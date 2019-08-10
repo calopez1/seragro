@@ -1,0 +1,514 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+	<ui:define name="content">
+
+		<p:ajaxStatus onstart="PF('statusDialog').show()"
+			onsuccess="PF('statusDialog').hide()" />
+		<p:dialog modal="true" widgetVar="statusDialog" header="Cargando"
+			draggable="false" closable="false">
+			<p:graphicImage
+				value="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/ajaxloadingbar.gif" />
+		</p:dialog>
+
+		<!-- Expired session -->
+		<p:idleMonitor onactive="PF('sessionTimeOutDialog').show();"
+			timeout="#{session.maxInactiveInterval * 1000}" />
+		<p:dialog modal="true" widgetVar="sessionTimeOutDialog"
+			header="Sesión terminada" draggable="false" closable="false">
+			<h:outputText value="La sesión ha finalizado" />
+			<input id="confirmBackToLogin" type="button" value="Iniciar sesión"
+				onclick="window.location='#{facesContext.externalContext.requestContextPath}/index.jsp';" />
+		</p:dialog>
+		
+		<script type="text/javascript">
+			function showStatus() {
+			    statusDialog.show();
+			}
+			 
+			function hideStatus() {
+			    statusDialog.hide();
+			}
+		</script>
+		
+
+		<style type="text/css">
+			.ui-panel {
+				margin-top: 20px
+			}
+			
+			.ui-tabs-top {
+				background-color: #FFFFFF;
+			}
+			
+			.one {
+				width: 10%;
+			}
+			
+			.two {
+				width: 90%;
+			}
+			
+        	.colAFiltro{width: 10%; }
+        	.colBFiltro{width: 50%; }
+			
+			.col50Left{
+				width: 10%;
+				text-align: left;
+			}
+			
+			.col50Right{
+				width: 10%;
+				text-align: right;
+			}
+			
+			.txt100{
+				width: 100%;
+			}
+			
+		</style>
+			<h:form id="formDialog">
+			
+			<div>
+				<div>
+				
+					<p:panel>
+						<h:outputText
+							value="Parametrice los conceptos de Rentas Propias" styleClass="FontBold Fs18 hardblue" />
+					</p:panel>
+				
+					<p:panel id="panelGluoParametrizacionConcepto" header="Conceptos de Rentas Propias">
+					
+						<p:growl id="men" showDetail="false" sticky="false"/>
+
+							<br />
+						
+							<div class="ContainerIndent">
+								<h:outputText value="Datos del concepto de renta" />
+							</div>
+						
+							<div>
+								<div>
+								<h:panelGrid id="panelGridFormulario" columns="2" columnClasses="one, two" style="width: 100%;">
+									
+									<h:outputText value=" Concepto: "/>
+									<p:panelGrid>
+										<p:inputText id="txtConcepto" styleClass="Wid30" binding="#{gluoParametrizacionConceptoView.txtConcepto}" maxlength="50"/>
+									</p:panelGrid>
+									
+									<h:outputText value=" Localidad"/>
+									<p:panelGrid>
+										<p:selectOneMenu id="somLocalidades" binding="#{gluoParametrizacionConceptoView.somLocalidades}">
+											<f:selectItem itemLabel="-------- Seleccione una localidad ----------" itemValue="-1"/>
+											<f:selectItems value="#{gluoParametrizacionConceptoView.lasLocalidades}"/>
+											<p:ajax listener="#{gluoParametrizacionConceptoView.listener_localidades}" event="change" update="txtRubro, txtIdentificacionTercero, txtCuentaDebito, btnBuscarCucoDeb, txtCuentaCredito, btnBuscarCucoCre, :formDialog:presupuestoGastosData, :formDialog:tercerosEncontrados, :formDialog:cuentasEncontradas, :formDialog:cuentasEncontradasCredito"/>
+										</p:selectOneMenu>
+									</p:panelGrid>
+	
+									<h:outputText value=" Rubro presupuestal: "/>
+									<p:panelGrid>
+										<p:inputText id="txtRubro" styleClass="Wid30" value="#{gluoParametrizacionConceptoView.codigoRubro}" readonly="true"/>
+										<p:commandButton icon="ui-icon-search" action="#{gluoParametrizacionConceptoView.action_preValidacionCargueRubros}" update="men"/>
+									</p:panelGrid>
+									
+									<h:outputText value="Tercero/Municipio"/>								
+									<p:panelGrid>
+										<p:inputText id="txtIdentificacionTercero" styleClass="Wid30" value="#{gluoParametrizacionConceptoView.identificacionTerceroSeleccionado}" readonly="true"/>
+										<p:commandButton icon="ui-icon-search" oncomplete="PF('dlgTercero').show();"/>
+									</p:panelGrid>
+									
+									<h:outputText value=" Cuenta Debito"/>
+									<p:panelGrid>
+										<p:inputText id="txtCuentaDebito" styleClass="Wid30" value="#{gluoParametrizacionConceptoView.cuentaDebitoDescr}" readonly="true"/>
+										<p:commandButton id="btnBuscarCucoDeb" icon="ui-icon-search" oncomplete="PF('dlgCuentasContablesDebito').show();" disabled="#{gluoParametrizacionConceptoView.deshabilitarBotonBusqueda}"/>
+									</p:panelGrid>
+									
+									<h:outputText value=" Cuenta Credito"/>
+									<p:panelGrid>
+										<p:inputText id="txtCuentaCredito" styleClass="Wid30" value="#{gluoParametrizacionConceptoView.cuentaCreditoDescr}" readonly="true"/>
+										<p:commandButton id="btnBuscarCucoCre" icon="ui-icon-search" oncomplete="PF('dlgCuentasContablesCredito').show();" disabled="#{gluoParametrizacionConceptoView.deshabilitarBotonBusqueda}"/>
+									</p:panelGrid>
+	
+									<h:outputText value=" Cuenta Bancaria"/>
+									<p:panelGrid>
+										<p:selectOneMenu id="somCuentaBancaria" styleClass="Wid30" binding="#{gluoParametrizacionConceptoView.somCuentaBancaria}">
+											<f:selectItem itemLabel="----- Seleccione una cuenta bancaria ------" itemValue="-1"/>
+											<f:selectItems value="#{gluoParametrizacionConceptoView.lasCuentasBancarias}"/>
+										</p:selectOneMenu>
+									</p:panelGrid>
+									
+									<h:outputText value=" Tarifa"/>
+									<p:inputText id="txtTarifa" binding="#{gluoParametrizacionConceptoView.txtTarifa}" maxlength="10" styleClass="Wid30"/>
+									
+									<h:outputText value=" Estado"/>
+									<p:panelGrid>
+										<p:selectOneMenu id="somEstadoRegistro" binding="#{gluoParametrizacionConceptoView.somEstadoRegistro}">
+											<f:selectItem itemLabel="Activo" itemValue="A"/>
+											<f:selectItem itemLabel="Inactivo" itemValue="I"/>
+										</p:selectOneMenu>
+									</p:panelGrid>
+								 </h:panelGrid>
+								</div>
+							</div>	
+							
+							<br />
+							
+							<div align="left">
+								<h:panelGrid id="panelBotones" columns="2">
+									<p:commandButton id="btnSave" value="Guardar" action="#{gluoParametrizacionConceptoView.action_save()}" 
+													 update=":formDialog:panelGluoParametrizacionConcepto, men, panelTabla, :formDialog:presupuestoGastosData, 
+													 		 :formDialog:tercerosEncontrados, :formDialog:cuentasEncontradas, :formDialog:cuentasEncontradasCredito" />
+													 		 
+									<p:commandButton id="btnClear" value="Limpiar" action="#{gluoParametrizacionConceptoView.action_clear()}" 
+				 									 update=":formDialog:panelGluoParametrizacionConcepto, men, :formDialog:presupuestoGastosData, :formDialog:tercerosEncontrados, 
+				 									 		 :formDialog:cuentasEncontradas, :formDialog:cuentasEncontradasCredito" />
+								</h:panelGrid>
+							</div>	
+						</p:panel>
+						
+						<br />
+				
+						<p:scrollPanel id="panelTabla" mode="native" style="width:100%;">
+								<p:dataTable id="tablaConceptosRentaPropios" value="#{gluoParametrizacionConceptoView.data}" 
+											 var="concepto"
+											 rows="10"
+											 paginator="true"
+											 style="width: 100%;"
+											 emptyMessage="No hay conceptos de renta propios encontrados"
+											 reflow="true" 
+											 rowKey="#{concepto.pacoId}"
+											 scrollable="true" 
+											 scrollWidth="100%"
+											 filterDelay="1000">
+									
+									<p:column headerText="Opciones" width="70">
+										<p:commandButton id="btnEditRow" icon="ui-icon-pencil" action="#{gluoParametrizacionConceptoView.action_edit(concepto)}" update=":formDialog"/>
+									</p:column>
+											 
+									<p:column headerText="Concepto" sortBy="#{concepto.codigoConcepto}"
+										width="200" filterBy="#{concepto.codigoConcepto}"
+										filterMatchMode="startsWith">
+										<h:outputText value="#{concepto.codigoConcepto}" />
+									</p:column>
+									
+									<p:column headerText="Localidad" sortBy="#{concepto.descripcionTipoLocalidad}"
+										width="200" filterBy="#{concepto.descripcionTipoLocalidad}"
+										filterMatchMode="startsWith">
+										<h:outputText value="#{concepto.descripcionTipoLocalidad}" />
+									</p:column>
+									
+									<p:column headerText="Rubro Presupuestal" sortBy="#{concepto.descripcionCuenta}"
+										width="200" filterBy="#{concepto.descripcionCuenta}"
+										filterMatchMode="startsWith">
+										<h:outputText value="#{concepto.descripcionCuenta}" />
+									</p:column>
+									
+									<p:column headerText="Tercero/Municipio" sortBy="#{concepto.razonSocialTerceroMunicipio}"
+										width="200" filterBy="#{concepto.razonSocialTerceroMunicipio}"
+										filterMatchMode="startsWith">
+										<h:outputText value="#{concepto.razonSocialTerceroMunicipio}" />
+									</p:column>
+									
+									<p:column headerText="Cuenta Debito" sortBy="#{concepto.cuentaDebitoDescr}"
+										width="200" filterBy="#{concepto.cuentaDebitoDescr}"
+										filterMatchMode="startsWith">
+										<h:outputText value="#{concepto.cuentaDebitoDescr}" />
+									</p:column>
+									
+									<p:column headerText="Cuenta Credito" sortBy="#{concepto.cuentaCreditoDescr}"
+										width="200" filterBy="#{concepto.cuentaCreditoDescr}"
+										filterMatchMode="startsWith">
+										<h:outputText value="#{concepto.cuentaCreditoDescr}" />
+									</p:column>
+									
+									<p:column headerText="Cuenta Bancaria" sortBy="#{concepto.cuentaBancariaDescr}"
+										width="200" filterBy="#{concepto.cuentaBancariaDescr}"
+										filterMatchMode="startsWith">
+										<h:outputText value="#{concepto.cuentaBancariaDescr}" />
+									</p:column>
+									
+									<p:column headerText="Tarifa" sortBy="#{concepto.tarifa}"
+										width="200" filterBy="#{concepto.tarifa}"
+										filterMatchMode="startsWith">
+										<h:outputText value="#{concepto.tarifa}" />
+									</p:column>
+									
+									<p:column headerText="Estado" sortBy="#{concepto.estadoDescripcion}"
+										width="200" filterBy="#{concepto.estadoDescripcion}"
+										filterMatchMode="startsWith">
+										<h:outputText value="#{concepto.estadoDescripcion}" />
+									</p:column>
+											 
+								</p:dataTable>
+						</p:scrollPanel>
+				</div>
+			</div>
+			
+			<!--        Codigos Presupuestales Ingresos        -->
+			<!-- ************************* -->
+			<p:dialog modal="true" widgetVar="dlgCodigosPresupuestales" header="Codigos Presupuestales" draggable="false" closable="true"
+						resizable="true" width="90%" height="200px;" position="center"> 
+					
+					<p:growl id="menRubros" showDetail="false"/>
+					
+					<p:scrollPanel mode="native" style="width:100%; height:400px">
+								<p:dataTable id="presupuestoGastosData" var="cuenta"
+									value="#{gluoParametrizacionConceptoView.detallePresupuesto}"
+									rows="10" paginator="true"
+									paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+									rowsPerPageTemplate="10,15,20,30"
+									emptyMessage="No existen cuentas del presupuesto" reflow="true"
+									rowKey="#{cuenta.dptoId}"
+									selection="#{gluoParametrizacionConceptoView.rubroSeleccionado}"
+									filterDelay="1000">
+									
+			                        <p:column selectionMode="single" style="width:5%; text-align:center" />
+			
+									<p:column headerText="Cuenta" sortBy="#{cuenta.codigoCuenta}"
+										style="width: 15%" filterBy="#{cuenta.codigoCuenta}"
+										filterMatchMode="startsWith">
+										<h:outputText value="#{cuenta.codigoCuenta}" />
+									</p:column>
+									
+									<p:column headerText="Descripción"
+										sortBy="#{cuenta.descripcionCuenta}" style="width: 50%" filterBy="#{cuenta.descripcionCuenta}"
+										filterMatchMode="contains">
+										<h:outputText value="#{cuenta.descripcionCuenta}" />
+									</p:column>
+									
+									<p:column headerText="Valor Inicial" style="width: 10%">
+										<div align="right">
+											<h:outputText value="#{cuenta.valorInicial}">
+												<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+											</h:outputText>
+										</div>
+									</p:column>
+								</p:dataTable>
+							</p:scrollPanel>
+							
+							<div align="center">
+								<h:panelGrid id="btnSelecciona" columns="2">
+									<p:commandButton id="btnSeleccionar" value="Seleccionar" action="#{gluoParametrizacionConceptoView.action_validarRubroSeleccionado}" update="menRubros, :formDialog:txtRubro, :formDialog:txtCuentaDebito, :formDialog:txtCuentaCredito"/>
+								</h:panelGrid>
+							</div>
+				
+							<div class="EmptyBox20" />
+					</p:dialog>
+			<!-- ************************* -->	
+					
+			<!--        Tercero            -->
+			<!-- ************************* -->
+			<p:dialog modal="true" widgetVar="dlgTercero" header="Tercero"
+				draggable="false" closable="true" resizable="true"
+				width="90%" height="500">
+				
+				<p:growl id="menTerceros" showDetail="false"/>
+				
+				<p:scrollPanel id="pnlTerceros" mode="native" style="width:100%; height:400px">
+					<div class="ContainerIndent"/>
+					
+					<p:outputLabel value="Criterios de búsqueda para terceros/Municipios:"/>
+					
+					<h:panelGrid columns="2" columnClasses="colAFiltro, colBFiltro" style="width: 100%;">
+								
+						<p:outputLabel value="Identificación: "/>
+						<p:inputText styleClass="Wid50"
+							value="#{gluoParametrizacionConceptoView.identificacionFiltro}"/>
+						
+						<p:outputLabel value="Nombre/Razón Social:"/>
+						<p:inputText styleClass="Wid50"
+							value="#{gluoParametrizacionConceptoView.nombreRazonSocialFiltro}"/>
+						
+					</h:panelGrid>
+					
+					<p:commandButton value="Buscar Tercero/Municipio"
+						actionListener="#{gluoParametrizacionConceptoView.action_buscarTercero}"
+						update="pnlTerceros"/>
+					
+					<br />
+					<br />
+				
+					<p:dataTable id="tercerosEncontrados" var="tercero" rows="350" style="width: 100%;"
+						value="#{gluoParametrizacionConceptoView.terceros}"
+						paginator="true"
+						paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+						rowsPerPageTemplate="300,400,500"
+						emptyMessage="No hay terceros encontrados"
+						reflow="true" 
+						rowKey="#{tercero.tercId}"
+						selection="#{gluoParametrizacionConceptoView.terceroSeleccionado}"
+						filterDelay="1000">
+						
+						<f:facet name="header">
+                             Terceros
+                         </f:facet>
+                         
+						<p:column selectionMode="single" style="width:5%; text-align:center" />
+                         
+                   		<p:column headerText="Identificación" sortBy="#{tercero.identificacion}"
+							style="width: 10%" filterBy="#{tercero.identificacion}"
+							filterMatchMode="startsWith">
+							<h:outputText value="#{tercero.identificacion}"/>
+						</p:column>
+						
+						<p:column headerText="Primer Nombre" sortBy="#{tercero.primerNombre}"
+							style="width: 10%" filterBy="#{tercero.primerNombre}"
+							filterMatchMode="contains">
+							<h:outputText value="#{tercero.primerNombre}"/>
+						</p:column>
+						
+						<p:column headerText="Segundo Nombre" sortBy="#{tercero.segundoNombre}"
+							style="width: 10%" filterBy="#{tercero.segundoNombre}"
+							filterMatchMode="contains">
+							<h:outputText value="#{tercero.segundoNombre}"/>
+						</p:column>
+						
+						<p:column headerText="Primer Apellido" sortBy="#{tercero.primerApellido}"
+							style="width: 10%" filterBy="#{tercero.primerApellido}"
+							filterMatchMode="contains">
+							<h:outputText value="#{tercero.primerApellido}"/>
+						</p:column>
+						
+						<p:column headerText="Segundo Apellido" sortBy="#{tercero.segundoApellido}"
+							style="width: 10%" filterBy="#{tercero.segundoApellido}"
+							filterMatchMode="contains">
+							<h:outputText value="#{tercero.segundoApellido}"/>
+						</p:column>
+						
+						<p:column headerText="Razón Social" sortBy="#{tercero.razonSocial}"
+							style="width: 10%" filterBy="#{tercero.razonSocial}"
+							filterMatchMode="contains">
+							<h:outputText value="#{tercero.razonSocial}"/>
+						</p:column>
+						
+					</p:dataTable>
+					</p:scrollPanel>
+
+					<div align="center">
+						<h:panelGrid id="btnSeleccionaTercero" columns="2">
+							<p:commandButton id="btnSeleccionarTercero" value="Seleccionar" action="#{gluoParametrizacionConceptoView.action_seleccionarTercero}" update="menTerceros, :formDialog:txtIdentificacionTercero"/>
+						</h:panelGrid>
+					</div>
+				
+					<div class="EmptyBox20" />
+			</p:dialog>
+			<!--        Tercero            -->
+			<!-- ************************* -->
+			
+						<!--        Cuenta Contable Debito            -->
+			<!-- ************************* -->
+			<p:dialog modal="true" widgetVar="dlgCuentasContablesDebito" header="Cuentas Contables Debito"
+				draggable="false" closable="true" resizable="true"
+				width="90%" height="500px">
+				
+				<p:growl id="menCuentaContableDebito" showDetail="false"/>
+				
+					<p:scrollPanel id="pnlCuentasDebito" mode="native" style="width:100%; height:400px">
+					<div class="ContainerIndent"/>
+					
+					<br />
+				
+					<p:dataTable id="cuentasEncontradas" var="cucoDeb" rows="350" style="width: 100%;"
+						value="#{gluoParametrizacionConceptoView.listaCuentasDebito}"
+						paginator="true"
+						paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+						rowsPerPageTemplate="300,400,500"
+						emptyMessage="No hay cuentas contables encontradas"
+						reflow="true" 
+						rowKey="#{cucoDeb.cconId}"
+						selection="#{gluoParametrizacionConceptoView.cuentaDebitoSeleccionada}"
+						filterDelay="1000">
+						
+						<f:facet name="header">
+                             Cuentas Contables
+                         </f:facet>
+                         
+						<p:column selectionMode="single" style="width:5%; text-align:center" />
+                         
+                   		<p:column headerText="Codigo" sortBy="#{cucoDeb.codigo}"
+							style="width: 10%" filterBy="#{cucoDeb.codigo}"
+							filterMatchMode="startsWith">
+							<h:outputText value="#{cucoDeb.codigo}"/>
+						</p:column>
+						
+						<p:column headerText="Descripcion" sortBy="#{cucoDeb.descripcion}"
+							style="width: 50%" filterBy="#{cucoDeb.descripcion}"
+							filterMatchMode="contains">
+							<h:outputText value="#{cucoDeb.descripcion}"/>
+						</p:column>
+					</p:dataTable>
+					</p:scrollPanel>
+
+					<div align="center">
+						<h:panelGrid id="btnSeleccionaCucoDeb" columns="2">
+							<p:commandButton id="btnSeleccionarCucoDeb" value="Seleccionar" action="#{gluoParametrizacionConceptoView.action_seleccionarCuentaDebito}" update="menCuentaContableDebito, :formDialog:txtCuentaDebito"/>
+						</h:panelGrid>
+					</div>
+				
+					<div class="EmptyBox20" />
+			</p:dialog>
+			<!--        Cuenta Contable Debito           -->
+			<!-- ************************* -->
+			
+			
+			<!--        Cuenta Contable Credito            -->
+			<!-- ************************* -->
+			<p:dialog modal="true" widgetVar="dlgCuentasContablesCredito" header="Cuentas Contables Credito"
+				draggable="false" closable="true" resizable="true"
+				width="90%" height="500px" >
+				
+				<p:growl id="menCuentaContableCredito" showDetail="false"/>
+				
+					<p:scrollPanel id="pnlCuentasCredito" mode="native" style="width:100%; height:400px">
+					<div class="ContainerIndent"/>
+					
+					<br />
+				
+					<p:dataTable id="cuentasEncontradasCredito" var="cucoCre" rows="350" style="width: 100%;"
+						value="#{gluoParametrizacionConceptoView.listaCuentasCredito}"
+						paginator="true"
+						paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+						rowsPerPageTemplate="300,400,500"
+						emptyMessage="No hay cuentas contables encontradas"
+						reflow="true" 
+						rowKey="#{cucoCre.cconId}"
+						selection="#{gluoParametrizacionConceptoView.cuentaCreditoSeleccionada}"
+						filterDelay="1000">
+						
+						<f:facet name="header">
+                             Cuentas Contables
+                         </f:facet>
+                         
+						<p:column selectionMode="single" style="width:5%; text-align:center" />
+                         
+                   		<p:column headerText="Codigo" sortBy="#{cucoCre.codigo}"
+							style="width: 10%" filterBy="#{cucoCre.codigo}"
+							filterMatchMode="startsWith">
+							<h:outputText value="#{cucoCre.codigo}"/>
+						</p:column>
+						
+						<p:column headerText="Descripcion" sortBy="#{cucoCre.descripcion}"
+							style="width: 50%" filterBy="#{cucoCre.descripcion}"
+							filterMatchMode="contains">
+							<h:outputText value="#{cucoCre.descripcion}"/>
+						</p:column>
+					</p:dataTable>
+					</p:scrollPanel>
+
+					<div align="center">
+						<h:panelGrid id="btnSeleccionaCucoCre" columns="2">
+							<p:commandButton id="btnSeleccionarCucoCre" value="Seleccionar" action="#{gluoParametrizacionConceptoView.action_seleccionarCuentaCredito}" update="menCuentaContableCredito, :formDialog:txtCuentaCredito"/>
+						</h:panelGrid>
+					</div>
+				
+					<div class="EmptyBox20" />
+			</p:dialog>
+			<!--        Cuenta Contable Debito           -->
+			<!-- ************************* -->
+			
+		</h:form>
+	</ui:define>
+</ui:composition>

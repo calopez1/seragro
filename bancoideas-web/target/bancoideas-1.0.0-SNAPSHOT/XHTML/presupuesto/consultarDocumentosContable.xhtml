@@ -1,0 +1,204 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+	<ui:define name="content">
+
+		<p:ajaxStatus onstart="PF('statusDialog').show()"
+			onsuccess="PF('statusDialog').hide()" />
+		<p:dialog modal="true" widgetVar="statusDialog" header="Cargando"
+			draggable="false" closable="false">
+			<p:graphicImage
+				value="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/ajaxloadingbar.gif" />
+		</p:dialog>
+
+		<!-- Expired session -->
+		<p:idleMonitor onactive="PF('sessionTimeOutDialog').show();"
+			timeout="#{session.maxInactiveInterval * 1000}" />
+		<p:dialog modal="true" widgetVar="sessionTimeOutDialog"
+			header="Sesión terminada" draggable="false" closable="false">
+			<h:outputText value="La sesión ha finalizado" />
+			<input id="confirmBackToLogin" type="button" value="Iniciar sesión"
+				onclick="window.location='#{facesContext.externalContext.requestContextPath}/index.jsp';" />
+		</p:dialog>
+		
+		<script type="text/javascript">
+			function showStatus() {
+			    statusDialog.show();
+			}
+			 
+			function hideStatus() {
+			    statusDialog.hide();
+			}
+		</script>
+
+		<style type="text/css">
+			.one {
+				width: 20%;
+			}
+			
+			.two {
+				width: 80%;
+			}
+			
+		</style>
+	
+		<div align="center">
+			<h:form id="formConsultarDocumentosContables">
+				<p:growl id="men" showDetail="false" autoUpdate="true" closable="true" />
+				<p:panel id="pnlConsultaDocumentosContables" header="Consultar Documentos Contables" 
+				style="width: 90%;">
+					<p:panel header="CDP">
+						<h:panelGrid columns="2">
+							<p:outputLabel for="consecutivoCDP" value="Consecutivo CDP: "/>
+							<p:inputText id="consecutivoCDP" 
+							placeholder="Ingrese el consecutivo del CDP" 
+							style="width: 200px;"
+							value="#{consultarDocumentosContableView.consecutivoCDP}"/>
+							
+							<p:outputLabel for="fechaDesdeCDP" value="Fecha desde: "/>
+							<p:calendar id="fechaDesdeCDP" 
+							placeholder="Seleccione una fecha"
+							value="#{consultarDocumentosContableView.fechaDesdeCDP}"/>
+							
+							<p:outputLabel for="fechaHastaCDP" value="Fecha hasta: "/>
+							<p:calendar id="fechaHastaCDP" 
+							placeholder="Seleccione una fecha"
+							value="#{consultarDocumentosContableView.fechaHastaCDP}"/>
+							
+							<p:outputLabel for="conceptoCDP" value="Concepto CDP: "/>
+							<p:inputTextarea id="conceptoCDP" 
+							placeholder="Ingrese el Concepto del CDP"
+							value="#{consultarDocumentosContableView.conceptoCDP}"/>
+							
+							<p:outputLabel for="codigoCuentaDPTO" value="Consecutivo Rubro Presupuestal: "/>
+							<p:inputTextarea id="codigoCuentaDPTO" 
+							placeholder="Ingrese el Consecutivo del Rubro Presupuestal"
+							value="#{consultarDocumentosContableView.codigoCuentaDPTO}"/>
+							
+						</h:panelGrid>
+					</p:panel>
+					
+					<p:panel header="CRP">
+						<h:panelGrid columns="2">
+							<p:outputLabel for="consecutivoCRP" value="Consecutivo CRP: "/>
+							<p:inputText id="consecutivoCRP" 
+							placeholder="Ingrese el consecutivo del CRP" 
+							style="width: 200px;"
+							value="#{consultarDocumentosContableView.consecutivoCRP}"/>
+							
+							<p:outputLabel for="identidadTerceroCRP" value="Identidad Tercero: "/>
+							<p:inputText id="identidadTerceroCRP" 
+							placeholder="Ingrese la identidad del Tercero" 
+							style="width: 200px;"
+							value="#{consultarDocumentosContableView.identidadTerceroCRP}"/>
+							
+							<p:outputLabel for="fechaDesdeCRP" value="Fecha desde: "/>
+							<p:calendar id="fechaDesdeCRP" 
+							placeholder="Seleccione una fecha"
+							value="#{consultarDocumentosContableView.fechaDesdeCRP}"/>
+							
+							<p:outputLabel for="fechaHastaCRP" value="Fecha hasta: "/>
+							<p:calendar id="fechaHastaCRP" 
+							placeholder="Seleccione una fecha"
+							value="#{consultarDocumentosContableView.fechaHastaCRP}"/>
+							
+							<p:outputLabel for="conSinAnticipo" value="Con anticipo / Sin anticipo: "/>
+							<p:selectManyCheckbox id="conSinAnticipo" value="#{consultarDocumentosContableView.conSinAnticipo}">
+						        <f:selectItem itemLabel="Con Anticipo" itemValue="S" />
+						        <f:selectItem itemLabel="Sin Ancicipo" itemValue="N" />
+        					</p:selectManyCheckbox>
+							
+							
+							<p:outputLabel for="conceptoCRP" value="Concepto CRP: "/>
+							<p:inputTextarea id="conceptoCRP" 
+							placeholder="Ingrese el Concepto del CRP"
+							value="#{consultarDocumentosContableView.conceptoCRP}"/>
+							
+						</h:panelGrid>
+					</p:panel>
+					
+					<p:panel header="OP">
+						<h:panelGrid columns="2">
+							<p:outputLabel for="consecutivoOP" value="Consecutivo OP: "/>
+							<p:inputText id="consecutivoOP" 
+							placeholder="Ingrese el consecutivo de la OP" 
+							style="width: 200px;"
+							value="#{consultarDocumentosContableView.consecutivoOP}"/>
+							
+							<p:outputLabel for="fechaDesdeOP" value="Fecha desde: "/>
+							<p:calendar id="fechaDesdeOP" 
+							placeholder="Seleccione una fecha"
+							value="#{consultarDocumentosContableView.fechaDesdeOP}"/>
+							
+							<p:outputLabel for="fechaHastaOP" value="Fecha hasta: "/>
+							<p:calendar id="fechaHastaOP" 
+							placeholder="Seleccione una fecha"
+							value="#{consultarDocumentosContableView.fechaHastaOP}"/>
+							
+							<p:outputLabel for="conceptoOP" value="Concepto OP: "/>
+							<p:inputTextarea id="conceptoOP" 
+							placeholder="Ingrese el Concepto del OP"
+							value="#{consultarDocumentosContableView.conceptoOP}"/>
+							
+						</h:panelGrid>
+					</p:panel>
+					
+					<p:panel header="CE">
+						<h:panelGrid columns="2">
+							<p:outputLabel for="consecutivoCE" value="Consecutivo CE: "/>
+							<p:inputText id="consecutivoCE" 
+							placeholder="Ingrese el consecutivo del CE" 
+							style="width: 200px;"
+							value="#{consultarDocumentosContableView.consecutivoCE}"/>
+							
+							<p:outputLabel for="fechaDesdeCE" value="Fecha desde: "/>
+							<p:calendar id="fechaDesdeCE" 
+							placeholder="Seleccione una fecha"
+							value="#{consultarDocumentosContableView.fechaDesdeCE}"/>
+							
+							<p:outputLabel for="fechaHastaCE" value="Fecha hasta: "/>
+							<p:calendar id="fechaHastaCE" 
+							placeholder="Seleccione una fecha"
+							value="#{consultarDocumentosContableView.fechaHastaCE}"/>
+							
+						</h:panelGrid>
+					</p:panel>
+						
+					<p:panel>
+						<h:panelGrid columns="3">
+
+						<p:commandButton id="btnPDF" value="Descarga Reporte PDF"
+							onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)"
+							ajax="false">
+							<p:fileDownload
+								value="#{consultarDocumentosContableView.reportePdf}" />
+						</p:commandButton>
+
+						<p:commandButton id="btnXLS" value="Descarga Reporte XLS"
+							onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)"
+							ajax="false">
+							<p:fileDownload
+								value="#{consultarDocumentosContableView.reporteXls}" />
+						</p:commandButton>
+
+						<p:commandButton id="btnXLSX" value="Descarga Reporte XLSX"
+							onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)"
+							ajax="false">
+							<p:fileDownload
+								value="#{consultarDocumentosContableView.reporteXlsx}" />
+						</p:commandButton>
+
+					</h:panelGrid>
+					</p:panel>
+										
+				</p:panel>
+			</h:form>
+		</div>
+		
+
+	</ui:define>
+
+</ui:composition>

@@ -1,0 +1,208 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+<ui:define name="content">
+
+<style type="text/css">
+	.ui-panel {
+		margin-top: 20px
+	}
+	
+	.ui-tabs-top{
+		background-color: #FFFFFF;
+	}
+</style>
+
+<p:ajaxStatus onstart="PF('statusDialog').show()"
+				onsuccess="PF('statusDialog').hide()" />
+			<p:dialog modal="true" widgetVar="statusDialog" header="Loading"
+				draggable="false" closable="false">
+				<p:graphicImage
+					value="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/ajaxloadingbar.gif" />
+			</p:dialog>
+
+			<!-- Expired session -->
+			<p:idleMonitor onactive="PF('sessionTimeOutDialog').show();"
+				timeout="#{session.maxInactiveInterval * 1000}" />
+			<p:dialog modal="true" widgetVar="sessionTimeOutDialog"
+				header="Expired session" draggable="false" closable="false">
+				<h:outputText value="The session is finished" />
+				<input id="confirmBackToLogin" type="button" value="Sign in"
+					onclick="window.location='#{facesContext.externalContext.requestContextPath}/index.jsp';" />
+			</p:dialog>
+
+
+<div align="center">
+
+
+	<h:form id="formAnularComprobanteTrasladoBancario" >
+		<p:growl id="messages" autoUpdate="true" closable="true" />
+		
+		<p:panel id="pnlAnularComprobanteTrasladoBancario" header="Anular Comprobante de Traslado Bancario" style="width: 90%;">
+			
+			<h:panelGrid columns="2">
+			
+				<p:outputLabel value="Comprobante de Traslado Bancario" for="txtComprobanteTraslado" />				
+				<h:panelGrid columns="2">				
+					
+					<p:inputText id="txtComprobanteTraslado" value="#{gluoComprobanteTrasladoBancarioView.selectNombreComprobanteTraslado}"
+					 maxlength="100" style="width: 200px"  />	
+					<p:commandButton  icon="ui-icon-search" 						
+						update=":formAnularComprobanteTrasladoBancario,:formDialogComprobanteTrasladoBancario"
+						onclick="PF('dialogComprobanteTrasladoBancario').show();" />
+				
+				</h:panelGrid>
+				
+			</h:panelGrid>
+			
+			<br/>
+			
+			<p:outputLabel value="No. comprobante: " />
+			<p:outputLabel value="#{gluoComprobanteTrasladoBancarioView.consecutivo}" />
+			
+			<br/>
+			
+			<p:outputLabel value="Fecha traslado: " />
+			<p:outputLabel value="#{gluoComprobanteTrasladoBancarioView.txtFechaTraslado}" >
+				<f:convertDateTime type="date" pattern="dd-MM-yyyy"/>
+			</p:outputLabel>
+		
+			<br/>
+		
+			<p:outputLabel value="Valor: " />
+			<p:outputLabel value="#{gluoComprobanteTrasladoBancarioView.txtValor}" >
+				<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+			</p:outputLabel>
+			
+			<!-- Botones -->
+			<br/><br/>
+
+			<p:commandButton id="btnAnular" value="Anular Comprobante"
+					action="#{gluoComprobanteTrasladoBancarioView.action_anular_comprobante_traslado}"					
+					update=":formAnularComprobanteTrasladoBancario,:formDialogComprobanteTrasladoBancario,
+						:formAnularComprobanteTrasladoBancario:pnlListaComprobantesTrasladoBancariosAnulados,
+						@([id$=pnlListaComprobantesTrasladoBancariosAnuladosDataTable])"
+						oncomplete="PF('tblComprobante').filter()" />
+					
+			<p:commandButton id="btnLimpiar" value="Limpiar"
+					action="#{gluoComprobanteTrasladoBancarioView.action_limpiar_anular_comprobante}"					
+					update=":formAnularComprobanteTrasladoBancario,:formDialogComprobanteTrasladoBancario" />
+							
+		</p:panel>
+			
+		<p:panel id="pnlListaComprobantesTrasladoBancariosAnulados" 
+		header="Comprobantes de Traslados Bancarios Anulados"
+		style="width: 90%; text-align: center;">
+	
+		<p:dataTable var="comprobanteTraslado" id="pnlListaComprobantesTrasladoBancariosAnuladosDataTable"
+			value="#{gluoComprobanteTrasladoBancarioView.dataComprobanteTrasladoBancariosSiAnulados}"
+			filterDelay="1000" widgetVar="tblComprobante">
+
+			<p:column headerText="No. comprobante" filterBy="#{comprobanteTraslado.consecutivo}" filterMatchMode="contains">
+				<h:outputText value="#{comprobanteTraslado.consecutivo}" />
+			</p:column>
+			
+			<p:column headerText="Fecha traslado" filterBy="#{comprobanteTraslado.fechaTraslado}" 
+				filterMatchMode="contains">
+				<h:outputText value="#{comprobanteTraslado.fechaTraslado}" >
+					<f:convertDateTime type="date" pattern="dd-MM-yyyy"/>
+				</h:outputText>
+			</p:column>
+			
+			<p:column headerText="Justificación" filterBy="#{comprobanteTraslado.descripcion}" 
+				filterMatchMode="contains">
+				<h:outputText value="#{comprobanteTraslado.descripcion}" />
+			</p:column>
+			
+			<p:column headerText="Valor" filterBy="#{comprobanteTraslado.valor}" 
+				filterMatchMode="contains">
+				<h:outputText value="#{comprobanteTraslado.valor}" >
+					<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+				</h:outputText>
+			</p:column>
+			
+		</p:dataTable>	
+	
+	</p:panel>	
+			
+	</h:form>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	<!--  **************************************************************************** -->
+	<!--  **				Dialogo Comprobante Traslado Bancario					** -->
+	<!--  **************************************************************************** -->
+	<p:dialog header="Comprobantes Traslados Bancarios"
+		widgetVar="dialogComprobanteTrasladoBancario" modal="true" height="400" width="90%">
+		
+		<div style="text-align: center;">
+		<h:form id="formDialogComprobanteTrasladoBancario">
+			
+			<p:scrollPanel mode="native" style="width:100%; height:400px;">
+				<p:dataTable var="comprobanteTraslado"
+					value="#{gluoComprobanteTrasladoBancarioView.dataComprobanteTrasladoBancariosNoAnulados}"
+					selectionMode="single"
+					selection="#{gluoComprobanteTrasladoBancarioView.selectedGluoComprobanteTrasladoBancario}"
+					rowKey="#{comprobanteTraslado.consecutivo}"
+					paginator="true"
+					rows="10"
+					filterDelay="1000">
+
+					<p:ajax event="rowSelect"
+						listener="#{gluoComprobanteTrasladoBancarioView.onRowSelectComprobanteTraslado}"	
+						update=":formAnularComprobanteTrasladoBancario"								
+						oncomplete="PF('dialogComprobanteTrasladoBancario').hide();" />
+
+					<p:column headerText="No. comprobante" filterBy="#{comprobanteTraslado.consecutivo}" 
+						filterMatchMode="contains">
+						<h:outputText value="#{comprobanteTraslado.consecutivo}" />
+					</p:column>
+					
+					<p:column headerText="Fecha traslado" filterBy="#{comprobanteTraslado.fechaTraslado}" 
+						filterMatchMode="contains">
+						<h:outputText value="#{comprobanteTraslado.fechaTraslado}" >
+							<f:convertDateTime type="date" pattern="dd-MM-yyyy"/>
+						</h:outputText>
+					</p:column>
+					
+					<p:column headerText="Justificación" filterBy="#{comprobanteTraslado.descripcion}" 
+						filterMatchMode="contains">
+						<h:outputText value="#{comprobanteTraslado.descripcion}" />
+					</p:column>
+					
+					<p:column headerText="Valor" filterBy="#{comprobanteTraslado.valor}" 
+						filterMatchMode="contains">
+						<h:outputText value="#{comprobanteTraslado.valor}" >
+							<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+						</h:outputText>
+					</p:column>
+					
+				</p:dataTable>	
+			</p:scrollPanel>	
+						
+		</h:form>			
+		</div>	
+		
+	</p:dialog> <!-- Dialogo para Traslado Comprobante Bancario -->
+	
+	
+	
+	
+
+</div>	
+	
+	
+
+</ui:define>
+
+</ui:composition>

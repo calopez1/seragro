@@ -1,0 +1,169 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+<ui:define name="content">
+
+<p:ajaxStatus onstart="PF('statusDialog').show()"
+	onsuccess="PF('statusDialog').hide()" />
+<p:dialog modal="true" widgetVar="statusDialog" header="Cargando"
+	draggable="false" closable="false">
+	<p:graphicImage
+		value="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/ajaxloadingbar.gif" />
+</p:dialog>
+
+<!-- Expired session -->
+<p:idleMonitor onactive="PF('sessionTimeOutDialog').show();"
+	timeout="#{session.maxInactiveInterval * 1000}" />
+<p:dialog modal="true" widgetVar="sessionTimeOutDialog"
+	header="Sesión terminada" draggable="false" closable="false">
+	<h:outputText value="La sesión ha finalizado" />
+	<input id="confirmBackToLogin" type="button" value="Iniciar sesión"
+		onclick="window.location='#{facesContext.externalContext.requestContextPath}/index.jsp';" />
+</p:dialog>
+
+<script type="text/javascript">
+	function showStatus() {
+	    statusDialog.show();
+	}
+	 
+	function hideStatus() {
+	    statusDialog.hide();
+	}
+</script>
+
+
+<style type="text/css">
+	.ui-panel {
+		margin-top: 20px
+	}
+	
+	.ui-tabs-top {
+		background-color: #FFFFFF;
+	}
+	
+	.one {
+		width: 10%;
+	}
+	
+	.two {
+		width: 90%;
+	}
+	
+	.col50Left{
+		width: 10%;
+		text-align: left;
+	}
+	
+	.col50Right{
+		width: 10%;
+		text-align: right;
+	}
+	
+	.txt100{
+		width: 100%;
+	}
+	
+</style>
+
+<div align="center">
+
+<h:form id="frmInformePredial">
+
+	<p:growl id="men" showDetail="false" autoUpdate="true" closable="true" />
+	
+	<p:panel id="pnlInformePredial" header="Informe de Predial" style="width: 90%;" >
+	
+		<h:panelGrid columns="2">
+		
+			<p:outputLabel value="Año Fiscal" for="anioFiscal" />			
+			<p:inputText id="anioFiscal" value="#{informePredialView.txtAnioFiscal}" />  
+            			
+		</h:panelGrid>
+		
+		<br/>
+		
+		<p:commandButton id="btnObtenerPredios" value="Obtener Predios" 
+						 action="#{informePredialView.action_obtener_predios}"
+						 update=":frmInformePredial" />
+		
+		<p:commandButton id="btnLimpiar" value="Limpiar" 
+						 action="#{informePredialView.action_limpiar}"
+						 update=":frmInformePredial" />
+	
+	</p:panel>
+	
+	<p:panel id="pnlListaInformePredial" header="Informes de Predial" style="width: 90%;" >
+	
+		<p:dataTable id="pnlListaInformePredialDataTable" var="informePredial" rows="20" 
+			scrollable="true" scrollWidth="100%"
+		 	value="#{informePredialView.listInformePredialDTOs}"	
+		 	selection="#{informePredialView.selectedInformePredialDTO}"	 	
+		 	paginator="true"
+		 	emptyMessage="No hay registros encontrados"			  
+			reflow="true"
+			rowKey="#{informePredial.predId}" 
+			filterDelay="1000">
+			
+			<p:column selectionMode="multiple" style="width: 30px; text-align: center"/>
+			
+			<p:column headerText="No. Predio" style="text-align: center"
+				filterBy="#{informePredial.numeroPredio}">								
+				<p:outputLabel value="#{informePredial.numeroPredio}" />										
+			</p:column>
+			
+			<p:column headerText="Dirección" style="text-align: center"
+				filterBy="#{informePredial.direccion}">								
+				<p:outputLabel value="#{informePredial.direccion}" />										
+			</p:column>
+			
+			<p:column headerText="Departamento" style="text-align: center"
+				filterBy="#{informePredial.nombreDepartamento}">								
+				<p:outputLabel value="#{informePredial.nombreDepartamento}" />										
+			</p:column>
+			
+			<p:column headerText="Municipio" style="text-align: center"
+				filterBy="#{informePredial.nombreMunicipio}">								
+				<p:outputLabel value="#{informePredial.nombreMunicipio}" />										
+			</p:column>
+			
+			<p:column headerText="Zona" style="text-align: center"
+				filterBy="#{informePredial.descripcionZona}">								
+				<p:outputLabel value="#{informePredial.descripcionZona}" />										
+			</p:column>
+			
+			<p:column headerText="Valor Avalúo" style="text-align: center"
+				filterBy="#{informePredial.valorAvaluo}">								
+				<p:outputLabel value="#{informePredial.valorAvaluo}" >
+					<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+				</p:outputLabel>										
+			</p:column>
+			
+			<p:column headerText="Valor Predial Calculado" style="text-align: center"
+				filterBy="#{informePredial.valorPredialCalculado}">								
+				<p:outputLabel value="#{informePredial.valorPredialCalculado}" >
+					<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+				</p:outputLabel>										
+			</p:column>
+			
+			<p:column headerText="Valor Predial a Pagar" style="text-align: center"
+				filterBy="#{informePredial.valorPredialPagar}">								
+				<p:outputLabel value="#{informePredial.valorPredialPagar}" >
+					<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+				</p:outputLabel>										
+			</p:column>
+			
+		</p:dataTable>
+		
+		
+	</p:panel>
+	
+	
+	<br/><br/>
+			
+</h:form>
+</div>
+</ui:define>
+</ui:composition>

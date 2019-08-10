@@ -1,0 +1,188 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+<ui:define name="content">
+
+	<p:ajaxStatus onstart="PF('statusDialog').show()"
+		onsuccess="PF('statusDialog').hide()" />
+	<p:dialog modal="true" widgetVar="statusDialog" header="Cargando"
+		draggable="false" closable="false">
+		<p:graphicImage
+			value="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/ajaxloadingbar.gif" />
+	</p:dialog>
+
+	<!-- Expired session -->
+<p:idleMonitor onactive="PF('sessionTimeOutDialog').show();"
+	timeout="#{session.maxInactiveInterval * 1000}" />
+<p:dialog modal="true" widgetVar="sessionTimeOutDialog"
+	header="Sesión terminada" draggable="false" closable="false">
+	<h:outputText value="La sesión ha finalizado" />
+	<input id="confirmBackToLogin" type="button" value="Iniciar sesión"
+		onclick="window.location='#{facesContext.externalContext.requestContextPath}/index.jsp';" />
+</p:dialog>
+
+<script type="text/javascript">
+	function showStatus() {
+	    statusDialog.show();
+	}
+	 
+	function hideStatus() {
+	    statusDialog.hide();
+	}
+</script>
+
+
+<style type="text/css">
+	.ui-panel {
+		margin-top: 20px
+	}
+	
+	.ui-tabs-top {
+		background-color: #FFFFFF;
+	}
+	
+	.one {
+		width: 10%;
+	}
+	
+	.two {
+		width: 90%;
+	}
+	
+	.col50Left{
+		width: 10%;
+		text-align: left;
+	}
+	
+	.col50Right{
+		width: 10%;
+		text-align: right;
+	}
+	
+	.txt100{
+		width: 100%;
+	}
+	
+</style>
+
+<div align="center">
+<h:form id="frmInformeAplazamientosDesaplazamientos">
+
+	<p:growl id="men" showDetail="false" autoUpdate="true" closable="true" />
+	
+	<p:panel id="pnlInformeAplazamientosDesaplazamientos" header="Generar Informe Aplazamientos/Desaplazamientos"
+		style="width: 90%;" >		
+		<h:panelGrid columns="2">		
+			<p:outputLabel value="Fecha Inicial" for="txtFechaInicio" />
+			<p:calendar id="txtFechaInicio" 
+				value="#{informeAplazamientosDesaplazamientosView.txtFechaInicio}"
+				navigator="true" />
+				
+			<p:outputLabel value="Fecha Final" for="txtFechaFinal" />
+			<p:calendar id="txtFechaFinal" 
+				value="#{informeAplazamientosDesaplazamientosView.txtFechaFinal}"
+				navigator="true" />
+				
+			<p:outputLabel value="Tipo Transacción" for="selectTipoTransaccion" />
+			<p:selectOneMenu id="selectTipoTransaccion" value="#{informeAplazamientosDesaplazamientosView.selectEsDeAplazamiento}" >
+				<f:selectItem itemLabel="Aplazamiento" itemValue="S"  />				
+				<f:selectItem itemLabel="Desaplazamiento" itemValue="N"  />
+			</p:selectOneMenu>
+			
+		</h:panelGrid>			
+		
+		<p:commandButton id="btnGenerarInforme" value="Generar Informe"
+			action="#{informeAplazamientosDesaplazamientosView.action_generar_informe_aplazamiento_desaplazamiento}"
+			update=":frmInformeAplazamientosDesaplazamientos" />
+			
+		<p:commandButton id="btnLimpiar" value="Limpiar"
+			action="#{informeAplazamientosDesaplazamientosView.action_limpiar}"
+			update=":frmInformeAplazamientosDesaplazamientos" />
+		
+	</p:panel>	
+	
+	<p:panel id="pnlListarInformeAplazamientosDesaplazamientos" header="Listar Informe Aplazamientos/Desaplazamientos"
+		style="width: 90%;" >
+				
+		<p:dataTable id="listarInformeAplazamientosDesaplazamientosDataTable"
+			var="aplazamientosDesaplazamientos"
+			value="#{informeAplazamientosDesaplazamientosView.listDetalleCdpDTOs}"
+			rows="10"
+			paginator="true" filterDelay="1000">			
+			
+			<p:column headerText="Fecha Expedición" filterBy="#{aplazamientosDesaplazamientos.fechaExpedicionAplazamiento}"
+				filterMatchMode="contains">
+				<h:outputLabel value="#{aplazamientosDesaplazamientos.fechaExpedicionAplazamiento}" >
+					<f:convertDateTime pattern="yyyy-MM-dd" />
+				</h:outputLabel>
+			</p:column>						
+			
+			<p:column headerText="Aplazamiento/Desaplazamiento" filterBy="#{aplazamientosDesaplazamientos.esDeAplazamiento}"
+				filterMatchMode="startsWith">
+				<h:outputLabel value="#{(aplazamientosDesaplazamientos.esDeAplazamiento == 'S' ? 'Aplazamiento' : 'Desaplazamiento')}" />
+			</p:column>
+			
+			<p:column headerText="Código Rubro" filterBy="#{aplazamientosDesaplazamientos.codigoCuenta}"
+				filterMatchMode="startsWith">
+				<h:outputLabel value="#{aplazamientosDesaplazamientos.codigoCuenta}" />
+			</p:column>
+						
+			<p:column headerText="Descripción Rubro" filterBy="#{aplazamientosDesaplazamientos.descripcionCuenta}"
+				filterMatchMode="startsWith">
+				<h:outputLabel value="#{aplazamientosDesaplazamientos.descripcionCuenta}" />
+			</p:column>
+			
+			<p:column headerText="Saldo Anterior" filterBy="#{aplazamientosDesaplazamientos.saldoAnterior}"
+				filterMatchMode="startsWith">
+				<h:outputLabel value="#{aplazamientosDesaplazamientos.saldoAnterior}" >
+					<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+				</h:outputLabel>
+			</p:column>
+			
+			<p:column headerText="Nuevo Saldo" filterBy="#{aplazamientosDesaplazamientos.nuevoSaldo}"
+				filterMatchMode="startsWith">
+				<h:outputLabel value="#{aplazamientosDesaplazamientos.nuevoSaldo}" >
+					<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+				</h:outputLabel>
+			</p:column>	
+			
+			<p:column headerText="Valor Traslado" filterBy="#{aplazamientosDesaplazamientos.valorCertificado}"
+				filterMatchMode="startsWith">
+				<h:outputLabel value="#{aplazamientosDesaplazamientos.valorCertificado}" >
+					<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+				</h:outputLabel>
+			</p:column>			
+			
+		</p:dataTable>		
+		
+		<br/><br/>
+		
+		<h:panelGrid columns="3">
+		
+			<p:commandButton id="btnPDF" value="Descarga Reporte PDF"				
+				onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)" ajax="false" >
+				<p:fileDownload value="#{informeAplazamientosDesaplazamientosView.reportePDF}" />				
+			</p:commandButton>
+		
+			<p:commandButton id="btnXLS" value="Descarga Reporte XLS"				
+				onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)" ajax="false" >
+				<p:fileDownload value="#{informeAplazamientosDesaplazamientosView.reporteXlS}" />				
+			</p:commandButton>
+		
+			<p:commandButton id="btnXLSX" value="Descarga Reporte XLSX"				
+				onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)" ajax="false" >
+				<p:fileDownload value="#{informeAplazamientosDesaplazamientosView.reporteXlSX}" />				
+			</p:commandButton>
+						
+		</h:panelGrid>
+		<br/>
+		
+	</p:panel>		
+	
+</h:form>
+</div>
+</ui:define>
+</ui:composition>

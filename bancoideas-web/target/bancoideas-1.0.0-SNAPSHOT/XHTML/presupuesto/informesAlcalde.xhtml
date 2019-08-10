@@ -1,0 +1,86 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+	<ui:define name="content">
+		<f:view>
+			<p:ajaxStatus onstart="PF('statusDialog').show()"
+				onsuccess="PF('statusDialog').hide()" />
+			<p:dialog modal="true" widgetVar="statusDialog" header="Cargando"
+				draggable="false" closable="false">
+				<p:graphicImage
+					value="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/ajaxloadingbar.gif" />
+			</p:dialog>
+
+			<!-- Expired session -->
+			<p:idleMonitor onactive="PF('sessionTimeOutDialog').show();"
+				timeout="#{session.maxInactiveInterval * 1000}" />
+			<p:dialog modal="true" widgetVar="sessionTimeOutDialog"
+				header="Sesión terminada" draggable="false" closable="false">
+				<h:outputText value="La sesión ha finalizado" />
+				<input id="confirmBackToLogin" type="button" value="Iniciar sesión"
+					onclick="window.location='#{facesContext.externalContext.requestContextPath}/index.jsp';" />
+			</p:dialog>
+
+			<style type="text/css">
+.colA {
+	width: 5%;
+}
+
+.colB {
+	width: 30%;
+}
+</style>
+
+			<h:form id="frm" enctype="multipart/form-data">
+
+				<p:panel id="panelConsultasPresupuestoAlcalde">
+					<p:growl id="growlEPG" autoUpdate="true" showDetail="false" />
+					<h:panelGrid columns="1" id="pnlCargarArchivo" style="width: 100%;">
+						<h:panelGrid columns="1" style="width: 100%;">
+							<div class="ContainerIndent">
+
+
+								<p:panel id="panelContenedor">
+
+									<div class="ContainerIndent">
+										<h:outputText value="Informes de presupuesto Alcaldía"
+											styleClass="FontBold Fs18 hardblue" />
+									</div>
+									
+
+									<div class="Container100">
+										<div class="ContainerIndent">
+												<br />	
+										
+												<h:panelGrid columns="2" columnClasses="colA,colB"
+													style="width: 100%;">
+
+													<p:commandButton
+														value="Deseo generar un Informe de Ejecución de Gastos"
+														update="@([id$=panelContenedor])" style="width: 500px"
+														action="InformeEjecucionGastosAlcalde.xhtml" />
+														
+														
+													<p:commandButton
+														value="Deseo generar un Informe de Ejecución de Ingresos"
+														update="@([id$=panelContenedor])" style="width: 500px"
+														action="InformeEjecucionIngresosAlcalde.xhtml" />	
+												</h:panelGrid>
+										
+										</div>
+									</div>
+								</p:panel>
+							</div>
+						</h:panelGrid>
+					</h:panelGrid>
+				</p:panel>
+
+			</h:form>
+
+		</f:view>
+	</ui:define>
+
+</ui:composition>

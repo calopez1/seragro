@@ -1,0 +1,317 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+	<ui:define name="content">
+
+		<p:ajaxStatus onstart="PF('statusDialog').show()"
+			onsuccess="PF('statusDialog').hide()" />
+		<p:dialog modal="true" widgetVar="statusDialog" header="Cargando"
+			draggable="false" closable="false">
+			<p:graphicImage
+				value="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/ajaxloadingbar.gif" />
+		</p:dialog>
+
+		<!-- Expired session -->
+		<p:idleMonitor onactive="PF('sessionTimeOutDialog').show();"
+			timeout="#{session.maxInactiveInterval * 1000}" />
+		<p:dialog modal="true" widgetVar="sessionTimeOutDialog"
+			header="Sesión terminada" draggable="false" closable="false">
+			<h:outputText value="La sesión ha finalizado" />
+			<input id="confirmBackToLogin" type="button" value="Iniciar sesión"
+				onclick="window.location='#{facesContext.externalContext.requestContextPath}/index.jsp';" />
+		</p:dialog>
+
+		<script type="text/javascript">
+			function showStatus() {
+				statusDialog.show();
+			}
+
+			function hideStatus() {
+				statusDialog.hide();
+			}
+
+			function teste() {
+
+				var checked = $(document).find(":checkbox")["0"].checked; ///Find checkbox header and verify if checkbox is checked
+				if (checked == true) {
+					PF('cuentaWidget').selectAllRows(); // if true, selectAllRows from datatable
+				} else {
+					PF('cuentaWidget').unselectAllRows(); //
+				}
+			}
+		</script>
+
+
+		<style type="text/css">
+.ui-panel {
+	margin-top: 20px
+}
+
+.ui-tabs-top {
+	background-color: #FFFFFF;
+}
+
+.one {
+	width: 10%;
+}
+
+.two {
+	width: 90%;
+}
+
+.col50Left {
+	width: 10%;
+	text-align: left;
+}
+
+.col50Right {
+	width: 10%;
+	text-align: right;
+}
+
+.txt100 {
+	width: 100%;
+}
+</style>
+
+		<div align="center">
+			<h:form id="frmInformeDisponibilidadesSinComprometer">
+
+				<p:growl id="men" showDetail="false" autoUpdate="true"
+					closable="true" />
+
+				<p:panel id="pnlInformeDisponibilidadesConSaldo"
+					header="Generar Informe Disponibilidades sin Comprometer"
+					style="width: 90%;">
+					<h:panelGrid columns="2">
+						<p:outputLabel value="Fecha Inicial" for="txtFechaInicial" />
+						<p:calendar id="txtFechaInicial"
+							value="#{gluoInformeDisponibilidadesSinComprometerView.txtFechaInicial}"
+							navigator="true" />
+
+						<p:outputLabel value="Fecha Final" for="txtFechaFinal" />
+						<p:calendar id="txtFechaFinal"
+							value="#{gluoInformeDisponibilidadesSinComprometerView.txtFechaFinal}"
+							navigator="true" />
+
+						<p:outputLabel value="Rubros Presupuestales" />
+						<h:panelGrid columns="2">
+							<p:commandButton icon="ui-icon-search"
+								onmousedown="PF('dlgRubros').show();" />
+						</h:panelGrid>
+					</h:panelGrid>
+
+					<br />
+
+					<p:dataTable id="rubrosPresupuestalesSelectedDataTable" var="rubro"
+						value="#{gluoInformeDisponibilidadesSinComprometerView.listDetallePresupuestosSelected}"
+						rowKey="#{rubro.dptoId}" filterDelay="1000">
+
+						<p:column headerText="Cuenta" filterBy="#{rubro.codigoCuenta}"
+							filterMatchMode="startsWith">
+							<h:outputLabel value="#{rubro.codigoCuenta}" />
+						</p:column>
+
+						<p:column headerText="Descripción"
+							filterBy="#{rubro.descripcionCuenta}" filterMatchMode="contains">
+							<h:outputLabel value="#{rubro.descripcionCuenta}" />
+						</p:column>
+
+						<p:column headerText="Valor Inicial"
+							filterBy="#{rubro.valorInicial}" filterMatchMode="startsWith">
+							<div align="right">
+								<h:outputLabel value="#{rubro.valorInicial}">
+									<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+								</h:outputLabel>
+							</div>
+						</p:column>
+
+					</p:dataTable>
+
+					<br />
+
+					<p:commandButton id="btnGenerarInforme" value="Generar Informe"
+						action="#{gluoInformeDisponibilidadesSinComprometerView.action_generar_informe}"
+						update=":frmInformeDisponibilidadesSinComprometer, pnlListarInformeDisponibilidadesConSaldo" />
+
+					<p:commandButton id="btnLimpiar" value="Limpiar"
+						action="#{gluoInformeDisponibilidadesSinComprometerView.action_limpiar}"
+						update=":frmInformeDisponibilidadesSinComprometer" />
+
+				</p:panel>
+
+
+
+				<p:panel id="pnlListarInformeDisponibilidadesConSaldo"
+					header="Informe Disponibilidades sin Comprometer"
+					style="width: 90%;">
+
+					<p:dataTable id="listarInformeDisponibilidadesConSaldoDataTable"
+						var="informeDisponibilidad"
+						value="#{gluoInformeDisponibilidadesSinComprometerView.listDetalleCdpDTOs}"
+						rows="10" paginator="true" filterDelay="1000">
+
+						<p:column headerText="Fecha Expedición"
+							filterBy="#{informeDisponibilidad.fechaExpedicion}"
+							filterMatchMode="contains">
+							<div align="center">
+								<h:outputText value="#{informeDisponibilidad.fechaExpedicion}">
+									<f:convertDateTime pattern="yyyy-MM-dd" />
+								</h:outputText>
+							</div>
+						</p:column>
+
+						<p:column headerText="Consecutivo"
+							filterBy="#{informeDisponibilidad.consecutivo}"
+							filterMatchMode="contains">
+							<div align="center">
+								<h:outputLabel value="#{informeDisponibilidad.consecutivo}" />
+							</div>
+						</p:column>
+
+						<p:column headerText="Código Rubro"
+							filterBy="#{informeDisponibilidad.codigoCuenta}"
+							filterMatchMode="startsWith">
+							<div align="center">
+								<h:outputLabel value="#{informeDisponibilidad.codigoCuenta}" />
+							</div>
+						</p:column>
+
+						<p:column headerText="Descripción Rubro"
+							filterBy="#{informeDisponibilidad.descripcionCuenta}"
+							filterMatchMode="contains">
+							<div align="center">
+								<h:outputLabel
+									value="#{informeDisponibilidad.descripcionCuenta}" />
+							</div>
+						</p:column>
+
+						<p:column headerText="Valor Disponible"
+							filterBy="#{informeDisponibilidad.valorDisponible}"
+							filterMatchMode="contains">
+							<div align="center">
+								<h:outputLabel value="#{informeDisponibilidad.valorDisponible}">
+									<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+								</h:outputLabel>
+							</div>
+						</p:column>
+
+					</p:dataTable>
+
+
+					<br />
+					<br />
+
+					<h:panelGrid columns="3">
+
+						<p:commandButton id="btnPDF" value="Descarga Reporte PDF"
+							onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)"
+							ajax="false">
+							<p:fileDownload
+								value="#{gluoInformeDisponibilidadesSinComprometerView.reporteCDPPdf}" />
+						</p:commandButton>
+
+						<p:commandButton id="btnXLS" value="Descarga Reporte XLS"
+							onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)"
+							ajax="false">
+							<p:fileDownload
+								value="#{gluoInformeDisponibilidadesSinComprometerView.reporteCDPXls}" />
+						</p:commandButton>
+
+						<p:commandButton id="btnXLSX" value="Descarga Reporte XLSX"
+							onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)"
+							ajax="false">
+							<p:fileDownload
+								value="#{gluoInformeDisponibilidadesSinComprometerView.reporteCDPXlsx}" />
+						</p:commandButton>
+
+					</h:panelGrid>
+					<br />
+
+				</p:panel>
+
+				<!-- ************************************************** -->
+				<!-- **			DIÁLOGO RUBROS PRESUPUESTALES 		 ** -->
+				<!-- ************************************************** -->
+				<p:dialog modal="true" widgetVar="dlgRubros" id="dlgRubrosId"
+					header="Rubros presupuestales" draggable="false" closable="true"
+					resizable="true" width="90%" height="200px;" position="center">
+
+					<p:scrollPanel mode="native" style="width:100%; height:400px">
+						<p:dataTable id="presupuestoGastosData" var="cuenta"
+							value="#{gluoInformeDisponibilidadesSinComprometerView.presupuestoGastosDTO.detallesPresupuesto}"
+							rows="10" paginator="true"
+							paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+							rowsPerPageTemplate="10,15,20,30"
+							emptyMessage="No existen cuentas del presupuesto" reflow="true"
+							widgetVar="cuentaWidget" rowKey="#{cuenta.dptoId}"
+							selection="#{gluoInformeDisponibilidadesSinComprometerView.listDetallePresupuestosSelected}"
+							filterDelay="1000">
+
+							<p:column selectionMode="multiple" id="dataSelection"
+								style="width:5%; text-align:center" />
+
+							<p:column headerText="Cuenta" sortBy="#{cuenta.codigoCuenta}"
+								style="width: 15%" filterBy="#{cuenta.codigoCuenta}"
+								filterMatchMode="startsWith">
+								<h:outputText value="#{cuenta.codigoCuenta}" />
+							</p:column>
+
+							<p:column headerText="Descripción"
+								sortBy="#{cuenta.descripcionCuenta}" style="width: 50%"
+								filterBy="#{cuenta.descripcionCuenta}"
+								filterMatchMode="contains">
+								<h:outputText value="#{cuenta.descripcionCuenta}" />
+							</p:column>
+
+							<p:column headerText="Valor Inicial" style="width: 10%">
+								<div align="right">
+									<h:outputText value="#{cuenta.valorInicial}">
+										<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+									</h:outputText>
+								</div>
+							</p:column>
+
+							<p:column headerText="Saldo para CDPs" style="width: 10%">
+								<div align="right">
+									<h:outputText value="#{cuenta.saldoEnCdps}">
+										<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+									</h:outputText>
+								</div>
+							</p:column>
+
+							<p:column headerText="% Disponible" style="width: 10%">
+								<div align="right">
+									<h:outputText value="#{cuenta.saldoEnCdps/cuenta.valorInicial}">
+										<f:convertNumber type="percent" maxFractionDigits="1" />
+									</h:outputText>
+								</div>
+							</p:column>
+
+						</p:dataTable>
+					</p:scrollPanel>
+
+					<br />
+					<div align="center">
+						<h:panelGrid columns="2">
+							<p:commandButton value="Adicionar rubros seleccionados"
+								icon="ui-icon-plus" oncomplete="PF('dlgRubros').hide();"
+								update=":frmInformeDisponibilidadesSinComprometer" />
+
+							<p:commandButton id="botonSeleccionar" value="#{gluoInformeDisponibilidadesSinComprometerView.botonSeleccionarRubrosValue}"
+								icon="#{gluoInformeDisponibilidadesSinComprometerView.iconValueSelectAll}" actionListener="#{gluoInformeDisponibilidadesSinComprometerView.selectAllRecordsRubrosAction}" update="botonSeleccionar, presupuestoGastosData"/>
+
+						</h:panelGrid>
+
+					</div>
+					
+				</p:dialog>
+				<!-- FIN DIÁLOGO RUBROS PRESUPUESTALES -->
+
+			</h:form>
+		</div>
+	</ui:define>
+</ui:composition>

@@ -1,0 +1,95 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+	<ui:define name="content">
+		<f:view>
+			<p:ajaxStatus onstart="PF('statusDialog').show()"
+				onsuccess="PF('statusDialog').hide()" />
+			<p:dialog modal="true" widgetVar="statusDialog" header="Cargando"
+				draggable="false" closable="false">
+				<p:graphicImage
+					value="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/ajaxloadingbar.gif" />
+			</p:dialog>
+
+			<!-- Expired session -->
+			<p:idleMonitor onactive="PF('sessionTimeOutDialog').show();"
+				timeout="#{session.maxInactiveInterval * 1000}" />
+			<p:dialog modal="true" widgetVar="sessionTimeOutDialog"
+				header="Sesión terminada" draggable="false" closable="false">
+				<h:outputText value="La sesión ha finalizado" />
+				<input id="confirmBackToLogin" type="button" value="Iniciar sesión"
+					onclick="window.location='#{facesContext.externalContext.requestContextPath}/index.jsp';" />
+			</p:dialog>
+
+			<div align="center">
+				<h:form id="frmDeduccionesPorCuentaBancariaDetallado">
+
+					<p:growl id="growl" autoUpdate="true" life="3000" />
+
+					<p:panel id="pnlDeduccionesPorCuentaBancariaDetallado"
+						header="Generar Informe Deducciones por Cuenta Bancaria Detallado"
+						style="width: 90%;">
+						<h:panelGrid columns="2">
+
+							<p:outputLabel value="Fecha inicial: *" for="fechaInicial" />
+							<p:calendar id="fechaInicial"
+								value="#{informeDeduccionesPorCuentaBancariaView.fechaInicial}"
+								pattern="yyyy-MM-dd" navigator="true" style="width: 200px;" />
+
+							<p:outputLabel value="Fecha inicial: *" for="fechaFinal" />
+							<p:calendar id="fechaFinal"
+								value="#{informeDeduccionesPorCuentaBancariaView.fechaFinal}"
+								pattern="yyyy-MM-dd" navigator="true" style="width: 200px;" />
+
+						</h:panelGrid>
+
+						<br />
+
+						<p:commandButton id="btnLimpiar" value="Limpiar"
+							action="#{informeDeduccionesPorCuentaBancariaView.action_clear}"
+							update=":frmDeduccionesPorCuentaBancariaDetallado" />
+
+					</p:panel>
+
+					<p:panel id="pnlListaDeduccionesPorCuentaBancariaDetallado"
+						header="Informe Deducciones por Cuenta Bancaria Detallado"
+						style="width: 90%;">
+
+						<br />
+
+						<div align="center">
+							<h:panelGrid id="pnlGenerarInforme" columns="4">
+								<p:commandButton value="Generar Reporte en PDF"
+									onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)"
+									icon="ui-icon-arrowthichk-s">
+									<p:fileDownload
+										value="#{informeDeduccionesPorCuentaBancariaView.reporteLibroAuxiliarPdf}" />
+								</p:commandButton>
+
+								<p:commandButton value="Generar Reporte en XLS"
+									onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)"
+									icon="ui-icon-arrowthichk-s">
+									<p:fileDownload
+										value="#{informeDeduccionesPorCuentaBancariaView.reporteLibroAuxiliarXls}" />
+								</p:commandButton>
+
+								<p:commandButton value="Generar Reporte en XLSX"
+									onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)"
+									icon="ui-icon-arrowthichk-s">
+									<p:fileDownload
+										value="#{informeDeduccionesPorCuentaBancariaView.reporteLibroAuxiliarXlsx}" />
+								</p:commandButton>
+							</h:panelGrid>
+						</div>
+					</p:panel>
+
+				</h:form>
+			</div>
+
+		</f:view>
+	</ui:define>
+
+</ui:composition>

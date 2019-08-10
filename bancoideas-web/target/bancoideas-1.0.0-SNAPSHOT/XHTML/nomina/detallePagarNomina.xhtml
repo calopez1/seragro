@@ -1,0 +1,354 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	xmlns:p="http://primefaces.org/ui" 
+	template="/WEB-INF/template.xhtml">
+
+	<ui:define name="content">
+		<f:view>
+		<script type="text/javascript">
+			function justNumbers(e) {
+					var keynum = window.event ? window.event.keyCode : e.which;
+					if ((keynum == 8) || (keynum == 46) || (keynum == 44))
+					return true;
+					 
+					return /\d/.test(String.fromCharCode(keynum));
+			}
+		</script>
+			<p:ajaxStatus onstart="PF('statusDialog').show()"
+				onsuccess="PF('statusDialog').hide()" />
+			<p:dialog modal="true" widgetVar="statusDialog" header="Cargando"
+				draggable="false" closable="false">
+				<p:graphicImage
+					value="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/ajaxloadingbar.gif" />
+			</p:dialog>
+
+			<!-- Expired session -->
+			<p:idleMonitor onactive="PF('sessionTimeOutDialog').show();"
+				timeout="#{session.maxInactiveInterval * 1000}" />
+			<p:dialog modal="true" widgetVar="sessionTimeOutDialog"
+				header="Sesión Finalizada" draggable="false" closable="false">
+				<h:outputText value="La sesión ha caducado." />
+				<input id="confirmBackToLogin" type="button" value="Iniciar Sesión"
+					onclick="window.location='#{facesContext.externalContext.requestContextPath}/index.jsp';" />
+			</p:dialog>
+
+			<h:form id="frm">
+			
+			<div align="center">
+			
+			<p:panel  id="pnlLiquidacionVacia"  header="No se ha seleccionado una liquidación de nómina" style="width:90%;"
+			 rendered="#{detalleLiquidacionNominaView.pintarMensajeLiquidacionVacia}">
+						
+			<p:spacer height="10"> </p:spacer>
+					<div class="Container100">
+								<div class="ContainerIndent">
+								<p:spacer height="30" width="0"></p:spacer>
+									<p:outputLabel
+										value="No se ha seleccionado una liquidación de nómina" />
+								</div>
+							</div>
+							
+							<div class="Container100">
+								<div class="ContainerIndent">
+									<p:outputLabel
+										value="Se debe seleccionar una liquidación de nómina para poder detallar" />
+								</div>
+							</div>
+					
+					<p:spacer height="10"> </p:spacer>
+				</p:panel>
+			
+			
+			<p:panel  id="pnlLiquidacionNomina"  header="Liquidación de Nómina" style="width:90%;"
+				rendered="#{!detalleLiquidacionNominaView.pintarMensajeLiquidacionVacia}">
+			<p:growl id="growlLiquidarNomina" autoUpdate="true" ></p:growl>
+			<p:spacer height="10"> </p:spacer>
+			
+					<h:panelGrid columns="8">
+						
+						<p:outputLabel value="Liquidación:  " style="width: 100%;font-size: 120%; font-height:bold"></p:outputLabel>
+						<p:outputLabel value="#{detalleLiquidacionNominaView.liquidacionNomina.consecutivo}" style="width: 100%;font-size: 120%;"></p:outputLabel>
+						<p:spacer width="20"></p:spacer>
+						<p:outputLabel value="Descripción:  " style="width: 100%;font-size: 120%; font-height:bold"></p:outputLabel>
+						<p:outputLabel value="#{detalleLiquidacionNominaView.liquidacionNomina.descripcion}" style="width: 100%;font-size: 120%;"></p:outputLabel>
+						<p:spacer width="20"></p:spacer>
+						<p:outputLabel value="Estado:  " style="width: 100%;font-size: 120%; font-height:bold"></p:outputLabel>
+						<p:outputLabel value="#{detalleLiquidacionNominaView.liquidacionNomina.estadoDescripcion}" style="width: 100%;font-size: 120%;"></p:outputLabel>
+						
+						<p:outputLabel value="Fecha Inicio:" style="width: 100%;font-size: 120%; font-height:bold"></p:outputLabel>
+						<p:outputLabel value="#{detalleLiquidacionNominaView.liquidacionNomina.fechaInicio}" style="width: 100%;font-size: 120%;">
+									<f:convertDateTime type="date" pattern="dd-MM-yyyy"/>
+						</p:outputLabel>
+						<p:spacer width="20"></p:spacer>
+						<h:outputText value="Fecha Fin:" style="width: 100%;font-size: 120%; font-height:bold"/>
+						<p:outputLabel value="#{detalleLiquidacionNominaView.liquidacionNomina.fechaFin}" style="width: 100%;font-size: 120%;">
+									<f:convertDateTime type="date" pattern="dd-MM-yyyy"/>
+						</p:outputLabel>
+					</h:panelGrid>
+					
+					<p:spacer height="10"> </p:spacer>
+					
+					
+						<p:commandButton value="Atrás" action="/XHTML/pagarNomina.xhtml"></p:commandButton>
+						
+						<br/><br/>
+						
+						<div style="width: 50%;">
+							<h:panelGrid columns="2" columnClasses="one, two"
+								style="width: 100%;" id="pnlScdp">
+								
+								<h:outputText value="Solicitud de CDP:" />
+								<p:panelGrid>
+									<p:inputText styleClass="Wid50" id="scdpSeleccionado" 
+										value="#{detalleLiquidacionNominaView.consecutivoSolicitudSeleccionada}"
+										readonly="true">
+										<p:ajax />
+									</p:inputText>
+									<p:commandButton icon="ui-icon-search" 
+										oncomplete="PF('dlgSolicitudCDP').show();"/>
+								</p:panelGrid>
+								<h:outputText value="Fecha de Expedición de los Comprobantes:" />
+								<p:panelGrid>
+									<p:calendar id="fechaExpedicionComprobantes" value="#{detalleLiquidacionNominaView.fechaExpedicionComprobantes}" 
+									timeZone="GMT-5" readonlyInput="true" styleClass="Wid50" pattern="yyyy-MM-dd" navigator="true" />
+								</p:panelGrid>
+							</h:panelGrid>
+						</div>
+						
+						<p:commandButton value="Pagar nómina"
+							oncomplete="PF('dialogoPagarNomina').show()" 
+							rendered="#{detalleLiquidacionNominaView.pintarBotonPagar}" />
+					
+					
+					<p:spacer height="10"> </p:spacer>
+					
+					<p:dataTable id="tblLiqidaciones" var="item"
+								value="#{detalleLiquidacionNominaView.lstLiquidacionNominaEmpleado}" style="width:90%; text-align: center"
+								rows="10"
+                         paginator="true"
+                         paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         rowsPerPageTemplate="5,10,15" filterDelay="1000">
+
+								 <f:facet name="header">
+								        Liquidación por Empleado
+								    </f:facet>
+    
+								<p:column headerText="Código"  sortBy="#{item.codidoEmpleado}" filterBy="#{item.codidoEmpleado}" filterMatchMode="contains">
+									<h:outputText
+										value="#{item.codidoEmpleado}" />
+								</p:column>
+								
+								<p:column headerText="Identificación" sortBy="#{item.identificacion}" filterBy="#{item.identificacion}" filterMatchMode="contains">
+									<h:outputText
+										value="#{item.identificacion}" />
+								</p:column>
+								
+								<p:column headerText="Nombre" sortBy="#{item.nombre}" filterBy="#{item.nombre}" filterMatchMode="contains">
+									<h:outputText
+										value="#{item.nombre}" />
+								</p:column>
+								
+								<p:column headerText="Teléfono" sortBy="#{item.telefono}" filterBy="#{item.telefono}" filterMatchMode="contains">
+									<h:outputText
+										value="#{item.telefono}" />
+								</p:column>
+								
+								<p:column headerText="Dirección" sortBy="#{item.direccion}" filterBy="#{item.direccion}" filterMatchMode="contains">
+									<h:outputText
+										value="#{item.direccion}" />
+								</p:column>
+								
+								<p:column headerText="Tipo Tercero" sortBy="#{item.nombreTipoTercero}" filterBy="#{item.nombreTipoTercero}" filterMatchMode="contains">
+									<h:outputText
+										value="#{item.nombreTipoTercero}" />
+								</p:column>
+								
+								<p:column style="width:32px;text-align: center">
+						             <p:commandButton update=":formDialogConceptoNomina"  icon="ui-icon-search" action="#{detalleLiquidacionNominaView.action_detallar_conceptos}" oncomplete="PF('dialogoConceptoNomina').show()" title="Ver Conceptos Nómina">
+						                <f:setPropertyActionListener value="#{item}" target="#{detalleLiquidacionNominaView.liquidacionNominaEmpleado}" />
+						            </p:commandButton>
+						        </p:column>	
+						        
+						        <p:column style="text-align: center" rendered="#{detalleLiquidacionNominaView.pintarBotonLiquidar}">
+						             <p:commandButton update=":frm:pnlLiquidacionNomina"  value="Liquidar" action="#{detalleLiquidacionNominaView.action_liquidar_empleado}" title="Liquidar empleado">
+						                <f:setPropertyActionListener value="#{item}" target="#{detalleLiquidacionNominaView.liquidacionNominaEmpleado}" />
+						            </p:commandButton>
+						        </p:column>	
+						        
+							</p:dataTable>
+					<p:spacer height="10"> </p:spacer>
+				</p:panel>
+				
+				
+			</div>
+		
+				
+				
+			</h:form>
+			
+		
+		<!-- Solicitud de CDP -->
+		<!-- ******************************************* -->
+		<p:dialog modal="true" widgetVar="dlgSolicitudCDP"
+			header="Solicitudes de CDP" draggable="false" closable="true"
+			resizable="true" width="90%" height="200px;" position="center">
+				<h:form>
+				<p:scrollPanel mode="native" style="width:100%; height:400px">
+					<p:dataTable id="tblSolicitudesCDP" var="scdp"
+						value="#{detalleLiquidacionNominaView.solicitudesCDP}"
+						rows="10" paginator="true"
+						paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+						rowsPerPageTemplate="10,15,20,30"
+						emptyMessage="No existen solicitudes de CDP disponibles" reflow="true"
+						rowKey="#{scdp.scdpId}"
+						selection="#{detalleLiquidacionNominaView.solicitudCDPSeleccionada}"
+						filterDelay="1000">
+						
+                        <p:column selectionMode="single"
+								style="width:5%; text-align:center" />
+
+						<p:column headerText="Descripción" sortBy="#{scdp.descripcion}"
+							style="width: 15%" filterBy="#{scdp.descripcion}"
+							filterMatchMode="contains">
+							<h:outputText value="#{scdp.descripcion}" />
+						</p:column>
+						
+					</p:dataTable>
+				</p:scrollPanel>
+
+				<br />
+				<p:commandButton value="Seleccionar Solicitud CDP"
+					icon="ui-icon-plus" oncomplete="PF('dlgSolicitudCDP').hide();"
+					actionListener="#{detalleLiquidacionNominaView.action_seleccionarSolicitudCDP}"
+					update=":frm:pnlScdp"/>
+
+				<div class="EmptyBox20" />
+				</h:form>
+
+		</p:dialog>
+		<!-- Solicitud de CDP -->
+		
+		<!-- Dialogo  pagar Nómina -->
+		<!-- **************************** -->
+		<p:dialog header="Conceptos de Nómina" widgetVar="dialogoPagarNomina" modal="true" height="200" width="70%">
+		        <h:form>
+		        	<p:outputLabel value="Al pagar la nómina, se crearán los documentos presupuestales (CDPs, CRPs, OPs) y de tesorería (CEs), asociados a la liquidación de la nómina escogida."/>
+		        	
+		        	<br/><br/>
+		        	
+		        	<p:outputLabel value="Desea continuar?"/>
+		        	
+		        	<br/><br/>
+		        	
+		        	<h:panelGrid columns="2">
+		        		<p:commandButton value="Si" actionListener="#{detalleLiquidacionNominaView.action_pagar}"/>
+		        		<p:commandButton value="No" oncomplete="PF('dialogoPagarNomina').hide()"/>
+		        	</h:panelGrid>
+		  		</h:form>
+		</p:dialog>
+		
+		<p:dialog modal="true" widgetVar="dlgGenerarReportes" header="Reporte Comprobante Egreso" draggable="false" closable="false" resizable="true" width="90%" >
+					<div align="center">
+						<h:panelGrid columns="4">
+							<h:form>
+								<p:commandButton value="Generar Reporte en PDF" icon="ui-icon-arrowthichk-s"
+								ajax="false" onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)">
+									<p:fileDownload value="#{detalleLiquidacionNominaView.getArchivosPdf()}" />
+								</p:commandButton>
+								
+								<p:commandButton value="Generar Reporte en XLS" onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)" icon="ui-icon-arrowthichk-s" ajax="false">
+									<p:fileDownload value="#{detalleLiquidacionNominaView.getArchivosXls()}" />
+								</p:commandButton>
+								
+								<p:commandButton value="Generar Reporte en XLSX" onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)" icon="ui-icon-arrowthichk-s" ajax="false">
+									<p:fileDownload value="#{detalleLiquidacionNominaView.getArchivosXlsx()}" />
+								</p:commandButton>
+								
+								<p:commandButton value="He terminado! Cerrar" oncomplete="PF('dlgGenerarReportes').hide();"/>
+								</h:form>
+							
+						</h:panelGrid>
+					</div>
+					<div class="EmptyBox20" />
+			</p:dialog>
+		
+		
+		<!-- Dialogo  detalle liquidación -->
+		<!-- **************************** -->
+		<p:dialog header="Conceptos de Nómina" widgetVar="dialogoConceptoNomina" modal="true" height="400" width="80%">
+		        <h:form id="formDialogConceptoNomina">
+		        <p:outputPanel id="pnlConceptoNomina" style="text-align:left;">
+		           <div align="left"> 
+		               
+		               
+		               <h:panelGrid columns="2">
+						
+						<p:outputLabel value="Liquidación:  " style="width: 100%;font-size: 110%; font-height:bold"></p:outputLabel>
+						<p:outputLabel value="#{detalleLiquidacionNominaView.liquidacionNomina.consecutivo} - #{detalleLiquidacionNominaView.liquidacionNomina.descripcion}" style="width: 100%;font-size: 110%;"></p:outputLabel>
+						
+						<p:outputLabel value="Empleado: " style="width: 100%;font-size: 110%; font-height:bold"></p:outputLabel>
+						<p:outputLabel value="#{detalleLiquidacionNominaView.liquidacionNominaEmpleado.identificacion} - #{detalleLiquidacionNominaView.liquidacionNominaEmpleado.nombre}" style="width: 100%;font-size: 110%;">
+						</p:outputLabel>
+						
+						<p:outputLabel value="Total Liquidado: " style="width: 100%;font-size: 110%; font-height:bold"></p:outputLabel>
+						<p:outputLabel value="#{detalleLiquidacionNominaView.totalLiquidado}" style="width: 100%;font-size: 110%; color: blue">
+						<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+						</p:outputLabel>
+						
+					</h:panelGrid>
+					<p:spacer width="20"></p:spacer>
+					 
+					
+					    <p:dataTable id="tblConceptosNomina" var="tipoConcepto"
+								value="#{detalleLiquidacionNominaView.lstTipoConceptoNomina}" style="width:90%; text-align: left">
+    
+								    <p:subTable var="concepto" value="#{tipoConcepto.lstConceptosNomina}">
+								            
+								            <f:facet name="header">
+								                <h:outputText value="#{tipoConcepto.descripcionTipoConcepto}" />
+								            </f:facet>
+								            
+								            <p:column>
+								            <div align="left">
+								                <h:outputText value="#{concepto.descripcionConcepto}" style=" text-align: left"/>
+								                </div>
+								            </p:column>
+								            
+								             <p:column>
+								            	 <div align="right">
+								                <h:outputText value="#{concepto.valorCalculado}" style="text-align: right" >
+								                <f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+								                </h:outputText>
+								                </div>
+								            </p:column>
+								            
+								            <f:facet name="footer">
+												    
+								                    <h:panelGrid columns="2" style="text-align: right" width="120%">
+								                   		 <h:outputText value="Total: "  />
+								                    	<h:outputText value="#{tipoConcepto.total}" style="text-align: right" >
+										                	<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+										                </h:outputText>
+										            </h:panelGrid>  
+										                
+										    </f:facet>
+								      </p:subTable>
+								
+						        
+							</p:dataTable>
+		                
+		                
+		 			</div>
+		        </p:outputPanel>
+		        </h:form>
+		    </p:dialog>
+		    
+			
+			
+		</f:view>
+	</ui:define>
+
+</ui:composition>

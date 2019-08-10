@@ -1,0 +1,319 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+
+<ui:define name="content">
+<f:view>
+
+	<p:ajaxStatus onstart="PF('statusDialog').show()"
+		onsuccess="PF('statusDialog').hide()" />
+	<p:dialog modal="true" widgetVar="statusDialog" header="Cargando"
+		draggable="false" closable="false">
+		<p:graphicImage
+			value="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/ajaxloadingbar.gif" />
+	</p:dialog>
+
+	<!-- Expired session -->
+<p:idleMonitor onactive="PF('sessionTimeOutDialog').show();"
+	timeout="#{session.maxInactiveInterval * 1000}" />
+<p:dialog modal="true" widgetVar="sessionTimeOutDialog"
+	header="Sesión terminada" draggable="false" closable="false">
+	<h:outputText value="La sesión ha finalizado" />
+	<input id="confirmBackToLogin" type="button" value="Iniciar sesión"
+		onclick="window.location='#{facesContext.externalContext.requestContextPath}/index.jsp';" />
+</p:dialog>
+
+<script type="text/javascript">
+function showStatus() {
+    statusDialog.show();
+}
+ 
+function hideStatus() {
+    statusDialog.hide();
+}
+</script>
+
+<style type="text/css">
+.ui-panel {
+	margin-top: 20px
+}
+
+.ui-tabs-top {
+	background-color: #FFFFFF;
+}
+
+.one {
+	width: 40%;
+}
+
+.two {
+	width: 60%;
+}
+
+.col50Left {
+	width: 10%;
+	text-align: left;
+}
+
+.col50Right {
+	width: 10%;
+	text-align: right;
+}
+
+.txt100 {
+	width: 100%;
+}
+</style>
+
+<div align="center">
+<h:form id="frmParametrizacionCuentas" >
+
+	<p:growl id="messages" autoUpdate="true" closable="true" />
+	
+	<p:panel id="pnlParametrizacionCuentas" header="Parametrización Cuentas" style="width: 90%;" >
+	
+		<h:panelGrid columns="2">
+		
+			<p:outputLabel value="Cuenta Utilidad" for="txtCuentaUtilidad" />
+			<h:panelGrid columns="2">
+				<p:inputText id="txtCuentaUtilidad" value="#{gluoParametrizacionCuentasView.txtCuentaUtilidad}"
+				 maxlength="100" style="width: 220px" />
+				<p:commandButton style="width:100%" icon="ui-icon-search"
+					onclick="PF('dialogCuentaContableUtilidad').show();" />
+			</h:panelGrid>
+		
+			<p:outputLabel value="Cuenta Perdida" for="txtCuentaPerdida" />			
+			<h:panelGrid columns="2">
+				<p:inputText id="txtCuentaPerdida" value="#{gluoParametrizacionCuentasView.txtCuentaPerdida}"
+				 maxlength="100" style="width: 220px" />
+				<p:commandButton style="width:100%" icon="ui-icon-search"
+					onclick="PF('dialogCuentaContablePerdida').show();" />
+			</h:panelGrid>
+			
+			<p:outputLabel value="Cuenta Caja" for="txtCuentaCaja" />			
+			<h:panelGrid columns="2">
+				<p:inputText id="txtCuentaCaja" value="#{gluoParametrizacionCuentasView.txtCuentaCaja}"
+				 maxlength="100" style="width: 220px" />
+				<p:commandButton style="width:100%" icon="ui-icon-search"
+					onclick="PF('dialogCuentaContableCaja').show();" />
+			</h:panelGrid>
+			
+			<p:outputLabel value="Cuenta Prescripción" for="txtCuentaPrescripcion" />			
+			<h:panelGrid columns="2">
+				<p:inputText id="txtCuentaPrescripcion" value="#{gluoParametrizacionCuentasView.txtCuentaPrescripcion}"
+				 maxlength="100" style="width: 220px" />
+				<p:commandButton style="width:100%" icon="ui-icon-search" 
+				onclick="PF('dialogCuentaContablePrescripcion').show();" />
+			</h:panelGrid>
+		
+		</h:panelGrid>
+		
+		<br/>
+		
+		<p:commandButton id="btnGuardar" value="Guardar"
+						 action="#{gluoParametrizacionCuentasView.action_guardar}" update=":frmParametrizacionCuentas" />
+						 
+		<p:commandButton id="btnLimpiar" value="Limpiar"
+						 action="#{gluoParametrizacionCuentasView.action_limpiar}" update=":frmParametrizacionCuentas" />
+	
+	</p:panel>
+	
+		
+	<p:panel id="pnlListadoParametrizacionCuentas" header="Listado Parametrización Cuentas"
+	 		 style="text-align: center; width: 90%;" >
+	
+		<p:dataTable id="listadoParametrizacionCuentasDataTable"
+			 var="cuenta"
+			 paginator="true"
+			 rows="12" 
+			 value="#{gluoParametrizacionCuentasView.listParametroDTOs}"
+			 rowKey="#{cuenta.paraId}" 
+			 filterDelay="1000">
+		
+			<p:column headerText="Código Tipo Cuenta" filterBy="#{cuenta.codigo}" 
+				filterMatchMode="contains">
+				<h:outputText value="#{cuenta.codigo}" />
+			</p:column>
+			
+			<p:column headerText="Descripción Tipo Cuenta" filterBy="#{cuenta.descripcion}" 
+				filterMatchMode="contains">
+				<h:outputText value="#{cuenta.descripcion}" />
+			</p:column>
+			
+			<p:column headerText="Cuenta Contable" filterBy="#{cuenta.valor}" 
+				filterMatchMode="contains">
+				<h:outputText value="#{cuenta.valor}" />
+			</p:column>
+			
+			<p:column headerText="Descripción Cuenta Contable" filterBy="#{cuenta.descripcionCuentaContable}" 
+				filterMatchMode="contains">
+				<h:outputText value="#{cuenta.descripcionCuentaContable}" />
+			</p:column>
+			
+		</p:dataTable>
+	
+	</p:panel>	
+	
+	
+	<!--  **************************************************************************** -->
+	<!--  **					CUENTAS CONTABLES DE UTILIDAD						** -->
+	<!--  **************************************************************************** -->
+
+	<p:dialog header="Cuentas Contables Utilidad" style="align-text: center"
+		widgetVar="dialogCuentaContableUtilidad" modal="true" height="500" width="90%">
+		
+		<div align="center" style="text-align: center;">
+		<p:growl id="msgDlgCconUtilidad" autoUpdate="true" closable="true" />
+		<p:scrollPanel mode="native" style="width:100%; height:500px">
+			<p:dataTable var="cuentaContableUtilidad" paginator="true" rows="10"
+				value="#{gluoParametrizacionCuentasView.listCuentaContablesUtilidad}"
+				selectionMode="single"
+				selection="#{gluoParametrizacionCuentasView.selectedCuentaContableUtilidad}"
+				rowKey="#{cuentaContableUtilidad.cconId}"
+				filterDelay="1000">
+
+				<p:ajax event="rowSelect"
+					listener="#{gluoParametrizacionCuentasView.onRowSelectCuentaContableUtilidad}"	
+					update="@([id$=msgDlgCconUtilidad]), :frmParametrizacionCuentas" />
+
+				<p:column headerText="Código" filterBy="#{cuentaContableUtilidad.codigo}" 
+					filterMatchMode="contains">
+					<h:outputText value="#{cuentaContableUtilidad.codigo}" />
+				</p:column>
+				
+				<p:column headerText="Descripción" filterBy="#{cuentaContableUtilidad.descripcion}" 
+					filterMatchMode="contains">
+					<h:outputText value="#{cuentaContableUtilidad.descripcion}" />
+				</p:column>
+				
+			</p:dataTable>	
+			</p:scrollPanel>
+		</div>
+	</p:dialog>
+	
+	
+	
+	<!--  **************************************************************************** -->
+	<!--  **					CUENTAS CONTABLES DE PERDIDA						** -->
+	<!--  **************************************************************************** -->
+
+	<p:dialog header="Cuentas Contables Perdidas" style="align-text: center"
+		widgetVar="dialogCuentaContablePerdida" modal="true" height="500" width="90%">
+
+		<div align="center" style="text-align: center;">
+		<p:growl id="msgDlgCconPerdidas" autoUpdate="true" closable="true" />
+		<p:scrollPanel mode="native" style="width:100%; height:500px">
+			<p:dataTable var="cuentaContablePerdida" paginator="true" rows="10"
+				value="#{gluoParametrizacionCuentasView.listCuentaContablesPerdida}"
+				selectionMode="single"
+				selection="#{gluoParametrizacionCuentasView.selectedCuentaContablePerdida}"
+				rowKey="#{cuentaContablePerdida.cconId}"
+				filterDelay="1000">
+
+				<p:ajax event="rowSelect"
+					listener="#{gluoParametrizacionCuentasView.onRowSelectCuentaContablePerdida}"	
+					update="@([id$=msgDlgCconPerdidas]), :frmParametrizacionCuentas" />								
+
+				<p:column headerText="Código" filterBy="#{cuentaContablePerdida.codigo}" 
+					filterMatchMode="contains">
+					<h:outputText value="#{cuentaContablePerdida.codigo}" />
+				</p:column>
+				
+				<p:column headerText="Descripción" filterBy="#{cuentaContablePerdida.descripcion}" 
+					filterMatchMode="contains">
+					<h:outputText value="#{cuentaContablePerdida.descripcion}" />
+				</p:column>
+				
+			</p:dataTable>	
+			</p:scrollPanel>
+		</div>
+
+	</p:dialog>
+	
+	
+	
+	<!--  **************************************************************************** -->
+	<!--  **					CUENTAS CONTABLES DE CAJA   						** -->
+	<!--  **************************************************************************** -->
+
+	<p:dialog header="Cuentas Contables Caja" style="align-text: center"
+		widgetVar="dialogCuentaContableCaja" modal="true" height="500" width="90%">
+
+		<div align="center" style="text-align: center;">
+		<p:growl id="msgDlgCconCaja" autoUpdate="true" closable="true" />
+		<p:scrollPanel mode="native" style="width:100%; height:500px">
+			<p:dataTable var="cuentaContableCaja" paginator="true" rows="10"
+				value="#{gluoParametrizacionCuentasView.listCuentaContablesCaja}"
+				selectionMode="single"
+				selection="#{gluoParametrizacionCuentasView.selectedCuentaContableCaja}"
+				rowKey="#{cuentaContableCaja.cconId}"
+				filterDelay="1000">
+
+				<p:ajax event="rowSelect"
+					listener="#{gluoParametrizacionCuentasView.onRowSelectCuentaContableCaja}"	
+					update="@([id$=msgDlgCconCaja]), :frmParametrizacionCuentas" />								
+
+				<p:column headerText="Código" filterBy="#{cuentaContableCaja.codigo}" 
+					filterMatchMode="contains">
+					<h:outputText value="#{cuentaContableCaja.codigo}" />
+				</p:column>
+				
+				<p:column headerText="Descripción" filterBy="#{cuentaContableCaja.descripcion}" 
+					filterMatchMode="contains">
+					<h:outputText value="#{cuentaContableCaja.descripcion}" />
+				</p:column>
+				
+			</p:dataTable>	
+			</p:scrollPanel>
+		</div>
+
+	</p:dialog>
+	
+	<!--  **************************************************************************** -->
+	<!--  **					CUENTAS CONTABLES DE PRESCRIPCIÓN 					** -->
+	<!--  **************************************************************************** -->
+
+	<p:dialog header="Cuentas Contables DE PRESCRIPCIÓN" style="align-text: center"
+		widgetVar="dialogCuentaContablePrescripcion" modal="true" height="500" width="90%">
+
+		<div align="center" style="text-align: center;">
+		<p:growl id="msgDlgCconPrescripcion" autoUpdate="true" closable="true" />
+		<p:scrollPanel mode="native" style="width:100%; height:500px">
+			<p:dataTable var="cuentaContablePrescripcion" paginator="true" rows="10"
+				value="#{gluoParametrizacionCuentasView.listCuentaContablesPrescripcion}"
+				selectionMode="single"
+				selection="#{gluoParametrizacionCuentasView.selectedCuentaContablePrescripcion}"
+				rowKey="#{cuentaContablePrescripcion.cconId}"
+				filterDelay="1000">
+
+				<p:ajax event="rowSelect"
+					listener="#{gluoParametrizacionCuentasView.onRowSelectCuentaContablePrescripcion}"	
+					update="@([id$=msgDlgCconPrescripcion]), :frmParametrizacionCuentas" />	
+
+				<p:column headerText="Código" filterBy="#{cuentaContablePrescripcion.codigo}" 
+					filterMatchMode="contains">
+					<h:outputText value="#{cuentaContablePrescripcion.codigo}" />
+				</p:column>
+				
+				<p:column headerText="Descripción" filterBy="#{cuentaContablePrescripcion.descripcion}" 
+					filterMatchMode="contains">
+					<h:outputText value="#{cuentaContablePrescripcion.descripcion}" />
+				</p:column>
+				
+			</p:dataTable>	
+			</p:scrollPanel>
+		</div>
+
+	</p:dialog>
+	
+	
+</h:form>
+</div>
+
+</f:view>
+</ui:define>
+</ui:composition>
+

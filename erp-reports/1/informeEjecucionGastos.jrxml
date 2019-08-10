@@ -1,0 +1,763 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.5.1.final using JasperReports Library version 6.5.1  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="informeEjecucionGastos" pageWidth="1680" pageHeight="612" orientation="Landscape" columnWidth="1640" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" isIgnorePagination="true" uuid="45d7c368-29ff-4a30-8b9d-c5f15c761d35">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="JDBCDataAdapterGluon.xml"/>
+	<property name="com.jaspersoft.studio.unit." value="pixel"/>
+	<parameter name="P_SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<parameterDescription><![CDATA[]]></parameterDescription>
+		<defaultValueExpression><![CDATA["/Users/frank/JaspersoftWorkspace/erp-reports/1/"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="P_FECHA_CORTE" class="java.util.Date"/>
+	<parameter name="P_ANO_FISCAL" class="java.lang.String"/>
+	<parameter name="P_CABE_LINEA_1" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["REPÚBLICA DE COLOMBIA"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="P_CABE_LINEA_2" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["DEPARTAMENTO DEL CAUCA"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="P_CABE_LINEA_3" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["MUNICIPIO DE TOTORÓ"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="P_CABE_LINEA_4" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["ALCALDÍA MUNICIPAL"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="P_CABE_LINEA_5" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["NIT: 800031874 - 5"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="P_CABE_LINEA_6" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["EDIFICIO CAM CALLE PRINCIPAL. TEL: 827 5130. FAX: 827 5130"]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[]]>
+	</queryString>
+	<field name="valorPresupuestoInicial" class="java.lang.Double">
+		<fieldDescription><![CDATA[valorPresupuestoInicial]]></fieldDescription>
+	</field>
+	<field name="adiciones" class="java.lang.Double">
+		<fieldDescription><![CDATA[adiciones]]></fieldDescription>
+	</field>
+	<field name="reducciones" class="java.lang.Double">
+		<fieldDescription><![CDATA[reducciones]]></fieldDescription>
+	</field>
+	<field name="creditos" class="java.lang.Double">
+		<fieldDescription><![CDATA[creditos]]></fieldDescription>
+	</field>
+	<field name="contraCreditos" class="java.lang.Double">
+		<fieldDescription><![CDATA[contraCreditos]]></fieldDescription>
+	</field>
+	<field name="aplazamientos" class="java.lang.Double">
+		<fieldDescription><![CDATA[aplazamientos]]></fieldDescription>
+	</field>
+	<field name="desaplazamientos" class="java.lang.Double">
+		<fieldDescription><![CDATA[desaplazamientos]]></fieldDescription>
+	</field>
+	<field name="sumatoriaCRPExpedidos" class="java.lang.Double">
+		<fieldDescription><![CDATA[sumatoriaCRPExpedidos]]></fieldDescription>
+	</field>
+	<field name="obligacionesPorPagar" class="java.lang.Double">
+		<fieldDescription><![CDATA[obligacionesPorPagar]]></fieldDescription>
+	</field>
+	<field name="descripcionDetallePresupuesto" class="java.lang.String">
+		<fieldDescription><![CDATA[descripcionDetallePresupuesto]]></fieldDescription>
+	</field>
+	<field name="class" class="java.lang.Class">
+		<fieldDescription><![CDATA[class]]></fieldDescription>
+	</field>
+	<field name="hoja" class="java.lang.Boolean">
+		<fieldDescription><![CDATA[hoja]]></fieldDescription>
+	</field>
+	<field name="valorPresupuestoDefinitivo" class="java.lang.Double">
+		<fieldDescription><![CDATA[valorPresupuestoDefinitivo]]></fieldDescription>
+	</field>
+	<field name="pendienteEjecutarDelPresupuesto" class="java.lang.Double">
+		<fieldDescription><![CDATA[pendienteEjecutarDelPresupuesto]]></fieldDescription>
+	</field>
+	<field name="sumatoriaCDPExpedidosMenosCompromisos" class="java.lang.Double">
+		<fieldDescription><![CDATA[sumatoriaCDPExpedidosMenosCompromisos]]></fieldDescription>
+	</field>
+	<field name="disponibleParaCDP" class="java.lang.Double">
+		<fieldDescription><![CDATA[disponibleParaCDP]]></fieldDescription>
+	</field>
+	<field name="sumatoriaCDPExpedidos" class="java.lang.Double">
+		<fieldDescription><![CDATA[sumatoriaCDPExpedidos]]></fieldDescription>
+	</field>
+	<field name="pagos" class="java.lang.Double">
+		<fieldDescription><![CDATA[pagos]]></fieldDescription>
+	</field>
+	<field name="compromisosPorCumplir" class="java.lang.Double">
+		<fieldDescription><![CDATA[compromisosPorCumplir]]></fieldDescription>
+	</field>
+	<field name="idDetallePresupuesto" class="java.lang.Integer">
+		<fieldDescription><![CDATA[idDetallePresupuesto]]></fieldDescription>
+	</field>
+	<field name="sumatoriaOPSinPagos" class="java.lang.Double">
+		<fieldDescription><![CDATA[sumatoriaOPSinPagos]]></fieldDescription>
+	</field>
+	<field name="codigoCuentaDetallePresupuesto" class="java.lang.String">
+		<fieldDescription><![CDATA[codigoCuentaDetallePresupuesto]]></fieldDescription>
+	</field>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="180" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="120" width="1310" height="30" uuid="751450d9-7527-428c-913e-1b94c4035ee6">
+					<property name="com.jaspersoft.studio.unit.x" value="cm"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="16" isBold="true"/>
+				</textElement>
+				<text><![CDATA[INFORME DE EJECUCION DE GASTOS]]></text>
+			</staticText>
+			<image>
+				<reportElement x="0" y="0" width="80" height="93" uuid="126fd9f2-e964-46c9-b1cc-68348819abd4">
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+				</reportElement>
+				<imageExpression><![CDATA[$P{P_SUBREPORT_DIR}+"logo-titulo-cdp.jpg"]]></imageExpression>
+			</image>
+			<staticText>
+				<reportElement mode="Opaque" x="0" y="160" width="80" height="20" backcolor="#FFFFFF" uuid="52df9cd4-8a76-409d-a1e3-0c4a86f766c4">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+				</reportElement>
+				<box padding="2">
+					<topPen lineWidth="0.1" lineStyle="Solid"/>
+					<leftPen lineWidth="0.1" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.1" lineStyle="Solid"/>
+					<rightPen lineWidth="0.1" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Fecha de Corte]]></text>
+			</staticText>
+			<textField pattern="yyyy-MM-dd">
+				<reportElement x="80" y="160" width="120" height="20" uuid="91c6904a-975a-472e-866c-17a5b48b4355">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				</reportElement>
+				<box padding="2" leftPadding="3" rightPadding="3">
+					<topPen lineWidth="0.1" lineStyle="Solid"/>
+					<leftPen lineWidth="0.1" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.1" lineStyle="Solid"/>
+					<rightPen lineWidth="0.1" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{P_FECHA_CORTE}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement mode="Opaque" x="200" y="160" width="80" height="20" backcolor="#FFFFFF" uuid="f003e3bc-7007-4384-b4c9-0e8f4efeee2d">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+				</reportElement>
+				<box padding="2">
+					<topPen lineWidth="0.1" lineStyle="Solid"/>
+					<leftPen lineWidth="0.1" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.1" lineStyle="Solid"/>
+					<rightPen lineWidth="0.1" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Año Fiscal]]></text>
+			</staticText>
+			<textField pattern="">
+				<reportElement x="280" y="160" width="80" height="20" uuid="8d4ce33f-bf9f-4261-8e0e-24c2e2274100">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				</reportElement>
+				<box padding="2" leftPadding="3" rightPadding="3">
+					<topPen lineWidth="0.1" lineStyle="Solid"/>
+					<leftPen lineWidth="0.1" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.1" lineStyle="Solid"/>
+					<rightPen lineWidth="0.1" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{P_ANO_FISCAL}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="80" y="0" width="1230" height="15" uuid="03997c4d-34fa-49d1-94d7-a99d43dead86"/>
+				<textElement textAlignment="Center">
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{P_CABE_LINEA_1}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="80" y="13" width="1230" height="17" uuid="5146700d-2d48-494c-af81-0d4d7b565888"/>
+				<textElement textAlignment="Center">
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{P_CABE_LINEA_2}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="80" y="28" width="1230" height="17" uuid="202663ed-5854-4d50-b8b6-e5176760227b"/>
+				<textElement textAlignment="Center">
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{P_CABE_LINEA_3}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="80" y="45" width="1230" height="15" uuid="56f79c50-fdca-40e3-a25a-e0f4bd699017"/>
+				<textElement textAlignment="Center">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{P_CABE_LINEA_4}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="80" y="60" width="1230" height="15" uuid="7f9eb0c3-6baa-4dde-9146-0a94faf58e7b"/>
+				<textElement textAlignment="Center">
+					<font size="10" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{P_CABE_LINEA_5}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="80" y="75" width="1230" height="15" uuid="6104e4ea-d47b-4ce4-a3a8-43f0caee6716"/>
+				<textElement textAlignment="Center">
+					<font size="10" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{P_CABE_LINEA_6}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="80" y="93" width="1230" height="1" uuid="7f27494f-cf9b-46e9-90ea-b91c5ab86dc5">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				</reportElement>
+			</line>
+		</band>
+	</title>
+	<columnHeader>
+		<band height="52" splitType="Stretch">
+			<staticText>
+				<reportElement mode="Opaque" x="0" y="22" width="80" height="30" backcolor="#FFFFFF" uuid="abfa271f-986b-4f39-af5b-aee6d8c6ddf4">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				</reportElement>
+				<box padding="5">
+					<topPen lineWidth="0.3" lineStyle="Solid"/>
+					<leftPen lineWidth="0.3" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.3" lineStyle="Solid"/>
+					<rightPen lineWidth="0.3" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="6" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Codigo Rubro]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="80" y="22" width="120" height="30" backcolor="#FFFFFF" uuid="5488b3f4-16e9-4573-8191-834e0c2b72d6"/>
+				<box padding="5">
+					<topPen lineWidth="0.3" lineStyle="Solid"/>
+					<leftPen lineWidth="0.3" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.3" lineStyle="Solid"/>
+					<rightPen lineWidth="0.3" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="6" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Descripcion]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="200" y="22" width="80" height="30" backcolor="#FFFFFF" uuid="daf93a2c-8467-474c-9d89-3c629b6d6df2"/>
+				<box padding="5">
+					<topPen lineWidth="0.3" lineStyle="Solid"/>
+					<leftPen lineWidth="0.3" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.3" lineStyle="Solid"/>
+					<rightPen lineWidth="0.3" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="6" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Presupuesto Inicial]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="760" y="22" width="80" height="30" backcolor="#FFFFFF" uuid="8dd06d64-1ad6-4b7c-ada0-7183398b1d63"/>
+				<box padding="5">
+					<topPen lineWidth="0.3" lineStyle="Solid"/>
+					<leftPen lineWidth="0.3" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.3" lineStyle="Solid"/>
+					<rightPen lineWidth="0.3" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="6" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Presupuesto Definitivo]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="840" y="22" width="80" height="30" backcolor="#FFFFFF" uuid="68728be9-8d9e-4238-bf69-b063423bcbf1"/>
+				<box padding="5">
+					<topPen lineWidth="0.3" lineStyle="Solid"/>
+					<leftPen lineWidth="0.3" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.3" lineStyle="Solid"/>
+					<rightPen lineWidth="0.3" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="6" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Disponibilidades]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="920" y="22" width="80" height="30" backcolor="#FFFFFF" uuid="1474e80c-c0c2-4dd7-ba5e-935b1cac59b3"/>
+				<box padding="5">
+					<topPen lineWidth="0.3" lineStyle="Solid"/>
+					<leftPen lineWidth="0.3" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.3" lineStyle="Solid"/>
+					<rightPen lineWidth="0.3" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="6" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Disponibilidades por comprometer]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="1000" y="22" width="70" height="30" backcolor="#FFFFFF" uuid="ab328971-ee91-4e91-9a45-67c34c37f45a"/>
+				<box padding="5">
+					<topPen lineWidth="0.3" lineStyle="Solid"/>
+					<leftPen lineWidth="0.3" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.3" lineStyle="Solid"/>
+					<rightPen lineWidth="0.3" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="6" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Compromisos]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="1070" y="22" width="70" height="30" backcolor="#FFFFFF" uuid="b010b3fd-c420-49bd-ade3-bd6a250fbf09"/>
+				<box padding="5">
+					<topPen lineWidth="0.3" lineStyle="Solid"/>
+					<leftPen lineWidth="0.3" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.3" lineStyle="Solid"/>
+					<rightPen lineWidth="0.3" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="6" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Obligaciones]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="1220" y="22" width="80" height="30" backcolor="#FFFFFF" uuid="1850f904-5142-4832-bfe3-9bd7cbc149b4"/>
+				<box padding="5">
+					<topPen lineWidth="0.3" lineStyle="Solid"/>
+					<leftPen lineWidth="0.3" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.3" lineStyle="Solid"/>
+					<rightPen lineWidth="0.3" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="6" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Obligaciones por pagar]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="1300" y="22" width="70" height="30" backcolor="#FFFFFF" uuid="e68fab49-b68c-4857-9395-10f115d00e16"/>
+				<box padding="5">
+					<topPen lineWidth="0.3" lineStyle="Solid"/>
+					<leftPen lineWidth="0.3" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.3" lineStyle="Solid"/>
+					<rightPen lineWidth="0.3" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="6" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Pagos]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="1540" y="22" width="100" height="30" backcolor="#FFFFFF" uuid="6e0c317d-a926-49dc-b9c9-b2438e675223"/>
+				<box padding="5">
+					<topPen lineWidth="0.3" lineStyle="Solid"/>
+					<leftPen lineWidth="0.3" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.3" lineStyle="Solid"/>
+					<rightPen lineWidth="0.3" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="6" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Pendiente de ejecutar del presupuesto]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="1460" y="22" width="80" height="30" backcolor="#FFFFFF" uuid="28ed2e7e-1d2d-4c5c-b32f-427389d2b640"/>
+				<box padding="5">
+					<topPen lineWidth="0.3" lineStyle="Solid"/>
+					<leftPen lineWidth="0.3" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.3" lineStyle="Solid"/>
+					<rightPen lineWidth="0.3" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="6" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Disponible para CDP]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="1140" y="22" width="80" height="30" backcolor="#FFFFFF" uuid="01421e59-d3bf-4c15-a6a3-be4cebd7cb72"/>
+				<box padding="5">
+					<topPen lineWidth="0.3" lineStyle="Solid"/>
+					<leftPen lineWidth="0.3" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.3" lineStyle="Solid"/>
+					<rightPen lineWidth="0.3" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="6" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Reservas Presupuestales]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="1370" y="22" width="90" height="30" backcolor="#FFFFFF" uuid="e2f2c06e-dfc3-4a49-8164-0c3df9f2330b"/>
+				<box padding="5">
+					<topPen lineWidth="0.3" lineStyle="Solid"/>
+					<leftPen lineWidth="0.3" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.3" lineStyle="Solid"/>
+					<rightPen lineWidth="0.3" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="6" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Cuentas x Pagar]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="280" y="22" width="80" height="30" backcolor="#FFFFFF" uuid="23d85522-4987-4515-8531-7512c15d5d2d"/>
+				<box padding="5">
+					<topPen lineWidth="0.3" lineStyle="Solid"/>
+					<leftPen lineWidth="0.3" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.3" lineStyle="Solid"/>
+					<rightPen lineWidth="0.3" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="6" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Adiciones]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="360" y="22" width="80" height="30" backcolor="#FFFFFF" uuid="f8ec4f73-4c23-4ec3-96ac-d3998ac65b95"/>
+				<box padding="5">
+					<topPen lineWidth="0.3" lineStyle="Solid"/>
+					<leftPen lineWidth="0.3" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.3" lineStyle="Solid"/>
+					<rightPen lineWidth="0.3" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="6" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Reducciones]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="440" y="22" width="80" height="30" backcolor="#FFFFFF" uuid="4f63731b-c090-4f52-8e86-755e9f204859"/>
+				<box padding="5">
+					<topPen lineWidth="0.3" lineStyle="Solid"/>
+					<leftPen lineWidth="0.3" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.3" lineStyle="Solid"/>
+					<rightPen lineWidth="0.3" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="6" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Créditos]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="520" y="22" width="80" height="30" backcolor="#FFFFFF" uuid="e3cff4b5-72c5-4ce8-bdaf-ab53409fb242"/>
+				<box padding="5">
+					<topPen lineWidth="0.3" lineStyle="Solid"/>
+					<leftPen lineWidth="0.3" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.3" lineStyle="Solid"/>
+					<rightPen lineWidth="0.3" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="6" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Contracréditos]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="600" y="22" width="80" height="30" backcolor="#FFFFFF" uuid="700f3afd-404a-49be-a37c-391ff5dd90cb"/>
+				<box padding="5">
+					<topPen lineWidth="0.3" lineStyle="Solid"/>
+					<leftPen lineWidth="0.3" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.3" lineStyle="Solid"/>
+					<rightPen lineWidth="0.3" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="6" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Aplazamientos]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="680" y="22" width="80" height="30" backcolor="#FFFFFF" uuid="fcbe593e-ccb9-4a4e-a57b-9f9c1d07c7bd"/>
+				<box padding="5">
+					<topPen lineWidth="0.3" lineStyle="Solid"/>
+					<leftPen lineWidth="0.3" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.3" lineStyle="Solid"/>
+					<rightPen lineWidth="0.3" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="6" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Desaplazamientos]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="15" splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="cm"/>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="80" height="15" uuid="fd85672a-6cdf-4961-b110-18f3b29f97bb">
+					<property name="com.jaspersoft.studio.unit.width" value="cm"/>
+				</reportElement>
+				<box padding="2">
+					<topPen lineWidth="0.1" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.1" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.1" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.1" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{codigoCuentaDetallePresupuesto}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="80" y="0" width="120" height="15" uuid="6c57cae7-6450-4d4f-9dca-fe4bcbbb1be9"/>
+				<box padding="2">
+					<topPen lineWidth="0.1" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.1" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.1" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.1" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{descripcionDetallePresupuesto}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="$#,##0.##;¤-#,##0.##" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="200" y="0" width="80" height="15" uuid="852c1e74-ea1f-4058-8b95-0fa668ca8286"/>
+				<box padding="2">
+					<topPen lineWidth="0.1" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.1" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.1" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.1" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{valorPresupuestoInicial}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="$#,##0.##;¤-#,##0.##" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="760" y="0" width="80" height="15" uuid="a39c0481-4f6e-4aeb-b6d2-655c64b7017c"/>
+				<box padding="2">
+					<topPen lineWidth="0.1" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.1" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.1" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.1" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{valorPresupuestoDefinitivo}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="$#,##0.##;¤-#,##0.##" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="840" y="0" width="80" height="15" uuid="8ddd9cf6-b40e-4135-8c29-ef991b424aa3"/>
+				<box padding="2">
+					<topPen lineWidth="0.1" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.1" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.1" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.1" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{sumatoriaCDPExpedidos}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="$#,##0.##;¤-#,##0.##" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="1000" y="0" width="70" height="15" uuid="c6dbc9a1-3e28-443a-adf5-587f0c555a4a"/>
+				<box padding="2">
+					<topPen lineWidth="0.1" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.1" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.1" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.1" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{sumatoriaCRPExpedidos}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="$#,##0.##;¤-#,##0.##" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="1070" y="0" width="70" height="15" uuid="9d111e92-e10e-493a-b7f3-2a4cb994d023"/>
+				<box padding="2">
+					<topPen lineWidth="0.1" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.1" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.1" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.1" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{sumatoriaOPSinPagos}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="$#,##0.##;¤-#,##0.##" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="1220" y="0" width="80" height="15" uuid="dcec8f43-5c17-4ba6-9b0c-d23c030dc482"/>
+				<box padding="2">
+					<topPen lineWidth="0.1" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.1" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.1" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.1" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{obligacionesPorPagar}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="$#,##0.##;¤-#,##0.##" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="1300" y="0" width="70" height="15" uuid="a40e6e2c-ea34-4e60-b995-29b1ac8c28e2"/>
+				<box padding="2">
+					<topPen lineWidth="0.1" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.1" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.1" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.1" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{pagos}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="$#,##0.##;¤-#,##0.##" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="920" y="0" width="80" height="15" uuid="61338109-8c2a-4b2c-9cb7-5d4ba1e79076"/>
+				<box padding="2">
+					<topPen lineWidth="0.1" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.1" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.1" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.1" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{sumatoriaCDPExpedidos} - $F{sumatoriaCRPExpedidos}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="$#,##0.##;¤-#,##0.##" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="1540" y="0" width="100" height="15" uuid="2ff34d75-c41d-45e0-85ff-34dedab65fec"/>
+				<box padding="2">
+					<topPen lineWidth="0.1" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.1" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.1" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.1" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{valorPresupuestoDefinitivo} - $F{sumatoriaCRPExpedidos}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="$#,##0.##;¤-#,##0.##" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="1460" y="0" width="80" height="15" uuid="7b0cdfac-b8ea-4f4a-83c7-7d9d572dbc94"/>
+				<box padding="2">
+					<topPen lineWidth="0.1" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.1" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.1" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.1" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{valorPresupuestoDefinitivo})-($F{sumatoriaCDPExpedidos})]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="$#,##0.##;¤-#,##0.##" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="1140" y="0" width="80" height="15" uuid="ac79d63e-38ba-400d-b245-3f9d34c5f06d"/>
+				<box>
+					<topPen lineWidth="0.1" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.1" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.1" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.1" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{sumatoriaCRPExpedidos} - $F{sumatoriaOPSinPagos}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="$#,##0.##;¤-#,##0.##" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="1370" y="0" width="90" height="15" uuid="e21e2de8-83e3-4560-8ce6-a54ea1959824"/>
+				<box>
+					<topPen lineWidth="0.1" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.1" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.1" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.1" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{sumatoriaOPSinPagos} - $F{pagos}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="$#,##0.##;¤-#,##0.##" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="280" y="0" width="80" height="15" uuid="3c90dad9-1d78-4ec1-aa5f-db9884d98a8b"/>
+				<box padding="2">
+					<topPen lineWidth="0.1" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.1" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.1" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.1" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{adiciones}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="$#,##0.##;¤-#,##0.##" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="360" y="0" width="80" height="15" uuid="c06cc1e4-1e34-454d-b77a-e28a9818f345"/>
+				<box padding="2">
+					<topPen lineWidth="0.1" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.1" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.1" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.1" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{reducciones}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="$#,##0.##;¤-#,##0.##" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="440" y="0" width="80" height="15" uuid="37690e4e-ae4b-4ef7-9c37-29cda675a051"/>
+				<box padding="2">
+					<topPen lineWidth="0.1" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.1" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.1" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.1" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{creditos}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="$#,##0.##;¤-#,##0.##" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="520" y="0" width="80" height="15" uuid="b1b43dad-ee7f-49b0-a699-ac4c0ca2d058"/>
+				<box padding="2">
+					<topPen lineWidth="0.1" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.1" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.1" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.1" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{contraCreditos}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="$#,##0.##;¤-#,##0.##" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="600" y="0" width="80" height="15" uuid="0fcf269d-0366-4afd-8f9c-9a3474c4044e"/>
+				<box padding="2">
+					<topPen lineWidth="0.1" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.1" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.1" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.1" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{aplazamientos}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="$#,##0.##;¤-#,##0.##" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="680" y="0" width="80" height="15" uuid="5b160f5c-5893-4426-9015-a7f1c805274f"/>
+				<box padding="2">
+					<topPen lineWidth="0.1" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.1" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.1" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.1" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{desaplazamientos}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

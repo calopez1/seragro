@@ -1,0 +1,334 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.3.1.final using JasperReports Library version 6.3.1  -->
+<!-- 2017-03-02T12:14:00 -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="ejecucionIngresos" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="817522bc-af8f-470d-99b6-d1240b94256e">
+	<property name="com.jaspersoft.studio.unit." value="pixel"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
+	<property name="com.jaspersoft.studio.data.sql.tables" value="Z2x1b19jYXJnb19lbXBsZWFkb19ncmFkbyAsNjYwLDE1LDhmOTFiNGEwLWVjZGUtNDY1Zi04NGNh&#xA;LWI5N2RlMWFhNjI2MztnbHVvX2NhcmdvX2dyYWRvICwzMzksMTUsM2IwMzY5OWItZGJmYy00YTJk&#xA;LWE2YzEtZjkxM2Q3ZjFlOTExO2dsdW9fZW1wcmVzYSAsMTUsMTUsYjZlNDQwNzYtOWVjZi00MWRk&#xA;LWJmNmYtNTZmZGYwNmE2MWMyO2dsdW9fY2FyZ29fZW1wbGVhZG8gLDE1NiwxNSw0ZjQxOWJhYi1h&#xA;MTU1LTQ0YTEtOTZmMS1mMjVlNmM4ZDk3YzQ7Z2x1b19ncmFkb19zYWxhcmlhbCAsNDk2LDE1LDRk&#xA;MzczYjZmLWM0YTgtNDNmMC04Zjc3LTYzOGExOTU0OTVmZDtnbHVvX2NvbmNlcHRvX25vbWluYSAs&#xA;MTEwNiwxNSwwNTI0NGZmMi1lYjg1LTRhY2MtOWJlYy00ODU4OWM2ZDUzZTA7Z2x1b19jb25jZXB0&#xA;b3NfeF9jYXJnb19ncmFkbyAsODc2LDE1LGEzZmFiM2JmLWY4N2UtNGVhYS1hM2Q1LTdmMDNkOTM3&#xA;MTA1Yzs="/>
+	<parameter name="P_SUBREPORT_DIR" class="java.lang.String">
+		<parameterDescription><![CDATA[]]></parameterDescription>
+		<defaultValueExpression><![CDATA["/Users/frank/JaspersoftWorkspace/erp-reports/1/"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="P_CABE_LINEA_1" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["REPÚBLICA DE COLOMBIA"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="P_CABE_LINEA_2" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["DEPARTAMENTO DEL CAUCA"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="P_CABE_LINEA_3" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["MUNICIPIO DE TOTORÓ"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="P_CABE_LINEA_4" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["ALCALDÍA MUNICIPAL"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="P_CABE_LINEA_5" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["NIT: 800031874 - 5"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="P_CABE_LINEA_6" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["EDIFICIO CAM CALLE PRINCIPAL. TEL: 827 5130. FAX: 827 5130"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="P_PIE_LINEA_1" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["HACIA LA CONSTRUCCIÓN DEL BUEN VIVIR EN UNIDAD Y DESARROLLO PARA TOTORÓ"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="P_PIE_LINEA_2" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["Generado por: Glu ERP."]]></defaultValueExpression>
+	</parameter>
+	<parameter name="P_PIE_LINEA_3" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["Desarrollado por: VortexBird (www.vortexbird.com)"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="P_ENTIDAD_EXTERNA" class="java.lang.String" isForPrompting="false">
+		<parameterDescription><![CDATA[]]></parameterDescription>
+	</parameter>
+	<parameter name="P_PERIODO_LIQUIDACION" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="P_TOTAL_IBC" class="java.lang.Double" isForPrompting="false"/>
+	<parameter name="P_TOTAL_APORTE" class="java.lang.Double" isForPrompting="false"/>
+	<queryString>
+		<![CDATA[]]>
+	</queryString>
+	<field name="totalIbc" class="java.lang.Double">
+		<fieldDescription><![CDATA[totalIbc]]></fieldDescription>
+	</field>
+	<field name="totalIbcXPorcentaje" class="java.lang.Double">
+		<fieldDescription><![CDATA[totalIbcXPorcentaje]]></fieldDescription>
+	</field>
+	<field name="porcentaje" class="java.lang.Double">
+		<fieldDescription><![CDATA[porcentaje]]></fieldDescription>
+	</field>
+	<field name="tipoNomina" class="java.lang.String">
+		<fieldDescription><![CDATA[tipoNomina]]></fieldDescription>
+	</field>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="224" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="130" width="800" height="30" uuid="e1e08b50-53cc-47ce-8f75-5355e08a66ac"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="14" isBold="true"/>
+				</textElement>
+				<text><![CDATA[CUADRO APORTES PARAFISCALES CONSOLIDADO]]></text>
+			</staticText>
+			<image>
+				<reportElement x="0" y="0" width="140" height="120" uuid="884a3088-c4de-473a-8b9b-3a5540c834ff">
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				</reportElement>
+				<imageExpression><![CDATA[$P{P_SUBREPORT_DIR}+"logo-titulo-cdp.jpg"]]></imageExpression>
+			</image>
+			<textField>
+				<reportElement x="0" y="2" width="800" height="13" uuid="097451c5-015d-466a-a79e-5f7d4488b3a9"/>
+				<textElement textAlignment="Center">
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{P_CABE_LINEA_1}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="15" width="800" height="15" uuid="21e6b4df-b9bf-4eb8-8232-60fafd41da5f"/>
+				<textElement textAlignment="Center">
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{P_CABE_LINEA_2}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="30" width="800" height="15" uuid="45ce67a0-68e1-42d4-831e-a78598e5b112"/>
+				<textElement textAlignment="Center">
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{P_CABE_LINEA_3}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="45" width="800" height="15" uuid="f3439132-6563-4b65-ae53-5e08b574f991">
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+				</reportElement>
+				<textElement textAlignment="Center">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{P_CABE_LINEA_4}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="60" width="800" height="15" uuid="bf229686-52cb-49e6-831d-e801c12c06af"/>
+				<textElement textAlignment="Center">
+					<font size="10" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{P_CABE_LINEA_5}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="75" width="800" height="15" uuid="2dca3201-02c6-46c8-9a20-cd8fe8654bd1"/>
+				<textElement textAlignment="Center">
+					<font size="10" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{P_CABE_LINEA_6}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="0" y="120" width="800" height="3" uuid="ae720998-8825-4300-9b35-915843a5e71e">
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+				</reportElement>
+			</line>
+			<staticText>
+				<reportElement stretchType="RelativeToTallestObject" mode="Opaque" x="480" y="194" width="70" height="30" backcolor="#FFFFFF" uuid="31bc0739-f5ef-4158-97c5-8caa06ac416c">
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+				</reportElement>
+				<box leftPadding="2" rightPadding="2">
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<text><![CDATA[Porcentaje (%)]]></text>
+			</staticText>
+			<staticText>
+				<reportElement stretchType="RelativeToTallestObject" mode="Opaque" x="550" y="194" width="130" height="30" backcolor="#FFFFFF" uuid="faec5c7e-7caf-42ac-8c2f-cd6210b6856e">
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+				</reportElement>
+				<box leftPadding="2" rightPadding="2">
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<text><![CDATA[TOTAL I.B.C]]></text>
+			</staticText>
+			<staticText>
+				<reportElement stretchType="RelativeToTallestObject" mode="Opaque" x="0" y="160" width="270" height="20" backcolor="#FFFFFF" uuid="e9aef0ff-50a3-4ba3-a7f3-01e0c86fe23c">
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+				</reportElement>
+				<box leftPadding="2" rightPadding="2">
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<text><![CDATA[DE FECHA:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="270" y="160" width="530" height="20" uuid="c43cb3e7-bd86-4572-b1ed-7a868a7a5dbb"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$P{P_PERIODO_LIQUIDACION}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="194" width="480" height="30" uuid="9bc96552-9284-4253-aaf2-a4b23a31dd8a"/>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{P_ENTIDAD_EXTERNA}+" GASTOS DE PERSONAL"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="680" y="194" width="120" height="30" uuid="15da8f34-b98b-4c07-8969-e981917d6046"/>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$P{P_ENTIDAD_EXTERNA}]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<pageHeader>
+		<band splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band height="27" splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+			<textField>
+				<reportElement x="0" y="0" width="480" height="27" uuid="89aa592a-88ef-4123-a850-5ad536e7114a">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{tipoNomina}+" "]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="480" y="0" width="70" height="27" uuid="f8c6402a-7fcd-4974-b792-0c74ab293b8f">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textFieldExpression><![CDATA[new java.text.DecimalFormat("%#,##0.00").format(($F{porcentaje} != null) ? $F{porcentaje} : 0)]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="550" y="0" width="130" height="27" uuid="03b5dd54-b24e-43ed-92b2-4a2d384248a8">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textFieldExpression><![CDATA[new java.text.DecimalFormat("$#,##0.00").format(($F{totalIbc} != null) ? $F{totalIbc} : 0)]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="680" y="0" width="120" height="27" uuid="630dc093-79ad-450e-b907-c9e1bb403eb2">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textFieldExpression><![CDATA[new java.text.DecimalFormat("$#,##0.00").format(($F{totalIbcXPorcentaje} != null) ? $F{totalIbcXPorcentaje} : 0)]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+		</band>
+	</columnFooter>
+	<pageFooter>
+		<band splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+		</band>
+	</pageFooter>
+	<summary>
+		<band height="90" splitType="Stretch">
+			<textField>
+				<reportElement x="1" y="70" width="160" height="10" uuid="dd0503a1-3a63-476c-b69f-c7a6ef4da730"/>
+				<textElement textAlignment="Left">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{P_PIE_LINEA_2}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="1" y="80" width="160" height="10" uuid="94bf6cc0-6408-4200-b3ff-513b74a80f3c"/>
+				<textElement>
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{P_PIE_LINEA_3}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="1" y="40" width="800" height="15" uuid="56025c6d-3aaa-4fd4-af5c-7c8af85e6b04"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{P_PIE_LINEA_1}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="350" y="1" width="200" height="31" uuid="73ccbc2b-fb84-4d5c-bc15-a2b9720d3d07"/>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA["GRAN TOTAL "+$P{P_ENTIDAD_EXTERNA}+" "]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="550" y="1" width="130" height="31" uuid="eab5f273-a24f-4894-8ea7-89c6ec2d2dcf">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textFieldExpression><![CDATA[new java.text.DecimalFormat("$#,##0.00").format(($P{P_TOTAL_IBC} != null) ? $P{P_TOTAL_IBC} : 0)]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="680" y="1" width="120" height="31" uuid="b4aed194-a317-4ebe-964b-db7174c5d725">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textFieldExpression><![CDATA[new java.text.DecimalFormat("$#,##0.00").format(($P{P_TOTAL_APORTE} != null) ? $P{P_TOTAL_APORTE} : 0)]]></textFieldExpression>
+			</textField>
+		</band>
+	</summary>
+</jasperReport>

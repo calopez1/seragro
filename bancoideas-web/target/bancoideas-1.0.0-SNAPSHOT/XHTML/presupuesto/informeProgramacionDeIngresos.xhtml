@@ -1,0 +1,217 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+<ui:define name="content">
+<f:view>
+<script type="text/javascript">
+function start() {
+    PF('statusDialog').show();
+}
+
+function stop() {
+    PF('statusDialog').hide();
+}
+</script>
+<p:ajaxStatus onstart="PF('statusDialog').show()"
+	onsuccess="PF('statusDialog').hide()" />
+<p:dialog modal="true" widgetVar="statusDialog" header="Cargando"
+	draggable="false" closable="false">
+	<p:graphicImage
+		value="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/ajaxloadingbar.gif" />
+</p:dialog>
+
+<!-- Expired session -->
+<p:idleMonitor onactive="PF('sessionTimeOutDialog').show();"
+	timeout="#{session.maxInactiveInterval * 1000}" />
+<p:dialog modal="true" widgetVar="sessionTimeOutDialog"
+header="Sesión terminada" draggable="false" closable="false">
+<h:outputText value="La sesión ha finalizado" />
+<input id="confirmBackToLogin" type="button" value="Iniciar sesión"
+	onclick="window.location='#{facesContext.externalContext.requestContextPath}/index.jsp';" />
+</p:dialog>
+
+<div align="center">
+<h:form id="frmInformeProgramacionIngresosCgr">
+
+<p:growl id="growl" autoUpdate="true" />
+
+<p:panel style="width: 90%;">
+	<h:outputText value="Informe Programación de Ingresos" styleClass="FontBold Fs18 hardblue" />
+</p:panel>
+
+<p:panel id="pnlInformeProgramacionIngresosCgr" style="width: 90%;">		
+	<h:panelGrid columns="2">
+		<p:outputLabel value="Año Fiscal:" for="txtAnioFiscal" />
+		<p:inputText id="txtAnioFiscal" binding="#{gluoInformeProgramacionDeIngresosCgrView.txtAnioFiscal}" />
+		
+		<p:outputLabel value="Fecha Inicio:" for="fechaInicio" />
+		<p:calendar id="fechaInicio" binding="#{gluoInformeProgramacionDeIngresosCgrView.calFechaInicio}"
+			pattern="yyyy-MM-dd" navigator="true" />
+		
+		<p:outputLabel value="Fecha Corte:" for="fechaCorte" />
+		<p:calendar id="fechaCorte" binding="#{gluoInformeProgramacionDeIngresosCgrView.calFechaCorte}"
+			pattern="yyyy-MM-dd" navigator="true" />
+			
+	</h:panelGrid>
+	
+	<br/>
+	<p:commandButton id="btnGenerarInforme" value="Generar Informe"
+		action="#{gluoInformeProgramacionDeIngresosCgrView.action_informe_programacion_ingresos}"
+		update=":frmInformeProgramacionIngresosCgr" />
+		
+	<p:commandButton id="btnLimpiarInforme" value="Limpiar"
+		action="#{gluoInformeProgramacionDeIngresosCgrView.action_clear}"
+		update=":frmInformeProgramacionIngresosCgr" />
+	
+</p:panel>
+
+<p:panel id="pnlInformeGenerado" header="Informe Programación de Ingresos CGR" style="width: 90%;">
+
+	<p:scrollPanel mode="native">
+	<p:dataTable id="informeDataTable" style="text-align: center;" scrollable="true" scrollWidth="100%"
+		var="ingresos"
+		value="#{gluoInformeProgramacionDeIngresosCgrView.gluoInformeProgramacionIngresosDTOs}"
+		selection="#{gluoInformeProgramacionDeIngresosCgrView.selectedInformeProgramacionIngresosDTO}"
+		selectionMode="single"
+		filterDelay="2000"
+		paginator="true"
+		rows="20"
+		rowKey="#{ingresos.gcgrId}">
+		
+		<p:column headerText="Codigo Cgr" filterBy="#{ingresos.codigoCgr}"
+			filterMatchMode="startsWith" style="width: 200px;">
+			<p:outputLabel value="#{ingresos.codigoCgr}" />
+		</p:column>
+		
+		<p:column headerText="Nombre Cgr" filterBy="#{ingresos.nombreCgr}"
+			filterMatchMode="contains" style="width: 200px;">
+			<p:outputLabel value="#{ingresos.nombreCgr}" />
+		</p:column>
+		
+		<p:column headerText="Codigo Recursos" filterBy="#{ingresos.codigoRecursos}"
+			filterMatchMode="startsWith" style="width: 200px;">
+			<p:outputLabel value="#{ingresos.codigoRecursos}" />
+		</p:column>
+		
+		<p:column headerText="Nombre Recursos" filterBy="#{ingresos.nombreRecursos}"
+			filterMatchMode="contains" style="width: 200px;">
+			<p:outputLabel value="#{ingresos.nombreRecursos}" />
+		</p:column>
+		
+		<p:column headerText="Código Origen Especifico Ingresos Recursos" filterBy="#{ingresos.codigoOrigenEspecificoIngresos}"
+			filterMatchMode="startsWith" style="width: 200px;">
+			<p:outputLabel value="#{ingresos.codigoOrigenEspecificoIngresos}" />
+		</p:column>
+		
+		<p:column headerText="Nombre Origen Especifico Ingresos Recursos" filterBy="#{ingresos.nombreOrigenEspecificoIngresos}"
+			filterMatchMode="contains" style="width: 200px;">
+			<p:outputLabel value="#{ingresos.nombreOrigenEspecificoIngresos}" />
+		</p:column>
+		
+		<p:column headerText="Código Destinación Recursos" filterBy="#{ingresos.codigoDestinacionRecursos}"
+			filterMatchMode="startsWith" style="width: 200px;">
+			<p:outputLabel value="#{ingresos.codigoDestinacionRecursos}" />
+		</p:column>
+		
+		<p:column headerText="Nombre Destinación Recursos" filterBy="#{ingresos.nombreDestinacionRecursos}"
+			filterMatchMode="contains" style="width: 200px;">
+			<p:outputLabel value="#{ingresos.nombreDestinacionRecursos}" />
+		</p:column>
+		
+		<p:column headerText="Código Situación Fondos" filterBy="#{ingresos.codigoSituacionFondos}"
+			filterMatchMode="startsWith" style="width: 200px;">
+			<p:outputLabel value="#{ingresos.codigoSituacionFondos}" />
+		</p:column>
+		
+		<p:column headerText="Nombre Situación Fondos" filterBy="#{ingresos.nombreSituacionFondos}"
+			filterMatchMode="contains" style="width: 200px;">
+			<p:outputLabel value="#{ingresos.nombreSituacionFondos}" />
+		</p:column>
+		
+		<p:column headerText="Consecutivo Acto Administrativo" filterBy="#{ingresos.consecutivoActoAdministrativo}"
+			filterMatchMode="startsWith" style="width: 200px;">
+			<p:outputLabel value="#{ingresos.consecutivoActoAdministrativo}" />
+		</p:column>
+		
+		<p:column headerText="Presupuesto Inicial" filterBy="#{ingresos.presupuestoInicial}"
+			filterMatchMode="startsWith" style="width: 200px;">
+			<p:outputLabel value="#{ingresos.presupuestoInicial}" >
+				<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+			</p:outputLabel>
+		</p:column>
+		
+		<p:column headerText="Adiciones" filterBy="#{ingresos.adiciones}"
+			filterMatchMode="startsWith" style="width: 200px;">
+			<p:outputLabel value="#{ingresos.adiciones}" >
+				<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+			</p:outputLabel>
+		</p:column>
+		
+		<p:column headerText="Reducciones" filterBy="#{ingresos.reducciones}"
+			filterMatchMode="startsWith" style="width: 200px;">
+			<p:outputLabel value="#{ingresos.reducciones}" >
+				<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+			</p:outputLabel>
+		</p:column>
+		
+		<p:column headerText="Créditos" filterBy="#{ingresos.creditos}"
+			filterMatchMode="startsWith" style="width: 200px;">
+			<p:outputLabel value="#{ingresos.creditos}" >
+				<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+			</p:outputLabel>
+		</p:column>
+		
+		<p:column headerText="Contracréditos" filterBy="#{ingresos.contracreditos}"
+			filterMatchMode="startsWith" style="width: 200px;">
+			<p:outputLabel value="#{ingresos.contracreditos}" >
+				<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+			</p:outputLabel>
+		</p:column>
+		
+		<p:column headerText="Aplazamiento" filterBy="#{ingresos.aplazamiento}"
+			filterMatchMode="startsWith" style="width: 200px;">
+			<p:outputLabel value="#{ingresos.aplazamiento}" >
+				<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+			</p:outputLabel>
+		</p:column>
+		
+		<p:column headerText="DesAplazamiento" filterBy="#{ingresos.desAplazamiento}"
+			filterMatchMode="startsWith" style="width: 200px;">
+			<p:outputLabel value="#{ingresos.desAplazamiento}" >
+				<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+			</p:outputLabel>
+		</p:column>
+		
+		<p:column headerText="Presupuesto Definitivo" filterBy="#{ingresos.presupuestoDefinitivo}"
+			filterMatchMode="startsWith" style="width: 200px;">
+			<p:outputLabel value="#{ingresos.presupuestoDefinitivo}" >
+				<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+			</p:outputLabel>
+		</p:column>
+		
+	</p:dataTable>
+	</p:scrollPanel>
+	
+	<br/>
+	<h:panelGrid id="panelgridGeneraReporte" columns="2"> 
+			<p:commandButton value="Generar Reporte en CSV" onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)" icon="ui-icon-arrowthichk-s">
+				<p:fileDownload value="#{gluoInformeProgramacionDeIngresosCgrView.reporteCsv}" />
+			</p:commandButton>
+			
+			<p:commandButton value="Generar Reporte en XLS" onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)" icon="ui-icon-arrowthichk-s">
+				<p:fileDownload value="#{gluoInformeProgramacionDeIngresosCgrView.reporteXls}" />
+			</p:commandButton>
+			
+	</h:panelGrid>
+	
+</p:panel>
+	
+</h:form>
+</div>
+
+</f:view>
+</ui:define>
+</ui:composition>

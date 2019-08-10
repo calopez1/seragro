@@ -1,0 +1,193 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ps="http://primefaces.org/sentinel"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+	<h:form>
+		<div id="layout-menubar" class="Unselectable fontRegular">
+			<div class="layout-menubarinner-box" id="buttonArea">
+				<a href="#" id="layout-menubar-resize" class="BordRad3"
+					title="Abrir/Cerrar"><i class="icon-th-list-2"></i></a> <a href="#"
+					id="layout-menubar-resize2" class="BordRad3" title="Open Menu"><i
+					class="icon-menu"></i></a>
+			</div>
+			
+			<ps:menu id="sm_leftmenu" model="#{menuView.model}"/>
+
+			<!-- <ps:menu id="sm_leftmenu">
+				<p:menuitem id="sm_dashboard" value="Inicio"
+					icon="icon-home-outline" outcome="dashboard"
+					containerStyleClass="layout-menubar-active" />
+
+				<p:submenu id="psy_" label="Presupuesto" icon="icon-dollar">
+
+					<p:submenu id="psy_presupuesto_parametros" label="Parámetros"
+						icon="icon-right">
+						<p:menuitem value="Gestionar Cuenta Contable"
+							url="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/XHTML/presupuesto/GestionarCuentaContable.xhtml" />
+
+						<p:menuitem value="Gestionar Entidad Pública"
+							url="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/XHTML/presupuesto/GestionarEntidadPublica.xhtml" />
+					</p:submenu>
+
+					<p:menuitem value="Cargar presupuesto"
+						url="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/XHTML/presupuesto/cargarPresupuesto.xhtml" />
+
+					<p:menuitem value="Parametrizar Codigos Presupuesto"
+						url="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/XHTML/parametrizarCodigosPresupuesto/parametrizarCodigosPresupuesto.xhtml" />
+
+					<p:menuitem value="Modificar Presupuesto"
+						url="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/XHTML/presupuesto/modificarPresupuesto.xhtml" />
+
+					<p:menuitem value="Ejecucion Presupuestal de Gasto"
+						url="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/XHTML/presupuesto/EjecucionPresupuestalDeGasto.xhtml" />
+
+					<p:menuitem value="Gestionar Ingresos No Propios Presupuesto"
+						url="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/XHTML/presupuesto/GestionarIngresosNoPropios.xhtml" />
+
+					<p:menuitem value="Gestionar Ingresos No Propios Recurso Balance"
+						url="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/XHTML/presupuesto/GestionarIngresosNoPropiosRecursoBalance.xhtml" />
+
+					<p:menuitem value="Anular CDP"
+						url="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/XHTML/presupuesto/AnularCDP.xhtml" />
+
+					<p:menuitem value="Consultas e Informes"
+						url="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/XHTML/presupuesto/informes.xhtml" />
+
+					<p:menuitem value=" Generar Reconocimiento"
+							url="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/XHTML/presupuesto/generarReconocimiento.xhtml" />						
+	
+				</p:submenu>
+
+				<p:submenu label="Tesorería" icon="icon-doc-text">
+					<p:submenu id="psy_tesoreria_parametros" label="Parámetros"
+						icon="icon-right">
+						
+						<p:menuitem value="Gestionar Tipo Forma de Pago"
+							url="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/XHTML/tesoreria/GestionarTipoFormaPago.xhtml" />
+						
+						<p:menuitem value="Gestionar Tipo de Recurso"
+							url="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/XHTML/tesoreria/GestionarTipoRecurso.xhtml" />
+
+						<p:menuitem value="Gestionar Bancos"
+							url="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/XHTML/tesoreria/GestionarBancos.xhtml" />
+
+						<p:menuitem value="Gestionar Cuentas Bancarias"
+							url="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/XHTML/tesoreria/GestionarCuentasBancarias.xhtml" />
+							
+						<p:menuitem value="Parametrizar Conceptos de Rentas Propias"
+							url="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/XHTML/tesoreria/gluoParametrizacionConcepto.xhtml" />
+							
+						<p:menuitem value="Gestionar Deducciones"
+							url="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/XHTML/tesoreria/gluoDeduccionListDataTable.xhtml" />
+							
+						<p:menuitem value="Gestionar Conceptos de Pago"
+							url="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/XHTML/tesoreria/gluoConceptoPagoListDataTable.xhtml" />
+					</p:submenu>
+			
+					<p:menuitem value="Recibo de Caja"
+							url="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/XHTML/tesoreria/reciboCaja.xhtml" />										
+					
+					<p:menuitem value="Generar Comprobante de Traslado Bancario"
+							url="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/XHTML/tesoreria/GenerarComprobanteDeTrasladoBancario.xhtml" />
+					
+					<p:menuitem value="Anular Comprobante de Traslado Bancario"
+							url="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/XHTML/tesoreria/AnularComprobanteDeTrasladoBancario.xhtml" />				
+							
+					<p:menuitem value="Generar Comprobante de Egreso"
+							url="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/XHTML/tesoreria/MenuComprobanteEgreso.xhtml" />
+				
+					<p:menuitem value="Generar Informe de Comprobantes de Egreso"
+							url="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/XHTML/tesoreria/generarInformeRelacionComprobantesEgreso.xhtml" />
+							
+					<p:menuitem value="Generar Informe de Comprobantes de Egreso No Afecta Ppto"
+							url="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/XHTML/tesoreria/generarInformeRelacionComprobantesEgresoNoAfectaPpto.xhtml" />
+										
+					<p:menuitem value="Generar Arqueo de Caja"
+							url="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/XHTML/tesoreria/generarArqueoCaja.xhtml" />
+							
+					<p:menuitem value="Consultas e Informes"
+							url="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/XHTML/tesoreria/informes.xhtml" />		
+												
+				</p:submenu>
+				
+				
+				<p:submenu label="Impuestos" icon="icon-money">
+				
+				<p:submenu id="gluo_impuestos_parametros" label="Parámetros"
+						icon="icon-right">
+						
+					<p:menuitem value="Gestionar Concepto Impuesto"
+							url="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/XHTML/impuestos/GestionarConceptoImpuesto.xhtml" />
+				
+					<p:menuitem value="Gestionar Descuentos Impuestos"
+							url="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/XHTML/impuestos/GestionarDescuentosImpuestoPredial.xhtml" />														
+					
+					<p:menuitem value="Gestionar Interes Mora Impuesto"
+							url="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/XHTML/impuestos/GestionarInteresMoraImpuesto.xhtml" />
+						
+					<p:menuitem value="Gestionar Porcentajes por Rango de Avalúo"
+							url="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/XHTML/impuestos/GestionarPorcentajesRangosAvaluos.xhtml" />
+					
+				</p:submenu>
+					
+					<p:menuitem value="Matricular Predio Excluido"
+							url="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/XHTML/impuestos/MatricularPredioExcluido.xhtml" />
+							
+					<p:menuitem value="Matricular Predio Tarifa Especial"
+							url="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/XHTML/impuestos/MatricularPredioTarifaEspecial.xhtml" />							
+						
+					<p:menuitem value="Generar Liquidación Masiva de Impuestos"
+							url="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/XHTML/impuestos/GenerarLMI.xhtml" />						
+					
+					<p:menuitem value="Recibo Caja Impuesto"
+							url="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/XHTML/impuestos/reciboCajaImpuesto.xhtml" />
+					
+					<p:menuitem value="Generar Cartera"
+								url="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/XHTML/cartera/gluoCartera.xhtml" />						
+					
+					<p:menuitem value="Generar Informe de Cartera"
+								url="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/XHTML/cartera/generarInformeCartera.xhtml" />
+					
+					<p:menuitem value="Cargar Resoluciones"
+							url="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/XHTML/impuestos/cargarResoluciones.xhtml" />				
+					
+					<p:menuitem value="Cargar Predios"
+							url="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/XHTML/impuestos/cargarPredios.xhtml" />
+							
+					<p:menuitem value="Consultas e Informes"
+							url="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/XHTML/impuestos/informes.xhtml" />
+				</p:submenu>
+				
+				<p:submenu label="Contabilidad" icon="icon-dollar">
+					<p:menuitem value="Gestionar Centro de Costos"
+								url="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/XHTML/contabilidad/gestionarCentroCostos.xhtml" />
+	
+					<p:menuitem value="Gestionar Cuentas Contables por Centro de Costos"
+								url="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/XHTML/contabilidad/gestionarCuentasContablesXCentroCostos.xhtml" />				
+					
+					<p:menuitem value="Generar Libro Auxiliar por Cuenta"
+							url="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/XHTML/contabilidad/generarLibroAuxiliarPorCuenta.xhtml" />
+							
+					<p:menuitem value="Generar Libro Auxiliar por Cuenta y Tercero"
+							url="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/XHTML/contabilidad/generarLibroAuxiliarPorCuentaYTercero.xhtml" />
+				</p:submenu>
+				
+				
+				<p:submenu label="Administracion" icon="icon-dollar">
+					<p:menuitem value="Gestionar Terceros"
+								url="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/XHTML/general/gluoTerceroListDataTable.xhtml" />
+								
+					<p:menuitem value="Gestionar Empresas"
+								url="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/XHTML/general/gestionarEmpresas.xhtml" />			
+
+					<p:menuitem value="Gestionar Cargos"
+								url="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/XHTML/general/gestionarCargos.xhtml" />								
+				</p:submenu>
+				
+			</ps:menu> -->
+
+		</div>
+	</h:form>
+</ui:composition>

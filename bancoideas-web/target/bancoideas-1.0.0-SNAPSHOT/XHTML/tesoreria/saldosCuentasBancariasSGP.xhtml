@@ -1,0 +1,123 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+<ui:define name="content">
+
+	<p:ajaxStatus onstart="PF('statusDialog').show()"
+		onsuccess="PF('statusDialog').hide()" />
+	<p:dialog modal="true" widgetVar="statusDialog" header="Cargando"
+		draggable="false" closable="false">
+		<p:graphicImage
+			value="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/ajaxloadingbar.gif" />
+	</p:dialog>
+
+	<!-- Expired session -->
+	<p:idleMonitor onactive="PF('sessionTimeOutDialog').show();"
+		timeout="#{session.maxInactiveInterval * 1000}" />
+	<p:dialog modal="true" widgetVar="sessionTimeOutDialog"
+		header="Sesión terminada" draggable="false" closable="false">
+		<h:outputText value="La sesión ha finalizado" />
+		<input id="confirmBackToLogin" type="button" value="Iniciar sesión"
+			onclick="window.location='#{facesContext.externalContext.requestContextPath}/index.jsp';" />
+	</p:dialog>
+	
+<script type="text/javascript">
+	function showStatus() {
+	    statusDialog.show();
+	}
+	 
+	function hideStatus() {
+	    statusDialog.hide();
+	}
+</script>
+
+<style type="text/css">
+	.one {
+		width: 20%;
+	}
+	
+	.two {
+		width: 80%;
+	}	
+</style>
+
+<div align="center">
+<h:form id="frmCuentasSGP">
+
+	<p:growl id="grow" showDetail="false" autoUpdate="true"/>
+
+	<p:panel id="pnlCuentasSGP" header="Saldos Cuentas Bancarias del Sistema General de Participaciones" style="width: 90%;">
+		<h:panelGrid columns="2">
+			<p:outputLabel value="Fecha de corte" for="calFechaCorte" />
+			<p:calendar id="calFechaCorte" binding="#{gluoSaldosCuentasBancariasSGPView.calFechaCorte}" 
+				pattern="yyyy-MM-dd" maxdate="c" navigator="true" />							
+		</h:panelGrid>
+		
+		<br/>
+		<p:commandButton id="btnConsultar" value="Consultar cuentas bancarias SGP" action="#{gluoSaldosCuentasBancariasSGPView.action_consultar_informe}"
+			update="@([id$=cuentasSGPDataTable])" />
+		
+	</p:panel>
+	
+	<br/>
+	
+	<p:panel id="pnlListadoCuentasSGP" header="Informe Saldos Cuentas Bancarias del Sistema General de Participaciones" style="width: 90%;">
+		<p:scrollPanel mode="native">
+			<p:dataTable id="cuentasSGPDataTable" var="saldo" scrollable="true"
+				value="#{gluoSaldosCuentasBancariasSGPView.listSaldosCuentasSGPDTO}"
+				paginator="true"
+				rows="10"
+				filterDelay="1100">
+				
+				<p:column headerText="Número cuenta" sortBy="#{saldo.numeroCuenta}" filterBy="#{saldo.numeroCuenta}" filterMatchMode="startsWith" style="width: 180px;" >
+					<p:outputLabel value="#{saldo.numeroCuenta}" />
+				</p:column>
+				
+				<p:column headerText="Nombre cuenta" filterBy="#{saldo.nombreCuenta}" filterMatchMode="contains" style="width: 180px;">
+					<p:outputLabel value="#{saldo.nombreCuenta}" />
+				</p:column>
+				
+				<p:column headerText="Nombre tipo cuenta" filterBy="#{saldo.nombreTipoCuenta}" filterMatchMode="startsWith" style="width: 180px;">
+					<p:outputLabel value="#{saldo.nombreTipoCuenta}" />
+				</p:column>
+				
+				<p:column headerText="Código banco" filterBy="#{saldo.codigoBanco}" filterMatchMode="startsWith" style="width: 180px;">
+					<p:outputLabel value="#{saldo.codigoBanco}" />
+				</p:column>
+				
+				<p:column headerText="Nombre banco" filterBy="#{saldo.nombreBanco}" filterMatchMode="contains" style="width: 180px;">
+					<p:outputLabel value="#{saldo.nombreBanco}" />
+				</p:column>
+				
+				<p:column headerText="Saldo" filterBy="#{saldo.saldoSGP}" filterMatchMode="startsWith" style="width: 180px;">
+					<p:outputLabel value="#{saldo.saldoSGP}" >
+						<f:convertNumber currencySymbol="$" pattern="¤#,##0.00" />
+					</p:outputLabel>
+				</p:column>
+				
+		</p:dataTable>
+		</p:scrollPanel>
+		
+		<br/>
+		<p:commandButton value="Generar Informe en PDF" onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)" icon="ui-icon-arrowthichk-s">
+			<p:fileDownload value="#{gluoSaldosCuentasBancariasSGPView.informePdf}" />
+		</p:commandButton>
+		
+		<p:commandButton value="Generar Informe en XLS" onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)" icon="ui-icon-arrowthichk-s">
+			<p:fileDownload value="#{gluoSaldosCuentasBancariasSGPView.informeXls}" />
+		</p:commandButton>
+		
+		<p:commandButton value="Generar Informe en XLSX" onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)" icon="ui-icon-arrowthichk-s">
+			<p:fileDownload value="#{gluoSaldosCuentasBancariasSGPView.informeXlsx}" />
+		</p:commandButton>
+				
+	</p:panel>
+	
+</h:form>
+</div>
+
+</ui:define>
+</ui:composition>

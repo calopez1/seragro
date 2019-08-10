@@ -1,0 +1,210 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+<ui:define name="content">
+
+<p:ajaxStatus onstart="PF('statusDialog').show()"
+	onsuccess="PF('statusDialog').hide()" />
+<p:dialog modal="true" widgetVar="statusDialog" header="Cargando"
+	draggable="false" closable="false">
+	<p:graphicImage
+		value="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/ajaxloadingbar.gif" />
+</p:dialog>
+
+<!-- Expired session -->
+<p:idleMonitor onactive="PF('sessionTimeOutDialog').show();"
+	timeout="#{session.maxInactiveInterval * 1000}" />
+<p:dialog modal="true" widgetVar="sessionTimeOutDialog"
+	header="Sesión terminada" draggable="false" closable="false">
+	<h:outputText value="La sesión ha finalizado" />
+	<input id="confirmBackToLogin" type="button" value="Iniciar sesión"
+		onclick="window.location='#{facesContext.externalContext.requestContextPath}/index.jsp';" />
+</p:dialog>
+
+<script type="text/javascript">
+	function showStatus() {
+	    statusDialog.show();
+	}
+	 
+	function hideStatus() {
+	    statusDialog.hide();
+	}
+</script>
+
+
+<style type="text/css">
+	.ui-panel {
+		margin-top: 20px
+	}
+	
+	.ui-tabs-top {
+		background-color: #FFFFFF;
+	}
+	
+	.one {
+		width: 10%;
+	}
+	
+	.two {
+		width: 90%;
+	}
+	
+	.col50Left{
+		width: 10%;
+		text-align: left;
+	}
+	
+	.col50Right{
+		width: 10%;
+		text-align: right;
+	}
+	
+	.txt100{
+		width: 100%;
+	}
+	
+</style>
+
+<div align="center">
+
+<h:form id="frmInformeEjecucionGastos">
+
+	<p:growl id="men" showDetail="false" autoUpdate="true" closable="true" />
+		
+	<p:panel id="pnlInformeEjecucionGastos" header="Informe de Ejecución de Ingresos Ampliado" style="width: 90%;" >
+	
+		<h:panelGrid columns="2">
+		
+			<p:outputLabel value="Año Fiscal" for="anioFiscal" />			
+			<p:inputText id="anioFiscal" value="#{informeEjecucionIngresosView.txtAnioFiscal}" />  
+            
+			<p:outputLabel value="Fecha de Corte" for="fechaCorte" />
+			<p:calendar id="fechaCorte" mode="popup" navigator="true" value="#{informeEjecucionIngresosView.txtFechaCorte}"  />
+			
+			<h:outputText value="Seleccionar: " />
+			<p:selectOneRadio id="modoRubrosPresupuestales" value="#{informeEjecucionIngresosView.modoRubrosPresupuestales}">
+				<f:selectItem itemValue="1" itemLabel="Árbol de Presupuesto" />
+				<f:selectItem itemValue="2" itemLabel="Rubros de último nivel" />
+			</p:selectOneRadio>
+		
+		</h:panelGrid>
+		
+		<br/>
+		
+		<p:commandButton id="btnGenerarInformeIngresos" value="Generar Informe Ingresos"
+						 action="#{informeEjecucionIngresosView.action_generar_informe_ingresos}"
+						 update=":frmInformeEjecucionGastos" />
+		
+		<p:commandButton id="btnLimpiar" value="Limpiar" 
+						 action="#{informeEjecucionIngresosView.action_limpiar}"
+						 update=":frmInformeEjecucionGastos" />
+	
+	</p:panel>
+	
+	<div class="Container100 Responsive">
+		<p:panel id="pnlListaInformeEjecucionIngresos" header="Informe de Ejecución de Ingresos Ampliado" style="width: 90%;">	 
+			<p:dataTable id="pnlListaInformeEjecucionIngresosDataTable" var="ejecucionIngresos" rows="20" 
+				value="#{informeEjecucionIngresosView.listInformeEjecucionIngresosDTOs}"
+			 	paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+			 	paginator="true"
+			 	emptyMessage="No hay registros encontrados"			  
+				reflow="true"
+				rowKey="#{ejecucionIngresos.detallePresupuestoDTO.dptoId}"
+				scrollable="true" scrollWidth="100%" scrollHeight="300"
+				filterDelay="1000">
+				
+				<p:column headerText="Código" style="width: 200px;"
+					filterBy="#{ejecucionIngresos.detallePresupuestoDTO.codigoCuenta}">								
+					<p:outputLabel value="#{ejecucionIngresos.detallePresupuestoDTO.codigoCuenta}" />										
+				</p:column>	
+				
+				<p:column headerText="Descripción" style="width: 200px;"
+					filterBy="#{ejecucionIngresos.detallePresupuestoDTO.descripcionCuenta}">								
+					<p:outputLabel value="#{ejecucionIngresos.detallePresupuestoDTO.descripcionCuenta}" />										
+				</p:column>
+				
+				
+				<p:column headerText="Presupuesto Inicial" style="width: 200px;">				
+						<p:outputLabel value="#{ejecucionIngresos.presupuestoInicial}" >					
+							<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+						</p:outputLabel>																
+				</p:column>
+								
+				<p:column headerText="Adiciones" style="width: 200px;">					
+					<p:outputLabel value="#{ejecucionIngresos.adicionAcomulada}" >
+						<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+					</p:outputLabel>																	
+				</p:column>
+				
+				<p:column headerText="Reducciones" style="width: 200px;">				
+					<p:outputLabel value="#{ejecucionIngresos.reduccionesAcomuladas}" >
+						<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+					</p:outputLabel>																	
+				</p:column>
+				
+				<p:column headerText="Créditos" style="width: 200px;">				
+					<p:outputLabel value="#{ejecucionIngresos.creditos}" >
+						<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+					</p:outputLabel>																	
+				</p:column>
+				
+				<p:column headerText="Contracreditos" style="width: 200px;">				
+					<p:outputLabel value="#{ejecucionIngresos.contracreditos}" >
+						<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+					</p:outputLabel>																	
+				</p:column>				
+				
+				<p:column headerText="Presupuesto Definitivo" style="width: 200px;">				
+					<p:outputLabel value="#{ejecucionIngresos.presupuestoDefinitivo}" >					
+						<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+					</p:outputLabel>																	
+				</p:column>
+				
+				<p:column headerText="Reconocimientos" style="width: 200px;">				
+					<p:outputLabel value="#{ejecucionIngresos.reconocimientos}" >
+						<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+					</p:outputLabel>																	
+				</p:column>
+				
+				<p:column headerText="Recaudo" style="width: 200px;">				
+					<p:outputLabel value="#{ejecucionIngresos.recaudoAcomulado}" >
+						<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+					</p:outputLabel>																	
+				</p:column>
+				
+				<p:column headerText="Pendiente por Recaudar" style="width: 200px;">				
+					<p:outputLabel value="#{ejecucionIngresos.pendienteXRecaudar}" >
+						<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+					</p:outputLabel>																	
+				</p:column>
+				
+			</p:dataTable>
+	</p:panel>
+	</div>
+	
+	
+	<h3>Exportar el Informe de Ejecución de Ingresos</h3>
+    <h:panelGrid id="panelgridGeneraReporte" columns="3"> 
+			<p:commandButton value="Generar Reporte en PDF" onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)" icon="ui-icon-arrowthichk-s">
+				<p:fileDownload value="#{informeEjecucionIngresosView.reporteIEIPdf}" />
+			</p:commandButton>
+			
+			<p:commandButton value="Generar Reporte en XLS" onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)" icon="ui-icon-arrowthichk-s">
+				<p:fileDownload value="#{informeEjecucionIngresosView.reporteIEIXls}" />
+			</p:commandButton>
+			
+			<p:commandButton value="Generar Reporte en XLSX" onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)" icon="ui-icon-arrowthichk-s">
+				<p:fileDownload value="#{informeEjecucionIngresosView.reporteIEIXlsx}" />
+			</p:commandButton>
+	</h:panelGrid>
+    
+    <br/><br/>
+	
+			
+</h:form>
+</div>
+</ui:define>
+</ui:composition>

@@ -1,0 +1,220 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+
+	<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+	</h:head>
+
+	<h:body>
+		  <ui:composition template="/WEB-INF/facelets/template.xhtml">	
+		 
+		 	<ui:define name="body">	
+				<f:view>
+					<p:ajaxStatus onstart="PF('statusDialog').show()" onsuccess="PF('statusDialog').hide()"/>               
+					<p:dialog modal="true" widgetVar="statusDialog" header="Loading"  draggable="false" closable="false">  
+   						<p:graphicImage value="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/ajaxloadingbar.gif" />   
+					</p:dialog>
+					
+					<!-- Expired session -->
+					<p:idleMonitor onactive="PF('sessionTimeOutDialog').show();" timeout="#{session.maxInactiveInterval * 1000}" />
+					<p:dialog modal="true" widgetVar="sessionTimeOutDialog" header="Expired session"  draggable="false" closable="false">  
+	   					<h:outputText value="The session is finished" />
+	                 	<input id="confirmBackToLogin" 
+	                 		type="button" 
+	                 		value="Sign in"
+	                    	onclick="window.location='#{facesContext.externalContext.requestContextPath}/index.jsp';" />   
+					</p:dialog>
+					
+		  			<h:form id="frm">								  		
+						
+						<p:panel id="panelDataTableLiquidacionHoraExtra" header="LiquidacionHoraExtraData">
+							<p:growl id="men"/>				
+							<p:dataTable value="#{liquidacionHoraExtraView.data}" var="liquidacionHoraExtra"
+								paginator="true" rows="5">
+																										<p:column filterBy="#{liquidacionHoraExtra.lhoeId}" sortBy="#{liquidacionHoraExtra.lhoeId}" >
+										 <f:facet name="header">
+										<h:outputText value="lhoeId"/>
+										</f:facet>
+										 <h:outputText value="#{liquidacionHoraExtra.lhoeId}"/>
+										 </p:column>
+			                    																									
+										<p:column filterBy="#{liquidacionHoraExtra.estadoRegistro}" sortBy="#{liquidacionHoraExtra.estadoRegistro}" >
+										 <f:facet name="header">
+										<h:outputText value="EstadoRegistro"/>
+										</f:facet>
+										 <h:outputText value="#{liquidacionHoraExtra.estadoRegistro}"/>
+										</p:column>   
+			                    									
+										<p:column filterBy="#{liquidacionHoraExtra.fecha}" sortBy="#{liquidacionHoraExtra.fecha}" >
+										 <f:facet name="header">
+										<h:outputText value="Fecha"/>
+										</f:facet>
+										 <h:outputText value="#{liquidacionHoraExtra.fecha}"/>
+										</p:column>   
+			                    									
+										<p:column filterBy="#{liquidacionHoraExtra.fechaCreacion}" sortBy="#{liquidacionHoraExtra.fechaCreacion}" >
+										 <f:facet name="header">
+										<h:outputText value="FechaCreacion"/>
+										</f:facet>
+										 <h:outputText value="#{liquidacionHoraExtra.fechaCreacion}"/>
+										</p:column>   
+			                    									
+										<p:column filterBy="#{liquidacionHoraExtra.fechaModificacion}" sortBy="#{liquidacionHoraExtra.fechaModificacion}" >
+										 <f:facet name="header">
+										<h:outputText value="FechaModificacion"/>
+										</f:facet>
+										 <h:outputText value="#{liquidacionHoraExtra.fechaModificacion}"/>
+										</p:column>   
+			                    									
+										<p:column filterBy="#{liquidacionHoraExtra.horasTrabajadas}" sortBy="#{liquidacionHoraExtra.horasTrabajadas}" >
+										 <f:facet name="header">
+										<h:outputText value="HorasTrabajadas"/>
+										</f:facet>
+										 <h:outputText value="#{liquidacionHoraExtra.horasTrabajadas}"/>
+										</p:column>   
+			                    									
+										<p:column filterBy="#{liquidacionHoraExtra.totalPagarHorasExtras}" sortBy="#{liquidacionHoraExtra.totalPagarHorasExtras}" >
+										 <f:facet name="header">
+										<h:outputText value="TotalPagarHorasExtras"/>
+										</f:facet>
+										 <h:outputText value="#{liquidacionHoraExtra.totalPagarHorasExtras}"/>
+										</p:column>   
+			                    									
+										<p:column filterBy="#{liquidacionHoraExtra.totalPagarRecargo}" sortBy="#{liquidacionHoraExtra.totalPagarRecargo}" >
+										 <f:facet name="header">
+										<h:outputText value="TotalPagarRecargo"/>
+										</f:facet>
+										 <h:outputText value="#{liquidacionHoraExtra.totalPagarRecargo}"/>
+										</p:column>   
+			                    									
+										<p:column filterBy="#{liquidacionHoraExtra.usuCreador}" sortBy="#{liquidacionHoraExtra.usuCreador}" >
+										 <f:facet name="header">
+										<h:outputText value="UsuCreador"/>
+										</f:facet>
+										 <h:outputText value="#{liquidacionHoraExtra.usuCreador}"/>
+										</p:column>   
+			                    									
+										<p:column filterBy="#{liquidacionHoraExtra.usuModificador}" sortBy="#{liquidacionHoraExtra.usuModificador}" >
+										 <f:facet name="header">
+										<h:outputText value="UsuModificador"/>
+										</f:facet>
+										 <h:outputText value="#{liquidacionHoraExtra.usuModificador}"/>
+										</p:column>   
+			                    									
+										<p:column filterBy="#{liquidacionHoraExtra.valorHoraExtra}" sortBy="#{liquidacionHoraExtra.valorHoraExtra}" >
+										 <f:facet name="header">
+										<h:outputText value="ValorHoraExtra"/>
+										</f:facet>
+										 <h:outputText value="#{liquidacionHoraExtra.valorHoraExtra}"/>
+										</p:column>   
+			                    									
+										<p:column filterBy="#{liquidacionHoraExtra.valorRecargo}" sortBy="#{liquidacionHoraExtra.valorRecargo}" >
+										 <f:facet name="header">
+										<h:outputText value="ValorRecargo"/>
+										</f:facet>
+										 <h:outputText value="#{liquidacionHoraExtra.valorRecargo}"/>
+										</p:column>   
+			                    									
+										<p:column filterBy="#{liquidacionHoraExtra.noemId_NominaEmpleado}" sortBy="#{liquidacionHoraExtra.noemId_NominaEmpleado}" >
+										 <f:facet name="header">
+										<h:outputText value="NoemId_NominaEmpleado"/>
+										</f:facet>
+										 <h:outputText value="#{liquidacionHoraExtra.noemId_NominaEmpleado}"/>
+										</p:column>   
+			                    									
+										<p:column filterBy="#{liquidacionHoraExtra.thoeId_TipoHoraExtra}" sortBy="#{liquidacionHoraExtra.thoeId_TipoHoraExtra}" >
+										 <f:facet name="header">
+										<h:outputText value="ThoeId_TipoHoraExtra"/>
+										</f:facet>
+										 <h:outputText value="#{liquidacionHoraExtra.thoeId_TipoHoraExtra}"/>
+										</p:column>   
+			                    			                    
+								<p:column headerText="Options">
+									<p:commandButton id="btnEdit" icon="ui-icon-pencil"
+										update=":dialogLiquidacionHoraExtra"
+										actionListener="#{liquidacionHoraExtraView.action_edit}">
+										<f:attribute name="selectedLiquidacionHoraExtra" value="#{liquidacionHoraExtra}" />
+									</p:commandButton>
+									<p:commandButton id="btnDelete"									
+										title="Delete" actionListener="#{liquidacionHoraExtraView.action_delete_datatable}"
+										onclick="if(!confirm('Do you really want to delete this Entry?')){return false;}"
+										icon="ui-icon-trash" update="@form">
+										<f:attribute name="selectedLiquidacionHoraExtra" value="#{liquidacionHoraExtra}" />
+									</p:commandButton>
+								</p:column>									                    
+							</p:dataTable>	
+						</p:panel>
+						<p:panel id="panelBoton">
+							<div align="center">
+								<p:commandButton id="btnNew" value="New"
+									action="#{liquidacionHoraExtraView.action_new()}" update=":dialogLiquidacionHoraExtra" />
+							</div>
+						</p:panel>						
+		   			</h:form>
+					<p:dialog id="dialogLiquidacionHoraExtra" appendTo="@(body)" draggable="true"
+						closable="false" visible="#{liquidacionHoraExtraView.showDialog}" resizable="false"
+						modal="true" width="500">
+						<h:form id="formDialog">
+							<p:messages id="msg" />
+							<p:panel id="panelLiquidacionHoraExtra" header="LiquidacionHoraExtra">							
+							    <h:panelGrid columns="2" id="panelGrid" >
+																		 <h:outputText id="msgLhoeId" value="LhoeId"/>
+									 <p:inputText id="txtLhoeId" binding="#{liquidacionHoraExtraView.txtLhoeId}">
+									 <p:ajax update=":dialogLiquidacionHoraExtra" listener="#{liquidacionHoraExtraView.listener_txtId}"/>
+									 </p:inputText>	
+																											
+																		<h:outputText id="msgEstadoRegistro" value=" EstadoRegistro"/>
+									<p:inputText id="txtEstadoRegistro" disabled="true" binding="#{liquidacionHoraExtraView.txtEstadoRegistro}"/>
+																		<h:outputText id="msgHorasTrabajadas" value=" HorasTrabajadas"/>
+									<p:inputText id="txtHorasTrabajadas" disabled="true" binding="#{liquidacionHoraExtraView.txtHorasTrabajadas}"/>
+																		<h:outputText id="msgTotalPagarHorasExtras" value=" TotalPagarHorasExtras"/>
+									<p:inputText id="txtTotalPagarHorasExtras" disabled="true" binding="#{liquidacionHoraExtraView.txtTotalPagarHorasExtras}"/>
+																		<h:outputText id="msgTotalPagarRecargo" value=" TotalPagarRecargo"/>
+									<p:inputText id="txtTotalPagarRecargo" disabled="true" binding="#{liquidacionHoraExtraView.txtTotalPagarRecargo}"/>
+																		<h:outputText id="msgUsuCreador" value=" UsuCreador"/>
+									<p:inputText id="txtUsuCreador" disabled="true" binding="#{liquidacionHoraExtraView.txtUsuCreador}"/>
+																		<h:outputText id="msgUsuModificador" value=" UsuModificador"/>
+									<p:inputText id="txtUsuModificador" disabled="true" binding="#{liquidacionHoraExtraView.txtUsuModificador}"/>
+																		<h:outputText id="msgValorHoraExtra" value=" ValorHoraExtra"/>
+									<p:inputText id="txtValorHoraExtra" disabled="true" binding="#{liquidacionHoraExtraView.txtValorHoraExtra}"/>
+																		<h:outputText id="msgValorRecargo" value=" ValorRecargo"/>
+									<p:inputText id="txtValorRecargo" disabled="true" binding="#{liquidacionHoraExtraView.txtValorRecargo}"/>
+																		<h:outputText id="msgNoemId_NominaEmpleado" value=" NoemId_NominaEmpleado"/>
+									<p:inputText id="txtNoemId_NominaEmpleado" disabled="true" binding="#{liquidacionHoraExtraView.txtNoemId_NominaEmpleado}"/>
+																		<h:outputText id="msgThoeId_TipoHoraExtra" value=" ThoeId_TipoHoraExtra"/>
+									<p:inputText id="txtThoeId_TipoHoraExtra" disabled="true" binding="#{liquidacionHoraExtraView.txtThoeId_TipoHoraExtra}"/>
+																		
+																													<h:outputText id="msgFecha" value=" Fecha"/>
+																				<p:calendar showOn="button" navigator="true" locale="en" 
+										binding="#{liquidacionHoraExtraView.txtFecha}" >
+										<p:ajax event="dateSelect" listener="#{liquidacionHoraExtraView.listener_txtFecha}" />
+										</p:calendar>
+																				<h:outputText id="msgFechaCreacion" value=" FechaCreacion"/>
+																				<p:calendar showOn="button" navigator="true" locale="en" 
+										binding="#{liquidacionHoraExtraView.txtFechaCreacion}" >
+										<p:ajax event="dateSelect" listener="#{liquidacionHoraExtraView.listener_txtFechaCreacion}" />
+										</p:calendar>
+																				<h:outputText id="msgFechaModificacion" value=" FechaModificacion"/>
+																				<p:calendar showOn="button" navigator="true" locale="en" 
+										binding="#{liquidacionHoraExtraView.txtFechaModificacion}" >
+										<p:ajax event="dateSelect" listener="#{liquidacionHoraExtraView.listener_txtFechaModificacion}" />
+										</p:calendar>
+																										    </h:panelGrid>
+							</p:panel>						   
+							<p:panel id="panelBotones">
+								<div align="center">					
+									<p:commandButton id="btnSave" binding="#{liquidacionHoraExtraView.btnSave}" value="Save" action="#{liquidacionHoraExtraView.action_save()}" update=":dialogLiquidacionHoraExtra :frm:panelDataTableLiquidacionHoraExtra" />
+									<p:commandButton id="btnClear" value="Clear" action="#{liquidacionHoraExtraView.action_clear()}" update=":dialogLiquidacionHoraExtra" />
+									<p:commandButton id="btnExit" value="Exit" action="#{liquidacionHoraExtraView.action_closeDialog()}" update=":dialogLiquidacionHoraExtra" />
+								</div>
+							</p:panel>					
+						</h:form>
+					</p:dialog>
+				</f:view>
+			</ui:define>		
+		</ui:composition>	
+	</h:body>	
+</html>	

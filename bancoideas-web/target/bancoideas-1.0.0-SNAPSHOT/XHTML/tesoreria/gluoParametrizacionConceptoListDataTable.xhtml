@@ -1,0 +1,215 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+
+	<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+	</h:head>
+
+	<h:body>
+		  <ui:composition template="/WEB-INF/facelets/template.xhtml">	
+		 
+		 	<ui:define name="body">	
+				<f:view>
+					<p:ajaxStatus onstart="PF('statusDialog').show()" onsuccess="PF('statusDialog').hide()"/>               
+					<p:dialog modal="true" widgetVar="statusDialog" header="Loading"  draggable="false" closable="false">  
+   						<p:graphicImage value="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/ajaxloadingbar.gif" />   
+					</p:dialog>
+		  			<h:form id="frm">								  		
+						
+						<p:panel id="panelDataTableGluoParametrizacionConcepto" header="GluoParametrizacionConceptoData">
+							<p:growl id="men"/>				
+							<p:dataTable value="#{gluoParametrizacionConceptoView.data}" var="gluoParametrizacionConcepto" filterDelay="1000"
+								paginator="true" rows="5">
+										<p:column filterBy="#{gluoParametrizacionConcepto.pacoId}" sortBy="#{gluoParametrizacionConcepto.pacoId}" >
+										 <f:facet name="header">
+										<h:outputText value="pacoId"/>
+										</f:facet>
+										 <h:outputText value="#{gluoParametrizacionConcepto.pacoId}"/>
+										 </p:column>
+			                    																									
+										<p:column filterBy="#{gluoParametrizacionConcepto.activo}" sortBy="#{gluoParametrizacionConcepto.activo}" >
+										 <f:facet name="header">
+										<h:outputText value="Activo"/>
+										</f:facet>
+										 <h:outputText value="#{gluoParametrizacionConcepto.activo}"/>
+										</p:column>   
+			                    									
+										<p:column filterBy="#{gluoParametrizacionConcepto.anofId}" sortBy="#{gluoParametrizacionConcepto.anofId}" >
+										 <f:facet name="header">
+										<h:outputText value="AnofId"/>
+										</f:facet>
+										 <h:outputText value="#{gluoParametrizacionConcepto.anofId}"/>
+										</p:column>   
+			                    									
+										<p:column filterBy="#{gluoParametrizacionConcepto.cconCreditoId}" sortBy="#{gluoParametrizacionConcepto.cconCreditoId}" >
+										 <f:facet name="header">
+										<h:outputText value="CconCreditoId"/>
+										</f:facet>
+										 <h:outputText value="#{gluoParametrizacionConcepto.cconCreditoId}"/>
+										</p:column>   
+			                    									
+										<p:column filterBy="#{gluoParametrizacionConcepto.cconDebidoId}" sortBy="#{gluoParametrizacionConcepto.cconDebidoId}" >
+										 <f:facet name="header">
+										<h:outputText value="CconDebidoId"/>
+										</f:facet>
+										 <h:outputText value="#{gluoParametrizacionConcepto.cconDebidoId}"/>
+										</p:column>   
+			                    									
+										<p:column filterBy="#{gluoParametrizacionConcepto.codigoConcepto}" sortBy="#{gluoParametrizacionConcepto.codigoConcepto}" >
+										 <f:facet name="header">
+										<h:outputText value="CodigoConcepto"/>
+										</f:facet>
+										 <h:outputText value="#{gluoParametrizacionConcepto.codigoConcepto}"/>
+										</p:column>   
+			                    									
+										<p:column filterBy="#{gluoParametrizacionConcepto.cubaId}" sortBy="#{gluoParametrizacionConcepto.cubaId}" >
+										 <f:facet name="header">
+										<h:outputText value="CubaId"/>
+										</f:facet>
+										 <h:outputText value="#{gluoParametrizacionConcepto.cubaId}"/>
+										</p:column>   
+			                    									
+										<p:column filterBy="#{gluoParametrizacionConcepto.dptoId}" sortBy="#{gluoParametrizacionConcepto.dptoId}" >
+										 <f:facet name="header">
+										<h:outputText value="DptoId"/>
+										</f:facet>
+										 <h:outputText value="#{gluoParametrizacionConcepto.dptoId}"/>
+										</p:column>   
+			                    									
+										<p:column filterBy="#{gluoParametrizacionConcepto.fechaCreacion}" sortBy="#{gluoParametrizacionConcepto.fechaCreacion}" >
+										 <f:facet name="header">
+										<h:outputText value="FechaCreacion"/>
+										</f:facet>
+										 <h:outputText value="#{gluoParametrizacionConcepto.fechaCreacion}"/>
+										</p:column>   
+			                    									
+										<p:column filterBy="#{gluoParametrizacionConcepto.fechaModificacion}" sortBy="#{gluoParametrizacionConcepto.fechaModificacion}" >
+										 <f:facet name="header">
+										<h:outputText value="FechaModificacion"/>
+										</f:facet>
+										 <h:outputText value="#{gluoParametrizacionConcepto.fechaModificacion}"/>
+										</p:column>   
+			                    									
+										<p:column filterBy="#{gluoParametrizacionConcepto.tarifa}" sortBy="#{gluoParametrizacionConcepto.tarifa}" >
+										 <f:facet name="header">
+										<h:outputText value="Tarifa"/>
+										</f:facet>
+										 <h:outputText value="#{gluoParametrizacionConcepto.tarifa}"/>
+										</p:column>   
+			                    									
+										<p:column filterBy="#{gluoParametrizacionConcepto.tercId}" sortBy="#{gluoParametrizacionConcepto.tercId}" >
+										 <f:facet name="header">
+										<h:outputText value="TercId"/>
+										</f:facet>
+										 <h:outputText value="#{gluoParametrizacionConcepto.tercId}"/>
+										</p:column>   
+			                    									
+										<p:column filterBy="#{gluoParametrizacionConcepto.usuCreador}" sortBy="#{gluoParametrizacionConcepto.usuCreador}" >
+										 <f:facet name="header">
+										<h:outputText value="UsuCreador"/>
+										</f:facet>
+										 <h:outputText value="#{gluoParametrizacionConcepto.usuCreador}"/>
+										</p:column>   
+			                    									
+										<p:column filterBy="#{gluoParametrizacionConcepto.usuModificador}" sortBy="#{gluoParametrizacionConcepto.usuModificador}" >
+										 <f:facet name="header">
+										<h:outputText value="UsuModificador"/>
+										</f:facet>
+										 <h:outputText value="#{gluoParametrizacionConcepto.usuModificador}"/>
+										</p:column>   
+			                    									
+										<p:column filterBy="#{gluoParametrizacionConcepto.tiloId_GluoTipoLocalidad}" sortBy="#{gluoParametrizacionConcepto.tiloId_GluoTipoLocalidad}" >
+										 <f:facet name="header">
+										<h:outputText value="TiloId_GluoTipoLocalidad"/>
+										</f:facet>
+										 <h:outputText value="#{gluoParametrizacionConcepto.tiloId_GluoTipoLocalidad}"/>
+										</p:column>   
+			                    			                    
+								<p:column headerText="Options">
+									<p:commandButton id="btnEdit" icon="ui-icon-pencil"
+										update=":dialogGluoParametrizacionConcepto"
+										actionListener="#{gluoParametrizacionConceptoView.action_edit}">
+										<f:attribute name="selectedGluoParametrizacionConcepto" value="#{gluoParametrizacionConcepto}" />
+									</p:commandButton>
+									<p:commandButton id="btnDelete"									
+										title="Delete" actionListener="#{gluoParametrizacionConceptoView.action_delete_datatable}"
+										onclick="if(!confirm('Do you really want to delete this Entry?')){return false;}"
+										icon="ui-icon-trash" update="@form">
+										<f:attribute name="selectedGluoParametrizacionConcepto" value="#{gluoParametrizacionConcepto}" />
+									</p:commandButton>
+								</p:column>									                    
+							</p:dataTable>	
+						</p:panel>
+						<p:panel id="panelBoton">
+							<div align="center">
+								<p:commandButton id="btnNew" value="New"
+									action="#{gluoParametrizacionConceptoView.action_new()}" update=":dialogGluoParametrizacionConcepto" />
+							</div>
+						</p:panel>						
+		   			</h:form>
+					<p:dialog id="dialogGluoParametrizacionConcepto" appendTo="@(body)" draggable="true"
+						closable="false" visible="#{gluoParametrizacionConceptoView.showDialog}" resizable="false"
+						modal="true" width="500">
+						<h:form id="formDialog">
+							<p:messages id="msg" />
+							<p:panel id="panelGluoParametrizacionConcepto" header="GluoParametrizacionConcepto">							
+							    <h:panelGrid columns="2" id="panelGrid" >
+																		 <h:outputText id="msgPacoId" value="PacoId"/>
+									 <p:inputText id="txtPacoId" binding="#{gluoParametrizacionConceptoView.txtPacoId}">
+									 <p:ajax update=":dialogGluoParametrizacionConcepto" listener="#{gluoParametrizacionConceptoView.listener_txtId}"/>
+									 </p:inputText>	
+																											
+																		<h:outputText id="msgActivo" value=" Activo"/>
+									<p:inputText id="txtActivo" disabled="true" binding="#{gluoParametrizacionConceptoView.txtActivo}"/>
+																		<h:outputText id="msgAnofId" value=" AnofId"/>
+									<p:inputText id="txtAnofId" disabled="true" binding="#{gluoParametrizacionConceptoView.txtAnofId}"/>
+																		<h:outputText id="msgCconCreditoId" value=" CconCreditoId"/>
+									<p:inputText id="txtCconCreditoId" disabled="true" binding="#{gluoParametrizacionConceptoView.txtCconCreditoId}"/>
+																		<h:outputText id="msgCconDebidoId" value=" CconDebidoId"/>
+									<p:inputText id="txtCconDebidoId" disabled="true" binding="#{gluoParametrizacionConceptoView.txtCconDebidoId}"/>
+																		<h:outputText id="msgCodigoConcepto" value=" CodigoConcepto"/>
+									<p:inputText id="txtCodigoConcepto" disabled="true" binding="#{gluoParametrizacionConceptoView.txtCodigoConcepto}"/>
+																		<h:outputText id="msgCubaId" value=" CubaId"/>
+									<p:inputText id="txtCubaId" disabled="true" binding="#{gluoParametrizacionConceptoView.txtCubaId}"/>
+																		<h:outputText id="msgDptoId" value=" DptoId"/>
+									<p:inputText id="txtDptoId" disabled="true" binding="#{gluoParametrizacionConceptoView.txtDptoId}"/>
+																		<h:outputText id="msgTarifa" value=" Tarifa"/>
+									<p:inputText id="txtTarifa" disabled="true" binding="#{gluoParametrizacionConceptoView.txtTarifa}"/>
+																		<h:outputText id="msgTercId" value=" TercId"/>
+									<p:inputText id="txtTercId" disabled="true" binding="#{gluoParametrizacionConceptoView.txtTercId}"/>
+																		<h:outputText id="msgUsuCreador" value=" UsuCreador"/>
+									<p:inputText id="txtUsuCreador" disabled="true" binding="#{gluoParametrizacionConceptoView.txtUsuCreador}"/>
+																		<h:outputText id="msgUsuModificador" value=" UsuModificador"/>
+									<p:inputText id="txtUsuModificador" disabled="true" binding="#{gluoParametrizacionConceptoView.txtUsuModificador}"/>
+																		<h:outputText id="msgTiloId_GluoTipoLocalidad" value=" TiloId_GluoTipoLocalidad"/>
+									<p:inputText id="txtTiloId_GluoTipoLocalidad" disabled="true" binding="#{gluoParametrizacionConceptoView.txtTiloId_GluoTipoLocalidad}"/>
+																		
+																													<h:outputText id="msgFechaCreacion" value=" FechaCreacion"/>
+																				<p:calendar showOn="button" navigator="true" locale="en" 
+										binding="#{gluoParametrizacionConceptoView.txtFechaCreacion}" >
+										<p:ajax event="dateSelect" listener="#{gluoParametrizacionConceptoView.listener_txtFechaCreacion}" />
+										</p:calendar>
+																				<h:outputText id="msgFechaModificacion" value=" FechaModificacion"/>
+																				<p:calendar showOn="button" navigator="true" locale="en" 
+										binding="#{gluoParametrizacionConceptoView.txtFechaModificacion}" >
+										<p:ajax event="dateSelect" listener="#{gluoParametrizacionConceptoView.listener_txtFechaModificacion}" />
+										</p:calendar>
+																										    </h:panelGrid>
+							</p:panel>						   
+							<p:panel id="panelBotones">
+								<div align="center">					
+									<p:commandButton id="btnSave" binding="#{gluoParametrizacionConceptoView.btnSave}" value="Save" action="#{gluoParametrizacionConceptoView.action_save()}" update=":dialogGluoParametrizacionConcepto :frm:panelDataTableGluoParametrizacionConcepto" />
+									<p:commandButton id="btnClear" value="Clear" action="#{gluoParametrizacionConceptoView.action_clear()}" update=":dialogGluoParametrizacionConcepto" />
+									<p:commandButton id="btnExit" value="Exit" action="#{gluoParametrizacionConceptoView.action_closeDialog()}" update=":dialogGluoParametrizacionConcepto" />
+								</div>
+							</p:panel>					
+						</h:form>
+					</p:dialog>
+				</f:view>
+			</ui:define>		
+		</ui:composition>	
+	</h:body>	
+</html>	

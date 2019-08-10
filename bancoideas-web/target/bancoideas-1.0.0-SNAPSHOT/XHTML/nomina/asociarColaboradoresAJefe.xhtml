@@ -1,0 +1,210 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+<ui:define name="content">
+<f:view>
+	<p:ajaxStatus onstart="PF('statusDialog').show()"
+		onsuccess="PF('statusDialog').hide()" />
+	<p:dialog modal="true" widgetVar="statusDialog" header="Cargando"
+		draggable="false" closable="false">
+		<p:graphicImage
+			value="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/ajaxloadingbar.gif" />
+	</p:dialog>
+
+	<!-- Expired session -->
+	<p:idleMonitor onactive="PF('sessionTimeOutDialog').show();"
+		timeout="#{session.maxInactiveInterval * 1000}" />
+	<p:dialog modal="true" widgetVar="sessionTimeOutDialog"
+		header="Sesión Finalizada" draggable="false" closable="false">
+		<h:outputText value="La sesión ha caducado." />
+		<input id="confirmBackToLogin" type="button" value="Iniciar Sesión"
+			onclick="window.location='#{facesContext.externalContext.requestContextPath}/index.jsp';" />
+	</p:dialog>
+	
+<div align="center">
+<h:form id="frmAsociarColaboradoresAJefe">
+
+	<p:growl id="growl" />
+
+	<p:panel id="pnlAsociarColaboradoresAJefe" header="Asociar Colaboradores A Jefe" style="width: 90%;">
+	
+		<h:panelGrid columns="2">
+			<p:outputLabel value="Consultar Colaboradores del Jefe:" for="identificacionJefe1" />		
+			<h:panelGrid columns="2">			
+				<p:inputText id="identificacionJefe1" binding="#{gluoAsociarColaboradoresAJefeView.identificacionJefe1}"
+					readonly="true" />
+				<p:commandButton style="width:100%" icon="ui-icon-search"					
+					onclick="PF('dialogEmpleadosJefe1').show();" />
+			</h:panelGrid>								
+		</h:panelGrid>
+		
+		<h:panelGrid columns="2">
+			<p:outputLabel value="Asociar Colaboradores al Jefe:" for="identificacionJefe2" />		
+			<h:panelGrid columns="2">			
+				<p:inputText id="identificacionJefe2" binding="#{gluoAsociarColaboradoresAJefeView.identificacionJefe2}"
+					readonly="true" />
+				<p:commandButton style="width:100%" icon="ui-icon-search"					
+					onclick="PF('dialogEmpleadosJefe2').show();" />
+			</h:panelGrid>								
+		</h:panelGrid>
+		
+		<br/>
+		
+		<p:pickList id="picklist"
+   			 value="#{gluoAsociarColaboradoresAJefeView.dualListEmpleados}"
+ 			 var="colaborador" itemLabel="#{colaborador}" itemValue="#{colaborador}" 
+ 			 showSourceControls="true" showTargetControls="true" showCheckbox="true"
+ 			 showSourceFilter="true" showTargetFilter="true" filterMatchMode="contains"
+ 			 style="text-align: left;">
+ 			 
+ 			 <f:facet name="sourceCaption">Jefe 1</f:facet>
+     		 <f:facet name="targetCaption">Jefe 2</f:facet>
+		 			 		 	
+		</p:pickList>
+		
+		<br/>
+		<p:commandButton id="btnGuardar" value="Guardar"
+			action="#{gluoAsociarColaboradoresAJefeView.action_crear}"
+			update=":frmAsociarColaboradoresAJefe" />
+			
+		<p:commandButton id="btnLimpiar" value="Limpiar"
+			action="#{gluoAsociarColaboradoresAJefeView.action_limpiar}"
+			update=":frmAsociarColaboradoresAJefe" />			
+	
+	</p:panel>
+	
+	<!-- ************************************************** -->
+	<!-- **				DIÁLOGO JEFE 1 		     	     ** -->
+	<!-- ************************************************** -->
+	<p:dialog header="Colaboradores Jefe 1" style="align-text: center"
+		widgetVar="dialogEmpleadosJefe1" modal="true" height="400" width="90%">
+
+		<p:scrollPanel mode="native" style="width:100%; height:400px">
+			<p:dataTable id="listarEmpleadosJefe1DataTable"
+				var="empleado"
+				value="#{gluoAsociarColaboradoresAJefeView.listEmpleadoJefe1DTOs}"
+				paginator="true"
+				rows="10"		
+				selectionMode="single"		
+				selection="#{gluoAsociarColaboradoresAJefeView.selectedEmpleadoJefe1DTO}"
+				rowKey="#{empleado.emplId}"
+				filterDelay="1000">
+				
+				<p:column selectionMode="single" style="width: 28px;" />
+				
+				<p:ajax event="rowSelect" 
+						listener="#{gluoAsociarColaboradoresAJefeView.listener_seleccionar_jefe_1}" 						
+						oncomplete="PF('dialogEmpleadosJefe1').hide();"
+						update=":frmAsociarColaboradoresAJefe" />		
+				
+				<p:column headerText="Tipo Identificación" filterBy="#{empleado.tipoIdentifiacion}"
+					filterMatchMode="startsWith">
+					<p:outputLabel value="#{empleado.tipoIdentifiacion}" />
+				</p:column>
+				
+				<p:column headerText="Identificación" filterBy="#{empleado.identificacion}"
+					filterMatchMode="startsWith">
+					<p:outputLabel value="#{empleado.identificacion}" />
+				</p:column>
+				
+				<p:column headerText="Código" filterBy="#{empleado.codigo}"
+					filterMatchMode="startsWith">
+					<p:outputLabel value="#{empleado.codigo}" />
+				</p:column>
+				
+				<p:column headerText="Primer Nombre" filterBy="#{empleado.primerNombre}"
+					filterMatchMode="startsWith">
+					<p:outputLabel value="#{empleado.primerNombre}" />
+				</p:column>
+				
+				<p:column headerText="Segundo Nombre" filterBy="#{empleado.segundoNombre}"
+					filterMatchMode="startsWith">
+					<p:outputLabel value="#{empleado.segundoNombre}" />
+				</p:column>
+				
+				<p:column headerText="Primer Apellido" filterBy="#{empleado.primerApellido}"
+					filterMatchMode="startsWith">
+					<p:outputLabel value="#{empleado.primerApellido}" />
+				</p:column>
+				
+				<p:column headerText="Segundo Apellido" filterBy="#{empleado.segundoApellido}"
+					filterMatchMode="startsWith">
+					<p:outputLabel value="#{empleado.segundoApellido}" />
+				</p:column>
+				
+			</p:dataTable>			
+		</p:scrollPanel>
+	</p:dialog> <!-- FIN DIÁLOGO EMPLEADOS JEFE 1 -->
+	
+	<!-- ************************************************** -->
+	<!-- **				DIÁLOGO JEFE 2 		     	     ** -->
+	<!-- ************************************************** -->
+	<p:dialog header="Colaboradores Jefe 2" style="align-text: center"
+		widgetVar="dialogEmpleadosJefe2" modal="true" height="400" width="90%">
+
+		<p:scrollPanel mode="native" style="width:100%; height:400px">
+			<p:dataTable id="listarEmpleadosJefe2DataTable"
+				var="empleado"
+				value="#{gluoAsociarColaboradoresAJefeView.listEmpleadoJefe2DTOs}"
+				paginator="true"
+				rows="10"		
+				selectionMode="single"		
+				selection="#{gluoAsociarColaboradoresAJefeView.selectedEmpleadoJefe2DTO}"
+				rowKey="#{empleado.emplId}"
+				filterDelay="1000">
+				
+				<p:column selectionMode="single" style="width: 28px;" />
+				
+				<p:ajax event="rowSelect" 
+						listener="#{gluoAsociarColaboradoresAJefeView.listener_seleccionar_jefe_2}" 						
+						oncomplete="PF('dialogEmpleadosJefe2').hide();"
+						update=":frmAsociarColaboradoresAJefe" />		
+				
+				<p:column headerText="Tipo Identificación" filterBy="#{empleado.tipoIdentifiacion}"
+					filterMatchMode="startsWith">
+					<p:outputLabel value="#{empleado.tipoIdentifiacion}" />
+				</p:column>
+				
+				<p:column headerText="Identificación" filterBy="#{empleado.identificacion}"
+					filterMatchMode="startsWith">
+					<p:outputLabel value="#{empleado.identificacion}" />
+				</p:column>
+				
+				<p:column headerText="Código" filterBy="#{empleado.codigo}"
+					filterMatchMode="startsWith">
+					<p:outputLabel value="#{empleado.codigo}" />
+				</p:column>
+				
+				<p:column headerText="Primer Nombre" filterBy="#{empleado.primerNombre}"
+					filterMatchMode="startsWith">
+					<p:outputLabel value="#{empleado.primerNombre}" />
+				</p:column>
+				
+				<p:column headerText="Segundo Nombre" filterBy="#{empleado.segundoNombre}"
+					filterMatchMode="startsWith">
+					<p:outputLabel value="#{empleado.segundoNombre}" />
+				</p:column>
+				
+				<p:column headerText="Primer Apellido" filterBy="#{empleado.primerApellido}"
+					filterMatchMode="startsWith">
+					<p:outputLabel value="#{empleado.primerApellido}" />
+				</p:column>
+				
+				<p:column headerText="Segundo Apellido" filterBy="#{empleado.segundoApellido}"
+					filterMatchMode="startsWith">
+					<p:outputLabel value="#{empleado.segundoApellido}" />
+				</p:column>
+				
+			</p:dataTable>			
+		</p:scrollPanel>
+	</p:dialog> <!-- FIN DIÁLOGO EMPLEADOS JEFE 2 -->
+
+</h:form>
+</div>
+</f:view>
+</ui:define>
+
+</ui:composition>

@@ -1,0 +1,181 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+
+	<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+	</h:head>
+
+	<h:body>
+		  <ui:composition template="/WEB-INF/facelets/template.xhtml">	
+		 
+		 	<ui:define name="body">	
+				<f:view>
+					<p:ajaxStatus onstart="PF('statusDialog').show()" onsuccess="PF('statusDialog').hide()"/>               
+					<p:dialog modal="true" widgetVar="statusDialog" header="Loading"  draggable="false" closable="false">  
+   						<p:graphicImage value="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/ajaxloadingbar.gif" />   
+					</p:dialog>
+					
+					<!-- Expired session -->
+					<p:idleMonitor onactive="PF('sessionTimeOutDialog').show();" timeout="#{session.maxInactiveInterval * 1000}" />
+					<p:dialog modal="true" widgetVar="sessionTimeOutDialog" header="Expired session"  draggable="false" closable="false">  
+	   					<h:outputText value="The session is finished" />
+	                 	<input id="confirmBackToLogin" 
+	                 		type="button" 
+	                 		value="Sign in"
+	                    	onclick="window.location='#{facesContext.externalContext.requestContextPath}/index.jsp';" />   
+					</p:dialog>
+					
+		  			<h:form id="frm">								  		
+						
+						<p:panel id="panelDataTableGluoTipoEntidad" header="GluoTipoEntidadData">
+							<p:growl id="men"/>				
+							<p:dataTable value="#{gluoTipoEntidadView.data}" var="gluoTipoEntidad"
+								paginator="true" rows="5">
+																										<p:column filterBy="#{gluoTipoEntidad.tienId}" sortBy="#{gluoTipoEntidad.tienId}" >
+										 <f:facet name="header">
+										<h:outputText value="tienId"/>
+										</f:facet>
+										 <h:outputText value="#{gluoTipoEntidad.tienId}"/>
+										 </p:column>
+			                    																									
+										<p:column filterBy="#{gluoTipoEntidad.activo}" sortBy="#{gluoTipoEntidad.activo}" >
+										 <f:facet name="header">
+										<h:outputText value="Activo"/>
+										</f:facet>
+										 <h:outputText value="#{gluoTipoEntidad.activo}"/>
+										</p:column>   
+			                    									
+										<p:column filterBy="#{gluoTipoEntidad.descripcion}" sortBy="#{gluoTipoEntidad.descripcion}" >
+										 <f:facet name="header">
+										<h:outputText value="Descripcion"/>
+										</f:facet>
+										 <h:outputText value="#{gluoTipoEntidad.descripcion}"/>
+										</p:column>   
+			                    									
+										<p:column filterBy="#{gluoTipoEntidad.fechaCreacion}" sortBy="#{gluoTipoEntidad.fechaCreacion}" >
+										 <f:facet name="header">
+										<h:outputText value="FechaCreacion"/>
+										</f:facet>
+										 <h:outputText value="#{gluoTipoEntidad.fechaCreacion}"/>
+										</p:column>   
+			                    									
+										<p:column filterBy="#{gluoTipoEntidad.fechaModificacion}" sortBy="#{gluoTipoEntidad.fechaModificacion}" >
+										 <f:facet name="header">
+										<h:outputText value="FechaModificacion"/>
+										</f:facet>
+										 <h:outputText value="#{gluoTipoEntidad.fechaModificacion}"/>
+										</p:column>   
+			                    									
+										<p:column filterBy="#{gluoTipoEntidad.porcentajeAporteEmpleado}" sortBy="#{gluoTipoEntidad.porcentajeAporteEmpleado}" >
+										 <f:facet name="header">
+										<h:outputText value="PorcentajeAporteEmpleado"/>
+										</f:facet>
+										 <h:outputText value="#{gluoTipoEntidad.porcentajeAporteEmpleado}"/>
+										</p:column>   
+			                    									
+										<p:column filterBy="#{gluoTipoEntidad.porcentajeAportePatrono}" sortBy="#{gluoTipoEntidad.porcentajeAportePatrono}" >
+										 <f:facet name="header">
+										<h:outputText value="PorcentajeAportePatrono"/>
+										</f:facet>
+										 <h:outputText value="#{gluoTipoEntidad.porcentajeAportePatrono}"/>
+										</p:column>   
+			                    									
+										<p:column filterBy="#{gluoTipoEntidad.usuCreador}" sortBy="#{gluoTipoEntidad.usuCreador}" >
+										 <f:facet name="header">
+										<h:outputText value="UsuCreador"/>
+										</f:facet>
+										 <h:outputText value="#{gluoTipoEntidad.usuCreador}"/>
+										</p:column>   
+			                    									
+										<p:column filterBy="#{gluoTipoEntidad.usuModificador}" sortBy="#{gluoTipoEntidad.usuModificador}" >
+										 <f:facet name="header">
+										<h:outputText value="UsuModificador"/>
+										</f:facet>
+										 <h:outputText value="#{gluoTipoEntidad.usuModificador}"/>
+										</p:column>   
+			                    									
+										<p:column filterBy="#{gluoTipoEntidad.tiplId_GluoTipoPlanta}" sortBy="#{gluoTipoEntidad.tiplId_GluoTipoPlanta}" >
+										 <f:facet name="header">
+										<h:outputText value="TiplId_GluoTipoPlanta"/>
+										</f:facet>
+										 <h:outputText value="#{gluoTipoEntidad.tiplId_GluoTipoPlanta}"/>
+										</p:column>   
+			                    			                    
+								<p:column headerText="Options">
+									<p:commandButton id="btnEdit" icon="ui-icon-pencil"
+										update=":dialogGluoTipoEntidad"
+										actionListener="#{gluoTipoEntidadView.action_edit}">
+										<f:attribute name="selectedGluoTipoEntidad" value="#{gluoTipoEntidad}" />
+									</p:commandButton>
+									<p:commandButton id="btnDelete"									
+										title="Delete" actionListener="#{gluoTipoEntidadView.action_delete_datatable}"
+										onclick="if(!confirm('Do you really want to delete this Entry?')){return false;}"
+										icon="ui-icon-trash" update="@form">
+										<f:attribute name="selectedGluoTipoEntidad" value="#{gluoTipoEntidad}" />
+									</p:commandButton>
+								</p:column>									                    
+							</p:dataTable>	
+						</p:panel>
+						<p:panel id="panelBoton">
+							<div align="center">
+								<p:commandButton id="btnNew" value="New"
+									action="#{gluoTipoEntidadView.action_new()}" update=":dialogGluoTipoEntidad" />
+							</div>
+						</p:panel>						
+		   			</h:form>
+					<p:dialog id="dialogGluoTipoEntidad" appendTo="@(body)" draggable="true"
+						closable="false" visible="#{gluoTipoEntidadView.showDialog}" resizable="false"
+						modal="true" width="500">
+						<h:form id="formDialog">
+							<p:messages id="msg" />
+							<p:panel id="panelGluoTipoEntidad" header="GluoTipoEntidad">							
+							    <h:panelGrid columns="2" id="panelGrid" >
+																		 <h:outputText id="msgTienId" value="TienId"/>
+									 <p:inputText id="txtTienId" binding="#{gluoTipoEntidadView.txtTienId}">
+									 <p:ajax update=":dialogGluoTipoEntidad" listener="#{gluoTipoEntidadView.listener_txtId}"/>
+									 </p:inputText>	
+																											
+																		<h:outputText id="msgActivo" value=" Activo"/>
+									<p:inputText id="txtActivo" disabled="true" binding="#{gluoTipoEntidadView.txtActivo}"/>
+																		<h:outputText id="msgDescripcion" value=" Descripcion"/>
+									<p:inputText id="txtDescripcion" disabled="true" binding="#{gluoTipoEntidadView.txtDescripcion}"/>
+																		<h:outputText id="msgPorcentajeAporteEmpleado" value=" PorcentajeAporteEmpleado"/>
+									<p:inputText id="txtPorcentajeAporteEmpleado" disabled="true" binding="#{gluoTipoEntidadView.txtPorcentajeAporteEmpleado}"/>
+																		<h:outputText id="msgPorcentajeAportePatrono" value=" PorcentajeAportePatrono"/>
+									<p:inputText id="txtPorcentajeAportePatrono" disabled="true" binding="#{gluoTipoEntidadView.txtPorcentajeAportePatrono}"/>
+																		<h:outputText id="msgUsuCreador" value=" UsuCreador"/>
+									<p:inputText id="txtUsuCreador" disabled="true" binding="#{gluoTipoEntidadView.txtUsuCreador}"/>
+																		<h:outputText id="msgUsuModificador" value=" UsuModificador"/>
+									<p:inputText id="txtUsuModificador" disabled="true" binding="#{gluoTipoEntidadView.txtUsuModificador}"/>
+																		<h:outputText id="msgTiplId_GluoTipoPlanta" value=" TiplId_GluoTipoPlanta"/>
+									<p:inputText id="txtTiplId_GluoTipoPlanta" disabled="true" binding="#{gluoTipoEntidadView.txtTiplId_GluoTipoPlanta}"/>
+																		
+																													<h:outputText id="msgFechaCreacion" value=" FechaCreacion"/>
+																				<p:calendar showOn="button" navigator="true" locale="en" 
+										binding="#{gluoTipoEntidadView.txtFechaCreacion}" >
+										<p:ajax event="dateSelect" listener="#{gluoTipoEntidadView.listener_txtFechaCreacion}" />
+										</p:calendar>
+																				<h:outputText id="msgFechaModificacion" value=" FechaModificacion"/>
+																				<p:calendar showOn="button" navigator="true" locale="en" 
+										binding="#{gluoTipoEntidadView.txtFechaModificacion}" >
+										<p:ajax event="dateSelect" listener="#{gluoTipoEntidadView.listener_txtFechaModificacion}" />
+										</p:calendar>
+																										    </h:panelGrid>
+							</p:panel>						   
+							<p:panel id="panelBotones">
+								<div align="center">					
+									<p:commandButton id="btnSave" binding="#{gluoTipoEntidadView.btnSave}" value="Save" action="#{gluoTipoEntidadView.action_save()}" update=":dialogGluoTipoEntidad :frm:panelDataTableGluoTipoEntidad" />
+									<p:commandButton id="btnClear" value="Clear" action="#{gluoTipoEntidadView.action_clear()}" update=":dialogGluoTipoEntidad" />
+									<p:commandButton id="btnExit" value="Exit" action="#{gluoTipoEntidadView.action_closeDialog()}" update=":dialogGluoTipoEntidad" />
+								</div>
+							</p:panel>					
+						</h:form>
+					</p:dialog>
+				</f:view>
+			</ui:define>		
+		</ui:composition>	
+	</h:body>	
+</html>	

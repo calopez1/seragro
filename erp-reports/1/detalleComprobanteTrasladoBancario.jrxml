@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.1.1.final using JasperReports Library version 6.1.1  -->
+<!-- 2016-04-25T13:47:16 -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="detalleComprobanteTrasladoBancario" pageWidth="572" pageHeight="70" columnWidth="572" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="500a3fa9-546c-456c-843e-87d5e1fbdbed">
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="JDBC-DATAADAPTER-GLUON.xml"/>
+	<property name="com.jaspersoft.studio.unit." value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageHeight" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.topMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.bottomMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.leftMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.rightMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnSpacing" value="pixel"/>
+	<parameter name="P_COTB_ID" class="java.lang.Integer" isForPrompting="false">
+		<defaultValueExpression><![CDATA[1]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT CUBA.NUMERO_CUENTA NUMERO_CUENTA_DESTINO, CUBA.NOMBRE NOMBRE_CUENTA_DESTINO, TICB.NOMBRE TIPO_CUENTA_DESTINO, BANC.NOMBRE NOMBRE_BANCO_DESTINO, CHUS.NUMERO_CHEQUE, DCOTB.VALOR VALOR_TRASLADO_UNITARIO
+FROM GLUO_DETALLE_COMPROBANTE_TRASLADO_BANCARIO DCOTB
+INNER	JOIN GLUO_CUENTA_BANCARIA CUBA ON DCOTB.CUBA_ID = CUBA.CUBA_ID
+INNER	JOIN GLUO_BANCO BANC ON BANC.BANC_ID = CUBA.BANC_ID
+INNER	JOIN GLUO_TIPO_CUENTA_BANCARIA TICB ON TICB.TICB_ID = CUBA.TICB_ID
+LEFT	JOIN GLUO_CHEQUE_USADO CHUS ON CHUS.CHUS_ID = DCOTB.CHUS_ID AND CHUS.ACTIVO = 'A'
+WHERE DCOTB.ACTIVO = 'A'
+AND CUBA.ACTIVO = 'A'
+AND BANC.ACTIVO = 'A'
+AND TICB.ACTIVO = 'A'
+AND DCOTB.COTB_ID =  $P{P_COTB_ID}]]>
+	</queryString>
+	<field name="numero_cuenta_destino" class="java.lang.String"/>
+	<field name="nombre_cuenta_destino" class="java.lang.String"/>
+	<field name="tipo_cuenta_destino" class="java.lang.String"/>
+	<field name="nombre_banco_destino" class="java.lang.String"/>
+	<field name="numero_cheque" class="java.lang.String"/>
+	<field name="valor_traslado_unitario" class="java.math.BigDecimal"/>
+	<variable name="valor_traslado_unitario1" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{valor_traslado_unitario}]]></variableExpression>
+	</variable>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+		</band>
+	</title>
+	<pageHeader>
+		<band splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="15" splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+			<staticText>
+				<reportElement mode="Opaque" x="0" y="0" width="90" height="15" backcolor="#FFFFFF" uuid="b6cfd5f5-00c2-477b-bb30-1baa490b7281">
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+				</reportElement>
+				<box padding="0">
+					<topPen lineWidth="0.1" lineStyle="Solid"/>
+					<leftPen lineWidth="0.1" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.1" lineStyle="Solid"/>
+					<rightPen lineWidth="0.1" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Banco Destino]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="90" y="0" width="230" height="15" backcolor="#FFFFFF" uuid="822d8d84-614e-452b-a3fc-026ee842a9d1">
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+				</reportElement>
+				<box padding="0">
+					<topPen lineWidth="0.1" lineStyle="Solid"/>
+					<leftPen lineWidth="0.1" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.1" lineStyle="Solid"/>
+					<rightPen lineWidth="0.1" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Cuenta Destino]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="320" y="0" width="70" height="15" backcolor="#FFFFFF" uuid="de8b36d5-f449-4b6e-9377-fd9ea8b100c2">
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+				</reportElement>
+				<box padding="0">
+					<topPen lineWidth="0.1" lineStyle="Solid"/>
+					<leftPen lineWidth="0.1" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.1" lineStyle="Solid"/>
+					<rightPen lineWidth="0.1" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Tipo Cuenta]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="390" y="0" width="80" height="15" backcolor="#FFFFFF" uuid="a8e676f3-251b-48de-9954-fc151a7e9a1b">
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+				</reportElement>
+				<box padding="0">
+					<topPen lineWidth="0.1" lineStyle="Solid"/>
+					<leftPen lineWidth="0.1" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.1" lineStyle="Solid"/>
+					<rightPen lineWidth="0.1" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[No. Cheque]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="470" y="0" width="102" height="15" backcolor="#FFFFFF" uuid="2a436340-9093-42b6-a461-5c075730360a">
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+				</reportElement>
+				<box padding="0">
+					<topPen lineWidth="0.1" lineStyle="Solid"/>
+					<leftPen lineWidth="0.1" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.1" lineStyle="Solid"/>
+					<rightPen lineWidth="0.1" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Valor]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="15" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="0" width="90" height="15" uuid="5ea86bea-d1f7-4baa-9174-883a9a455631"/>
+				<box leftPadding="2" rightPadding="2">
+					<topPen lineWidth="0.1" lineStyle="Solid"/>
+					<leftPen lineWidth="0.1" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.1" lineStyle="Solid"/>
+					<rightPen lineWidth="0.1" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{nombre_banco_destino}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="90" y="0" width="230" height="15" uuid="d588ebe0-5bc2-4245-9a01-4660ec55cf4d"/>
+				<box leftPadding="2" rightPadding="2">
+					<topPen lineWidth="0.1" lineStyle="Solid"/>
+					<leftPen lineWidth="0.1" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.1" lineStyle="Solid"/>
+					<rightPen lineWidth="0.1" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{numero_cuenta_destino} + " - " + $F{nombre_cuenta_destino}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="320" y="0" width="70" height="15" uuid="3c796e92-3696-488a-849b-b0d2a4b9b64e"/>
+				<box leftPadding="2" rightPadding="2">
+					<topPen lineWidth="0.1" lineStyle="Solid"/>
+					<leftPen lineWidth="0.1" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.1" lineStyle="Solid"/>
+					<rightPen lineWidth="0.1" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{tipo_cuenta_destino}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="390" y="0" width="80" height="15" uuid="624a220b-d576-406b-9158-408401ee525c"/>
+				<box leftPadding="2" rightPadding="2">
+					<topPen lineWidth="0.1" lineStyle="Solid"/>
+					<leftPen lineWidth="0.1" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.1" lineStyle="Solid"/>
+					<rightPen lineWidth="0.1" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{numero_cheque}!=null)?$F{numero_cheque}:""]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00#">
+				<reportElement x="470" y="0" width="102" height="15" uuid="54f257e1-ff2f-4f12-a57d-82364d31a23d">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				</reportElement>
+				<box leftPadding="2" rightPadding="2">
+					<topPen lineWidth="0.1" lineStyle="Solid"/>
+					<leftPen lineWidth="0.1" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.1" lineStyle="Solid"/>
+					<rightPen lineWidth="0.1" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{valor_traslado_unitario}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+		</band>
+	</columnFooter>
+	<pageFooter>
+		<band splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+		</band>
+	</pageFooter>
+	<summary>
+		<band height="15" splitType="Stretch">
+			<textField pattern="#,##0.00#">
+				<reportElement x="470" y="0" width="102" height="15" uuid="c70ec1c9-f2b4-4612-9742-65c91ee911f1">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				</reportElement>
+				<box leftPadding="2" rightPadding="2">
+					<topPen lineWidth="0.1" lineStyle="Solid"/>
+					<leftPen lineWidth="0.1" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.1" lineStyle="Solid"/>
+					<rightPen lineWidth="0.1" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{valor_traslado_unitario1}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement mode="Opaque" x="0" y="0" width="470" height="15" backcolor="#FFFFFF" uuid="2a9f4973-1ea0-405e-a73c-a331124938fd">
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+				</reportElement>
+				<box leftPadding="2" rightPadding="2">
+					<topPen lineWidth="0.1" lineStyle="Solid"/>
+					<leftPen lineWidth="0.1" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.1" lineStyle="Solid"/>
+					<rightPen lineWidth="0.1" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[TOTAL]]></text>
+			</staticText>
+		</band>
+	</summary>
+</jasperReport>

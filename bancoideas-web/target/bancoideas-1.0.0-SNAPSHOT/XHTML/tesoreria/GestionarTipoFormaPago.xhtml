@@ -1,0 +1,117 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+<ui:define name="content">
+	<style type="text/css">
+		.ui-panel {
+			margin-top: 20px
+		}
+		
+		.ui-tabs-top{
+			background-color: #FFFFFF;
+		}
+	</style>
+
+	<!-- formTipoFormaPago -->
+	<div align="center">
+	
+		<h:form id="formTipoFormaPago">
+		
+			<p:growl id="messages" />
+			
+			<p:panel id="pnlTipoFormaPago" header="Gestionar Tipo Forma de Pago" style="width: 90%;">
+				<h:panelGrid columns="2">
+				
+				<p:outputLabel value="Código" />
+				<p:inputText id="txtCodigo" value="#{gluoTipoFormaPagoView.txtCodigo}"
+					 maxlength="100" style="width: 200px" >
+					 <p:ajax listener="#{gluoTipoFormaPagoView.listenerTxtCodigo}" update=":formTipoFormaPago" />
+				</p:inputText>
+					 					 
+				<p:outputLabel value="Descripción" />
+				<p:inputText id="txtDescripcion" value="#{gluoTipoFormaPagoView.txtDescripcion}"
+					 maxlength="100" style="width: 200px" />
+					 					 				
+				<p:outputLabel value="Maneja Banco" />
+				<p:selectBooleanCheckbox id="chbxManejaBanco" value="#{gluoTipoFormaPagoView.manejaBanco}" />
+				
+				<p:outputLabel value="Exije Número" />
+				<p:selectBooleanCheckbox id="chbxExijeNumero" value="#{gluoTipoFormaPagoView.exijeNumero}" />
+				
+				<p:outputLabel value="Es forma pago por defecto?" />
+				<p:selectOneRadio id="somFormaPagoDefault" binding="#{gluoTipoFormaPagoView.sorFormaPagoDefecto}" value="N">
+		            <f:selectItem itemLabel="No" itemValue="N" />
+		            <f:selectItem itemLabel="Si" itemValue="S" />			            
+		        </p:selectOneRadio>
+				
+				<p:outputLabel value="Activo: " />        			
+       			<p:selectOneRadio id="selectActivo" value="#{gluoTipoFormaPagoView.selectActivo}">
+		            <f:selectItem itemLabel="Activo" itemValue="A" />
+		            <f:selectItem itemLabel="Inactivo" itemValue="I" />			            
+		        </p:selectOneRadio>
+				
+				</h:panelGrid>
+				
+				<!-- Botones -->				
+				<br/>
+				<p:commandButton id="btnSave" value="Guardar"
+						action="#{gluoTipoFormaPagoView.action_save}"						
+						update=":formTipoFormaPago,:pnlListaTipoFormaPago" />
+	
+				<p:commandButton id="btnClear" value="Limpiar"
+					action="#{gluoTipoFormaPagoView.action_clear}"
+					update=":formTipoFormaPago,:pnlListaTipoFormaPago" />
+									
+				<!-- Botones -->
+				
+			</p:panel>
+		
+		</h:form> <!-- formTipoFormaPago -->
+
+
+	
+	<!-- pnlListaTipoFormaPago -->
+	<p:panel id="pnlListaTipoFormaPago" header="Listado Tipo Forma de Pago" style="width: 90%; text-align: center;">
+	
+		<p:dataTable value="#{gluoTipoFormaPagoView.data}" var="tipoFormaPago"
+			paginator="true" rows="10" scrollable="true" scrollWidth="100%"
+			scrollHeight="500"
+			rowKey="#{tipoFormaPago.tfdpId}" filterDelay="1000">
+			
+			<p:column headerText="Código" filterBy="#{tipoFormaPago.codigo}"> 
+				<p:outputLabel value="#{tipoFormaPago.codigo}"  />
+			</p:column>
+			
+			<p:column headerText="Descripción" filterBy="#{tipoFormaPago.descripcion}"> 
+				<p:outputLabel value="#{tipoFormaPago.descripcion}"  />
+			</p:column>
+			
+			<p:column headerText="Maneja Banco" filterBy="#{tipoFormaPago.manejaBancoNombre}"> 
+				<p:outputLabel value="#{tipoFormaPago.manejaBancoNombre}"  />
+			</p:column>
+			
+			<p:column headerText="Exije Número" filterBy="#{tipoFormaPago.exigeNumeroNombre}"> 
+				<p:outputLabel value="#{tipoFormaPago.exigeNumeroNombre}"  />
+			</p:column>
+			
+			<p:column headerText="Es la forma de pago por defecto?" filterBy="#{tipoFormaPago.formaPagoDefecto}"> 
+				<p:outputLabel value="#{tipoFormaPago.formaPagoDefecto}"  />
+			</p:column>
+			
+			<p:column headerText="Activo" filterBy="#{tipoFormaPago.activoNombre}"> 
+				<p:outputLabel value="#{tipoFormaPago.activoNombre}"  />
+			</p:column>
+			
+		</p:dataTable>
+		
+	</p:panel> <!-- pnlListaTipoFormaPago -->
+	
+	
+	</div> 
+	
+</ui:define>
+
+</ui:composition>

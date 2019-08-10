@@ -1,0 +1,152 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+	<ui:define name="content">
+
+		<p:ajaxStatus onstart="PF('statusDialog').show()"
+			onsuccess="PF('statusDialog').hide()" />
+		<p:dialog modal="true" widgetVar="statusDialog" header="Cargando"
+			draggable="false" closable="false">
+			<p:graphicImage
+				value="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/ajaxloadingbar.gif" />
+		</p:dialog>
+
+		<!-- Expired session -->
+		<p:idleMonitor onactive="PF('sessionTimeOutDialog').show();"
+			timeout="#{session.maxInactiveInterval * 1000}" />
+		<p:dialog modal="true" widgetVar="sessionTimeOutDialog"
+			header="Sesión terminada" draggable="false" closable="false">
+			<h:outputText value="La sesión ha finalizado" />
+			<input id="confirmBackToLogin" type="button" value="Iniciar sesión"
+				onclick="window.location='#{facesContext.externalContext.requestContextPath}/index.jsp';" />
+		</p:dialog>
+		
+		<script type="text/javascript">
+			function showStatus() {
+			    statusDialog.show();
+			}
+			 
+			function hideStatus() {
+			    statusDialog.hide();
+			}
+		</script>
+
+		<style type="text/css">
+			.one {
+				width: 20%;
+			}
+			
+			.two {
+				width: 80%;
+			}
+			
+		</style>
+
+		<h:form id="frmCartera">
+
+			<p:growl id="men" showDetail="false" autoUpdate="true"/>
+
+					<p:panel>
+						<h:outputText
+							value="Informe de Cartera" styleClass="FontBold Fs18 hardblue" />
+					</p:panel>
+					
+					<p:panel id="pnlDatos">
+						<div align="center">
+							<h:panelGrid id="pnlSeleccionTrimestre" columns="2">
+								<h:outputText value="Fecha de Corte: " style="width: 100%;"/>
+								<p:calendar id="fechaCorte" locale="es" showButtonPanel="true"  
+											value="#{generarInformeCarteraView.fechaCorte}" readonlyInput="true" 
+											timeZone="GMT-5" style="width: 100%;" disabled="false" navigator="true"/>
+							</h:panelGrid>
+						</div>
+						<br/>
+						<div align="center">
+							<h:panelGrid id="pnlGenerarInformeCartera" columns="2">
+								<p:commandButton id="btnGenerarInformeCartera" value="Generar Informe de Cartera" action="#{generarInformeCarteraView.action_generarInformeCartera()}" update="men, panlResultados"/>
+							</h:panelGrid>
+						</div>
+					</p:panel>
+
+					<div class="EmptyBox20" />
+					
+					<p:scrollPanel id="panlResultados" mode="native" style="width:99%; height:530px" rendered="true">
+						<p:dataTable id="tablaCartera" var="cartera" value="#{generarInformeCarteraView.listCarteraDTO}" widgetVar="informeCarteraTable"
+					                 emptyMessage="No hay registros encontrados con el criterio de busqueda ingresado" filteredValue="#{generarInformeCarteraView.filteredListCarteraDTO}"
+					                 paginator="true" rows="5" filterDelay="1000">
+					 
+					        <f:facet name="header">
+					       	 <div align="right">
+					            <p:outputPanel>
+					                <h:outputText value="Buscar:  " />
+					                <p:inputText id="globalFilter" onkeyup="PF('informeCarteraTable').filter()" style="width:150px" placeholder="Ingrese palabra clave"/>
+					            </p:outputPanel>
+					           </div>
+					        </f:facet>
+					 
+					        <p:column filterBy="#{cartera.numeroPredio}" headerText="Numero Predio" footerText="in" filterMatchMode="in">
+					            <f:facet name="filter">
+					                <p:selectCheckboxMenu label="Predios" onchange="PF('informeCarteraTable').filter()" panelStyle="width:600px" scrollHeight="150">
+					                    <f:selectItems value="#{generarInformeCarteraView.filtrosDTO.predios}" />
+					                </p:selectCheckboxMenu>
+					            </f:facet>
+					            <h:outputText value="#{cartera.numeroPredio}" />
+					        </p:column>
+					 
+					        <p:column filterBy="#{cartera.descripcionConceptoImpuesto}" headerText="Concepto" footerText="in" filterMatchMode="in">
+					            <f:facet name="filter">
+					                <p:selectCheckboxMenu label="Conceptos" onchange="PF('informeCarteraTable').filter()" panelStyle="width:300px" scrollHeight="150">
+					                    <f:selectItems value="#{generarInformeCarteraView.filtrosDTO.conceptos}" />
+					                </p:selectCheckboxMenu>
+					            </f:facet>
+					            <h:outputText value="#{cartera.descripcionConceptoImpuesto}" />
+					        </p:column>
+					        
+					        <p:column headerText="Valor">
+					            <h:outputText value="#{cartera.valorConceptoImpuesto}">
+					                <f:convertNumber currencySymbol="$" type="currency"/>
+					            </h:outputText>
+					        </p:column>
+					 
+					        <p:column filterBy="#{cartera.edadDeuda}" headerText="Edad" footerText="Menor o Igual" filterMatchMode="lte">
+					            <f:facet name="filter">
+					                <p:spinner onchange="PF('informeCarteraTable').filter()" styleClass="year-spinner">
+					                    <f:converter converterId="javax.faces.Integer" />
+					                </p:spinner>
+					            </f:facet>
+					            <h:outputText value="#{cartera.edadDeuda}" />
+					        </p:column>
+					        
+					        <f:facet name="footer">
+					         <div align="right">
+						            <h:commandLink>
+						                <img src="../../images/excel.png" width="30px" />
+						                <p:dataExporter type="xls" target="tablaCartera" fileName="Informe_Cartera" />
+						            </h:commandLink>
+						 
+						            <h:commandLink>
+						            	<img src="../../images/iconoPdf.png" width="30px" />
+						                <p:dataExporter type="pdf" target="tablaCartera" fileName="Informe_Cartera"/>
+						            </h:commandLink>
+						 
+						            <h:commandLink>
+						                <img src="../../images/csv.png" width="30px" />
+						                <p:dataExporter type="csv" target="tablaCartera" fileName="Informe_Cartera" />
+						            </h:commandLink>
+						 
+						            <h:commandLink>
+						                <img src="../../images/xml.png" width="30px" />
+						                <p:dataExporter type="xml" target="tablaCartera" fileName="Informe_Cartera" />
+						            </h:commandLink>
+					            </div>
+					        </f:facet>
+					        
+					    </p:dataTable>
+						
+					</p:scrollPanel>
+		</h:form>
+	</ui:define>
+</ui:composition>

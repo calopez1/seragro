@@ -1,0 +1,240 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" 
+	template="/WEB-INF/template.xhtml"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+
+	<ui:define name="content">
+	
+		<p:ajaxStatus onstart="PF('statusDialog').show()"
+			onsuccess="PF('statusDialog').hide()" />
+		<p:dialog modal="true" widgetVar="statusDialog" header="Cargando"
+			draggable="false" closable="false">
+			<p:graphicImage
+				value="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/ajaxloadingbar.gif" />
+		</p:dialog>
+
+		<!-- Expired session -->
+		<p:idleMonitor onactive="PF('sessionTimeOutDialog').show();"
+			timeout="#{session.maxInactiveInterval * 1000}" />
+		<p:dialog modal="true" widgetVar="sessionTimeOutDialog"
+			header="Sesión terminada" draggable="false" closable="false">
+			<h:outputText value="La sesión ha finalizado" />
+			<input id="confirmBackToLogin" type="button" value="Iniciar sesión"
+				onclick="window.location='#{facesContext.externalContext.requestContextPath}/index.jsp';" />
+		</p:dialog>
+	
+		<style type="text/css">
+			.ui-panel {
+				margin-top: 20px
+			}
+			
+			.ui-tabs-top {
+				background-color: #FFFFFF;
+			}
+			
+			.one{width: 15%; }
+        	.two{width: 85%; }
+        	
+        	.colAFiltro{width: 10%; }
+        	.colBFiltro{width: 50%; }
+        	
+		</style>
+
+		<h:form id="frmGenerarReconocimiento">
+
+			<div class="Container100">
+				<div>
+	
+					<p:panel>
+						<h:outputText value="Generar Reconocimiento" styleClass="FontBold Fs18 hardblue" />
+					</p:panel>
+
+					<p:panel>
+						<p:growl id="men" showDetail="false" autoUpdate="true" closable="true" />
+
+						<div class="ContainerIndent">
+							<h:outputText value="Datos del Reconocimiento" />
+						</div>
+
+						<div>
+							<div>
+								<h:panelGrid id="pnlEncabezadoReconocimiento" columns="2" columnClasses="one, two" style="width: 100%;">
+								
+									<p:outputLabel value="Entidad Pública: " />
+									<h:panelGrid columns="2">
+										<p:inputText id="txtEntidadPublicaSeleccionada" styleClass="Wid90"  value="#{gluoReconocimientoView.nombreEntidadSeleccionada}"	readonly="true"/>
+										<p:commandButton icon="ui-icon-search" oncomplete="PF('dlgEntidadesPublicas').show();"/>
+									</h:panelGrid>
+									
+									<p:outputLabel value="Rubro Presupuestal: " />
+									<h:panelGrid columns="2">
+										<p:inputText id="txtRubroPresupuestalSeleccionado" styleClass="Wid90"  value="#{gluoReconocimientoView.codigoNombreRubroPresupuestal}" readonly="true"/>
+										<p:commandButton icon="ui-icon-search" oncomplete="PF('dlgRubrosPresupuestales').show();"/>
+									</h:panelGrid>
+									
+									<h:outputText value="Fecha Reconocimiento: " />
+									<p:calendar value="#{gluoReconocimientoView.fechaReconocimiento}" timeZone="GMT-5" locale="es" readonlyInput="true"/>
+									
+									<h:outputText value="Valor Reconocimiento: " />
+									<pe:inputNumber id="txtValorReconocimiento" 
+										value="#{gluoReconocimientoView.txtValorReconocimiento}" 
+										styleClass="Wid20" style="text-align: right;" 
+										symbol=" $" symbolPosition="p"  
+                            			decimalSeparator="," thousandSeparator="."
+                            			minValue="0" validatorMessage="Valor no válido"
+                            			decimalPlaces="2">
+											<p:ajax event="blur" update="@this"/>
+									</pe:inputNumber>
+
+									<h:outputText value="Descripción:" />
+									<h:panelGrid columns="1" style="width: 100%;">
+										<p:inputTextarea styleClass="Wid50" 
+											counter="counterConcepto" maxlength="2000"
+											counterTemplate="{0} caracteres restantes." disabled="false"
+											autoResize="false"
+											value="#{gluoReconocimientoView.descripcion}"/>
+										<p:outputLabel id="counterConcepto" />
+									</h:panelGrid>
+									
+									<h:outputText value="Archivo adjunto (Convenio de Soporte) " />
+									<p:fileUpload fileUploadListener="#{gluoReconocimientoView.upload}"
+												auto="true"
+												value="#{gluoReconocimientoView.file}" 
+												mode="advanced"
+												sizeLimit="10485760" fileLimit="1"
+												allowTypes="/(\.|\/)(xls|xlsx|pdf|doc|docx|ppt|pptx)$/"
+												label="Escoger archivo de mi computador"
+												uploadLabel="Validar Archivo de Convenio de Soporte"
+												cancelLabel="Cancelar" 
+												invalidFileMessage="Archivo no válido"
+												invalidSizeMessage="Tamaño no válido"/>
+								</h:panelGrid>
+							</div>
+						</div>
+					</p:panel>
+					
+					<p:dialog id="dialogEntPub" modal="true" widgetVar="dlgEntidadesPublicas" header="Entidades Publicas"
+							  draggable="false" closable="true" resizable="true"
+							  width="90%" height="400">
+					
+							<p:scrollPanel id="pnlEntPublicas" mode="native" style="width:100%; height:400px">
+								
+								<div class="ContainerIndent" />
+							
+								<p:outputLabel value="Criterios de búsqueda para Entidades Publicas"/>
+								
+								<h:panelGrid id="panelGridDatosConsulta" columns="2" columnClasses="colAFiltro,colBFiltro" style="width: 100%;">
+									<p:outputLabel value="Codigo Institucional: "/>
+									<p:inputText id="txtCodigoInstitucional" binding="#{gluoReconocimientoView.txtCodigoInstitucional}" maxlength="10"/>
+								
+									<p:outputLabel value="Nombre Entidad Publica: "/>
+									<p:inputText id="txtNombreEntidadPublica" binding="#{gluoReconocimientoView.txtNombreEntidadPublica}" maxlength="50"/>
+								</h:panelGrid>
+								
+								<p:commandButton value="Buscar Entidad Publica" actionListener="#{gluoReconocimientoView.action_buscarEntidadPublica}" update=":frmGenerarReconocimiento:pnlEntPublicas"/>
+					
+								<br />
+								<br />
+							
+								<p:dataTable id="entidadPublicasEncontrados" var="entidadPublica" rows="200" style="width: 100%;"
+											value="#{gluoReconocimientoView.listEntidadesPublicas}"
+											paginator="true"
+											paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+											rowsPerPageTemplate="300,400,500"
+											emptyMessage="No hay entidades publicas encontradas"
+											reflow="true" 
+											rowKey="#{entidadPublica.enpuId}"
+											selection="#{gluoReconocimientoView.entidadPublicaSeleccionada}"
+											filterDelay="1000">
+								
+								<f:facet name="header"> Entidades Publicas </f:facet>
+								
+								<p:column selectionMode="single" style="width:5%; text-align:center" />
+											
+								<p:column headerText="Codigo Institucional" sortBy="#{entidadPublica.codigoInstitucional}"
+									style="width: 20%" filterBy="#{entidadPublica.codigoInstitucional}"
+									filterMatchMode="startsWith">
+									<h:outputText value="#{entidadPublica.codigoInstitucional}" />
+								</p:column>
+								
+								<p:column headerText="Nombre" sortBy="#{entidadPublica.nombre}" style="width: 70%" filterBy="#{entidadPublica.nombre}" filterMatchMode="contains">
+									<h:outputText value="#{entidadPublica.nombre}" />
+								</p:column>
+							</p:dataTable>
+						</p:scrollPanel>
+						
+						<div align="center">
+							<h:panelGrid id="panelBotones" columns="2">
+								<p:commandButton id="btnSeleccionar" value="Seleccionar" action="#{gluoReconocimientoView.action_seleccionarEntidadPublica}" update="@form"/>
+							</h:panelGrid>
+						</div>
+					
+					<div class="EmptyBox20" />	
+					
+					</p:dialog>
+					
+					<p:dialog id="dialogRubrosPpto" modal="true" widgetVar="dlgRubrosPresupuestales" header="Rubros Presupuestales"
+							  draggable="false" closable="true" resizable="true"
+							  width="90%" height="500px">
+					
+							<p:scrollPanel id="pnlRubrosPresupuestales" mode="native" style="width:100%; height:400px">
+								
+								<div class="ContainerIndent" />
+								<br/>
+							
+								<p:dataTable id="dataTableRubrosPresupuestales" var="rubro" rows="200" style="width: 100%;"
+											value="#{gluoReconocimientoView.detallesPresupuestoRenta}"
+											paginator="true"
+											paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+											rowsPerPageTemplate="300,400,500"
+											emptyMessage="No hay rubros presupuestales"
+											reflow="true" 
+											rowKey="#{rubro.dptoId}"
+											selection="#{gluoReconocimientoView.rubroSeleccionado}">
+								
+								<f:facet name="header"> Rubros presupuestales </f:facet>
+								
+								<p:column selectionMode="single" style="width:5%; text-align:center" />
+											
+								<p:column headerText="Cuenta">
+									<h:outputText value="#{rubro.codigoCuenta}" />
+								</p:column>
+								
+								<p:column headerText="Descripción">
+									<h:outputText value="#{rubro.descripcionCuenta}" />
+								</p:column>
+								
+								<p:column headerText="Valor Inicial">
+									<h:outputText value="#{rubro.valorInicial}" style="text-align: right;">
+										<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+									</h:outputText>
+								</p:column>
+							</p:dataTable>
+						</p:scrollPanel>
+						
+						<div align="center">
+							<h:panelGrid id="panelBotones2" columns="2">
+								<p:commandButton id="btnSeleccionar2" value="Seleccionar" action="#{gluoReconocimientoView.action_seleccionarRubroPresupuestal}" update="@form"/>
+							</h:panelGrid>
+						</div>
+					
+					<div class="EmptyBox20" />	
+					
+					</p:dialog>
+
+					<div class="EmptyBox20" />
+					<p:commandButton value="Generar Reconocimiento" action="#{gluoReconocimientoView.action_generarReconocimiento}" update="pnlEncabezadoReconocimiento, entidadPublicasEncontrados, dataTableRubrosPresupuestales, men"/>
+					<p:commandButton value="Limpiar" action="#{gluoReconocimientoView.action_limpiar}" update="pnlEncabezadoReconocimiento, entidadPublicasEncontrados, dataTableRubrosPresupuestales"/>
+				</div>
+			</div>
+
+			<div class="EmptyBox20"></div>
+
+		</h:form>
+
+	</ui:define>
+
+</ui:composition>

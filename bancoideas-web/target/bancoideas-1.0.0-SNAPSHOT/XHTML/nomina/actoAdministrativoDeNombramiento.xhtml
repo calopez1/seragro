@@ -1,0 +1,449 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+<ui:define name="content">
+<f:view>
+	<p:ajaxStatus onstart="PF('statusDialog').show()"
+		onsuccess="PF('statusDialog').hide()" />
+	<p:dialog modal="true" widgetVar="statusDialog" header="Cargando"
+		draggable="false" closable="false">
+		<p:graphicImage
+			value="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/ajaxloadingbar.gif" />
+	</p:dialog>
+
+	<!-- Expired session -->
+	<p:idleMonitor onactive="PF('sessionTimeOutDialog').show();"
+		timeout="#{session.maxInactiveInterval * 1000}" />
+	<p:dialog modal="true" widgetVar="sessionTimeOutDialog"
+		header="Sesión Finalizada" draggable="false" closable="false">
+		<h:outputText value="La sesión ha caducado." />
+		<input id="confirmBackToLogin" type="button" value="Iniciar Sesión"
+			onclick="window.location='#{facesContext.externalContext.requestContextPath}/index.jsp';" />
+	</p:dialog>
+	
+<div align="center">
+<h:form id="frmActoAdministrativoDeNombramiento" enctype="multipart/form-data">
+
+	<p:growl id="growl" autoUpdate="true" />
+	
+	<p:panel id="pnlActoAdministrativoDeNombramiento" header="Gestionar Acto Administrativo de Nombramiento" style="width:90%;">
+	
+		<h:panelGrid columns="2">
+		
+			<p:outputLabel value="Fecha Laboral Inicio:" for="fechaInicioLaboral" />
+			<p:calendar id="fechaInicioLaboral" binding="#{gluoCargoEmpleadoGradoView.fechaInicioLaboral}" navigator="true" />
+			
+			<p:outputLabel value="Fecha Laboral Final:" for="fechaFinalLaboral" />
+			<p:calendar id="fechaFinalLaboral" binding="#{gluoCargoEmpleadoGradoView.fechaFinalLaboral}" navigator="true" />
+			
+			<p:outputLabel value="Es vigente:" for="esVigente" />
+			<p:selectOneRadio id="esVigente" binding="#{gluoCargoEmpleadoGradoView.esVigente}"
+				disabled="true">
+				<f:selectItem itemLabel="Si" itemValue="S" />
+				<f:selectItem itemLabel="No" itemValue="N" />
+			</p:selectOneRadio>			
+			
+			<p:outputLabel value="Acto Administrativo:" for="actoAdministrativoId" />
+			<h:panelGrid columns="2">			
+				<p:inputText id="actoAdministrativoId" binding="#{gluoCargoEmpleadoGradoView.actoAdministrativoId}"
+					readonly="true" />
+				<p:commandButton style="width:100%" icon="ui-icon-search"
+									onclick="PF('dialogActoAdministrativo').show();" />
+			</h:panelGrid>
+			
+			<p:outputLabel value="Cargo Grado:" for="cargoGradoId" />
+			<h:panelGrid columns="2">			
+				<p:inputText id="cargoGradoId" binding="#{gluoCargoEmpleadoGradoView.cargoGradoId}"
+					readonly="true" />
+				<p:commandButton style="width:100%" icon="ui-icon-search"
+									onclick="PF('dialogCargoGrado').show();" />
+			</h:panelGrid>
+			
+			<p:outputLabel value="Consultar Empleado:" for="empleadoId" />		
+			<h:panelGrid columns="2">			
+				<p:inputText id="empleadoId" binding="#{gluoCargoEmpleadoGradoView.empleadoId}"
+					readonly="true" />
+				<p:commandButton style="width:100%" icon="ui-icon-search"
+									onclick="PF('dialogEmpleado').show();" />
+			</h:panelGrid>
+			
+			<p:outputLabel value="Tipo Planta:" for="tipoPlanta" />
+			<p:selectOneMenu id="tipoPlanta" binding="#{gluoCargoEmpleadoGradoView.tipoPlanta}" >
+				<f:selectItem itemLabel="-- SELECCIONAR --" itemValue="-1" />
+				<f:selectItems value="#{gluoCargoEmpleadoGradoView.itemsTipoPlanta}" />
+			</p:selectOneMenu>
+			
+			<p:outputLabel value="Tipo Nómina" for="tipoNomina" />
+			<p:selectOneMenu id="tipoNomina" value="#{gluoCargoEmpleadoGradoView.tipoNominaSeleccionado}" >
+				<f:selectItem itemLabel="-- SELECCIONAR --" itemValue="" />
+				<f:selectItems value="#{gluoCargoEmpleadoGradoView.lstTipoNominaItem}" />
+			</p:selectOneMenu>
+			
+			<p:outputLabel value="Estado:" for="activo" />
+			<p:selectOneRadio id="activo" binding="#{gluoCargoEmpleadoGradoView.activo}">
+				<f:selectItem itemLabel="Activo" itemValue="A" />
+				<f:selectItem itemLabel="Inactivo" itemValue="I" />
+			</p:selectOneRadio>		
+		
+		</h:panelGrid>
+		
+		<br/>
+		<p:commandButton id="btnGuardar" value="Guardar"
+			action="#{gluoCargoEmpleadoGradoView.action_guardar_cargo_empleado_grado}"
+			update=":frmActoAdministrativoDeNombramiento" />
+			
+		<p:commandButton id="btnLimpiar" value="Limpiar"
+			action="#{gluoCargoEmpleadoGradoView.action_limpiar_cargo_empleado_grado}"
+			update=":frmActoAdministrativoDeNombramiento" />
+	
+	</p:panel>
+	
+	<br/>
+	
+	<p:panel id="pnlListaCargoEmpleadoGrado" header="Listado Cargos Empleados Grados" style="width: 90%;">
+	
+		<p:dataTable id="listaCargoEmpleadoGradoDataTable" style="text-align: center;"
+			var="cargoEmpleadoGrado"
+			value="#{gluoCargoEmpleadoGradoView.listCargoEmpleadoGradoDTOs}"
+			selection="#{gluoCargoEmpleadoGradoView.selectedCargoEmpleadoGradoDTO}"
+			selectionMode="single"
+			rowKey="#{cargoEmpleadoGrado.cemgId}"
+			scrollable="true"
+			scrollWidth="100%"
+			filterDelay="1000">
+			
+			<p:column selectionMode="single" style="width: 28px;"/>
+			
+			<p:ajax event="rowSelect"
+				listener="#{gluoCargoEmpleadoGradoView.listener_seleccionar_cargo_empleado_grado}"
+				update=":frmActoAdministrativoDeNombramiento" />
+			
+			<p:column headerText="Tipo Identificación" filterBy="#{cargoEmpleadoGrado.tipoIdentificacionEmpleado}"
+				filterMatchMode="startsWith" style="width: 200px;">
+				<p:outputLabel value="#{cargoEmpleadoGrado.tipoIdentificacionEmpleado}" />
+			</p:column>
+			
+			<p:column headerText="Identificación" filterBy="#{cargoEmpleadoGrado.identificacionEmpleado}"
+				filterMatchMode="startsWith" style="width: 200px;">
+				<p:outputLabel value="#{cargoEmpleadoGrado.identificacionEmpleado}" />
+			</p:column>
+			
+			<p:column headerText="Código Empleado" filterBy="#{cargoEmpleadoGrado.codigoEmpleado}"
+				filterMatchMode="startsWith" style="width: 200px;">
+				<p:outputLabel value="#{cargoEmpleadoGrado.codigoEmpleado}" />
+			</p:column>
+			
+			<p:column headerText="Nombre Empleado" filterBy="#{cargoEmpleadoGrado.nombreEmpleado}"
+				filterMatchMode="contains" style="width: 200px;">
+				<p:outputLabel value="#{cargoEmpleadoGrado.nombreEmpleado}" />
+			</p:column>
+			
+			
+			<p:column headerText="Fecha Inicio Laboral" filterBy="#{cargoEmpleadoGrado.fechaInicioLaboral}"
+				filterMatchMode="startsWith" style="width: 200px;">
+				<p:outputLabel value="#{cargoEmpleadoGrado.fechaInicioLaboral}" >
+					<f:convertDateTime type="date" pattern="yyyy-MM-dd" />
+				</p:outputLabel>
+			</p:column>
+			
+			<p:column headerText="Fecha Final Laboral" filterBy="#{cargoEmpleadoGrado.fechaFinalLaboral}"
+				filterMatchMode="startsWith" style="width: 200px;">
+				<p:outputLabel value="#{cargoEmpleadoGrado.fechaFinalLaboral}" >
+					<f:convertDateTime type="date" pattern="yyyy-MM-dd" />
+				</p:outputLabel>
+			</p:column>
+			
+			<p:column headerText="Es Vigente" filterBy="#{cargoEmpleadoGrado.esVigente}"
+				filterMatchMode="startsWith" style="width: 200px;">
+				<p:outputLabel value="#{(cargoEmpleadoGrado.esVigente == 'S' ? 'Si' : 'No')}" />
+			</p:column>
+			
+			<p:column headerText="Estado" filterBy="#{cargoEmpleadoGrado.activo}"
+				filterMatchMode="startsWith" style="width: 200px;">
+				<p:outputLabel value="#{(cargoEmpleadoGrado.activo == 'A' ? 'Activo' : 'Inactivo')}" />
+			</p:column>
+			
+			<p:column headerText="Año Fiscal" filterBy="#{cargoEmpleadoGrado.anoFiscal}" filterMatchMode="startsWith" style="width: 200px;">
+				<p:outputLabel value="#{cargoEmpleadoGrado.anoFiscal}" />
+			</p:column>
+			
+		</p:dataTable>
+	
+	</p:panel>
+	
+	<!-- ************************************************** -->
+	<!-- **			DIÁLOGO ACTO ADMINISTRATIVO		     ** -->
+	<!-- ************************************************** -->
+	<p:dialog id="dialogActoAdministrativo" widgetVar="dialogActoAdministrativo"
+		draggable="true" closable="true" modal="true" height="400" width="90%"
+		position="center" header="Registrar Acto Administrativo">
+		
+			<p:messages id="msg" autoUpdate="true" closable="true" />
+			
+			<p:tabView id="crearConsultarActoAdministrativoTabTraslado">
+		
+				<p:tab id="crearActoAdministrativoTabTraslado" title="Crear un acto administrativo">
+											
+					<div class="ContainerIndent">
+
+						<h:panelGrid columns="2" columnClasses="one, two"
+							style="width: 100%;" id="pnlDatosActoAdministrativoTraslado">
+							
+							<h:outputText value="Consecutivo" />
+							<p:inputText id="txtConsecutivoTraslado" disabled="true" style="width: 40%;"
+								binding="#{gluoCargoEmpleadoGradoView.consecutivoActoAdministrativo}" />
+							
+							<h:outputText id="msgNombreOperacionTraslado" value="Nombre de la operacion" />
+							<p:inputText id="txtNombreOperacionTraslado" disabled="false" style="width: 95%;"
+								binding="#{gluoCargoEmpleadoGradoView.nombreOperacionActoAdministrativo}" />
+								
+							<h:outputText id="msgFundamentoLegalTraslado" value="Fundamento Legal" />
+							<h:panelGrid columns="1" style="width: 100%;">
+								<p:inputTextarea id="txtFundamentoLegalTraslado" 
+									counter="displayFundamentoTraslado" maxlength="2000" styleClass="Wid50" 
+									counterTemplate="{0} caracteres restantes." disabled="false"
+									autoResize="false"
+									binding="#{gluoCargoEmpleadoGradoView.fundamentoLegalActoAdministrativo}" />
+								<h:outputText id="displayFundamentoTraslado" />
+							</h:panelGrid>
+							
+							<h:outputText id="msgRazon" value="Razón" />
+							<h:panelGrid columns="1" style="width: 100%;">
+								<p:inputTextarea id="txtRazonTraslado" 
+									counter="displayRazonTraslado" maxlength="2000" styleClass="Wid50" 
+									counterTemplate="{0} caracteres restantes." disabled="false"
+									autoResize="false"
+									binding="#{gluoCargoEmpleadoGradoView.razonActoAdministrativo}" />
+								<h:outputText id="displayRazonTraslado" />
+							</h:panelGrid>
+							
+							<h:outputText id="msgFechaActoAdministrativoTraslado"
+								value="Fecha del Acto Administrativo" />
+							<p:calendar navigator="true" locale="en" size="30"
+								binding="#{gluoCargoEmpleadoGradoView.fechaActoAdministrativo}" />
+							
+							<h:outputText id="msgArchivoTraslado"
+								value="Archivo adjunto" />
+								
+							<p:fileUpload
+								fileUploadListener="#{gluoCargoEmpleadoGradoView.upload}"
+								auto="true"
+								value="#{gluoCargoEmpleadoGradoView.file}" 
+								mode="advanced"
+								sizeLimit="10485760" fileLimit="1"
+								allowTypes="/(\.|\/)(xls|xlsx|pdf|doc|docx|ppt|pptx)$/"
+								label="Escoger archivo de mi computador"
+								uploadLabel="Validar Archivo de presupuesto"
+								cancelLabel="Cancelar" 
+								invalidFileMessage="Archivo no válido"
+								invalidSizeMessage="Tamaño no válido"/>
+							
+						</h:panelGrid>
+						
+						<br/>						
+						<p:commandButton id="btnGuardarActoAdministrativo" 
+							value="Guardar Acto Administrativo"
+							action="#{gluoCargoEmpleadoGradoView.action_crear_acto_administrativo}"
+							update=":frmActoAdministrativoDeNombramiento" />						
+					</div>							
+				</p:tab>
+								
+				<p:tab id="consultarActoAdministrativoTabTraslado" title="Consultar un acto administrativo existente">
+					<p:scrollPanel mode="native" style="width:100%; height:400px">								
+						<p:dataTable id="dataTableActoAdministrativoTraslado" 
+							value="#{gluoCargoEmpleadoGradoView.listActosAdministrativosDTOs}"
+							selection="#{gluoCargoEmpleadoGradoView.actoAdministrativoDTO}" 
+							selectionMode="single"
+							emptyMessage="No se han encontrado actos administrativos registrados"
+							rows="5"
+							var="gluoActoAdministrativo"
+							paginator="true"
+							rowKey="#{gluoActoAdministrativo.acadId}"
+							filterDelay="1000" >
+							
+							<p:column selectionMode="single" style="width: 28px;" />
+							
+							<p:ajax event="rowSelect"
+								listener="#{gluoCargoEmpleadoGradoView.listener_seleccionar_acto_administrativo}"
+								oncomplete="PF('dialogActoAdministrativo').hide();"
+								update=":frmActoAdministrativoDeNombramiento" />
+							
+							<p:column filterBy="#{gluoActoAdministrativo.nombreOperacion}"
+								sortBy="#{gluoActoAdministrativo.nombreOperacion}">
+								<f:facet name="header">
+									<h:outputText value="Nombre de la Operacion" />
+								</f:facet>
+								<h:outputText value="#{gluoActoAdministrativo.nombreOperacion}" />
+							</p:column>
+							
+							<p:column filterBy="#{gluoActoAdministrativo.consecutivo}"
+								sortBy="#{gluoActoAdministrativo.consecutivo}">
+								<f:facet name="header">
+									<h:outputText value="Consecutivo" />
+								</f:facet>
+								<h:outputText value="#{gluoActoAdministrativo.consecutivo}" />
+							</p:column>
+	
+							<p:column
+								filterBy="#{gluoActoAdministrativo.fechaActoAdministrativo}"
+								sortBy="#{gluoActoAdministrativo.fechaActoAdministrativo}">
+								<f:facet name="header">
+									<h:outputText value="Fecha del Acto Administrativo" />
+								</f:facet>
+								<h:outputText
+									value="#{gluoActoAdministrativo.fechaActoAdministrativo}" />
+							</p:column>
+	
+							<p:column filterBy="#{gluoActoAdministrativo.fundamentoLegal}"
+								sortBy="#{gluoActoAdministrativo.fundamentoLegal}">
+								<f:facet name="header">
+									<h:outputText value="Fundamento Legal" />
+								</f:facet>
+								<h:outputText value="#{gluoActoAdministrativo.fundamentoLegal}" />
+							</p:column>
+	
+							<p:column filterBy="#{gluoActoAdministrativo.razon}"
+								sortBy="#{gluoActoAdministrativo.razon}">
+								<f:facet name="header">
+									<h:outputText value="Razon" />
+								</f:facet>
+								<h:outputText value="#{gluoActoAdministrativo.razon}" />
+							</p:column>
+	
+							<p:column filterBy="#{gluoActoAdministrativo.nombreEmpresa}"
+								sortBy="#{gluoActoAdministrativo.nombreEmpresa}">
+								<f:facet name="header">
+									<h:outputText value="Empresa" />
+								</f:facet>
+								<h:outputText
+									value="#{gluoActoAdministrativo.nombreEmpresa}" />
+							</p:column>
+								
+						</p:dataTable>
+					</p:scrollPanel>						
+				</p:tab>
+			</p:tabView>		
+	</p:dialog><!-- FIN DIÁLOGO ACTO ADMINISTRATIVO -->		
+	
+	<!-- ************************************************** -->
+	<!-- **				DIÁLOGO CARGO GRADO		         ** -->
+	<!-- ************************************************** -->
+	<p:dialog id="dialogCargoGrado" widgetVar="dialogCargoGrado" 
+		draggable="true" closable="true" modal="true" height="400" width="90%"
+		position="center" header="Seleccionar Cargo Grado" >
+		
+		<p:scrollPanel mode="native" style="width:100%; height:400px">	
+		<p:dataTable id="cargoGradoDataTable" style="text-align: center;"
+			var="cargoGrado"
+			value="#{gluoCargoEmpleadoGradoView.listCargosGradosDTOs}"
+			selection="#{gluoCargoEmpleadoGradoView.cargoGradoDTO}"
+			selectionMode="single"
+			rowKey="#{cargoGrado.cagrId}"
+			paginator="true"
+			rows="5"
+			filterDelay="1000">
+			
+			<p:column selectionMode="single" style="width: 28px;" />
+			
+			<p:ajax event="rowSelect"
+				listener="#{gluoCargoEmpleadoGradoView.listener_seleccionar_cargo_grado}"
+				oncomplete="PF('dialogCargoGrado').hide();"
+				update=":frmActoAdministrativoDeNombramiento" />
+			
+			<p:column headerText="Cargo Empleado" filterBy="#{cargoGrado.descripcionCargoEmpleado}"
+				filterMatchMode="contains">
+				<p:outputLabel value="#{cargoGrado.descripcionCargoEmpleado}" />
+			</p:column>
+			
+			<p:column headerText="Grado Salarial" filterBy="#{cargoGrado.gradoSalarial}"
+				filterMatchMode="contains">
+				<p:outputLabel value="#{cargoGrado.gradoSalarial}" >
+					
+				</p:outputLabel>
+			</p:column>
+			
+			<p:column headerText="Salario Base" filterBy="#{cargoGrado.salarioBase}"
+				filterMatchMode="startsWith">
+				<p:outputLabel value="#{cargoGrado.salarioBase}" >
+					<f:convertNumber pattern="$#,##0.00"/>
+				</p:outputLabel>
+			</p:column>
+			
+		</p:dataTable>
+		</p:scrollPanel>
+		
+	</p:dialog><!-- FIN DIÁLOGO CARGO GRADO -->
+	
+	<!-- ************************************************** -->
+	<!-- **				DIÁLOGO EMPLEADOS		         ** -->
+	<!-- ************************************************** -->
+	<p:dialog id="dialogEmpleado" widgetVar="dialogEmpleado"
+		draggable="true" closable="true" modal="true" height="400" width="90%"
+		position="center" header="Seleccionar Empleado">
+	
+		<p:scrollPanel mode="native" style="width:100%; height:400px">
+			<p:dataTable id="empleadoDataTable" style="text-align: center;"
+				var="empleado"
+				value="#{gluoCargoEmpleadoGradoView.listEmpleadosDTOs}"
+				selection="#{gluoCargoEmpleadoGradoView.empleadoDTO}"
+				selectionMode="single"
+				rowKey="#{empleado.emplId}"
+				paginator="true"
+				rows="5"
+				filterDelay="1000">
+			
+				<p:column selectionMode="single" style="width: 28px;" />
+			
+				<p:ajax event="rowSelect"
+					listener="#{gluoCargoEmpleadoGradoView.listener_seleccionar_empleado}"
+					oncomplete="PF('dialogEmpleado').hide();"
+					update=":frmActoAdministrativoDeNombramiento" />
+					
+				<p:column headerText="Tipo Identificación" filterBy="#{empleado.tipoIdentifiacion}"
+					filterMatchMode="startsWith">
+					<p:outputLabel value="#{empleado.tipoIdentifiacion}" />
+				</p:column>
+				
+				<p:column headerText="Identificación" filterBy="#{empleado.identificacion}"
+					filterMatchMode="startsWith">
+					<p:outputLabel value="#{empleado.identificacion}" />
+				</p:column>
+				
+				<p:column headerText="Código" filterBy="#{empleado.codigo}"
+					filterMatchMode="startsWith">
+					<p:outputLabel value="#{empleado.codigo}" />
+				</p:column>
+				
+				<p:column headerText="Primer Nombre" filterBy="#{empleado.primerNombre}"
+					filterMatchMode="startsWith">
+					<p:outputLabel value="#{empleado.primerNombre}" />
+				</p:column>
+				
+				<p:column headerText="Segundo Nombre" filterBy="#{empleado.segundoNombre}"
+					filterMatchMode="startsWith">
+					<p:outputLabel value="#{empleado.segundoNombre}" />
+				</p:column>
+				
+				<p:column headerText="Primer Apellido" filterBy="#{empleado.primerApellido}"
+					filterMatchMode="startsWith">
+					<p:outputLabel value="#{empleado.primerApellido}" />
+				</p:column>
+				
+				<p:column headerText="Segundo Apellido" filterBy="#{empleado.segundoApellido}"
+					filterMatchMode="startsWith">
+					<p:outputLabel value="#{empleado.segundoApellido}" />
+				</p:column>
+			
+			</p:dataTable>
+		</p:scrollPanel>	
+	</p:dialog><!-- FIN DIÁLOGO EMPLEADOS -->
+	
+</h:form>
+</div>
+</f:view>
+</ui:define>
+
+</ui:composition>

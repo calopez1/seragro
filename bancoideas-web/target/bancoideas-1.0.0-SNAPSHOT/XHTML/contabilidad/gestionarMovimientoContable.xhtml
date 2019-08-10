@@ -1,0 +1,586 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" 
+	template="/WEB-INF/template.xhtml"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+
+	<ui:define name="content">
+
+		<p:ajaxStatus onstart="PF('statusDialog').show()"
+			onsuccess="PF('statusDialog').hide()" />
+		<p:dialog modal="true" widgetVar="statusDialog" header="Cargando"
+			draggable="false" closable="false">
+			<p:graphicImage
+				value="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/ajaxloadingbar.gif" />
+		</p:dialog>
+
+		<!-- Expired session -->
+		<p:idleMonitor onactive="PF('sessionTimeOutDialog').show();"
+			timeout="#{session.maxInactiveInterval * 1000}" />
+		<p:dialog modal="true" widgetVar="sessionTimeOutDialog"
+			header="Sesión terminada" draggable="false" closable="false">
+			<h:outputText value="La sesión ha finalizado" />
+			<input id="confirmBackToLogin" type="button" value="Iniciar sesión"
+				onclick="window.location='#{facesContext.externalContext.requestContextPath}/index.jsp';" />
+		</p:dialog>
+		
+		<script type="text/javascript">
+			function showStatus() {
+			    statusDialog.show();
+			}
+			 
+			function hideStatus() {
+			    statusDialog.hide();
+			}
+		</script>
+		
+
+		<style type="text/css">
+			.ui-panel {
+				margin-top: 20px
+			}
+			
+			.ui-tabs-top {
+				background-color: #FFFFFF;
+			}
+			
+			.one {
+				width: 10%;
+			}
+			
+			.two {
+				width: 90%;
+			}
+			
+        	.colAFiltro{width: 10%; }
+        	.colBFiltro{width: 50%; }
+			
+			.col50Left{
+				width: 10%;
+				text-align: left;
+			}
+			
+			.col50Right{
+				width: 10%;
+				text-align: right;
+			}
+			
+			.txt100{
+				width: 100%;
+			}
+			
+			.col30{width: 30%;}
+        	.col70{width: 70%;}
+			
+			.tachado {
+			    position: relative;
+			}
+			
+			.tachado:before {
+			    border-bottom: 1px solid red;
+			    position: absolute;
+			    content: "";
+			    width: 100%;
+			    height: 50%;
+			}
+			
+		</style>
+			<h:form id="formGestionarMovimiento">
+			<p:growl autoUpdate="true"></p:growl>
+			<div>
+				<div align="center">
+				<p:panel  id="pnlSeleccionar"  header="GESTIONAR MOVIMIENTO CONTABLE" style="width:90%;">
+					
+					<p:spacer height="10"></p:spacer>
+					
+					<h:panelGrid id="pnlFiltroMovimiento" columns="5"  >
+								
+									<h:outputText value="Tipo Documento: "/>
+									<p:selectOneMenu id="cmbTipoDocumento"
+										value="#{gestionarMovimientoContableView.tipoDocumentoSeleccionado}" filterMatchMode="contains" filter="true" >
+										<f:selectItem itemLabel="Seleccionar Tipo de Documento"
+											itemValue="" />
+										<f:selectItems
+											value="#{gestionarMovimientoContableView.listTipoDocumentoSeleccionar}" />
+									</p:selectOneMenu>
+									<p:spacer width="10"></p:spacer>
+									
+									<h:outputText value="Id Documento"/>
+									<p:inputText id="txtIdDocu" value="#{gestionarMovimientoContableView.idDocuSeleccionado}" readonly="false" />
+									
+					</h:panelGrid>
+					<br/>
+					<p:commandButton id="btnConsultar" value="Consultar" icon="ui-icon-search" action="#{gestionarMovimientoContableView.action_consultar}" update="@([id$=dataTblMovimientoActual])" />
+					<br/>
+					
+					<p:spacer height="10"></p:spacer>
+					
+					<p:accordionPanel id="pnlTab" multiple="true" activeIndex="1">
+						<p:tab title="Movimiento Contable Actual" >
+							
+							<p:dataTable id="dataTblMovimientoActual" value="#{gestionarMovimientoContableView.lstMovimientoContable}" 
+										 var="movimiento" paginator="true" rows="10" emptyMessage="No hay movimientos contables">
+								
+	
+								<p:column headerText="Cuenta">
+									<h:outputText value="#{movimiento.codigoCuentaContable}" />
+								</p:column>
+								
+								<p:column headerText="Auxiliar">
+									<h:outputText value="#{movimiento.auxiliar}" />
+								</p:column>
+								
+								<p:column headerText="Débito">
+									<div align="right">
+										<h:outputText value="#{movimiento.valorDebito}">
+											<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+										</h:outputText>
+									</div>
+								</p:column>
+								
+								<p:column headerText="Crédito">
+									<div align="right">
+										<h:outputText value="#{movimiento.valorCredito}">
+											<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+										</h:outputText>
+									</div>
+								</p:column>
+								
+								<p:column headerText="Tercero">
+									<h:outputText value="#{movimiento.terceroIdentificacion}" />
+								</p:column>
+								
+								<f:facet name="footer">
+									<h:panelGrid columns="4">
+										<h:outputText value="Total en Débito:" />
+										<h:outputText value="#{gestionarMovimientoContableView.valorTotalEnDebitoActual}">
+								                    <f:convertNumber type="currency" currencySymbol="$" />
+								        </h:outputText>
+								        
+								        <h:outputText value="Total en Crédito:" />
+								        <h:outputText value="#{gestionarMovimientoContableView.valorTotalEnCreditoActual}">
+						                    <f:convertNumber type="currency" currencySymbol="$" />
+						                </h:outputText>    
+									</h:panelGrid>
+								</f:facet>
+								
+							</p:dataTable>
+							
+							
+						</p:tab>
+						<p:tab title="Registrar Nuevo Movimiento Contable">
+							
+					<p:panel id="panelComprobante" style="border:0px">
+					
+						<p:growl id="men" showDetail="false" sticky="false"/>
+
+							<br />
+							
+							
+							<div align="center">		
+								<h:panelGrid id="panelPopUps" columns="5" >	
+								
+									<h:outputText value=" Cuenta: "/>
+									<h:outputText value=" Auxiliar (Opcional): "/>
+									<h:outputText value=" Débito: "/>
+									<h:outputText value=" Crédito: "/>
+									<h:outputText value=" Tercero: "/>
+									
+									<h:panelGrid columns="2">
+										<p:inputText id="txtCuentaSeleccionada" value="#{gestionarMovimientoContableView.descripcionCuentaContable}" readonly="true"/>
+										<p:commandButton icon="ui-icon-search"  oncomplete="PF('dlgCuentaContable').show();"/>
+									</h:panelGrid>
+									
+									<h:panelGrid columns="2">
+										<p:inputText id="txtAuxiliar" value="#{gestionarMovimientoContableView.descripcionAuxiliar}" readonly="true"/>
+										<p:commandButton icon="ui-icon-search"  oncomplete="PF('dlgAuxiliar').show();"/>
+									</h:panelGrid>
+									
+									<pe:inputNumber id="valDebito"
+										value="#{gestionarMovimientoContableView.valorEnDebito}"
+										style="text-align: right;" symbol="$ " symbolPosition="p"
+										decimalSeparator="," thousandSeparator="."
+										validatorMessage="Valor no válido" decimalPlaces="2">
+									</pe:inputNumber>
+
+
+									<pe:inputNumber id="valCredito"
+										value="#{gestionarMovimientoContableView.valorEnCredito}"
+										style="text-align: right;" symbol="$ " symbolPosition="p"
+										decimalSeparator="," thousandSeparator="."
+										validatorMessage="Valor no válido" decimalPlaces="2">
+									</pe:inputNumber>
+									
+									<h:panelGrid columns="2">
+										<p:inputText id="txtIdentificacionTercero" value="#{gestionarMovimientoContableView.descripcionTercero}" readonly="true"/>
+										<p:commandButton icon="ui-icon-search"  oncomplete="PF('dlgTercero').show();"/>
+									</h:panelGrid>
+									
+								</h:panelGrid>
+							</div>	
+							
+							<br/>
+							
+							<h:panelGrid id="panelBotones" columns="1">
+								<p:commandButton id="btnAddParametros" value="Adicionar Transacción" icon="ui-icon-plus" action="#{gestionarMovimientoContableView.action_adicionarTransaccion}" update="men, panelPopUps, panlNotasAgregadas"/>
+							</h:panelGrid>
+							
+						</p:panel>
+						
+						<h:panelGrid id="panelNotasDef" columns="1">
+							<p:dataTable id="panlNotasAgregadas" value="#{gestionarMovimientoContableView.listNotasContablesAgregadas}" 
+										 var="notas" paginator="true" rows="10" emptyMessage="No hay notas contables adicionadas">
+								
+								<f:facet name="header">
+		                             Movimiento Contable
+		                         </f:facet>
+	
+								<p:column headerText="Cuenta">
+									<h:outputText value="#{notas.gluoCuentaContable.codigo}" />
+								</p:column>
+								
+								<p:column headerText="Auxiliar">
+									<h:outputText value="#{notas.descripcionAuxiliar}" />
+								</p:column>
+								
+								<p:column headerText="Débito">
+									<div align="right">
+										<h:outputText value="#{notas.valorEnDebito}">
+											<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+										</h:outputText>
+									</div>
+								</p:column>
+								
+								<p:column headerText="Crédito">
+									<div align="right">
+										<h:outputText value="#{notas.valorEnCredito}">
+											<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+										</h:outputText>
+									</div>
+								</p:column>
+								
+								<p:column headerText="Tercero">
+									<h:outputText value="#{notas.gluoTercero.identificacion}" />
+								</p:column>
+								
+								<f:facet name="footer">
+									<h:panelGrid columns="4">
+										<h:outputText value="Total en Débito:" />
+										<h:outputText value="#{gestionarMovimientoContableView.valorTotalEnDebito}">
+								                    <f:convertNumber type="currency" currencySymbol="$" />
+								        </h:outputText>
+								        
+								        <h:outputText value="Total en Crédito:" />
+								        <h:outputText value="#{gestionarMovimientoContableView.valorTotalEnCredito}">
+						                    <f:convertNumber type="currency" currencySymbol="$" />
+						                </h:outputText>    
+									</h:panelGrid>
+								</f:facet>
+								
+							</p:dataTable>
+						</h:panelGrid>
+						
+						<br/>
+						<br/>
+						
+							
+						</p:tab>
+					</p:accordionPanel>
+						
+						
+						<div align="center">
+							<h:panelGrid id="panelBntMain" columns="2">
+								<p:commandButton id="btnGuardarNota" value="Guardar" icon="ui-icon-disk" action="#{gestionarMovimientoContableView.action_guardarNotaContable}" update=":formGestionarMovimiento"/>
+								<p:commandButton id="btnLimpiar" value="Limpiar" action="#{gestionarMovimientoContableView.action_clear}" update=":formGestionarMovimiento"/>
+							</h:panelGrid>
+						</div>
+						</p:panel>
+				</div>
+			</div>
+			
+			
+			<!-- ************************************************** -->
+			<!-- **		DIÁLOGO CUENTA CONTABLE INICIAL		 ** -->
+			<!-- ************************************************** -->
+			<p:dialog header="Cuentas Contables" widgetVar="dlgCuentaContable" modal="true" height="600" width="90%">
+
+				<div style="text-align: center;">
+
+				<p:growl id="menCuentas" showDetail="false"/>
+
+					<p:scrollPanel mode="native" style="width:100%; height:400px;">
+						<p:dataTable var="cuentaContable" paginator="true" rows="10"
+							value="#{gestionarMovimientoContableView.listCuentasContables}"
+							selection="#{gestionarMovimientoContableView.gluoCuentaContable}"
+							rowKey="#{cuentaContable.cconId}" 
+							reflow = "true"
+							filterDelay="1000">
+
+							<f:facet name="header">
+	                             Cuentas Contables
+	                         </f:facet>
+
+ 							<p:column selectionMode="single" style="width:5%; text-align:center" />
+							
+							<p:column headerText="Código" filterBy="#{cuentaContable.codigo}" sortBy="#{cuentaContable.codigo}">
+								<h:outputText value="#{cuentaContable.codigo}" />
+							</p:column>
+
+							<p:column headerText="Descripción" filterBy="#{cuentaContable.descripcion}" sortBy="#{cuentaContable.descripcion}" filterMatchMode="contains">
+								<h:outputText value="#{cuentaContable.descripcion}" />
+							</p:column>
+						</p:dataTable>
+					</p:scrollPanel>
+				</div>
+					
+				<div align="center">
+					<h:panelGrid id="btnSeleccionaCuco" columns="1">
+						<p:commandButton id="btnSeleccionarCuco" value="Seleccionar" action="#{gestionarMovimientoContableView.action_validarCuentaContable}" update="menCuentas, :formGestionarMovimiento:pnlTab:txtCuentaSeleccionada"/>
+					</h:panelGrid>
+				</div>
+
+				<div class="EmptyBox20" />
+			</p:dialog>
+			<!-- *********************** Cuentas Contables *********************** -->
+			
+			
+			<!--  DIALOG DE AUXILIAR  -->
+			<p:dialog id="dialogAuxiliar" modal="true" widgetVar="dlgAuxiliar" header="Auxiliar"
+					  draggable="false" closable="true" resizable="true"
+					  width="90%" height="550px">
+					
+					<p:outputLabel value="Seleccione el tipo de Auxiliar"/>
+					
+					<h:panelGrid columns="2" columnClasses="colAFiltro, colBFiltro" style="width: 100%;">
+						<p:outputLabel value="Auxiliar: "/>
+						<p:selectOneRadio id="sorAuxiliar" binding="#{gestionarMovimientoContableView.sorAuxiliar}" value="1">
+							<f:selectItem itemLabel="Rubros Presupuestales" itemValue="1"/>
+							<f:selectItem itemLabel="Cuenta Bancaria" itemValue="2"/>
+							<p:ajax listener="#{gestionarMovimientoContableView.listener_tipoAuxiliar}" update="panelRubros, panelCuentaBancaria"/>
+						</p:selectOneRadio>						
+					</h:panelGrid>
+					
+					
+					<p:panel id="panelRubros" visible="#{gestionarMovimientoContableView.showPanelRubros}" header="Rubros Presupuestales">
+					
+						<p:scrollPanel id="pnlRubrosPresupuestales" mode="native" style="width:100%; height:400px">
+								
+							<div class="ContainerIndent" />
+							<br/>
+								
+							<p:dataTable id="dataTableRubrosPresupuestales" var="rubro" rows="200" style="width: 100%;"
+										 value="#{gestionarMovimientoContableView.listRubrosPresupuestales}"
+										 paginator="true"
+										 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+										 rowsPerPageTemplate="300,400,500"
+										 emptyMessage="No hay rubros presupuestales"
+										 reflow="true" 
+										 rowKey="#{rubro.dptoId}"
+										 selection="#{gestionarMovimientoContableView.auxiliarComoRubroPresupuestal}"
+										 filterDelay="1000">
+									
+									<f:facet name="header"> Rubros presupuestales </f:facet>
+									
+									<p:column selectionMode="single" style="width:5%; text-align:center" />
+												
+									<p:column headerText="Cuenta" sortBy="#{rubro.codigoCuenta}" filterBy="#{rubro.codigoCuenta}">
+										<h:outputText value="#{rubro.codigoCuenta}" />
+									</p:column>
+									
+									<p:column headerText="Descripción" filterBy="#{rubro.descripcionCuenta}" sortBy="#{rubro.descripcionCuenta}">
+										<h:outputText value="#{rubro.descripcionCuenta}" />
+									</p:column>
+									
+									<p:column headerText="Valor Inicial">
+										<h:outputText value="#{rubro.valorInicial}" style="text-align: right;">
+											<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+										</h:outputText>
+									</p:column>
+								</p:dataTable>
+							</p:scrollPanel>
+							
+							<div align="center">
+								<h:panelGrid id="panelBotonesRubro" columns="2">
+									<p:commandButton id="btnSeleccionarRubro" value="Seleccionar" action="#{gestionarMovimientoContableView.action_seleccionarRubroPresupuestal}" update="@form"/>
+								</h:panelGrid>
+							</div>
+						</p:panel>
+						
+						<p:panel id="panelCuentaBancaria" visible="#{!gestionarMovimientoContableView.showPanelRubros}" header="Cuentas Bancarias">
+							<p:scrollPanel id="pnlCBancaria" mode="native" style="width:100%; height:400px">
+								
+								<div class="ContainerIndent" />
+								<br/>
+								
+								<h:panelGrid id="pnlBancos" columns="2">
+									<h:outputText value="Banco: "/>
+										<p:selectOneMenu id="cmbBancos"	value="#{gestionarMovimientoContableView.bancoSeleccionado}" style="width: 290px;">
+											<f:selectItem itemLabel="--- Seleccione un Banco ---" itemValue="-1"/>
+											<f:selectItems value="#{gestionarMovimientoContableView.bancos}"/>
+											<p:ajax listener="#{gestionarMovimientoContableView.listener_cargarCuentasBanciaras}" event="change" update="panelDataTableCuentasBancarias"/>
+										</p:selectOneMenu>
+										
+										<h:outputText value="Tipo Cuenta:"/>
+										<p:selectOneMenu id="cmbTiposDeCuenta" value="#{gestionarMovimientoContableView.tipoCuentaBancariaSeleccionada}" style="width: 290px;">
+											<f:selectItem itemLabel="--- Seleccione un Tipo de cuenta bancaria ---" itemValue="-1"/>
+											<f:selectItems value="#{gestionarMovimientoContableView.tiposCuentasBancarias}"/>
+											<p:ajax listener="#{gestionarMovimientoContableView.listener_cargarCuentasBanciaras}" event="change" update="panelDataTableCuentasBancarias"/>
+										</p:selectOneMenu>
+								</h:panelGrid>
+								
+								<h:panelGrid id="panelDataTableCuentasBancarias" columns="1">
+									<p:dataTable id="tableCuentasBancarias" var="cuba" rows="10" style="width: 100%;"
+											 value="#{gestionarMovimientoContableView.listCuentasBancarias}"
+											 paginator="true"
+											 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+											 rowsPerPageTemplate="300,400,500"
+											 emptyMessage="No hay cuentas bancarias"
+											 reflow="true" 
+											 rowKey="#{cuba.cubaId}"
+											 selection="#{gestionarMovimientoContableView.auxiliarComoCuentaBancaria}">
+										
+										<f:facet name="header"> Cuentas Bancarias </f:facet>
+										
+										<p:column selectionMode="single" style="width:5%; text-align:center" />
+													
+										<p:column headerText="Nombre">
+											<h:outputText value="#{cuba.nombre}" />
+										</p:column>
+										
+										<p:column headerText="Numero de Cuenta">
+											<h:outputText value="#{cuba.numeroCuenta}" />
+										</p:column>
+									</p:dataTable>
+								</h:panelGrid>
+									
+							</p:scrollPanel>
+								
+							<div align="center">
+								<h:panelGrid id="panelBotonesCuentaBancaria" columns="2">
+									<p:commandButton id="btnSeleccionarCuba" value="Seleccionar" action="#{gestionarMovimientoContableView.action_seleccionarCuentaBancaria}" update="@form"/>
+								</h:panelGrid>
+							</div>
+						</p:panel>
+					
+						<div class="EmptyBox20" />	
+						
+					</p:dialog>
+			
+			
+			
+			<!--        Tercero            -->
+			<!-- ************************* -->
+			<p:dialog modal="true" widgetVar="dlgTercero" header="Tercero" draggable="false" closable="true" resizable="true" width="90%" height="500px">
+				
+				<p:growl id="menTerceros" showDetail="false"/>
+				
+				<p:scrollPanel id="pnlTercerosDialog" mode="native" style="width:100%; height:400px">
+					<div class="ContainerIndent"/>
+					
+					<p:outputLabel value="Criterios de búsqueda para terceros:"/>
+					
+					<h:panelGrid columns="2" columnClasses="colAFiltro, colBFiltro" style="width: 100%;">
+								
+						<p:outputLabel value="Identificación: "/>
+						<p:inputText styleClass="Wid50"
+							value="#{gestionarMovimientoContableView.identificacionFiltro}"/>
+						
+						<p:outputLabel value="Nombre/Razón Social:"/>
+						<p:inputText styleClass="Wid50"
+							value="#{gestionarMovimientoContableView.nombreRazonSocialFiltro}"/>
+						
+					</h:panelGrid>
+					
+					<p:commandButton value="Buscar Tercero"
+						actionListener="#{gestionarMovimientoContableView.action_buscarTercero}"
+						update=":formGestionarMovimiento:pnlTercerosDialog"/>
+					
+					<br/>
+				
+					<p:dataTable id="tercerosEncontrados" var="tercero" rows="350" style="width: 100%;"
+						value="#{gestionarMovimientoContableView.listTerceros}"
+						paginator="true"
+						paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+						rowsPerPageTemplate="300,400,500"
+						emptyMessage="No hay terceros encontrados"
+						reflow="true" rowKey="#{tercero.tercId}"
+						selection="#{gestionarMovimientoContableView.gluoTercero}"
+						filterDelay="1000">
+						
+						<f:facet name="header">
+                             Terceros
+                         </f:facet>
+                        
+                         <p:column selectionMode="single" style="width:5%; text-align:center" />
+                         
+                   		<p:column headerText="Identificación" sortBy="#{tercero.identificacion}"
+							style="width: 10%" filterBy="#{tercero.identificacion}"
+							filterMatchMode="startsWith">
+							<h:outputText value="#{tercero.identificacion}"/>
+						</p:column>
+						
+						<p:column headerText="Primer Nombre" sortBy="#{tercero.primerNombre}"
+							style="width: 10%" filterBy="#{tercero.primerNombre}"
+							filterMatchMode="contains">
+							<h:outputText value="#{tercero.primerNombre}"/>
+						</p:column>
+						
+						<p:column headerText="Segundo Nombre" sortBy="#{tercero.segundoNombre}"
+							style="width: 10%" filterBy="#{tercero.segundoNombre}"
+							filterMatchMode="contains">
+							<h:outputText value="#{tercero.segundoNombre}"/>
+						</p:column>
+						
+						<p:column headerText="Primer Apellido" sortBy="#{tercero.primerApellido}"
+							style="width: 10%" filterBy="#{tercero.primerApellido}"
+							filterMatchMode="contains">
+							<h:outputText value="#{tercero.primerApellido}"/>
+						</p:column>
+						
+						<p:column headerText="Segundo Apellido" sortBy="#{tercero.segundoApellido}"
+							style="width: 10%" filterBy="#{tercero.segundoApellido}"
+							filterMatchMode="contains">
+							<h:outputText value="#{tercero.segundoApellido}"/>
+						</p:column>
+					</p:dataTable>
+				</p:scrollPanel>
+				
+				<div align="center">
+					<h:panelGrid id="btnSelecciona" columns="2">
+						<p:commandButton id="btnSeleccionar" value="Seleccionar" action="#{gestionarMovimientoContableView.action_validarTercero}" update="menTerceros, :formGestionarMovimiento:pnlTab:txtIdentificacionTercero"/>
+					</h:panelGrid>
+				</div>
+
+				<div class="EmptyBox20" />
+			</p:dialog>
+			<!--        Tercero            -->
+			<!-- ************************* -->
+			
+			
+			<p:dialog modal="true" widgetVar="dlgGenerarReportes" header="Reporte Nota Contable" draggable="false" closable="false" resizable="true" width="90%" >
+					<div align="center">
+						<h:panelGrid columns="4">
+							<p:commandButton value="Generar Reporte en PDF" onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)" icon="ui-icon-arrowthichk-s">
+								<p:fileDownload value="#{gestionarMovimientoContableView.getReporteNotaContablePdf}" />
+							</p:commandButton>
+							
+							<p:commandButton value="Generar Reporte en XLS" onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)" icon="ui-icon-arrowthichk-s">
+								<p:fileDownload value="#{gestionarMovimientoContableView.getReporteNotaContableXls}" />
+							</p:commandButton>
+							
+							<p:commandButton value="Generar Reporte en XLSX" onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)" icon="ui-icon-arrowthichk-s">
+								<p:fileDownload value="#{gestionarMovimientoContableView.getReporteNotaContableXlsx}" />
+							</p:commandButton>
+							
+							<p:commandButton value="He terminado! Cerrar" oncomplete="PF('dlgGenerarReportes').hide();"/>
+						</h:panelGrid>
+					</div>
+					<div class="EmptyBox20" />
+			</p:dialog>
+			
+			
+		</h:form>
+	</ui:define>
+</ui:composition>

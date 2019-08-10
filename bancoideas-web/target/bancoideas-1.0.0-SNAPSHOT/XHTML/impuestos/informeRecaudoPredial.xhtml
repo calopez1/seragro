@@ -1,0 +1,121 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+<ui:define name="content">
+
+<p:ajaxStatus onstart="PF('statusDialog').show()"
+	onsuccess="PF('statusDialog').hide()" />
+<p:dialog modal="true" widgetVar="statusDialog" header="Cargando"
+	draggable="false" closable="false">
+	<p:graphicImage
+		value="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/ajaxloadingbar.gif" />
+</p:dialog>
+
+<!-- Expired session -->
+<p:idleMonitor onactive="PF('sessionTimeOutDialog').show();"
+	timeout="#{session.maxInactiveInterval * 1000}" />
+<p:dialog modal="true" widgetVar="sessionTimeOutDialog"
+	header="Sesión terminada" draggable="false" closable="false">
+	<h:outputText value="La sesión ha finalizado" />
+	<input id="confirmBackToLogin" type="button" value="Iniciar sesión"
+		onclick="window.location='#{facesContext.externalContext.requestContextPath}/index.jsp';" />
+</p:dialog>
+
+<script type="text/javascript">
+	function showStatus() {
+	    statusDialog.show();
+	}
+	 
+	function hideStatus() {
+	    statusDialog.hide();
+	}
+</script>
+
+
+<style type="text/css">
+	.ui-panel {
+		margin-top: 20px
+	}
+	
+	.ui-tabs-top {
+		background-color: #FFFFFF;
+	}
+	
+	.one {
+		width: 10%;
+	}
+	
+	.two {
+		width: 90%;
+	}
+	
+	.col50Left{
+		width: 10%;
+		text-align: left;
+	}
+	
+	.col50Right{
+		width: 10%;
+		text-align: right;
+	}
+	
+	.txt100{
+		width: 100%;
+	}
+	
+</style>
+
+<div align="center">
+
+<h:form id="frmInformeRecaudoPredial">
+
+	<p:growl id="men" showDetail="false" autoUpdate="true" closable="true" />
+	<p:panel id="pnlDatos"
+		header="Informe de Recaudo de Predial" style="width: 90%;">
+						<div align="center">
+							<h:panelGrid id="pnlSeleccionFechas" columns="2">
+								
+								<h:outputText value="Fecha Desde: " style="width: 100%;"/>
+								<p:calendar id="fechaDesde"
+											value="#{informeRecaudoPredialView.fechaDesde}" readonlyInput="true" 
+											disabled="false" navigator="true"/>
+											
+								<h:outputText value="Fecha Hasta: " style="width: 100%;"/>
+								<p:calendar id="fechaHasta"
+											value="#{informeRecaudoPredialView.fechaHasta}" readonlyInput="true" 
+											disabled="false" navigator="true"/>		
+											
+							</h:panelGrid>
+						</div>
+						<br/>
+						<h:panelGrid columns="3">
+
+							<p:commandButton id="btnPDF" value="Descarga Reporte PDF"
+								onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)"
+								ajax="false">
+								<p:fileDownload
+									value="#{informeRecaudoPredialView.reportePdf}" />
+							</p:commandButton>
+	
+							<p:commandButton id="btnXLS" value="Descarga Reporte XLS"
+								onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)"
+								ajax="false">
+								<p:fileDownload
+									value="#{informeRecaudoPredialView.reporteXls}" />
+							</p:commandButton>
+	
+							<p:commandButton id="btnXLSX" value="Descarga Reporte XLSX"
+								onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)"
+								ajax="false">
+								<p:fileDownload
+									value="#{informeRecaudoPredialView.reporteXlsx}" />
+							</p:commandButton>
+					</h:panelGrid>
+					</p:panel>		
+</h:form>
+</div>
+</ui:define>
+</ui:composition>

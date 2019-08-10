@@ -1,0 +1,278 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+<ui:define name="content">
+
+<style type="text/css">
+	.ui-panel {
+		margin-top: 20px
+	}
+	
+	.ui-tabs-top{
+		background-color: #FFFFFF;
+	}
+</style>
+
+<div align="center">
+
+	<h:form id="formConceptoImpuesto">
+		
+		<p:growl id="messages" autoUpdate="true" closable="true" />
+	
+			<p:panel id="pnlConceptoImpuesto" header="Concepto Impuesto" style="width: 90%;">
+				<h:panelGrid columns="2">
+					<p:outputLabel value="Descripción" for="txtDescripcion" />
+					<p:inputText id="txtDescripcion" value="#{gluoConceptoImpuestoView.txtDescripcion}" style="width: 200px;" />
+					
+					<p:outputLabel value="Tipo Liquidación" for="somTipoLiquidacion" />					
+			        <p:selectOneMenu  id="somTipoLiquidacion" value="#{gluoConceptoImpuestoView.selectTipoLiquidacion}" style="width: 180px;"
+			        					disabled="#{gluoConceptoImpuestoView.showSomTipoLiquidacion}" >
+			            <f:selectItem itemLabel="-- SELECCIONE TIPO --" itemValue="-1" />			            
+			            <f:selectItems value="#{gluoConceptoImpuestoView.tiposLiquidacion}"  />
+			            <p:ajax event="change" listener="#{gluoConceptoImpuestoView.listener_tipo_liquidacion}" 
+			            		update="@([id$=radPorcentajeTantoXMil]), @([id$=txtValor])"/>
+			        </p:selectOneMenu>			        			        
+			        
+			        <br/>
+					<p:selectOneRadio id="radPorcentajeTantoXMil" value="#{gluoConceptoImpuestoView.selectPorcentajeTantoXMil}"
+						disabled="#{gluoConceptoImpuestoView.showRadPorcentajeTantoXMil}">
+			            <f:selectItem itemLabel="Porcentaje" itemValue="P" />
+			            <f:selectItem itemLabel="Tanto por mil" itemValue="M" />			            			            
+			        </p:selectOneRadio>
+			        
+			        <p:outputLabel value="Concepto de renta asociado:" for="txtParametrizacionConcepto" />
+					<p:panelGrid>
+						<p:inputText id="txtParametrizacionConcepto" value="#{gluoConceptoImpuestoView.txtParametrizacionConcepto}"  
+									 style="width: 200px;" />
+						<p:commandButton icon="ui-icon-search" 
+										 oncomplete="PF('dlgParametrizacionConcepto').show();"
+										 update=":formConceptoImpuesto"/>
+					</p:panelGrid>			        	
+					
+					<p:outputLabel value="Cuenta Débito" for="txtCuentaDebito" />
+					<p:inputText id="txtCuentaDebito" style="width: 200px;"
+								 value="#{gluoConceptoImpuestoView.txtCuentaDebito}"
+								 disabled="#{gluoConceptoImpuestoView.showCuentaContableDebito}" />
+					
+					<p:outputLabel value="Cuenta Crédito" for="txtCuentaCredito" />
+					<p:inputText id="txtCuentaCredito" style="width: 200px;"
+								 value="#{gluoConceptoImpuestoView.txtCuentaCredito}"
+					  			 disabled="#{gluoConceptoImpuestoView.showCuentaContableCredito}"/>		       
+			        
+			        <p:outputLabel value="Valor" for="txtValor" />
+			        <p:inputText id="txtValor" value="#{gluoConceptoImpuestoView.txtValor}" style="width: 200px;"
+			        				disabled="#{gluoConceptoImpuestoView.showTxtValor}" >
+			        	<f:convertNumber pattern="#,##0.00" />
+			        	<p:ajax event="blur" update="@this" />
+			        </p:inputText>			        
+			       
+					<br/>
+					<p:selectOneRadio id="radActivo" value="#{gluoConceptoImpuestoView.selectActivo}">
+			            <f:selectItem itemLabel="Activo" itemValue="A" />
+			            <f:selectItem itemLabel="Inactivo" itemValue="I" />			            			            
+			        </p:selectOneRadio>
+					
+					<p:outputLabel value="Prioridad" />	
+					<p:spinner id="basic" value="#{gluoConceptoImpuestoView.selectPrioridadConceptoImpuesto}" min="1" />
+					
+				</h:panelGrid>
+				
+				<br/>
+				<p:commandButton id="btnGuardar" value="Guardar"
+							action="#{gluoConceptoImpuestoView.action_guardar}"							
+							update=":formConceptoImpuesto" />
+							
+				<p:commandButton id="btnLimpiar" value="Limpiar"
+							action="#{gluoConceptoImpuestoView.action_limpiar}"							
+							update=":formConceptoImpuesto" />
+				
+			</p:panel>
+			
+			<p:panel id="pnlListaConceptoImpuesto" header="Lista Concepto Impuesto" 
+					 style="width: 90%; text-align: center;" >
+			
+				<p:dataTable id="pnlListaConceptoImpuestoDataTable"
+							 var="conceptoImpuesto"
+							 value="#{gluoConceptoImpuestoView.listConceptoImpuestoDTOs}"
+							 rowKey="#{conceptoImpuesto.coimId}" filterDelay="1000" >
+				
+					<p:column headerText="Descripción" filterBy="#{conceptoImpuesto.descripcion}" sortBy="#{conceptoImpuesto.descripcion}">
+				        <h:outputText value="#{conceptoImpuesto.descripcion}" />
+				    </p:column>
+				    
+				    <p:column headerText="Tipo Liquidación" filterBy="#{conceptoImpuesto.nombreLiquidacion}" sortBy="#{conceptoImpuesto.nombreLiquidacion}" >
+				        <h:outputText value="#{conceptoImpuesto.nombreLiquidacion}" />
+				    </p:column>
+									    
+				    <p:column headerText="Código Cta. Débito" filterBy="#{conceptoImpuesto.codigoCuentaContableDebito}" sortBy="#{conceptoImpuesto.codigoCuentaContableDebito}">
+				        <h:outputText value="#{conceptoImpuesto.codigoCuentaContableDebito}" />
+				    </p:column>
+				    
+				    <p:column headerText="Cta. Débito" filterBy="#{conceptoImpuesto.nombreCuentaContableDebito}" sortBy="#{conceptoImpuesto.nombreCuentaContableDebito}">
+				        <h:outputText value="#{conceptoImpuesto.nombreCuentaContableDebito}" />
+				    </p:column>
+				    
+				    <p:column headerText="Código Cta. Crédito" filterBy="#{conceptoImpuesto.codigoCuentaContableCredito}" sortBy="#{conceptoImpuesto.codigoCuentaContableCredito}">
+				        <h:outputText value="#{conceptoImpuesto.codigoCuentaContableCredito}" />
+				    </p:column>
+				    
+				     <p:column headerText="Cta. Crédito" filterBy="#{conceptoImpuesto.nombreCuentaContableCredito}" sortBy="#{conceptoImpuesto.nombreCuentaContableCredito}">
+				        <h:outputText value="#{conceptoImpuesto.nombreCuentaContableCredito}" />
+				    </p:column>
+				    
+				     <p:column headerText="Valor" filterBy="#{conceptoImpuesto.valor}" sortBy="#{conceptoImpuesto.valor}">
+				        <h:outputText value="#{conceptoImpuesto.valor}" >
+				        	<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+				        </h:outputText>
+				    </p:column>
+				    
+				    <p:column headerText="Prioridad" filterBy="#{conceptoImpuesto.prioridad}" sortBy="#{conceptoImpuesto.prioridad}">
+				        <h:outputText value="#{conceptoImpuesto.prioridad}" />
+				    </p:column>
+				    
+				    <p:column style="width: 5%;">
+				        <p:commandButton icon="ui-icon-pencil" title="Actualizar Concepto Impuesto" actionListener="#{gluoConceptoImpuestoView.actionUpdateGluoConceptoImpuestoView}" update=":formConceptoImpuesto">
+				        	<f:attribute name="selectedGluoConceptoImpuestoDTO" value="#{conceptoImpuesto}" />  
+				        </p:commandButton>
+				    </p:column>
+				
+				</p:dataTable>
+			
+			</p:panel>
+			
+			
+			<!-- ************************************************** -->
+			<!-- **				RUBROS PRESUPUESTALES		     ** -->
+			<!-- ************************************************** -->
+			
+			<p:dialog header="Rubros Presupuestales" style="align-text: center"
+					widgetVar="dlgRubroPresupuestal" modal="true" height="400" width="90%">
+									
+				<p:scrollPanel mode="native" style="width:100%; height:400px">
+				<p:dataTable var="rubro" paginator="true" rows="10"
+					value="#{gluoConceptoImpuestoView.listDetallePresupuestos}"
+					selectionMode="single"
+					selection="#{gluoConceptoImpuestoView.selectedDetallePresupuesto}"
+					rowKey="#{rubro.dptoId}"
+					filterDelay="1000">
+
+					<p:ajax event="rowSelect"
+						listener="#{gluoConceptoImpuestoView.listener_rubro}"	
+						update=":formConceptoImpuesto"								
+						oncomplete="PF('dlgRubroPresupuestal').hide();" />
+
+					<p:column headerText="Código" filterBy="#{rubro.codigoCuenta}" 
+						filterMatchMode="contains">
+						<h:outputText value="#{rubro.codigoCuenta}" />
+					</p:column>
+					
+					<p:column headerText="Descripción" filterBy="#{rubro.descripcionCuenta}" 
+						filterMatchMode="contains">
+						<h:outputText value="#{rubro.descripcionCuenta}" />
+					</p:column>
+					
+					<p:column headerText="Valor Inicial" filterBy="#{rubro.descripcionCuenta}" 
+						filterMatchMode="contains">
+						<div align="right">
+							<h:outputText value="#{rubro.valorInicial}">
+								<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+							</h:outputText>
+						</div>
+					</p:column>
+					
+				</p:dataTable>	
+				</p:scrollPanel>
+			</p:dialog>
+
+			<br/>
+			<br/>
+			
+			<!-- ************************************************** -->
+			<!-- **				RANGO AVALUO		     		 ** -->
+			<!-- ************************************************** -->
+			<p:dialog header="Rango Avaluo" style="align-text: center" widgetVar="dlgRangoAvaluo" modal="true" height="400" width="90%">
+									
+				<p:scrollPanel mode="native" style="width:100%; height:400px">
+					<p:growl id="men" autoUpdate="true" showDetail="false"/>
+					<p:dataTable id="dataTablePorcentajesRangoAvaluo" value="#{gluoConceptoImpuestoView.listRangoAvaluos}" paginator="true"
+   						paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}" 
+   						rows="5" var="gluoPorcentajeRangoAvaluo"
+   						rowKey="#{gluoPorcentajeRangoAvaluo.raciId}"
+   						selection="#{gluoConceptoImpuestoView.listRangoAvaluosSeleccionados}"
+   						emptyMessage="No se han encontrado registrados activos."
+   						filterDelay="1000">
+
+	 					<p:column selectionMode="multiple" style="width:25px;text-align:center"/>
+	 					
+						<p:column headerText="Rango Inicial" filterBy="#{gluoPorcentajeRangoAvaluo.rangoInicial}" sortBy="#{gluoPorcentajeRangoAvaluo.rangoInicial}" filterMatchMode="contains">
+							<h:outputText value="#{gluoPorcentajeRangoAvaluo.rangoInicial}">
+								<f:convertNumber type="currency" currencySymbol="$" locale="es_CO"/>
+							</h:outputText>
+						</p:column>
+
+						<p:column headerText="Rango Final" filterBy="#{gluoPorcentajeRangoAvaluo.rangoFinal}" sortBy="#{gluoPorcentajeRangoAvaluo.rangoFinal}" filterMatchMode="contains">
+							<h:outputText value="#{gluoPorcentajeRangoAvaluo.rangoFinal}">
+								<f:convertNumber type="currency" currencySymbol="$" locale="es_CO"/>
+							</h:outputText>
+						</p:column>
+
+						<p:column headerText="Porcentaje SMMLV" filterBy="#{gluoPorcentajeRangoAvaluo.porcentajeSmmlv}" sortBy="#{gluoPorcentajeRangoAvaluo.porcentajeSmmlv}" filterMatchMode="contains">
+							<h:outputText value="#{gluoPorcentajeRangoAvaluo.porcentajeSmmlv}%" >
+								<f:convertNumber pattern="#0.00000" />
+							</h:outputText>
+						</p:column>
+
+						<p:column headerText="Tipo de Predio" filterBy="#{gluoPorcentajeRangoAvaluo.descripcionTipoPredio}"	sortBy="#{gluoPorcentajeRangoAvaluo.descripcionTipoPredio}"	filterMatchMode="contains">
+							<h:outputText value="#{gluoPorcentajeRangoAvaluo.descripcionTipoPredio}" />
+						</p:column>
+						
+						<p:column headerText="Activo" filterBy="#{gluoPorcentajeRangoAvaluo.activo}" sortBy="#{gluoPorcentajeRangoAvaluo.activo}" filterMatchMode="contains">
+							<h:outputText value="#{(gluoPorcentajeRangoAvaluo.activo.trim() eq 'A')?('Activo'):('Inactivo')}" />
+						</p:column>
+					</p:dataTable>
+					
+					<h:panelGrid id="panelBotonSelect" columns="1">
+						<p:commandButton id="btnSeleccionar" value="Seleccionar" update="men" action="#{gluoConceptoImpuestoView.action_seleccionar_avaluos}"/>					
+					</h:panelGrid>
+					
+					
+				</p:scrollPanel>
+			</p:dialog>
+			
+			<!-- ************************************************** -->
+			<!-- **				PARAMETRIZACION CONCEPTO	     ** -->
+			<!-- ************************************************** -->
+			
+			<p:dialog header="Parametrización Concepto" style="align-text: center"
+					widgetVar="dlgParametrizacionConcepto" modal="true" height="400" width="90%">
+									
+				<p:scrollPanel mode="native" style="width:100%; height:400px">
+				<p:dataTable var="paco" paginator="true" rows="10"
+					value="#{gluoConceptoImpuestoView.listParametrizacionConceptoDTOs}"
+					selectionMode="single"
+					selection="#{gluoConceptoImpuestoView.selectedParametrizacionConceptoDTO}"
+					rowKey="#{paco.pacoId}"
+					filterDelay="1000">
+
+					<p:ajax event="rowSelect"
+						listener="#{gluoConceptoImpuestoView.listener_parametrizacion_concepto}"	
+						update=":formConceptoImpuesto"								
+						oncomplete="PF('dlgParametrizacionConcepto').hide();" />
+
+					<p:column headerText="Código" filterBy="#{paco.codigoConcepto}" 
+						filterMatchMode="contains">
+						<h:outputText value="#{paco.codigoConcepto}" />
+					</p:column>
+					
+					
+				</p:dataTable>	
+				</p:scrollPanel>
+			</p:dialog>
+			
+	</h:form>
+</div>
+</ui:define>
+</ui:composition>

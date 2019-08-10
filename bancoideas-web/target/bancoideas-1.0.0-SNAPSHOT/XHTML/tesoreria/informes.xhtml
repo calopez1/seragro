@@ -1,0 +1,183 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+<ui:define name="content">
+<f:view>
+	<p:ajaxStatus onstart="PF('statusDialog').show()"
+		onsuccess="PF('statusDialog').hide()" />
+	<p:dialog modal="true" widgetVar="statusDialog" header="Cargando"
+		draggable="false" closable="false">
+		<p:graphicImage
+			value="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/ajaxloadingbar.gif" />
+	</p:dialog>
+
+	<!-- Expired session -->
+	<p:idleMonitor onactive="PF('sessionTimeOutDialog').show();"
+		timeout="#{session.maxInactiveInterval * 1000}" />
+	<p:dialog modal="true" widgetVar="sessionTimeOutDialog"
+		header="Sesión terminada" draggable="false" closable="false">
+		<h:outputText value="La sesión ha finalizado" />
+		<input id="confirmBackToLogin" type="button" value="Iniciar sesión"
+			onclick="window.location='#{facesContext.externalContext.requestContextPath}/index.jsp';" />
+	</p:dialog>
+	
+	<style type="text/css">
+		
+       	.colA{width: 5%; }
+       	.colB{width: 30%; }
+       	
+	</style>
+
+	<div align="center">
+	<h:form id="frmInformesTesoreria" >
+
+		<p:growl id="messages" autoUpdate="true" closable="true" />
+		
+		<p:panel id="pnlCargarPredios" style="width: 90%;" >
+		
+			<div class="ContainerIndent">
+				<h:outputText value="Informes de Tesorería"
+					styleClass="FontBold Fs18 hardblue" />
+			</div>
+			
+			<div class="Container100">
+				<div class="ContainerIndent">
+				<h:panelGrid columns="1" cellpadding="10"
+					style="width: 50%;">
+					
+					<h:panelGrid columns="2" 
+						columnClasses="colA,colB"
+						style="width: 100%;">
+												
+						<p:commandButton 
+							value="Deseo consultar el informe de traslado bancario"
+							update="@([id$=pnlCargarPredios])" style="width: 500px"
+							action="informeTrasladoBancario.xhtml"/>
+					</h:panelGrid>								
+					
+					<h:panelGrid columns="2" 
+						columnClasses="colA,colB"
+						style="width: 100%;">
+												
+						<p:commandButton 
+							value="Deseo consultar los informes de comprobante de egreso que afectan el presupuesto"
+							update="@([id$=pnlCargarPredios])" style="width: 500px"
+							action="generarInformeRelacionComprobantesEgreso.xhtml"/>
+					</h:panelGrid>
+					
+					<h:panelGrid columns="2" 
+						columnClasses="colA,colB"
+						style="width: 100%;">
+												
+						<p:commandButton 
+							value="Deseo consultar el informe de comprobante de egreso que no afecta el presupuesto"
+							update="@([id$=pnlCargarPredios])" style="width: 500px"
+							action="generarInformeRelacionComprobantesEgresoNoAfectaPpto.xhtml"/>
+					</h:panelGrid>	
+					
+					<h:panelGrid columns="2" 
+						columnClasses="colA,colB"
+						style="width: 100%;">
+												
+						<p:commandButton 
+							value="Deseo consultar recibos de caja"
+							update="@([id$=pnlCargarPredios])" style="width: 500px"
+							action="informeReciboCaja.xhtml"/>		
+					</h:panelGrid>
+					
+					<h:panelGrid columns="2" 
+						columnClasses="colA,colB"
+						style="width: 100%;">
+												
+						<p:commandButton 
+							value="Deseo consultar el informe de deducciones por cuenta bancaria detallado"
+							update="@([id$=pnlCargarPredios])" style="width: 500px"
+							action="informeDeduccionesPorCuentaBancariaDetallado.xhtml"/>		
+					</h:panelGrid>
+					
+					<h:panelGrid columns="2" 
+						columnClasses="colA,colB"
+						style="width: 100%;">
+												
+						<p:commandButton 
+							value="Deseo consultar el informe de deducciones por cuenta bancaria resumido"
+							update="@([id$=pnlCargarPredios])" style="width: 500px"
+							action="informeDeduccionesPorCuentaBancariaResumido.xhtml"/>		
+					</h:panelGrid>					
+					
+					<h:panelGrid columns="2" 
+						columnClasses="colA,colB"
+						style="width: 100%;">
+						
+						<p:commandButton 
+							value="Deseo generar informe de retencion en la fuente"
+							update="@([id$=pnlCargarPredios])" style="width: 500px"
+							action="generarInformeRetencionEnLaFuenteDIAN.xhtml"/>			
+					</h:panelGrid>
+					
+					<h:panelGrid columns="2" 
+						columnClasses="colA,colB"
+						style="width: 100%;">
+						
+						<p:commandButton 
+							value="Deseo generar informe de Conciliación bancaria"
+							update="@([id$=pnlCargarPredios])" style="width: 500px"
+							action="informeConciliacionBancaria.xhtml"/>			
+					</h:panelGrid>	
+					
+					<h:panelGrid columns="2" 
+						columnClasses="colA,colB"
+						style="width: 100%;">
+						
+						<p:commandButton 
+							value="Deseo generar un Comprobante de Consignación"
+							update="@([id$=pnlCargarPredios])" style="width: 500px"
+							action="comprobanteConsignacion.xhtml"/>			
+					</h:panelGrid>	
+					
+					<h:panelGrid columns="2" 
+						columnClasses="colA,colB"
+						style="width: 100%;">
+						
+						<p:commandButton 
+							value="Deseo generar un Informe Detallado de Recaudo"
+							update="@([id$=pnlCargarPredios])" style="width: 500px"
+							action="informeDetalladoRecaudo.xhtml"/>			
+					</h:panelGrid>	
+					
+					<h:panelGrid columns="2" 
+						columnClasses="colA,colB"
+						style="width: 100%;">
+						
+						<p:commandButton 
+							value="Deseo generar un Informe Saldos Cuentas Bancarias del SGP"
+							update="@([id$=pnlCargarPredios])" style="width: 500px"
+							action="saldosCuentasBancariasSGP.xhtml"/>			
+					</h:panelGrid>
+					
+					<h:panelGrid columns="2" 
+						columnClasses="colA,colB"
+						style="width: 100%;">
+						
+						<p:commandButton 
+							value="Deseo generar informe de Boletín de deudores Morosos"
+							update="@([id$=pnlCargarPredios])" style="width: 500px"
+							action="boletinDeudoresMorosos.xhtml"/>			
+					</h:panelGrid>			
+						
+				</h:panelGrid>		
+				</div>
+			</div>
+		
+		</p:panel>
+
+	</h:form>
+	</div>
+
+</f:view>
+</ui:define>
+
+</ui:composition>

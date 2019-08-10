@@ -1,0 +1,100 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+	<ui:define name="content">
+		<style type="text/css">
+			.ui-panel {
+				margin-top: 20px
+			}
+			
+			.ui-tabs-top{
+				background-color: #FFFFFF;
+			}
+		</style>
+
+		<div align="center">
+		<h:form id="formBancos">
+			
+			<p:growl id="messages" />
+
+			<p:panel id="pnlBancos" header="Gestionar Bancos" style="width: 90%;">
+				<h:panelGrid columns="2">
+				
+					<p:outputLabel value="No. Banco: " />
+					<p:inputText id="txtNumeroBanco" binding="#{gluoBancoView.txtNumeroBanco}" maxlength="100" style="width: 200px" >
+						<p:ajax listener="#{gluoBancoView.numeroBancoListener}"
+							update="pnlBancos" />
+					</p:inputText>
+
+					<p:outputLabel value="Nombre: " />
+					<p:inputText id="txtNombre" binding="#{gluoBancoView.txtNombre}" maxlength="100" style="width: 200px" />											
+					
+					<p:outputLabel value="Descripción: " />
+					<p:inputText id="txtDescripcion" binding="#{gluoBancoView.txtDescripcion}" maxlength="100" style="width: 200px" />
+					
+					<p:outputLabel value="Activo: " />        			
+        			<p:selectOneRadio id="selectActivar" value="#{gluoBancoView.activo}">
+			            <f:selectItem itemLabel="Activo" itemValue="A" />
+			            <f:selectItem itemLabel="Inactivo" itemValue="I" />			            
+			        </p:selectOneRadio>			        
+					
+				</h:panelGrid>
+				
+				<!-- Botones -->
+				<br/>
+
+					<p:commandButton id="btnSave" value="Guardar"
+							action="#{gluoBancoView.action_save}"
+							binding="#{gluoBancoView.btnSave}" disabled="false"
+							update="messages,pnlBancos,pnlListaBancos,formBancos" />
+							
+					<p:commandButton id="btnClear" value="Limpiar"
+						action="#{gluoBancoView.action_clear}"
+						binding="#{gluoBancoView.btnClear}" disabled="false"
+						update="messages,pnlBancos,pnlListaBancos,formBancos" />
+					
+				<!-- Botones -->
+
+
+			</p:panel>
+			
+			<!-- DataTable -->
+			<p:panel id="pnlListaBancos" header="Listado de Bancos" style="width: 90%;">
+				<p:dataTable value="#{gluoBancoView.data}" var="bancos"
+					paginator="true" rows="10" scrollable="true" scrollWidth="100%"
+					scrollHeight="500" selectionMode="single"
+					selection="#{gluoBancoView.selectedGluoBanco}"
+					rowKey="#{bancos.bancId}"
+					filterDelay="1000">
+					
+					<p:column headerText="No. Banco" filterBy="#{bancos.numeroBanco}"  class="text-center" style="text-align:center"> 
+						<p:outputLabel value="#{bancos.numeroBanco}" />
+					</p:column>
+				
+					<p:column headerText="Nombre" filterBy="#{bancos.nombre}"  class="text-center" style="text-align:center"> 
+						<p:outputLabel value="#{bancos.nombre}" />
+					</p:column>
+					
+					<p:column headerText="Descripción" filterBy="#{bancos.descripcion}"  class="text-center" style="text-align:center"> 
+						<p:outputLabel value="#{bancos.descripcion}" />
+					</p:column>
+					
+					<p:column headerText="Activo" filterBy="#{bancos.activoNombre}"  class="text-center" style="text-align:center"> 
+						<p:outputLabel value="#{bancos.activoNombre}" />
+					</p:column>
+				
+				</p:dataTable>
+			</p:panel>
+
+			<!-- DataTable -->
+
+
+		</h:form>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

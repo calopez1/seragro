@@ -1,0 +1,673 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" 
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	template="/WEB-INF/template.xhtml">
+
+	<ui:define name="content">
+		<style type="text/css">
+			.ui-panel {
+				margin-top: 20px
+			}
+			
+			.ui-tabs-top{
+				background-color: #FFFFFF;
+			}
+			
+			.one {
+				width: 40%;
+			}
+			
+			.two {
+				width: 60%;
+			}
+		</style>
+
+		<h:form id="frmCargarCuentasPresupuesto">
+			<h:panelGrid columns="1" id="pnlCargarArchivo" rendered="#{cargarPresupuestoView.presupuestoRentasDTO == null}">
+				<h:panelGrid columns="1">
+					<div class="ContainerIndent">
+			
+						<p:panel>
+							
+							<p:messages id="msg" showDetail="false" autoUpdate="true" closable="true" />
+							
+							<div class="ContainerIndent">
+								<h:outputText value="Presupuesto de rentas"
+									styleClass="FontBold Fs18 hardblue" />
+							</div>
+							
+							<div class="Container100">
+								<div class="ContainerIndent">
+								<p:spacer height="30" width="0"></p:spacer>
+									<p:outputLabel
+										value="Aún no existe un presupuesto de rentas cargado. Por favor realice los siguientes pasos:" />
+								</div>
+							</div>
+							
+							<div class="Container100">
+								<div class="ContainerIndent">
+									<p:outputLabel
+										value="1. Descargue la plantilla del presupuesto de rentas (Archivo de Excel). AQUÍ!" />
+								</div>
+							</div>
+							
+							<div class="Container100">
+								<div class="ContainerIndent">
+									<p:outputLabel
+										value="2. Diligencie la plantilla del presupuesto de rentas en su computador." />
+								</div>
+							</div>
+							
+							<div class="Container100">
+								<div class="ContainerIndent">
+									<p:outputLabel
+										value="3. Realice el cargue del presupuesto diligenciado, haciendo uso del botón 'Escoger archivo de mi computador'" />
+								</div>
+							</div>
+							
+							<div class="Container100">
+							<p:spacer height="10" width="0"></p:spacer>
+								<div class="ContainerIndent">
+									<p:fileUpload
+										fileUploadListener="#{cargarPresupuestoView.upload}"
+										auto="true"
+										value="#{cargarPresupuestoView.file}" 
+										mode="advanced"
+										sizeLimit="10485760" fileLimit="1"
+										allowTypes="/(\.|\/)(xls|xlsx)$/"
+										label="Escoger archivo de mi computador"
+										uploadLabel="Validar Archivo de presupuesto"
+										cancelLabel="Cancelar" 
+										update=":frmCargarCuentasPresupuesto"  
+										invalidFileMessage="Archivo no válido"
+										invalidSizeMessage="Tamaño no válido"/>
+								</div>
+							</div>
+						</p:panel>
+					</div>
+				</h:panelGrid>
+			</h:panelGrid>
+			
+			<p:tabView id="presupuestosTabView" rendered="#{cargarPresupuestoView.presupuestoRentasDTO != null}">
+			
+				<p:tab id="presupuestoRentasTab" title="Presupuesto de Rentas">
+					<h:panelGrid columns="1" id="pnlPresupuestoRentasData">
+						<h:panelGrid columns="1"  rendered="#{cargarPresupuestoView.presupuestoRentasDTO != null}">
+							<div class="Container100">
+					            <div class="ContainerIndent">
+					                    
+		                    		<div class="Container100">
+				                        <div class="ContainerIndent">
+				                                
+				                            <p:dataTable id="presupuestoRentasData" var="cuenta" value="#{cargarPresupuestoView.presupuestoRentasDTO.detallesPresupuesto}" 
+				                                         rows="200" paginator="true" paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+				                                         rowsPerPageTemplate="300,400,500" emptyMessage="No existen cuentas del presupuesto" reflow="true" filterDelay="1000">
+				                                         
+				                                <p:ajax event="filter" delay="1000" />
+				                                         
+				                                <f:facet name="header">
+				                                    Detalle del presupuesto de rentas
+				                                </f:facet>
+				
+				                                <p:column headerText="Cuenta" style="width: 20%"
+				                                filterBy="#{cuenta.codigoCuenta}" filterMatchMode="contains" sortBy="#{cuenta.codigoCuenta}">
+				                                    <h:outputText value="#{cuenta.codigoCuenta}" />
+				                                </p:column>
+				                                <p:column headerText="Descripción" style="width: 50%"
+				                                filterBy="#{cuenta.descripcionCuenta}" filterMatchMode="contains" sortBy="#{cuenta.descripcionCuenta}">
+				                                    <h:outputText value="#{cuenta.descripcionCuenta}" />
+				                                </p:column>
+				                                <p:column headerText="Valor"  style="width: 20%">
+				                                	<div align="right">
+					                                    <h:outputText value="#{cuenta.valorInicial}">
+					                                    	<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+					                                    </h:outputText>
+					                            	</div>
+				                                </p:column>
+				                                <p:column headerText="Opciones"  style="width: 10%">
+				                               	 <div align="center">
+													<p:commandButton id="btnEdit" icon="ui-icon-pencil" title="Editar"
+																update=":frmCargarCuentasPresupuesto:dialogNewRubroGastos" oncomplete="PF('dlgNewRubroGastos').show();"
+																actionListener="#{cargarPresupuestoView.action_edit_rentas}">
+														<f:attribute name="selectedRubro" value="#{cuenta}" />
+													</p:commandButton>
+												  </div>
+												</p:column>	
+				                            </p:dataTable>
+				                            
+				                            <div class="EmptyBox20"></div>
+				                                    
+				                                
+				                        </div>
+				                    </div>
+					            </div>
+					        </div>
+				        </h:panelGrid>
+				        
+				         <p:panel id="panelAgregarNuevoRentas" style="width:100%; border:none">
+				        	<div align="center">	
+				        		<p:commandButton id="btnAgregarRentas" value="Crear Nuevo Rubro de Rentas" actionListener="#{cargarPresupuestoView.action_asignarPresupuestoRentas}" oncomplete="PF('dlgNewRubroGastos').show();"/>
+				        		<p:commandButton id="btnAgregarHijosRentas" value="Agregar hijos" actionListener="#{cargarPresupuestoView.action_agregarHijosPresupuestoRenta}" oncomplete="PF('dlgNewHijosPresupuestoRenta').show();" update="@([id$=dialogNewHijosPresupuestoRenta])"/>
+				       		 </div>
+				        </p:panel>
+				        
+				        
+			        </h:panelGrid>
+				</p:tab>
+				
+				<p:tab id="presupuestoGastosTab" title="Presupuesto de Gastos">
+					<h:panelGrid columns="1" id="pnlPresupuestoGastosData">
+						<h:panelGrid columns="1"  rendered="#{cargarPresupuestoView.presupuestoGastosDTO != null}">
+							<div class="Container100">
+					            <div class="ContainerIndent">
+					                    
+		                    		<div class="Container100">
+				                        <div class="ContainerIndent">
+				                                
+				                            <p:dataTable id="presupuestoGastosData" var="cuenta" value="#{cargarPresupuestoView.presupuestoGastosDTO.detallesPresupuesto}" 
+				                                         rows="200" paginator="true" paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+				                                         rowsPerPageTemplate="300,400,500" emptyMessage="No existen cuentas del presupuesto" reflow="true" filterDelay="1000">
+				                                         
+				                               	<p:ajax event="filter" delay="1000" />
+				                                         
+				                                <f:facet name="header">
+				                                    Detalle del presupuesto de gastos
+				                                </f:facet>
+				
+				                                <p:column headerText="Cuenta" style="width: 20%"
+				                                filterBy="#{cuenta.codigoCuenta}" filterMatchMode="contains" sortBy="#{cuenta.codigoCuenta}">
+				                                    <h:outputText value="#{cuenta.codigoCuenta}" />
+				                                </p:column>
+				                                <p:column headerText="Descripción" style="width: 50%"
+				                                filterBy="#{cuenta.descripcionCuenta}" filterMatchMode="contains" sortBy="#{cuenta.descripcionCuenta}">
+				                                    <h:outputText value="#{cuenta.descripcionCuenta}" />
+				                                </p:column>
+				                                <p:column headerText="Valor"  style="width: 20%">
+				                                	<div align="right">
+					                                    <h:outputText value="#{cuenta.valorInicial}">
+					                                    	<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+					                                    </h:outputText>
+					                            	</div>
+				                                </p:column>
+				                                 <p:column headerText="Opciones" style="width: 10%">
+				                                	<div align="center">
+														<p:commandButton id="btnEditOther" icon="ui-icon-pencil" title="Editar"
+																	update=":frmCargarCuentasPresupuesto:dialogNewRubroGastos" oncomplete="PF('dlgNewRubroGastos').show();"
+																	actionListener="#{cargarPresupuestoView.action_edit_gastos}">
+															<f:attribute name="selectedRubro" value="#{cuenta}" />
+														</p:commandButton>
+													</div>
+												</p:column>	
+				                            </p:dataTable>
+				                            
+				                            <div class="EmptyBox20"></div>
+				                                    
+				                                
+				                        </div>
+				                    </div>
+					            </div>
+					        </div>
+				        </h:panelGrid>
+				       
+				        <p:panel id="panelAgregarNuevo" style="width:100%; border:none"> 
+				        	<div align="center">	
+				        		<p:commandButton id="btnAgregar" value="Crear Nuevo Rubro de Gastos" actionListener="#{cargarPresupuestoView.action_asignarPresupuestoGastos}" oncomplete="PF('dlgNewRubroGastos').show();"/>
+				       		 	<p:commandButton id="btnAgregarHijosGastos" value="Agregar hijos" actionListener="#{cargarPresupuestoView.action_agregarHijosPresupuestoGastos}" oncomplete="PF('dlgNewHijosPresupuestoGastos').show();" update="@([id$=dialogNewHijosPresupuestoGastos])"/>
+				       		 </div>
+				        </p:panel>
+			        </h:panelGrid>
+				</p:tab>
+			</p:tabView>
+			
+			<p:dialog id="dialogNewRubroGastos" widgetVar="dlgNewRubroGastos" draggable="true"
+						closable="false" resizable="false" modal="true" width="90%" height="500" position="center top">
+							
+							<p:growl id="msgDialog" showDetail="false" />
+							
+							<p:panel id="panelNuevoRubro" header="Rubro de Presupuesto">							
+							    <h:panelGrid columns="2" id="panelGrid" columnClasses="one,two">
+							    	
+							    	<h:outputText value="Código "/>
+									<p:inputText id="txtCodigo" binding="#{cargarPresupuestoView.txtCodigo}" maxlength="50"/>
+								
+									<h:outputText value="Descripción"/>
+									<h:panelGrid columns="1">
+										<p:inputTextarea id="txtDescripcion" rows="5" cols="30" counter="display" counterTemplate="{0} Caracteres Restantes." autoResize="false" binding="#{cargarPresupuestoView.txtDescripcion}" maxlength="200"/>
+										<h:outputText id="display" />
+									</h:panelGrid>
+
+									<h:outputText value=" Rubro presupuestal Padre"/>
+									<p:panelGrid>
+										<p:inputText id="txtDptoId" binding="#{cargarPresupuestoView.txtDptoId}" readonly="true"/>
+										<p:commandButton icon="ui-icon-search" action="#{cargarPresupuestoView.action_cargarRubros()}" update=":frmCargarCuentasPresupuesto:scrollPanelPpto, msgDialog"/>
+									</p:panelGrid>
+									
+									<h:outputText value=" Estado Registro"/>
+									<p:selectOneRadio id="sorActivo" binding="#{cargarPresupuestoView.sorActivo}" value="A">
+										<f:selectItem itemLabel="Activo" itemValue="A"/>
+										<f:selectItem itemLabel="Inactivo" itemValue="I"/>
+									</p:selectOneRadio>
+									
+									<p:inputText id="txtIdPk" binding="#{cargarPresupuestoView.txtPkId}" type="hidden"/>
+								</h:panelGrid>
+							</p:panel>
+							
+							<br />
+								
+							<div align="center">						   
+								<h:panelGrid id="panelBotones" columns="3">
+									<p:commandButton id="btnSave" value="Guardar" action="#{cargarPresupuestoView.action_guardar()}" update="frmCargarCuentasPresupuesto:presupuestosTabView:presupuestoRentasData, frmCargarCuentasPresupuesto:presupuestosTabView:presupuestoGastosData, panelNuevoRubro, msgDialog" />
+									<p:commandButton id="btnClear" value="Limpiar" action="#{cargarPresupuestoView.action_limpiar()}" update="panelNuevoRubro, msgDialog" />
+									<p:commandButton id="btnExit" value="Salir" action="#{cargarPresupuestoView.action_salir()}" update="panelNuevoRubro"/>
+								</h:panelGrid>	
+							</div>	
+					</p:dialog>	
+			 
+			 		<!--        Codigos Presupuestales Ingresos        -->
+					<!-- ************************* -->
+					<p:dialog modal="true" widgetVar="dlgCodigosPresupuestales" header="Codigos Presupuestales" draggable="false" closable="true"
+								resizable="true" width="90%" height="200px;" position="center"> 
+							
+							<p:growl id="menRubros" showDetail="false"/>
+							
+							<p:scrollPanel id="scrollPanelPpto" mode="native" style="width:100%; height:400px">
+										<p:dataTable id="presupuestoGastosData" var="cuenta"
+											value="#{cargarPresupuestoView.detallePresupuesto}"
+											rows="10" paginator="true"
+											paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+											rowsPerPageTemplate="10,15,20,30"
+											emptyMessage="No existen cuentas del presupuesto" reflow="true"
+											rowKey="#{cuenta.dptoId}"
+											selection="#{cargarPresupuestoView.rubroSeleccionado}"
+											filterDelay="1000">
+											
+											<p:ajax event="filter" delay="1000" />
+											
+					                        <p:column selectionMode="single" style="width:5%; text-align:center" />
+					
+											<p:column headerText="Cuenta" sortBy="#{cuenta.codigoCuenta}"
+												style="width: 15%" filterBy="#{cuenta.codigoCuenta}"
+												filterMatchMode="startsWith">
+												<h:outputText value="#{cuenta.codigoCuenta}" />
+											</p:column>
+											
+											<p:column headerText="Descripción"
+												sortBy="#{cuenta.descripcionCuenta}" style="width: 50%" filterBy="#{cuenta.descripcionCuenta}"
+												filterMatchMode="contains">
+												<h:outputText value="#{cuenta.descripcionCuenta}" />
+											</p:column>
+											
+											<p:column headerText="Valor Inicial" style="width: 10%">
+												<div align="right">
+													<h:outputText value="#{cuenta.valorInicial}">
+														<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+													</h:outputText>
+												</div>
+											</p:column>
+										</p:dataTable>
+									</p:scrollPanel>
+									
+									<div align="center">
+										<h:panelGrid id="btnSelecciona" columns="2">
+											<p:commandButton id="btnSeleccionar" value="Seleccionar" action="#{cargarPresupuestoView.action_validarRubroSeleccionado}" update="menRubros, :frmCargarCuentasPresupuesto:txtDptoId"/>
+										</h:panelGrid>
+									</div>
+						
+									<div class="EmptyBox20" />
+							</p:dialog>
+					<!-- ************************* -->
+					
+					<p:dialog id="dialogNewHijosPresupuestoRenta" widgetVar="dlgNewHijosPresupuestoRenta" draggable="true"
+						closable="false" resizable="false" modal="true" width="90%" height="600" position="center top">
+							
+							<p:growl id="msgDialogNewHijosPresupuestoRenta" showDetail="false" />
+							
+							<p:panel id="panelNuevoPresupuestoRenta" header="Rubros de Presupuesto de Renta">							
+							   <p:dataTable id="presupuestoHojaRenta" var="presupuesto" value="#{cargarPresupuestoView.detallePresupuestoDTO}" 
+				                                         rows="10" paginator="true" paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+				                                         rowsPerPageTemplate="10,20,30" emptyMessage="No existen cuentas del presupuesto" reflow="true" filterDelay="1000">
+				                                         
+				                                <p:ajax event="filter" delay="1000" />
+				                                         
+				                                <f:facet name="header">
+				                                    Detalle del presupuesto de Renta
+				                                </f:facet>
+				
+				                                <p:column headerText="Cuenta" style="width: 25%"
+				                                filterBy="#{presupuesto.codigoCuenta}" filterMatchMode="contains" sortBy="#{presupuesto.codigoCuenta}">
+				                                    <h:outputText value="#{presupuesto.codigoCuenta}" />
+				                                </p:column>
+				                                <p:column headerText="Descripción" style="width: 40%"
+				                                filterBy="#{presupuesto.descripcionCuenta}" filterMatchMode="contains" sortBy="#{presupuesto.descripcionCuenta}">
+				                                    <h:outputText value="#{presupuesto.descripcionCuenta}" />
+				                                </p:column>
+				                                <p:column headerText="Saldo disponible" style="width: 25%"
+				                                filterBy="#{presupuesto.valorDespuesDeModificaciones}" filterMatchMode="contains" sortBy="#{presupuesto.valorDespuesDeModificaciones}">
+				                                    <h:outputText value="#{presupuesto.valorDespuesDeModificaciones}">
+					                                    	<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+					                                </h:outputText>
+				                                </p:column>
+				                                <p:column headerText="Opciones"  style="width: 10%">
+				                               	 <div align="center">
+													<p:commandButton id="btnAdd" icon="ui-icon-plus" title="Agregar"
+																actionListener="#{cargarPresupuestoView.action_cargarNuevaHojaPadreRenta}"
+																oncomplete="PF('dlgAgregarHijosPresupuestoRenta').show();" 
+																update="@([id$=dialogAgregarHijosPresupuestoRenta]), @([id$=presupuestoNuevasRentas])">
+														<f:attribute name="selectedPresupuesto" value="#{presupuesto}" />
+													</p:commandButton>
+												  </div>
+												</p:column>
+				               </p:dataTable>
+				
+							</p:panel>
+							
+							<br />
+								
+							<div align="center">						   
+								<h:panelGrid id="panelBotonesNuevoPresupuestoRenta" columns="1">
+									<p:commandButton id="btnExitNuevoPresupuestoRenta" value="Salir" action="#{cargarPresupuestoView.action_salir_crearHijosPresupuestoRenta()}" update="panelNuevoPresupuestoRenta"/>
+								</h:panelGrid>	
+							</div>	
+					</p:dialog>	
+					<p:dialog id="dialogNewHijosPresupuestoGastos" widgetVar="dlgNewHijosPresupuestoGastos" draggable="true"
+						closable="false" resizable="false" modal="true" width="90%" height="600" position="center top">
+							
+							<p:growl id="msgDialogNewHijosPresupuestoGastos" showDetail="false" />
+							
+							<p:panel id="panelNuevoPresupuestoGastos" header="Rubros de Presupuesto de Gastos">							
+							   <p:dataTable id="presupuestoHojaGastos" var="presupuesto" value="#{cargarPresupuestoView.detallePresupuestoDTO}" 
+				                                         rows="10" paginator="true" paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+				                                         rowsPerPageTemplate="10,20,30" emptyMessage="No existen cuentas del presupuesto" reflow="true" filterDelay="1000">
+				                                         
+				                                <p:ajax event="filter" delay="1000" />
+				                                         
+				                                <f:facet name="header">
+				                                    Detalle del presupuesto de Gastos
+				                                </f:facet>
+				
+				                                <p:column headerText="Cuenta" style="width: 25%"
+				                                filterBy="#{presupuesto.codigoCuenta}" filterMatchMode="contains" sortBy="#{presupuesto.codigoCuenta}">
+				                                    <h:outputText value="#{presupuesto.codigoCuenta}" />
+				                                </p:column>
+				                                <p:column headerText="Descripción" style="width: 40%"
+				                                filterBy="#{presupuesto.descripcionCuenta}" filterMatchMode="contains" sortBy="#{presupuesto.descripcionCuenta}">
+				                                    <h:outputText value="#{presupuesto.descripcionCuenta}" />
+				                                </p:column>
+				                                <p:column headerText="Saldo disponible" style="width: 25%"
+				                                filterBy="#{presupuesto.valorDespuesDeModificaciones}" filterMatchMode="contains" sortBy="#{presupuesto.valorDespuesDeModificaciones}">
+				                                    <h:outputText value="#{presupuesto.valorDespuesDeModificaciones}">
+					                                    	<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+					                                </h:outputText>
+				                                </p:column>
+				                                <p:column headerText="Opciones"  style="width: 10%">
+				                               	 <div align="center">
+													<p:commandButton id="btnAdd" icon="ui-icon-plus" title="Agregar"
+																actionListener="#{cargarPresupuestoView.action_cargarNuevaHojaPadreGastos}"
+																oncomplete="PF('dlgAgregarHijosPresupuestoGastos').show();" 
+																update="@([id$=dialogAgregarHijosPresupuestoGastos]), @([id$=presupuestoNuevasGastos])" >
+														<f:attribute name="selectedPresupuesto" value="#{presupuesto}" />
+													</p:commandButton>
+												  </div>
+												</p:column>
+				               </p:dataTable>
+				
+							</p:panel>
+							
+							<br />
+								
+							<div align="center">						   
+								<h:panelGrid id="panelBotonesNuevoPresupuestoGastos" columns="1">
+									<p:commandButton id="btnExitNuevoPresupuestoGastos" value="Salir" action="#{cargarPresupuestoView.action_salir_crearHijosPresupuestoGastos()}" update="panelNuevoPresupuestoGastos" />
+								</h:panelGrid>	
+							</div>	
+					</p:dialog>	
+					<p:dialog id="dialogAgregarHijosPresupuestoRenta" widgetVar="dlgAgregarHijosPresupuestoRenta" draggable="true"
+						closable="false" resizable="false" modal="true" width="90%" height="600" position="center top">
+							
+							<p:growl id="msgDialogAgregarHijosPresupuestoRenta" showDetail="false" />
+							
+							<p:panel id="panelAgregarHijosPresupuestoRenta" header="Rubro de Presupuesto de Renta">
+								<h:panelGrid columns="2">
+									<h:outputLabel value="Rubro presupuestal Padre"/>
+									<p:spacer width="5"></p:spacer>
+									<p:outputLabel value="Código "/>
+									<p:outputLabel value="#{cargarPresupuestoView.detallePresupuestoRenta.codigoCuenta}"/>
+									<p:outputLabel value="Descripción "/>
+									<p:outputLabel value="#{cargarPresupuestoView.detallePresupuestoRenta.descripcionCuenta}"/>
+									<p:outputLabel value="Saldo disponible "/>
+									<p:outputLabel value="#{cargarPresupuestoView.detallePresupuestoRenta.valorDespuesDeModificaciones}">
+										<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+									</p:outputLabel>
+								</h:panelGrid>
+								<h:panelGrid columns="2">
+									<p:outputLabel value="Código "/>
+									<p:outputLabel value="#{cargarPresupuestoView.codigoCuentaNuevoPresupuestoRenta}"/>
+									
+									<p:outputLabel value="Descripción "/>
+									<h:panelGrid columns="1">
+										<p:inputTextarea rows="5" cols="30" counter="displayDescripcionNuevoPresupuestoRenta" counterTemplate="{0} Caracteres Restantes." 
+											autoResize="false" binding="#{cargarPresupuestoView.txtDecripcionCuentaNuevoPresupuestoRenta}" 
+											maxlength="200"/>
+										<h:outputText id="displayDescripcionNuevoPresupuestoRenta" />
+									</h:panelGrid>
+																		
+									<p:outputLabel value="Valor inicial " />
+									<pe:inputNumber value="#{cargarPresupuestoView.valorInicialNuevoPresupuestoRenta}">
+											<p:ajax update="@this, msgDialogAgregarHijosPresupuestoRenta, @([id$=btnAgregarNuevoPresupuestoRenta])" 
+										listener="#{cargarPresupuestoView.validarValorInicialNuevoPresupuestoRenta}" />
+									</pe:inputNumber>
+									
+									<p:outputLabel value="Estado registro "/>
+									<p:outputLabel value="#{cargarPresupuestoView.estadoCuentaNuevoPresupuestoRenta}"/>
+									
+									<p:commandButton id="btnAgregarNuevoPresupuestoRenta" value="Agregar" update="panelAgregarHijosPresupuestoRenta, 
+									msgDialogAgregarHijosPresupuestoRenta, @([id$=presupuestoNuevasRentas])" 
+										action="#{cargarPresupuestoView.agregarNuevoPresupuestoRenta}"
+										binding="#{cargarPresupuestoView.btnGuardarNuevaHojaRenta}" disabled="true"/>
+									<p:commandButton value="Limpiar" action="#{cargarPresupuestoView.action_limpiar_agregarHijosPrespuestoRenta}"
+									update="panelAgregarHijosPresupuestoRenta" />
+								</h:panelGrid>
+								<p:panel>
+									 <p:dataTable id="presupuestoNuevasRentas" var="presupuesto" value="#{cargarPresupuestoView.listaRubrosRentaDadoPadre}" 
+				                                         rows="10" paginator="true" paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+				                                         rowsPerPageTemplate="10,20,30" emptyMessage="No existen rubros del presupuesto" reflow="true" filterDelay="1000">
+				                                         
+				                                <p:ajax event="filter" delay="1000" />
+				                                         
+				                                <f:facet name="header">
+				                                    Detalle del presupuesto de Renta
+				                                </f:facet>
+				
+				                                <p:column headerText="Cuenta" style="width: 25%"
+				                                filterBy="#{presupuesto.codigoCuenta}" filterMatchMode="contains" sortBy="#{presupuesto.codigoCuenta}">
+				                                    <h:outputText value="#{presupuesto.codigoCuenta}" />
+				                                </p:column>
+				                                <p:column headerText="Descripción" style="width: 40%"
+				                                filterBy="#{presupuesto.descripcionCuenta}" filterMatchMode="contains" sortBy="#{presupuesto.descripcionCuenta}">
+				                                    <h:outputText value="#{presupuesto.descripcionCuenta}" />
+				                                </p:column>
+				                                <p:column headerText="Valor inicial" style="width: 25%"
+				                                filterBy="#{presupuesto.valorDespuesDeModificaciones}" filterMatchMode="contains" sortBy="#{presupuesto.valorDespuesDeModificaciones}">
+				                                    <h:outputText value="#{presupuesto.valorDespuesDeModificaciones}">
+					                                    	<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+					                                </h:outputText>
+				                                </p:column>
+				                                 <p:column headerText="Opciones"  style="width: 10%">
+				                               	 <div align="center">
+													<p:commandButton id="btnUpdate" icon="ui-icon-pencil" title="Editar"
+																actionListener="#{cargarPresupuestoView.action_cargarRubroRentaNuevaHoja}"
+																oncomplete="PF('dlgEditarValorInicialRenta').show();" update="@([id$=dialogEditarValorInicialRenta])">
+														<f:attribute name="selectedPresupuesto" value="#{presupuesto}" />
+													</p:commandButton>
+												  </div>
+												</p:column>
+												<f:facet name="footer">
+													<h:outputText value="Restante saldo rubro presupuestal padre: " />
+													<h:outputText value="#{cargarPresupuestoView.saldoRestanteNuevoRubroRenta}">
+					                                    	<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+					                                </h:outputText>
+				                                </f:facet>
+				                      </p:dataTable>
+								</p:panel>
+							</p:panel>
+							
+							<br />
+								
+							<div align="center">						   
+								<h:panelGrid id="panelBotonesAgregarHijosPresupuestoRenta" columns="2">
+									<p:commandButton id="btnGuardarNuevoPresupuestoRenta" value="Guardar" action="#{cargarPresupuestoView.action_guardar_agregarHijosPresupuestoRenta()}" 
+									update="panelAgregarHijosPresupuestoRenta, @([id$=presupuestoHojaRenta]), msgDialogAgregarHijosPresupuestoRenta"/>
+									<p:commandButton id="btnExitAgregarHijosPresupuestoRenta" value="Salir" action="#{cargarPresupuestoView.action_salir_agregarHijosPresupuestoRenta()}" 
+									update="panelAgregarHijosPresupuestoRenta, @([id$=presupuestoHojaRenta]), msgDialogAgregarHijosPresupuestoRenta"/>
+								</h:panelGrid>	
+							</div>	
+					</p:dialog>
+					<p:dialog id="dialogAgregarHijosPresupuestoGastos" widgetVar="dlgAgregarHijosPresupuestoGastos" draggable="true"
+						closable="false" resizable="false" modal="true" width="90%" height="600" position="center top">
+							
+							<p:growl id="msgDialogAgregarHijosPresupuestoGastos" showDetail="false" />
+							
+							<p:panel id="panelAgregarHijosPresupuestoGastos" header="Rubro de Presupuesto de Gastos">
+								<h:panelGrid columns="2">
+									<h:outputLabel value="Rubro presupuestal Padre"/>
+									<p:spacer width="5"></p:spacer>
+									<p:outputLabel value="Código "/>
+									<p:outputLabel value="#{cargarPresupuestoView.detallePresupuestoGastos.codigoCuenta}"/>
+									<p:outputLabel value="Descripción "/>
+									<p:outputLabel value="#{cargarPresupuestoView.detallePresupuestoGastos.descripcionCuenta}"/>
+									<p:outputLabel value="Saldo disponible "/>
+									<p:outputLabel value="#{cargarPresupuestoView.detallePresupuestoGastos.valorDespuesDeModificaciones}">
+										<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+									</p:outputLabel>
+								</h:panelGrid>
+								<h:panelGrid columns="2">
+									<p:outputLabel value="Código "/>
+									<p:outputLabel value="#{cargarPresupuestoView.codigoCuentaNuevoPresupuestoGastos}"/>
+									
+									<p:outputLabel value="Descripción "/>
+									<h:panelGrid columns="1">
+										<p:inputTextarea rows="5" cols="30" counter="displayDescripcionNuevoPresupuestoGastos" counterTemplate="{0} Caracteres Restantes." 
+											autoResize="false" binding="#{cargarPresupuestoView.txtDecripcionCuentaNuevoPresupuestoGastos}" 
+											maxlength="200"/>
+										<h:outputText id="displayDescripcionNuevoPresupuestoGastos" />
+									</h:panelGrid>
+																		
+									<p:outputLabel value="Valor inicial " />
+									<pe:inputNumber value="#{cargarPresupuestoView.valorInicialNuevoPresupuestoGastos}">
+											<p:ajax update="@this, msgDialogAgregarHijosPresupuestoGastos, @([id$=btnAgregarNuevoPresupuestoGastos])" 
+										listener="#{cargarPresupuestoView.validarValorInicialNuevoPresupuestoGastos}" />
+									</pe:inputNumber>
+									
+									<p:outputLabel value="Estado registro "/>
+									<p:outputLabel value="#{cargarPresupuestoView.estadoCuentaNuevoPresupuestoGastos}"/>
+									
+									<p:commandButton id="btnAgregarNuevoPresupuestoGastos" value="Agregar" update="panelAgregarHijosPresupuestoGastos, 
+									msgDialogAgregarHijosPresupuestoGastos, @([id$=presupuestoNuevasGastos])" 
+										action="#{cargarPresupuestoView.agregarNuevoPresupuestoGastos}"
+										binding="#{cargarPresupuestoView.btnGuardarNuevaHojaGastos}" disabled="true"/>
+									<p:commandButton value="Limpiar" action="#{cargarPresupuestoView.action_limpiar_agregarHijosPrespuestoGastos}"
+									update="panelAgregarHijosPresupuestoGastos" />
+								</h:panelGrid>
+								<p:panel>
+									 <p:dataTable id="presupuestoNuevasGastos" var="presupuesto" value="#{cargarPresupuestoView.listaRubrosGastosDadoPadre}" 
+				                                         rows="10" paginator="true" paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+				                                         rowsPerPageTemplate="10,20,30" emptyMessage="No existen rubros del presupuesto" reflow="true" filterDelay="1000">
+				                                         
+				                                <p:ajax event="filter" delay="1000" />
+				                                         
+				                                <f:facet name="header">
+				                                    Detalle del presupuesto de Gastos
+				                                </f:facet>
+				
+				                                <p:column headerText="Cuenta" style="width: 25%"
+				                                filterBy="#{presupuesto.codigoCuenta}" filterMatchMode="contains" sortBy="#{presupuesto.codigoCuenta}">
+				                                    <h:outputText value="#{presupuesto.codigoCuenta}" />
+				                                </p:column>
+				                                <p:column headerText="Descripción" style="width: 40%"
+				                                filterBy="#{presupuesto.descripcionCuenta}" filterMatchMode="contains" sortBy="#{presupuesto.descripcionCuenta}">
+				                                    <h:outputText value="#{presupuesto.descripcionCuenta}" />
+				                                </p:column>
+				                                <p:column headerText="Valor inicial" style="width: 25%"
+				                                filterBy="#{presupuesto.valorDespuesDeModificaciones}" filterMatchMode="contains" sortBy="#{presupuesto.valorDespuesDeModificaciones}">
+				                                    <h:outputText value="#{presupuesto.valorDespuesDeModificaciones}">
+					                                    	<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+					                                </h:outputText>
+				                                </p:column>
+				                                <p:column headerText="Opciones"  style="width: 10%">
+				                               	 <div align="center">
+													<p:commandButton id="btnUpdate" icon="ui-icon-pencil" title="Editar"
+																actionListener="#{cargarPresupuestoView.action_cargarRubroGastosNuevaHoja}"
+																oncomplete="PF('dlgEditarValorInicialGastos').show();" update="@([id$=dialogEditarValorInicialGastos])">
+														<f:attribute name="selectedPresupuesto" value="#{presupuesto}" />
+													</p:commandButton>
+												  </div>
+												</p:column>
+												<f:facet name="footer">
+													<h:outputText value="Restante saldo rubro presupuestal padre: " />
+													<h:outputText value="#{cargarPresupuestoView.saldoRestanteNuevoRubroGastos}">
+					                                    	<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+					                                </h:outputText>
+				                                </f:facet>
+				                      </p:dataTable>
+								</p:panel>
+							</p:panel>
+							
+							<br />
+								
+							<div align="center">						   
+								<h:panelGrid id="panelBotonesAgregarHijosPresupuestoGastos" columns="2">
+									<p:commandButton id="btnGuardarNuevoPresupuestoGastos" value="Guardar" action="#{cargarPresupuestoView.action_guardar_agregarHijosPresupuestoGastos()}" 
+									update="panelAgregarHijosPresupuestoGastos, @([id$=presupuestoHojaGastos]), msgDialogAgregarHijosPresupuestoGastos"/>
+									<p:commandButton id="btnExitAgregarHijosPresupuestoGastos" value="Salir" action="#{cargarPresupuestoView.action_salir_agregarHijosPresupuestoGastos()}" 
+									update="panelAgregarHijosPresupuestoGastos, @([id$=presupuestoHojaGastos]), msgDialogAgregarHijosPresupuestoGastos"/>
+								</h:panelGrid>	
+							</div>	
+					</p:dialog>
+					
+					<p:dialog id="dialogEditarValorInicialRenta" widgetVar="dlgEditarValorInicialRenta" draggable="true"
+						closable="true" resizable="false" modal="true" width="30%" height="170" position="center top">
+							
+							<p:growl id="msgDialogEditarValorInicialRenta" showDetail="false" />
+							
+							<p:panel id="panelEditarValorInicialRenta" header="Rubro de Presupuesto">
+								<h:panelGrid columns="2">
+									<p:outputLabel value="Valor inicial " />
+									<pe:inputNumber value="#{cargarPresupuestoView.valorInicialNuevaHojaRenta}" />
+								</h:panelGrid>
+							</p:panel>
+							<br />
+							<div align="center">						   
+								<h:panelGrid id="panelBotonesEditarValorInicialRenta" columns="1">
+									<p:commandButton id="btnEditarValorInicialRenta" value="Actualizar" action="#{cargarPresupuestoView.action_actualizarValorInicialRentaNuevaHoja}" 
+									update="dialogEditarValorInicialRenta, @([id$=presupuestoNuevasRentas])"/>
+								</h:panelGrid>	
+							</div>	
+					</p:dialog>
+					 <p:dialog id="dialogEditarValorInicialGastos" widgetVar="dlgEditarValorInicialGastos" draggable="true"
+						closable="true" resizable="false" modal="true" width="30%" height="170" position="center top">
+							
+							<p:growl id="msgDialogEditarValorInicial" showDetail="false" />
+							
+							<p:panel id="panelEditarValorInicialGastos" header="Rubro de Presupuesto">
+								<h:panelGrid columns="2">
+									<p:outputLabel value="Valor inicial " />
+									<pe:inputNumber value="#{cargarPresupuestoView.valorInicialNuevaHojaGastos}" />
+								</h:panelGrid>
+							</p:panel>
+							<br />
+							<div align="center">						   
+								<h:panelGrid id="panelBotonesEditarValorInicialGastos" columns="1">
+									<p:commandButton id="btnEditarValorInicialGastos" value="Actualizar" action="#{cargarPresupuestoView.action_actualizarValorInicialGastosNuevaHoja}" 
+									update="dialogEditarValorInicialGastos, @([id$=presupuestoNuevasGastos])"/>
+								</h:panelGrid>	
+							</div>	
+					</p:dialog>
+									
+		</h:form>
+
+	</ui:define>
+
+</ui:composition>

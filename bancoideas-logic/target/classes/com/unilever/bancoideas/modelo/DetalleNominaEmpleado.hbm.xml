@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated 9/08/2019 11:14:06 AM by Hibernate Tools 4.0.0 -->
+<hibernate-mapping>
+    <class name="com.unilever.bancoideas.modelo.DetalleNominaEmpleado" table="detalle_nomina_empleado" schema="public">
+        <id name="dnoeId" type="java.lang.Integer">
+            <column name="dnoe_id" />
+            <generator class="identity" />
+        </id>
+        <many-to-one name="nominaEmpleado" class="com.unilever.bancoideas.modelo.NominaEmpleado" fetch="select">
+            <column name="noem_id" not-null="true" />
+        </many-to-one>
+        <property name="salarioLiquidado" type="java.lang.Double">
+            <column name="salario_liquidado" not-null="true" />
+        </property>
+        <property name="auxilioTransporte" type="java.lang.Double">
+            <column name="auxilio_transporte" not-null="true" />
+        </property>
+        <property name="auxilioAlimentacion" type="java.lang.Double">
+            <column name="auxilio_alimentacion" not-null="true" />
+        </property>
+        <property name="valorHorasExtras" type="java.lang.Double">
+            <column name="valor_horas_extras" not-null="true" />
+        </property>
+        <property name="salud" type="java.lang.Double">
+            <column name="salud" not-null="true" />
+        </property>
+        <property name="pension" type="java.lang.Double">
+            <column name="pension" not-null="true" />
+        </property>
+        <property name="usuCreador" type="java.lang.String">
+            <column name="usu_creador" length="100" not-null="true" />
+        </property>
+        <property name="usuModificador" type="java.lang.String">
+            <column name="usu_modificador" length="100" />
+        </property>
+        <property name="fechaCreacion" type="java.util.Date">
+            <column name="fecha_creacion" length="13" not-null="true" />
+        </property>
+        <property name="fechaModificacion" type="java.util.Date">
+            <column name="fecha_modificacion" length="13" />
+        </property>
+        <property name="estadoRegistro" type="java.lang.String">
+            <column name="estado_registro" length="1" not-null="true" />
+        </property>
+    </class>
+</hibernate-mapping>

@@ -1,0 +1,519 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:pe="http://primefaces.org/ui/extensions" 
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+<ui:define name="content">
+
+	<p:ajaxStatus onstart="PF('statusDialog').show()"
+		onsuccess="PF('statusDialog').hide()" />
+	<p:dialog modal="true" widgetVar="statusDialog" header="Cargando"
+		draggable="false" closable="false">
+		<p:graphicImage
+			value="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/ajaxloadingbar.gif" />
+	</p:dialog>
+
+	<!-- Expired session -->
+<p:idleMonitor onactive="PF('sessionTimeOutDialog').show();"
+	timeout="#{session.maxInactiveInterval * 1000}" />
+<p:dialog modal="true" widgetVar="sessionTimeOutDialog"
+	header="Sesión terminada" draggable="false" closable="false">
+	<h:outputText value="La sesión ha finalizado" />
+	<input id="confirmBackToLogin" type="button" value="Iniciar sesión"
+		onclick="window.location='#{facesContext.externalContext.requestContextPath}/index.jsp';" />
+</p:dialog>
+
+<script type="text/javascript">
+	function showStatus() {
+	    statusDialog.show();
+	}
+	 
+	function hideStatus() {
+	    statusDialog.hide();
+	}
+</script>
+
+<style type="text/css">
+	.one {
+		width: 20%;
+	}
+	
+	.two {
+		width: 80%;
+	}
+	
+</style>
+
+<div align="center">
+<h:form id="frmConceptoNomina">
+
+	<p:growl id="growl" autoUpdate="true" />
+
+	<p:panel id="pnlGestionarConceptoNomina" header="Gestionar Concepto Nómina" style="width: 90%;">
+		
+			<h:panelGrid columns="2">
+			
+				<p:outputLabel value="Concepto Nómina:" for="conceptoNomina" style="width: 100%;" />
+				<h:panelGrid columns="2">			
+					<p:inputText id="conceptoNomina" binding="#{gluoConceptoNominaView.conceptoNomina}"
+						readonly="true" style="width: 90%;" />
+					<p:commandButton style="width:100%" icon="ui-icon-search"					
+						onclick="PF('dialogConceptoNomina').show();"/>
+				</h:panelGrid>
+				
+				
+				<p:outputLabel id="lblConcepto"  value= "Tipo Concepto: "
+					 style="width: 100%;"/>
+				<p:outputLabel id="tipoConceptoNomina" binding="#{gluoConceptoNominaView.tipoConceptoNomina}"
+					style="width: 100%;" />
+			
+			
+				<p:outputLabel value="Detalle Presupuesto:" for="detallePresupuesto" />
+				<h:panelGrid columns="2">			
+					<p:inputText id="detallePresupuesto" binding="#{gluoConceptoNominaView.detallePresupuesto}"
+						readonly="true"  />
+					<p:commandButton style="width:100%" icon="ui-icon-search"
+						disabled="#{gluoConceptoNominaView.showBtnDialogDetallePresupuesto}"
+						onclick="PF('dialogDetallePresupuesto').show();"/>
+				</h:panelGrid>
+				
+				
+				<p:outputLabel value="Cuenta Contable:" for="cuentaContable" />
+				<h:panelGrid columns="2">			
+					<p:inputText id="cuentaContable" binding="#{gluoConceptoNominaView.cuentaContable}"
+						readonly="true"  />
+					<p:commandButton style="width:100%" icon="ui-icon-search"
+						disabled="#{gluoConceptoNominaView.showBtnDialogCuentasContables}"
+						onclick="PF('dialogCuentasContables').show();"/>
+				</h:panelGrid>
+				
+				
+				<p:outputLabel value="Estado:" for="estado"/>
+				<p:selectOneRadio id="estado" binding="#{gluoConceptoNominaView.estado}" >
+					<f:selectItem itemLabel="Activo" itemValue="A" />
+					<f:selectItem itemLabel="Inactivo" itemValue="I" />
+				</p:selectOneRadio>	
+				
+				<p:outputLabel value="Aplica Para:" for="aplicaPara" />
+				<p:selectOneRadio id="aplicaPara" binding="#{gluoConceptoNominaView.aplicaPara}" >
+					<f:selectItem itemLabel="Cargo y Grado" itemValue="C" />
+					<f:selectItem itemLabel="Empleado" itemValue="E" />
+					<f:selectItem itemLabel="Todos" itemValue="T" />
+					<p:ajax event="change"
+						listener="#{gluoConceptoNominaView.listener_aplicar_para}"
+						update=":frmConceptoNomina" />
+				</p:selectOneRadio>	
+					
+			</h:panelGrid>
+			
+			<p:spacer height="10"></p:spacer>
+		
+		<p:accordionPanel id="acorPanelEmpleado" style="width: 80%;" rendered="#{gluoConceptoNominaView.showBtnDialogEmpleados}" >
+        	<p:tab title="Selección Empleado" rendered="#{gluoConceptoNominaView.showBtnDialogEmpleados}">
+	            
+	            <p:dataTable id="tblEmpleadoSeleccionado" var="empleadoSeleccionado" rows="200" style="width: 95%;"
+								value="#{gluoConceptoNominaView.listEmpleadosSeleccionados}"
+								emptyMessage="No hay empleados seleccionados"
+								rendered="#{gluoConceptoNominaView.showBtnDialogEmpleados}">
+								
+		                        <p:column headerText="Identificación" filterBy="#{empleadoSeleccionado.identificacion}"
+									filterMatchMode="contains">
+									<p:outputLabel value="#{empleadoSeleccionado.identificacion}" />
+								</p:column>
+								
+								<p:column headerText="Código" filterBy="#{empleadoSeleccionado.codigo}"
+									filterMatchMode="contains">
+									<p:outputLabel value="#{empleadoSeleccionado.codigo}" />
+								</p:column>
+								
+								<p:column headerText="Primer Nombre" filterBy="#{empleadoSeleccionado.primerNombre}"
+									filterMatchMode="contains">
+									<p:outputLabel value="#{empleadoSeleccionado.primerNombre}" />
+								</p:column>
+								
+								<p:column headerText="Segundo Nombre" filterBy="#{empleadoSeleccionado.segundoNombre}"
+									filterMatchMode="contains">
+									<p:outputLabel value="#{empleadoSeleccionado.segundoNombre}" />
+								</p:column>
+								
+								<p:column headerText="Primer Apellido" filterBy="#{empleadoSeleccionado.primerApellido}"
+									filterMatchMode="contains">
+									<p:outputLabel value="#{empleadoSeleccionado.primerApellido}" />
+								</p:column>
+								
+								<p:column headerText="Segundo Apellido" filterBy="#{empleadoSeleccionado.segundoApellido}"
+									filterMatchMode="contains">
+									<p:outputLabel value="#{empleadoSeleccionado.segundoApellido}" />
+								</p:column>
+								
+								<p:column headerText="Eliminar" 
+									style="width: 10%" >
+									<p:commandButton icon="ui-icon-close" update=":frmConceptoNomina" action="#{gluoConceptoNominaView.action_eliminar_empleado}">
+										<f:setPropertyActionListener value="#{empleadoSeleccionado}" target="#{gluoConceptoNominaView.empleadoSeleccionado}"/>
+									</p:commandButton>
+								</p:column>
+		                        
+							</p:dataTable>
+							<p:spacer height="10"></p:spacer>
+	            <div align="center">
+	              <p:commandButton id="btnAddEmpl" icon="ui-icon-plus" value="Adicionar Empleado" oncomplete="PF('dialogEmpleado').show();" rendered="true"/>
+	            </div>
+	        </p:tab>
+	        
+	    </p:accordionPanel>
+
+
+		<p:accordionPanel id="acorPanelCargoGrado" style="width: 80%;" rendered="#{gluoConceptoNominaView.showBtnDialogCargoGrado}">
+        	
+	        <p:tab title="Selección Cargo Grado" rendered="#{gluoConceptoNominaView.showBtnDialogCargoGrado}">
+	            
+	            <p:dataTable id="tblCargoSeleccionado" var="cargoSeleccionado" rows="200" style="width: 95%;"
+								value="#{gluoConceptoNominaView.listCargoGradoSeleccionados}"
+								emptyMessage="No hay cargos seleccionados"
+								rendered="#{gluoConceptoNominaView.showBtnDialogCargoGrado}">
+								
+		                        
+		                        <p:column headerText="Descripción Cargo Empleado" filterBy="#{cargoSeleccionado.descripcionCargoEmpleado}"
+									filterMatchMode="contains">
+									<p:outputLabel value="#{cargoSeleccionado.descripcionCargoEmpleado}" />
+								</p:column>
+								
+								<p:column headerText="Grado Salarial" filterBy="#{cargoSeleccionado.gradoSalarial}"
+									filterMatchMode="contains">
+									<p:outputLabel value="#{cargoSeleccionado.gradoSalarial}" />
+								</p:column>
+							
+							<p:column headerText="Eliminar" 
+									style="width: 10%" >
+									<p:commandButton icon="ui-icon-close" update=":frmConceptoNomina" action="#{gluoConceptoNominaView.action_eliminar_grado_salarial}">
+										<f:setPropertyActionListener value="#{cargoSeleccionado}" target="#{gluoConceptoNominaView.cargoGradoSeleccionado}" />
+									</p:commandButton>
+							</p:column>
+		                        
+			 </p:dataTable>
+	            <p:spacer height="10"></p:spacer>
+	            <div align="center">
+	           		 <p:commandButton id="btnAddCargo" icon="ui-icon-plus" value="Adicionar Cargo Grado" oncomplete="PF('dialogCargoGrado').show();" rendered="true"/>
+	            </div>
+	        </p:tab>
+	        
+	    </p:accordionPanel>		
+		<p:spacer height="10"></p:spacer>
+		
+		   <div align="center">
+				<h:panelGrid columns="2">
+				<p:outputLabel value="Periodicidad:"  for="periodicidad" />
+						<p:inputText id="periodicidad" binding="#{gluoConceptoNominaView.periodicidad}"
+						 	>
+							<p:ajax event="blur"
+								listener="#{gluoConceptoNominaView.listener_periodicidad}"
+								update=":frmConceptoNomina" />
+						</p:inputText>
+				</h:panelGrid>		
+			</div>
+			
+			<p:spacer height="10"></p:spacer>
+			<p:accordionPanel id="acorPeriodicidad" style="width: 80%;">
+        	
+	        <p:tab title="Fecha Pago">
+	            
+	           <p:dataTable var="conceptoNomina" style="text-align: center; width: 90%;"
+					value="#{gluoConceptoNominaView.listFechaLiquidacionDTOs}"
+					emptyMessage="No se han encontrado fechas de liquidación" >
+					
+					<p:column headerText="Mes Pago">
+						<p:inputText value="#{conceptoNomina.mesPago}" />				
+					</p:column>
+					
+					<p:column headerText="Día Pago">
+						<p:inputText value="#{conceptoNomina.diaPago}" />				
+					</p:column>
+					
+					<p:column headerText="Eliminar">
+						<p:commandButton id="btnEliminarConceptoNomina" icon="ui-icon-close"
+							title="Eliminar" update=":frmConceptoNomina"
+							actionListener="#{gluoConceptoNominaView.listener_periodicidad}">
+							<f:attribute name="selectedConceptoNomina" value="#{conceptoNomina}" />
+						</p:commandButton>								
+					</p:column>				
+				</p:dataTable>	
+	           
+	        </p:tab>
+	        
+	    </p:accordionPanel>		
+			
+		
+		
+		<br/>
+		<p:commandButton id="btnGuardar" value="Guardar"
+			action="#{gluoConceptoNominaView.action_crear}" update=":frmConceptoNomina" />
+			
+		<p:commandButton id="btnLimpiar" value="Limpiar"
+			action="#{gluoConceptoNominaView.action_limpiar}" update=":frmConceptoNomina" />
+	</p:panel>
+	
+	<!-- ************************************************** -->
+	<!-- **			DIÁLOGO CONCEPTO NÓMINA		 	     ** -->
+	<!-- ************************************************** -->
+	<p:dialog widgetVar="dialogConceptoNomina" header="Listado Conceptos Nómina"
+		draggable="true" closable="true" modal="true" height="400" width="90%">
+		<p:dataTable id="conceptoNominaDataTable" style="text-align: center;"
+			var="conceptoNomina"
+			value="#{gluoConceptoNominaView.listConceptoNominaDTOs}"
+			selection="#{gluoConceptoNominaView.selectedConceptoNominaDTO}"
+			selectionMode="single"
+			paginator="true"
+			rows="10"
+			rowKey="#{conceptoNomina.conoId}">
+			
+			<p:column selectionMode="single" style="width: 28px;"/>	
+			
+			<p:ajax event="rowSelect"
+				listener="#{gluoConceptoNominaView.listener_seleccionar_concepto_nomina}"
+				oncomplete="PF('dialogConceptoNomina').hide()"				
+				update=":frmConceptoNomina"/>	
+			
+			<p:column headerText="Descripción:" filterBy="#{conceptoNomina.descripcion}"
+				filterMatchMode="contains">
+				<p:outputLabel value="#{conceptoNomina.descripcion}" />
+			</p:column>	
+			
+			<p:column headerText="Periodicidad:" filterBy="#{conceptoNomina.periodicidad}"
+				filterMatchMode="startsWith">
+				<p:outputLabel value="#{conceptoNomina.periodicidad}" />
+			</p:column>	
+		
+		</p:dataTable>
+	</p:dialog>
+	
+	<!-- ************************************************** -->
+	<!-- **			DIÁLOGO DETALLE PRESUPUESTO		 	 ** -->
+	<!-- ************************************************** -->
+	<p:dialog widgetVar="dialogDetallePresupuesto" header="Listado Detalle Presupuesto"
+		draggable="true" closable="true" modal="true" height="400" width="90%">
+		<p:tabView>
+			<p:tab title="Detalle Presupuesto Renta">
+				<p:dataTable id="listadoDetallePresupuestoRenta" style="text-align: center;"
+					var="rentas"
+					value="#{gluoConceptoNominaView.presupuestoRentasDTO.detallesPresupuesto}"
+					selection="#{gluoConceptoNominaView.selectedDetallePresupuestoRentas}"
+					selectionMode="single"
+					paginator="true"
+					rows="10"
+					rowKey="#{rentas.dptoId}">	
+					
+					<p:column selectionMode="single" style="width: 28px;" />	
+					
+					<p:ajax event="rowSelect"
+						listener="#{gluoConceptoNominaView.listener_seleccionar_detalle_presupuesto_rentas}"
+						oncomplete="PF('dialogDetallePresupuesto').hide()"
+						update=":frmConceptoNomina" />		
+					
+					<p:column headerText="Código Cuenta" filterBy="#{rentas.codigoCuenta}"
+						filterMatchMode="startsWith">
+						<p:outputLabel value="#{rentas.codigoCuenta}" />
+					</p:column>
+					
+					<p:column headerText="Descripción Cuenta" filterBy="#{rentas.descripcionCuenta}"
+						filterMatchMode="contains">
+						<p:outputLabel value="#{rentas.descripcionCuenta}" />
+					</p:column>
+					
+				</p:dataTable>
+			</p:tab>
+			<p:tab title="Detalle Presupuesto Gasto">
+				<p:dataTable id="listadoDetallePresupuestoGasto" style="text-align: center;"
+					var="gastos"
+					value="#{gluoConceptoNominaView.presupuestoGastosDTO.detallesPresupuesto}"
+					selection="#{gluoConceptoNominaView.selectedDetallePresupuestoGastos}"
+					selectionMode="single"
+					paginator="true"
+					rows="10"
+					rowKey="#{gastos.dptoId}">
+					
+					<p:column selectionMode="single" style="width: 28px;" />	
+					
+					<p:ajax event="rowSelect"
+						listener="#{gluoConceptoNominaView.listener_seleccionar_detalle_presupuesto_gastos}"
+						update=":frmConceptoNomina" />
+						
+					<p:column headerText="Código Cuenta" filterBy="#{gastos.codigoCuenta}"
+						filterMatchMode="startsWith">
+						<p:outputLabel value="#{gastos.codigoCuenta}" />
+					</p:column>
+					
+					<p:column headerText="Descripción Cuenta" filterBy="#{gastos.descripcionCuenta}"
+						filterMatchMode="contains">
+						<p:outputLabel value="#{gastos.descripcionCuenta}" />
+					</p:column>
+				</p:dataTable>
+			</p:tab>
+		</p:tabView>
+	</p:dialog>
+
+	<!-- ************************************************** -->
+	<!-- **			DIÁLOGO CUENTAS CONTABLES		 	 ** -->
+	<!-- ************************************************** -->
+	<p:dialog widgetVar="dialogCuentasContables" header="Listado Cuentas Contables"
+		draggable="true" closable="true" modal="true" height="400" width="90%">
+		<p:dataTable id="cuentasContablesDataTable" style="text-align: center;"
+			var="cuentaContable"
+			value="#{gluoConceptoNominaView.listCuentaContableDTOs}"
+			selection="#{gluoConceptoNominaView.selectedCuentaContableDTO}"
+			selectionMode="single"
+			paginator="true"
+			rows="10"
+			rowKey="#{cuentaContable.cconId}">
+		
+			<p:column selectionMode="single" style="width: 28px;" />	
+					
+			<p:ajax event="rowSelect"
+				listener="#{gluoConceptoNominaView.listener_seleccionar_cuenta_contable}"
+				oncomplete="PF('dialogCuentasContables').hide()"
+				update=":frmConceptoNomina" />
+				
+			<p:column headerText="Código" filterBy="#{cuentaContable.codigo}"
+				filterMatchMode="startsWith">
+				<p:outputLabel value="#{cuentaContable.codigo}" />
+			</p:column>
+			
+			<p:column headerText="Descripción" filterBy="#{cuentaContable.descripcion}"
+				filterMatchMode="contains">
+				<p:outputLabel value="#{cuentaContable.descripcion}" />
+			</p:column>			
+		
+		</p:dataTable>
+	</p:dialog>
+	
+	<!-- ************************************************** -->
+	<!-- **				DIÁLOGO EMPLEADOS		         ** -->
+	<!-- ************************************************** -->
+	<p:dialog id="dialogEmpleado" widgetVar="dialogEmpleado"
+		draggable="true" closable="true" modal="true" height="400" width="90%"
+		position="center" header="Seleccionar Empleado">
+	 	<p:growl id="menEmpleado" showDetail="false"/>
+		
+		<p:scrollPanel mode="native" style="width:100%; height:400px">
+			
+			<p:dataTable id="tblSeleccionarEmpleados" var="empleado" rows="200" style="width: 100%;"
+						value="#{gluoConceptoNominaView.listEmpleadosDTOs}"
+						paginator="true"
+						paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+						rowsPerPageTemplate="300,400,500"
+						emptyMessage="No existen empleados"
+						reflow="true" 
+						rowKey="#{empleado.emplId}"
+						selection="#{gluoConceptoNominaView.listEmpleadosSeleccionados}">
+						
+						<f:facet name="header"> Empleados </f:facet>
+                        
+                        <p:column selectionMode="multiple" style="width:10%; text-align:center" />
+                        
+                        <p:column headerText="Tipo Identificación" filterBy="#{empleado.tipoIdentifiacion}"
+					filterMatchMode="contains">
+					<p:outputLabel value="#{empleado.tipoIdentifiacion}" />
+				</p:column>
+				
+				<p:column headerText="Identificación" filterBy="#{empleado.identificacion}"
+					filterMatchMode="contains">
+					<p:outputLabel value="#{empleado.identificacion}" />
+				</p:column>
+				
+				<p:column headerText="Código" filterBy="#{empleado.codigo}"
+					filterMatchMode="contains">
+					<p:outputLabel value="#{empleado.codigo}" />
+				</p:column>
+				
+				<p:column headerText="Primer Nombre" filterBy="#{empleado.primerNombre}"
+					filterMatchMode="contains">
+					<p:outputLabel value="#{empleado.primerNombre}" />
+				</p:column>
+				
+				<p:column headerText="Segundo Nombre" filterBy="#{empleado.segundoNombre}"
+					filterMatchMode="contains">
+					<p:outputLabel value="#{empleado.segundoNombre}" />
+				</p:column>
+				
+				<p:column headerText="Primer Apellido" filterBy="#{empleado.primerApellido}"
+					filterMatchMode="contains">
+					<p:outputLabel value="#{empleado.primerApellido}" />
+				</p:column>
+				
+				<p:column headerText="Segundo Apellido" filterBy="#{empleado.segundoApellido}"
+					filterMatchMode="contains">
+					<p:outputLabel value="#{empleado.segundoApellido}" />
+				</p:column>
+			
+			</p:dataTable>
+			
+			<p:spacer height="10"></p:spacer>
+			
+			<div align="center">
+					<h:panelGrid columns="2">
+						<p:commandButton id="btnSeleccionarEmpleado" value="Adicionar Empleados" update="menEmpleado, :frmConceptoNomina"
+							actionListener="#{gluoConceptoNominaView.action_seleccionarEmpleados}"/>
+					</h:panelGrid>
+				</div>
+			
+		</p:scrollPanel>
+		
+		
+						
+	</p:dialog><!-- FIN DIÁLOGO EMPLEADOS -->
+	
+	<!-- ************************************************** -->
+	<!-- **				DIÁLOGO CARGO GRADO		         ** -->
+	<!-- ************************************************** -->
+	<p:dialog id="dialogCargoGrado" widgetVar="dialogCargoGrado"
+		draggable="true" closable="true" modal="true" height="400" width="90%"
+		position="center" header="Seleccionar Cargo Grado">
+	
+		 <p:growl id="menCargoGrado" showDetail="false"/>
+	
+		<p:scrollPanel mode="native" style="width:100%; height:400px">
+			
+			<p:dataTable id="cargoGradoDataTable" var="cargoGrado" rows="200" style="width: 100%;"
+						value="#{gluoConceptoNominaView.listCargoGradoDTOs}"
+						paginator="true"
+						paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+						rowsPerPageTemplate="300,400,500"
+						emptyMessage="No existen cargos grados"
+						reflow="true" 
+						rowKey="#{cargoGrado.cagrId}"
+						selection="#{gluoConceptoNominaView.listCargoGradoSeleccionados}">
+						
+						<f:facet name="header"> Cargos Grados </f:facet>
+                        
+                        <p:column selectionMode="multiple" style="width:10%; text-align:center" />
+                        
+                        	<p:column headerText="Descripción Cargo Empleado" filterBy="#{cargoGrado.descripcionCargoEmpleado}"
+					filterMatchMode="contains">
+					<p:outputLabel value="#{cargoGrado.descripcionCargoEmpleado}" />
+				</p:column>
+				
+				<p:column headerText="Grado Salarial" filterBy="#{cargoGrado.gradoSalarial}"
+					filterMatchMode="contains">
+					<p:outputLabel value="#{cargoGrado.gradoSalarial}" />
+				</p:column>
+			
+			</p:dataTable>
+			
+			<p:spacer height="10"></p:spacer>
+			<div align="center">
+					<h:panelGrid columns="2">
+						<p:commandButton id="btnSeleccionarCargo" value="Adicionar Cargos Grados" update="menCargoGrado, :frmConceptoNomina"
+							actionListener="#{gluoConceptoNominaView.action_seleccionarCargos}"/>
+					</h:panelGrid>
+			</div>	
+			
+		</p:scrollPanel>
+		
+			
+	</p:dialog><!-- FIN DIÁLOGO EMPLEADOS -->
+						
+</h:form>
+</div>
+</ui:define>
+</ui:composition>

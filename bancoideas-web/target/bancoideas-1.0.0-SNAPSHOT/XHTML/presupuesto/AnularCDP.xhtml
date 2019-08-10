@@ -1,0 +1,163 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+	<ui:define name="content">
+		<f:view>
+			<p:ajaxStatus onstart="PF('statusDialog').show()"
+				onsuccess="PF('statusDialog').hide()" />
+			<p:dialog modal="true" widgetVar="statusDialog" header="Cargando"
+				draggable="false" closable="false">
+				<p:graphicImage
+					value="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/ajaxloadingbar.gif" />
+			</p:dialog>
+
+			<!-- Expired session -->
+			<p:idleMonitor onactive="PF('sessionTimeOutDialog').show();"
+				timeout="#{session.maxInactiveInterval * 1000}" />
+			<p:dialog modal="true" widgetVar="sessionTimeOutDialog"
+				header="Sesión Finalizada" draggable="false" closable="false">
+				<h:outputText value="La sesión ha terminado" />
+				<input id="confirmBackToLogin" type="button" value="Iniciar Sesión"
+					onclick="window.location='#{facesContext.externalContext.requestContextPath}/index.jsp';" />
+			</p:dialog>
+
+
+			<div align="center" style="align-text: center">
+			<h:form id="frm" style="width: 90%;">
+			
+				<p:growl id="messages" />
+				
+				<p:panel id="pnlAnularCDP" header="Anular un Certificado de Disponibilidad Presupuestal - CDP">
+				
+				
+					<h:panelGrid columns="2">
+					
+						<p:outputLabel value="Certificado de Disponibilidad Presupuestal - CDP: " />
+						<h:panelGrid columns="2">
+							<p:inputText id="txtConsecutivo" value="#{gluoCdpView.consecutivo}"
+							 maxlength="100" style="width: 200px" />
+							<p:commandButton style="width:100%" icon="ui-icon-search"
+								onclick="PF('dlg2').show();"></p:commandButton>
+						</h:panelGrid>
+						
+				
+						<p:dialog header="Certificados de Disponibilidad Presupuestal" 
+						widgetVar="dlg2" modal="true" height="400" width="80%">
+						
+							<h:form id="formDialogoCDP">
+							
+								<p:scrollPanel mode="native" style="width:100%; height:400px">
+								<p:dataTable var="cdp" paginator="true" rows="10"
+								value="#{gluoCdpView.data}"
+								selectionMode="single"
+								selection="#{gluoCdpView.selectedGluoCdp}"
+								rowKey="#{cdp.cdpId}" filterDelay="1000">
+								
+									<p:ajax event="rowSelect"
+									listener="#{gluoCdpView.onRowSelect}"	
+									update=":frm"								
+									oncomplete="PF('dlg2').hide();" />
+									
+									<p:column headerText="Consecutivo" filterBy="#{cdp.consecutivo}"
+										filterMatchMode="contains" >
+										<h:outputText value="#{cdp.consecutivo}" />
+									</p:column>
+									
+									<p:column headerText="Objeto CDP" filterBy="#{cdp.objeto}"
+										filterMatchMode="contains" >
+										<h:outputText value="#{cdp.objeto}" />
+									</p:column>
+									
+									<p:column headerText="Valor Total" filterBy="#{cdp.valorTotalCdp}"
+										filterMatchMode="contains" >
+										<h:outputText value="#{cdp.valorTotalCdp}" />
+									</p:column>
+									
+									<p:column headerText="Valor Disponible" filterBy="#{cdp.valorTotalDisponible}"
+										filterMatchMode="contains" >
+										<h:outputText value="#{cdp.valorTotalDisponible}" />
+									</p:column>
+									
+									<p:column headerText="Fecha Expedición" filterBy="#{cdp.fechaExpedicion}"
+										filterMatchMode="contains" >
+										<h:outputText value="#{cdp.fechaExpedicion}" />
+									</p:column>
+									
+									<p:column headerText="Fecha Vencimiento" filterBy="#{cdp.fechaVencimiento}"
+										filterMatchMode="contains" >
+										<h:outputText value="#{cdp.fechaVencimiento}" />
+									</p:column>									
+								
+								</p:dataTable>
+								</p:scrollPanel>
+							
+							</h:form>
+						
+						</p:dialog>		
+					
+					
+					</h:panelGrid>
+					
+					
+					
+					
+					<h:panelGrid columns="2">
+					
+						
+						
+						<p:outputLabel value="Valor Total: " />
+						<p:outputLabel value="#{gluoCdpView.selectedGluoCdp.valorTotalCdp}" >
+						<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+						</p:outputLabel>
+						
+						<p:outputLabel value="Valor Disponible: " />
+						<p:outputLabel value="#{gluoCdpView.selectedGluoCdp.valorTotalDisponible}" >
+						<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+						</p:outputLabel>
+						
+						<p:outputLabel value="Fecha Expedición :" />
+						<p:outputLabel value="#{gluoCdpView.selectedGluoCdp.fechaExpedicion}" >
+						<f:convertDateTime type="date" pattern="dd-MM-yyyy"/>
+						</p:outputLabel>
+						
+    					<p:outputLabel value="Fecha Vencimiento :" />
+						<p:outputLabel value="#{gluoCdpView.selectedGluoCdp.fechaVencimiento}" >
+						<f:convertDateTime type="date" pattern="dd-MM-yyyy"/>
+						</p:outputLabel>
+						
+						
+					</h:panelGrid>
+
+					
+						<!-- Botones -->
+						<br/>
+	
+						<p:commandButton id="btnAnular" value="Anular CDP"
+								action="#{gluoCdpView.action_anular_cdp}"
+								binding="#{gluoCdpView.btnAnular}" disabled="false"
+								update="messages,pnlAnularCDP,formDialogoCDP,listarAnularCDP" />
+								
+						<p:commandButton id="btnClearAnular" value="Limpiar"
+								action="#{gluoCdpView.action_clear_anular}"
+								binding="#{gluoCdpView.btnClearAnular}" disabled="false"
+								update="messages,pnlAnularCDP,formDialogoCDP,listarAnularCDP" />
+					
+				</p:panel>
+				
+				
+				<p:panel id="listarAnularCDP">
+					
+										
+				</p:panel>
+					
+				
+			</h:form>
+			</div>
+			
+		</f:view>
+	</ui:define>
+
+</ui:composition>

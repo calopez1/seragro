@@ -1,0 +1,271 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+
+	<ui:define name="content">
+		<f:view>
+
+			<p:ajaxStatus onstart="PF('statusDialog').show()"
+				onsuccess="PF('statusDialog').hide()" />
+			<p:dialog modal="true" widgetVar="statusDialog" header="Cargando"
+				draggable="false" closable="false">
+				<p:graphicImage
+					value="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/ajaxloadingbar.gif" />
+			</p:dialog>
+
+			<!-- Expired session -->
+			<p:idleMonitor onactive="PF('sessionTimeOutDialog').show();"
+				timeout="#{session.maxInactiveInterval * 1000}" />
+			<p:dialog modal="true" widgetVar="sessionTimeOutDialog"
+				header="Sesión terminada" draggable="false" closable="false">
+				<h:outputText value="La sesión ha finalizado" />
+				<input id="confirmBackToLogin" type="button" value="Iniciar sesión"
+					onclick="window.location='#{facesContext.externalContext.requestContextPath}/index.jsp';" />
+			</p:dialog>
+
+			<script type="text/javascript">
+			function showStatus() {
+			    statusDialog.show();
+			}
+			 
+			function hideStatus() {
+			    statusDialog.hide();
+			}
+			</script>
+
+			<style type="text/css">
+				.ui-panel {
+					margin-top: 20px
+				}
+				
+				.ui-tabs-top {
+					background-color: #FFFFFF;
+				}
+				
+				.one {
+					width: 40%;
+				}
+				
+				.two {
+					width: 60%;
+				}
+				
+				.col50Left {
+					width: 10%;
+					text-align: left;
+				}
+				
+				.col50Right {
+					width: 10%;
+					text-align: right;
+				}
+				
+				.txt100 {
+					width: 100%;
+				}
+			</style>
+
+			<h:form id="idForm">
+
+				<p:panel>
+					<h:outputText value="Gestion de terceros" styleClass="FontBold Fs18 hardblue" />
+				</p:panel>
+
+				<p:panel id="panelDataTableTercero" header="Listado de Terceros">
+
+					<p:growl id="men" showDetail="false" autoUpdate="true" />
+
+					<p:scrollPanel id="pnlTerceros" mode="native"
+						style="width:100%; height:400px">
+
+						<p:dataTable id="tercerosEncontrados" var="tercero" rows="350"
+							style="width: 100%;" value="#{gluoTerceroView.data}"
+							paginator="true"
+							paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+							rowsPerPageTemplate="300,400,500"
+							emptyMessage="No hay terceros encontrados" reflow="true"
+							filterDelay="1000">
+							
+							<f:facet name="header"> Terceros  </f:facet>
+
+							<p:column headerText="Identificación"
+								sortBy="#{tercero.identificacion}" style="width: 30%"
+								filterBy="#{tercero.identificacion}"
+								filterMatchMode="startsWith">
+								<h:outputText value="#{tercero.identificacion}" />
+							</p:column>
+							
+							<p:column headerText="Tipo Persona" sortBy="#{tercero.descripcionTipoPersona}" style="width: 30%"
+								filterBy="#{tercero.descripcionTipoPersona}"
+								filterMatchMode="startsWith">
+								<h:outputText value="#{tercero.descripcionTipoPersona}" />
+							</p:column>
+
+							<p:column headerText="Nombre Completo"
+								sortBy="#{tercero.nombreCompleto}" style="width: 40%"
+								filterBy="#{tercero.nombreCompleto}" filterMatchMode="contains">
+								<h:outputText value="#{tercero.nombreCompleto}" />
+							</p:column>
+							
+							<p:column headerText="Razon Social"
+								sortBy="#{tercero.razonSocial}" style="width: 40%"
+								filterBy="#{tercero.razonSocial}" filterMatchMode="contains">
+								<h:outputText value="#{tercero.razonSocial}" />
+							</p:column>
+							
+							<p:column headerText="Direccion"
+								sortBy="#{tercero.direccionPrincipal}" style="width: 30%"
+								filterBy="#{tercero.direccionPrincipal}" filterMatchMode="contains">
+								<h:outputText value="#{tercero.direccionPrincipal}" />
+							</p:column>
+							
+							<p:column headerText="Empresa"
+								sortBy="#{tercero.nombreEmpresa}" style="width: 30%"
+								filterBy="#{tercero.nombreEmpresa}" filterMatchMode="contains">
+								<h:outputText value="#{tercero.nombreEmpresa}" />
+							</p:column>
+							
+							
+							<p:column headerText="Municipio"
+								sortBy="#{tercero.nombreMunicipio}" style="width: 30%"
+								filterBy="#{tercero.nombreMunicipio}" filterMatchMode="contains">
+								<h:outputText value="#{tercero.nombreMunicipio}" />
+							</p:column>
+							
+							
+							<p:column headerText="Estado Registro"
+								sortBy="#{tercero.activo}" style="width: 30%"
+								filterBy="#{tercero.activo}" filterMatchMode="contains">
+								<h:outputText value="#{tercero.activo}" />
+							</p:column>
+
+							<p:column headerText="Opciones" style="width: 20%">
+								<p:commandButton id="btnEdit" icon="ui-icon-pencil"
+									title="Editar" update=":idForm:idDialogoTercero"
+									oncomplete="PF('dialogoTercero').show();"
+									actionListener="#{gluoTerceroView.action_edit}">
+									<f:attribute name="selectedGluoTercero" value="#{tercero}" />
+								</p:commandButton>
+								<p:commandButton id="btnDelete" title="Inactivar"
+									actionListener="#{gluoTerceroView.action_delete_datatable}"
+									onclick="if(!confirm('Realmente desea inactivar este registro?')){return false;}"
+									icon="ui-icon-trash" update="@form">
+									<f:attribute name="selectedGluoTercero" value="#{tercero}" />
+								</p:commandButton>
+							</p:column>
+
+						</p:dataTable>
+
+					</p:scrollPanel>
+
+					<div class="EmptyBox20" />
+
+					<div align="center">
+						<h:panelGrid id="panelGridNew" columns="1">
+							<p:commandButton id="btnNew" value="Crear Nuevo" action="#{gluoTerceroView.action_new()}"
+								oncomplete="PF('dialogoTercero').show();" update=":idForm:idDialogoTercero" />
+						</h:panelGrid>
+					</div>
+				</p:panel>
+
+				<!-- Crear el tercero -->
+				<!-- **************************** -->
+				<p:dialog id="idDialogoTercero" widgetVar="dialogoTercero"
+					draggable="true" closable="true" modal="true" visible="false"
+					resizable="false" height="400" width="80%" position="center"
+					header="Registrar Tercero">
+
+					<p:panel id="panelGluoTercero" header="Tercero">
+						<h:panelGrid id="pnlDatosTercero" columns="5" style="width: 100%;">
+							
+							<p:outputLabel for="tipoTercero" value="Tipo Tercero: " />
+							<p:selectOneMenu id="tipoTercero" binding="#{gluoTerceroView.somTipoTercero}" style="width:80%">
+								<f:selectItem itemLabel="Seleccionar" itemValue="-1" />
+								<f:selectItems value="#{gluoTerceroView.lstTipoTerceroItems}" />
+								<p:ajax listener="#{gluoTerceroView.listener_tipoPersona}" update="pnlDatosTercero" process="@this"/>
+							</p:selectOneMenu>
+							
+							<p:outputLabel for="cmbTipoIdentificacion" value="Tipo Identificación: "/>
+							<p:selectOneMenu id="cmbTipoIdentificacion" binding="#{gluoTerceroView.somTipoIdentificacion}" style="width:80%">
+								<f:selectItem itemLabel="Seleccionar" itemValue="-1" />
+								<f:selectItems value="#{gluoTerceroView.lstTipoIdentificacionItems}" />
+							</p:selectOneMenu>
+							
+							<p:spacer width="10"></p:spacer>
+							
+							<h:outputText value="Identificación*:" />
+							<p:inputText id="txtIdentificacion" disabled="false" style="width: 80%;" value="#{gluoTerceroView.identificacion}" maxlength="20"/>
+
+							<h:outputText value="Primer Nombre*:" />
+							<p:inputText id="txtPrimerNombre" style="width: 80%;" value="#{gluoTerceroView.primerNombre}" maxlength="50" disabled="#{gluoTerceroView.showPersonaNatural}"/>
+
+							<p:spacer width="10"></p:spacer>
+
+							<h:outputText value="Segundo Nombre:" />
+							<p:inputText id="txtSegundoNombre" style="width: 80%;" value="#{gluoTerceroView.segundoNombre}" maxlength="50" disabled="#{gluoTerceroView.showPersonaNatural}"/>
+
+							<h:outputText  value="Primer Apellido*:" />
+							<p:inputText id="txtPrimerApellido" style="width: 80%;" value="#{gluoTerceroView.primerApellido}" maxlength="50" disabled="#{gluoTerceroView.showPersonaNatural}"/>
+
+							<p:spacer width="10"></p:spacer>
+
+							<h:outputText value="Segundo Apellido:" />
+							<p:inputText id="txtSegundoApellido" style="width: 80%;" value="#{gluoTerceroView.segundoApellido}" maxlength="50" disabled="#{gluoTerceroView.showPersonaNatural}"/>
+							
+							<h:outputText value="Razon Social*:" />
+							<p:inputText id="txtRazonSOcial" style="width: 80%;" value="#{gluoTerceroView.razonSocial}" maxlength="100" disabled="#{!gluoTerceroView.showPersonaNatural}"/>
+							
+							<p:spacer width="10"></p:spacer>
+							
+							<h:outputText value="Teléfono 1:" />
+							<p:inputText id="txtTelefonoUno" style="width: 80%;" value="#{gluoTerceroView.telefonoUno}" />
+
+							<h:outputText  value="Dirección:" />
+							<p:inputText id="txtDireccion" style="width: 80%;" value="#{gluoTerceroView.direccion}" />
+							
+							<p:spacer width="10"></p:spacer>
+							
+							<p:outputLabel for="genero" value="Género*: " />
+							<p:selectOneRadio id="genero" binding="#{gluoTerceroView.sorGenero}">
+								<f:selectItem itemLabel="Masculino" itemValue="#{gluoTerceroView.masculino}" />
+								<f:selectItem itemLabel="Femenino" itemValue="#{gluoTerceroView.femenino}" />
+							</p:selectOneRadio>
+							
+							<p:outputLabel for="estado" value="Estado Registro*: " />
+							<p:selectOneRadio id="estado" binding="#{gluoTerceroView.sorEstadoRegistro}" value="A">
+								<f:selectItem itemLabel="Activo" itemValue="A" />
+								<f:selectItem itemLabel="Inactivo" itemValue="I" />
+							</p:selectOneRadio>
+							
+							<p:spacer width="10"></p:spacer>
+							
+							<p:outputLabel for="municipio" value="Municipio*: " />
+							<p:selectOneMenu id="municipio" binding="#{gluoTerceroView.somMunicipio}" style="width:80%" filter="true" filterMatchMode="contains">
+								<f:selectItem itemLabel="Seleccionar" itemValue="-1" />
+								<f:selectItems value="#{gluoTerceroView.lstMunicipiosItems}" />
+							</p:selectOneMenu>
+							
+						</h:panelGrid>
+					</p:panel>
+
+					<br />
+
+					<div align="center">
+						<h:panelGrid id="panelBotones" columns="3">
+							<p:commandButton id="btnSave" value="Guardar" action="#{gluoTerceroView.action_save()}"
+								update="panelGluoTercero, :idForm:panelDataTableTercero" />
+							<p:commandButton id="btnClear" value="Limpiar"
+								action="#{gluoTerceroView.action_limpiarDatosTercero()}"
+								update="panelGluoTercero" />
+							<p:commandButton id="btnExit" value="Salir"
+								oncomplete="PF('dialogoTercero').hide();" />
+						</h:panelGrid>
+					</div>
+				</p:dialog>
+			</h:form>
+		</f:view>
+	</ui:define>
+</ui:composition>

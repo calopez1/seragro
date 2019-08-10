@@ -1,0 +1,453 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml"
+	xmlns:pe="http://primefaces.org/ui/extensions">	
+		<ui:define name="content">	
+		<f:view>
+			<p:ajaxStatus onstart="PF('statusDialog').show()" onsuccess="PF('statusDialog').hide()"/>               
+			<p:dialog modal="true" widgetVar="statusDialog" header="Cargando Informacion"  draggable="false" closable="false">  
+   				<p:graphicImage value="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/ajaxloadingbar.gif" />   
+			</p:dialog>
+			
+			<!-- Expired session -->
+					<p:idleMonitor onactive="PF('sessionTimeOutDialog').show();" timeout="#{session.maxInactiveInterval * 1000}" />
+					<p:dialog modal="true" widgetVar="sessionTimeOutDialog" header="Expired session"  draggable="false" closable="false">  
+	   					<h:outputText value="The session is finished" />
+	                 	<input id="confirmBackToLogin" 
+	                 		type="button" 
+	                 		value="Sign in"
+	                    	onclick="window.location='#{facesContext.externalContext.requestContextPath}/index.jsp';" />   
+					</p:dialog>
+			
+			
+			<h:form id="formRecibo">
+
+				<p:growl id="men" autoUpdate="true" showDetail="false" />
+				
+				<div align="center">
+					<p:panel id="panelGluoRecibo" header="Certificado de Paz y Salvo" style="width:90%;">							
+				
+						<h:panelGrid columns="2" id="panelGrid" >
+							<h:outputText value="Tercero: " />
+							<h:panelGrid columns="3" columnClasses="two,one" style="width: 100%;">
+								<p:inputText style="width: 100%;" id="terceroSeleccionado" value="#{certificadoPazYSalvoView.terceroSeleccionado}">
+									<p:ajax />
+								</p:inputText>
+								<p:spacer width="5"/>
+								<p:commandButton icon="ui-icon-search" oncomplete="PF('dialogoTercero').show();" style="width:100%" />
+							</h:panelGrid>
+							
+							<h:outputText value="Tramites de Escritura: "/>
+							<h:panelGrid columns="1"  style="width: 100%;">
+										<p:inputTextarea style="width: 100%;" 
+											counter="counterObjeto" maxlength="2000"
+											counterTemplate="{0} caracteres restantes." disabled="false"
+											autoResize="false"
+											value="#{certificadoPazYSalvoView.observacion}"/>
+										<p:outputLabel id="counterObjeto" />
+							</h:panelGrid>
+				 	   </h:panelGrid>
+				   
+				   		<br/>
+				   
+					   <h:panelGrid columns="1" style="width:40%">
+						   <p:commandButton value="Seleccionar Predio" style="width:100%" onclick="PF('adicionarPredioDialog').show();"/>
+					   </h:panelGrid>
+				</p:panel>
+				</div>
+	   			
+	   			<p:spacer height="20"/>
+	   					
+				<div align="center">
+				<p:panel  style="width:90%;">
+					<p:accordionPanel multiple="true">
+						<p:tab title="INFORMACIÓN DEL PREDIO">
+							<p:spacer height="20"/>
+							
+							<h:panelGrid columns="3">
+								<h:outputText value="Número del predio: " />
+								<p:spacer width="5"/>
+								<h:outputText value="#{certificadoPazYSalvoView.predioSeleccionado.numeroPredio}" />
+		
+								<h:outputText value="Dirección: " />
+								<p:spacer width="5"/>
+								<h:outputText value="#{certificadoPazYSalvoView.predioSeleccionado.direccion}"/>
+		
+								<h:outputText value="Municipio: "/>
+								<p:spacer width="5"/>
+								<h:outputText value="#{certificadoPazYSalvoView.predioSeleccionado.nombreMunicipio}"/>
+		
+								<h:outputText value="Departamento"/>
+								<p:spacer width="5"/>
+								<h:outputText value="#{certificadoPazYSalvoView.predioSeleccionado.nombreDepartamento}"/>
+							
+								<h:outputText value="Zona"/>
+								<p:spacer width="5"/>
+								<h:outputText value="#{certificadoPazYSalvoView.predioSeleccionado.descripcionZona}"/>
+								
+								<h:outputText value="Avaluo"/>
+								<p:spacer width="5"/>
+								<h:outputText value="#{certificadoPazYSalvoView.predioSeleccionado.avaluoPredio}">
+									 <f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+								</h:outputText>
+							</h:panelGrid>
+							
+							<p:spacer height="10"/> 
+							
+							<h:panelGrid columns="2">
+								<p:spacer width="5"/>
+								
+								<h:outputText value="Saldo"/>
+							
+								<h:outputText value="Valor Concepto Predio:"/>
+								<h:outputText value="#{certificadoPazYSalvoView.valorTotalReciboInformacion}" >
+								   <f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+								</h:outputText>
+								
+								<h:outputText value="Descuentos:"/>
+								<h:outputText value="#{certificadoPazYSalvoView.totalDescuentos}" >
+								    <f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+								</h:outputText>
+								
+								<h:outputText value="Valor Menos Descuento Predial:"/>
+								<h:outputText value="#{certificadoPazYSalvoView.totalPredioDescuento}" >
+								       <f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+								</h:outputText>
+								
+								
+								<h:outputText value="Total Otros Conceptos:"/>
+								<h:outputText value="#{certificadoPazYSalvoView.totalOtrosConceptos}" >
+								       <f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+								</h:outputText>
+								
+								
+								<h:outputText value="Total intereses de cartera:"/>
+								<h:outputText value="#{certificadoPazYSalvoView.totalCarteraVencida}" >
+								       <f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+								</h:outputText>
+							</h:panelGrid>
+						</p:tab>
+					</p:accordionPanel>
+
+					<p:spacer height="15"/>
+
+					<h:panelGrid columns="4">
+						<p:commandButton value="Generar Reporte en PDF" onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)" icon="ui-icon-arrowthichk-s">
+							<p:fileDownload value="#{certificadoPazYSalvoView.reporteCDPPdf}" />
+						</p:commandButton>
+						
+						<p:commandButton value="Generar Reporte en XLS" onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)" icon="ui-icon-arrowthichk-s">
+							<p:fileDownload value="#{certificadoPazYSalvoView.reporteCDPXls}" />
+						</p:commandButton>
+						
+						<p:commandButton value="Generar Reporte en XLSX" onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)" icon="ui-icon-arrowthichk-s">
+							<p:fileDownload value="#{certificadoPazYSalvoView.reporteCDPXlsx}" />
+						</p:commandButton>
+						
+						<p:commandButton value="Limpiar" action="#{certificadoPazYSalvoView.limpiar}"	update=":formRecibo, :formDialogoPredio"/>
+					</h:panelGrid>
+				</p:panel>
+			</div>
+			
+			<p:spacer height="40"/>
+	   					
+			</h:form>
+			
+			<!-- Crear el tercero -->
+		<!-- **************************** -->
+		<p:dialog id="idDialogoTercero" widgetVar="dialogoTercero"
+			draggable="true" closable="true" modal="true"
+			visible="false" resizable="false"
+			height="400" width="80%" position="center" header="Registrar Tercero">
+			
+			<h:form id="frmTercero" enctype="multipart/form-data">
+			
+				<p:messages id="msg" autoUpdate="true" showDetail="false" closable="true" />
+				
+				<p:tabView id="crearConsultarTercero">
+			
+					<p:tab id="crearTerceroTab" title="Crear un tercero">
+							
+						<div class="Container100">
+							<div class="ContainerIndent">
+		
+								<h:panelGrid columns="5" columnClasses="one, two"
+									style="width: 100%;" id="pnlDatosTercero">
+									
+									 <p:outputLabel for="municipio" value="Municipio: " />
+										<p:selectOneMenu id="municipio" value="#{certificadoPazYSalvoView.municipio}" style="width:80%" filter="true" filterMatchMode="contains">
+											<f:selectItem itemLabel="Seleccionar" itemValue="-1" />
+											<f:selectItems value="#{certificadoPazYSalvoView.lstMunicipiosItems}" />
+										</p:selectOneMenu>
+							        
+							        <p:spacer width="10"/>
+							        
+							        <p:outputLabel for="tipoTercero" value="Tipo Tercero: " />
+							        <p:selectOneMenu id="tipoTercero" value="#{certificadoPazYSalvoView.tipoTercero}" style="width:80%">
+							            <f:selectItem itemLabel="Seleccionar" itemValue="" />
+							            <f:selectItems value="#{certificadoPazYSalvoView.lstTipoTerceroItems}" />
+							            <p:ajax listener="#{certificadoPazYSalvoView.listener_tipoPersona}" update=":frmTercero" process="@this"/>
+							        </p:selectOneMenu>
+									
+									<h:outputText value="Identificación:" />
+									<p:inputText id="txtIdentificacion" disabled="false" style="width: 95%;"
+										value="#{certificadoPazYSalvoView.identificacion}" />
+										
+										<p:spacer width="10"/>
+										
+									<p:outputLabel for="cmbTipoIdentificacion" value="Tipo Identificación: " style="width: 100%;"/>
+								       <p:selectOneMenu id="cmbTipoIdentificacion" value="#{certificadoPazYSalvoView.tipoIdentificacionSeleccionada}" style="width:100%">
+								            <f:selectItem itemLabel="Seleccionar" itemValue="" />
+           									 <f:selectItems value="#{certificadoPazYSalvoView.lstTipoIdentificacionItems}" />
+								     </p:selectOneMenu>
+								     
+								   
+									<h:outputText id="lblPrimerNombre" value="Primer Nombre:" />
+									<p:inputText id="txtPrimerNombre"  style="width: 95%;"
+										value="#{certificadoPazYSalvoView.primerNombre}" disabled="#{certificadoPazYSalvoView.showPersonaNatural}"/>
+										
+										<p:spacer width="10"></p:spacer>
+										
+									<h:outputText id="lblSegundoNombre" value="Segundo Nombre:" />
+									<p:inputText id="txtSegundoNombre"  style="width: 95%;"
+										value="#{certificadoPazYSalvoView.segundoNombre}" disabled="#{certificadoPazYSalvoView.showPersonaNatural}"/>
+										
+									<h:outputText id="lblPrimerApellido" value="Primer Apellido:" />
+									<p:inputText id="txtPrimerApellido"  style="width: 95%;"
+										value="#{certificadoPazYSalvoView.primerApellido}" disabled="#{certificadoPazYSalvoView.showPersonaNatural}"/>
+										
+										<p:spacer width="10"/>
+										
+									<h:outputText id="lblSegundoApellido" value="Segundo Apellido:" />
+									<p:inputText id="txtSegundoApellido"  style="width: 95%;"
+										value="#{certificadoPazYSalvoView.segundoApellido}" disabled="#{certificadoPazYSalvoView.showPersonaNatural}"/>
+										
+										<h:outputText id="lblRazonSocial" value="Razón Social: " />
+									<p:inputText id="txtRazonSocial"  style="width: 95%;"
+										value="#{certificadoPazYSalvoView.razonSocial}" disabled="#{!certificadoPazYSalvoView.showPersonaNatural}"/>
+									
+								</h:panelGrid>
+								
+								<div align="center">
+								<h:panelGrid columns="2" style="margin-bottom:10px" cellpadding="5">
+							        <p:outputLabel for="genero" value="Género: " />
+							        <p:selectOneRadio id="genero" value="#{certificadoPazYSalvoView.genero}">
+							            <f:selectItem itemLabel="Masculino" itemValue="#{certificadoPazYSalvoView.masculino}" />
+							            <f:selectItem itemLabel="Femenino" itemValue="#{certificadoPazYSalvoView.femenino}" />
+							        </p:selectOneRadio>
+							    </h:panelGrid>
+							    
+							    <h:panelGrid columns="4" style="margin-bottom:10px" cellpadding="5">
+							        
+							        <h:outputText id="lblTelefonoUno" value="Teléfono 1:" />
+									<p:inputText id="txtTelefonoUno"  style="width: 95%;"
+										value="#{certificadoPazYSalvoView.telefonoUno}" />
+										
+										<h:outputText id="lblTelefonoDos" value="Teléfono 2:" />
+									<p:inputText id="txtTelefonoDos"  style="width: 95%;"
+										value="#{certificadoPazYSalvoView.telefonoDos}" />
+										
+										<h:outputText id="lblTelefonoTres" value="Teléfono 3:" />
+									<p:inputText id="txtTelefonoTres"  style="width: 95%;"
+										value="#{certificadoPazYSalvoView.telefonoTres}" />
+										
+										<h:outputText id="lblDireccion" value="Dirección:" />
+									<p:inputText id="txtDireccion"  style="width: 95%;"
+										value="#{certificadoPazYSalvoView.direccion}" />
+										
+							        
+							    </h:panelGrid>
+							    
+							    </div>
+							    
+							</div>
+						</div>
+							
+						
+						<div align="center">
+							<p:commandButton id="btnSave"
+								value="Guardar Tercero"
+								actionListener="#{certificadoPazYSalvoView.guardarTercero}"
+								update=":frmTercero:crearConsultarTercero, :formDialogoPredio"
+								oncomplete="$('#formRecibo\\:terceroSeleccionado').val($('#frmTercero\\:crearConsultarTercero\\:txtIdentificacion').val()); PF('dialogoTercero').hide();"/>
+								
+						</div>
+						
+					</p:tab>
+					
+					
+					<p:tab id="consultarTerceroTab" title="Consultar un tercero">
+						<p:scrollPanel mode="native" style="width:100%; height:400px">		
+								<p:dataTable id="dataTableTercero" value="#{certificadoPazYSalvoView.lstTerceros}" 
+									emptyMessage="No se han encontrado terceros registrados"
+									rows="5"
+									var="tercero" paginator="true" rowsPerPageTemplate="5,10,15"
+									filterDelay="1000">
+									
+									<p:column filterBy="#{tercero.identificacion}" filterMatchMode="contains" 
+										sortBy="#{tercero.identificacion}">
+										<f:facet name="header">
+											<h:outputText value="Identificación" />
+										</f:facet>
+										<h:outputText value="#{tercero.identificacion}" />
+									</p:column>
+									
+									<p:column filterBy="#{tercero.primerNombre}" filterMatchMode="contains" 
+										sortBy="#{tercero.primerNombre}">
+										<f:facet name="header">
+											<h:outputText value="Primer Nombre" />
+										</f:facet>
+										<h:outputText value="#{tercero.primerNombre}" />
+									</p:column>
+									
+									<p:column filterBy="#{tercero.segundoNombre}" filterMatchMode="contains" 
+										sortBy="#{tercero.segundoNombre}">
+										<f:facet name="header">
+											<h:outputText value="Segundo Nombre" />
+										</f:facet>
+										<h:outputText value="#{tercero.segundoNombre}" />
+									</p:column>
+									
+									<p:column filterBy="#{tercero.primerApellido}" filterMatchMode="contains" 
+										sortBy="#{tercero.primerApellido}">
+										<f:facet name="header">
+											<h:outputText value="Primer Apellido" />
+										</f:facet>
+										<h:outputText value="#{tercero.primerApellido}" />
+									</p:column>
+									
+									<p:column filterBy="#{tercero.segundoApellido}" filterMatchMode="contains" 
+										sortBy="#{tercero.segundoApellido}">
+										<f:facet name="header">
+											<h:outputText value="Segundo Apellido" />
+										</f:facet>
+										<h:outputText value="#{tercero.segundoApellido}" />
+									</p:column>
+									
+									<p:column filterBy="#{tercero.gluoEmpresa.razonSocial}" filterMatchMode="contains" 
+										sortBy="#{tercero.gluoEmpresa.razonSocial}">
+										<f:facet name="header">
+											<h:outputText value="Empresa" />
+										</f:facet>
+										<h:outputText value="#{tercero.gluoEmpresa.razonSocial}" />
+									</p:column>
+									
+									<p:column filterBy="#{tercero.gluoTipoTercero.nombre}" filterMatchMode="contains" 
+										sortBy="#{tercero.gluoTipoTercero.nombre}">
+										<f:facet name="header">
+											<h:outputText value="Tipo Tercero" />
+										</f:facet>
+										<h:outputText value="#{tercero.gluoTipoTercero.nombre}" />
+									</p:column>
+									
+			
+									<p:column headerText="Seleccionar">
+										
+										<p:commandButton title="Seleccionar"  
+							            	icon="ui-icon-check" 
+							            	oncomplete="PF('dialogoTercero').hide();"
+							            	update=":formRecibo,:formDialogoPredio"
+							            	action="#{certificadoPazYSalvoView.consultarPrediosTerceroSeleccionado()}">
+							            	
+							            	<f:setPropertyActionListener value="#{tercero.identificacion}" target="#{certificadoPazYSalvoView.terceroSeleccionado}"  />
+							            	
+							            </p:commandButton>
+							             
+									</p:column>
+								</p:dataTable>
+							</p:scrollPanel>
+					</p:tab>
+				</p:tabView>
+			</h:form>
+		</p:dialog>
+	    
+	    
+	    
+		<p:dialog header="Predios" style="align-text: center"
+			widgetVar="adicionarPredioDialog" modal="true" height="400" width="80%">
+
+			<h:form id="formDialogoPredio">
+				<h:panelGrid columns="5">
+					<h:outputText value="Número Predio Corto: " />
+					<p:inputText style="width: 95%;" value="#{certificadoPazYSalvoView.numeroPredioCorto}" />
+					<p:spacer width="10"/>
+					<h:outputText value="  Número Predio largo: " />
+					<p:inputText style="width: 95%;" value="#{certificadoPazYSalvoView.numeroPredioLargo}" />
+					
+					<h:outputText value="Identificación Propietario: " />
+					<p:inputText style="width: 95%;" value="#{certificadoPazYSalvoView.identificacionPropietario}" />
+				</h:panelGrid>
+					
+				<p:spacer height="5"/>
+			
+				<h:panelGrid columns="1">
+					<p:commandButton value="Consultar" action="#{certificadoPazYSalvoView.consultarPrediosPropietario()}" update=":formDialogoPredio"/>			
+				</h:panelGrid>
+			
+				<p:spacer height="5"/>
+				
+				<p:dataTable id="dataPredios" var="item"
+					value="#{certificadoPazYSalvoView.lstPredios}"
+					rowKey="#{item.prafId}"
+					filterDelay="1000"
+					paginator="true"
+					paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+					rows="10">
+
+					<p:column headerText="Ano Fiscal" filterBy="#{item.anoFiscal}"
+						filterMatchMode="contains"  style="text-align: center; width: 10%">
+						<h:outputText value="#{item.anoFiscal}" />
+					</p:column>
+					
+					<p:column headerText="Número Predio" filterBy="#{item.numeroPredio}"
+						filterMatchMode="contains"  style="text-align: center; width: 30%">
+						<h:outputText value="#{item.numeroPredio}" />
+					</p:column>
+					
+					<p:column headerText="Avalúo"
+						filterBy="#{item.avaluoPredio}" style="text-align: center; width: 10%">
+						<h:outputText value="#{item.avaluoPredio}" >
+						       <f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+						</h:outputText>
+					</p:column>
+					
+					<p:column headerText="Dirección"
+						filterBy="#{item.direccion}" filterMatchMode="contains"  style="text-align: center;">
+						<h:outputText value="#{item.direccion}"  style="text-align: center; width: 10%"/>
+					</p:column>
+
+					<p:column headerText="Municipio"
+						filterBy="#{item.nombreMunicipio}" filterMatchMode="contains"  style="text-align: center;">
+						<h:outputText value="#{item.nombreMunicipio}"  style="text-align: center; width: 10%">
+							
+						</h:outputText>
+					</p:column>
+
+					<p:column headerText="Zona"
+						filterBy="#{item.descripcionZona}"
+						filterMatchMode="contains"  style="text-align: center; width: 10%">
+						<h:outputText value="#{item.descripcionZona}" style="text-align: center;">
+						</h:outputText>
+					</p:column>
+					
+					<p:column headerText="Identificación Propietario"
+						filterBy="#{item.identificacionPropietario}"
+						filterMatchMode="contains"  style="text-align: center; width: 10%">
+						<h:outputText value="#{item.identificacionPropietario}" style="text-align: center;">
+						</h:outputText>
+					</p:column>
+					
+					<p:column headerText="Seleccione" style="text-align: center; width: 5%">
+						<p:commandButton icon="ui-icon-check" action="#{certificadoPazYSalvoView.action_seleccionar_predio(item)}" oncomplete="PF('adicionarPredioDialog').hide();" 
+										 update=":formDialogoPredio, :formRecibo"/>
+					</p:column>
+					
+				</p:dataTable>
+			</h:form>
+		</p:dialog>
+	
+		</f:view>
+	</ui:define>		
+</ui:composition>

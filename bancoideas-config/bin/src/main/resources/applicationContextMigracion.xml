@@ -1,0 +1,50 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!--Author Zathuracode Generator -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:task="http://www.springframework.org/schema/task"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.2.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.2.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
+       http://www.springframework.org/schema/task 
+	   http://www.springframework.org/schema/task/spring-task-4.2.xsd
+	   http://www.springframework.org/schema/util
+	   http://www.springframework.org/schema/util/spring-util-4.2.xsd"> 
+
+	<bean id="sessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+		<property name="configLocation" value="classpath:hibernate.cfg.xml" />
+		<property name="dataSource" ref="dataSource" />  
+	</bean>
+	
+	<bean id="transactionManager"  class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+	
+	<bean class="com.vortexbird.aws.s3.VortexAWSCredentials" id="vortexAWSCredentials">
+     	<property name="AWSAccessKeyId" 	value="AKIAIRWP6W5UHT4GCACA"/>
+     	<property name="AWSSecretKey" 	value="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"/>
+     	<property name="region" 			value="us-east-1"/>
+     </bean>
+	
+	<tx:annotation-driven transaction-manager="transactionManager" />
+	<context:component-scan base-package="com" scoped-proxy="interfaces" />
+	
+	<import resource="dataSourceContext.xml" />
+	
+	<bean id="migracionArchivoLogic" class="com.vortexbird.gluon.migracion.control.MigracionArchivoLogic" scope="prototype"/>
+	
+	<bean id="taskExecutor"
+		class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+		<property name="corePoolSize" value="50" />
+		<property name="maxPoolSize" value="60" />
+		<property name="queueCapacity" value="2000" />
+		<property name="WaitForTasksToCompleteOnShutdown" value="true" />
+	</bean>
+	
+</beans>

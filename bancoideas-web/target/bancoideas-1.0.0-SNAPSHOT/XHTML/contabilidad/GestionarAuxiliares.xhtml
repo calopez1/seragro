@@ -1,0 +1,119 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+	<ui:define name="content">
+		<style type="text/css">
+			.ui-panel {
+				margin-top: 20px
+			}
+			
+			.ui-tabs-top{
+				background-color: #FFFFFF;
+			}
+		</style>
+
+
+		<div align="center">
+		<h:form id="formCuentaContable">
+			
+			<p:growl id="messages" />
+			<p:messages id="msg"/>
+
+			<p:panel id="pnlGestionarAuxiliares" header="Gestionar Auxiliares" style="width: 90%;">
+				<div align="center">
+					<p:selectOneMenu id="somAuxiliaresContables" panelStyle="width:180px" style="width:300px" filter="true" filterMatchMode="contains" 
+						value="#{gestionarAuxiliaresView.cuentaContableSeleccionadaId}">
+						<p:ajax listener="#{gestionarAuxiliaresView.buscarAuxiliaresContables}" 
+							update="btnAbrirCrear, pnlAuxiliaresContables" />
+						<f:selectItem itemLabel="SELECCIONE UNA CUENTA CONTABLE" itemValue="-1"/>
+			            <f:selectItems value="#{gestionarAuxiliaresView.cuentasContablesCuartoNivel}" var="ccon" />
+			 
+			            <p:column>
+			                <h:outputText value="#{ccon.codigo} - #{ccon.descripcion}" />
+			            </p:column>
+			        </p:selectOneMenu>
+			        <br/>
+			        <p:commandButton id="btnAbrirCrear" 
+			        	value="Crear Auxiliar Contable" disabled="true" binding="#{gestionarAuxiliaresView.btnCrearAuxiliarContable}"
+			        	action="#{gestionarAuxiliaresView.abrirDialogoCrearAuxiliar}" update="dlgCrearAuxiliarContable"/>
+			        <br/>
+			        <p:panel id="pnlAuxiliaresContables">
+			        	<p:dataTable value="#{gestionarAuxiliaresView.auxiliaresContables}" var="aux" id="tblAuxiliaresContables"
+			        	emptyMessage="No se ha encontrado registros de Auxiliares Contables">
+							<p:column headerText="Código">
+								<h:outputText value="#{aux.codigo}"/>
+							</p:column>
+							<p:column headerText="Descripción">
+								<h:outputText value="#{aux.descripcion}"/>
+							</p:column>
+							<p:column headerText="Acciones">
+								<p:commandButton value="Modificar"
+									update="@([id$=dlgModificarAuxiliarContable])"
+									actionListener="#{gestionarAuxiliaresView.abrirDialogoModificarAuxiliarContable}">
+										<f:attribute name="auxiliarContableModificar" value="#{aux}" />
+								</p:commandButton>
+								<p:commandButton value="#{aux.labelBotonActivarInactivar}" 
+									update="tblAuxiliaresContables"
+									actionListener="#{gestionarAuxiliaresView.activarInactivarAuxiliarContable}">
+										<f:attribute name="auxiliarContableActivarInactivar" value="#{aux}" />
+								</p:commandButton>
+							</p:column>
+						</p:dataTable>
+			        </p:panel>	
+				</div>
+				
+			</p:panel>
+			
+			<!-- ************************************************** -->
+			<!-- **		DIÁLOGO CREAR AUXILIAR CONTABLE	     	 ** -->
+			<!-- ************************************************** -->
+			<p:dialog header="Crear Auxiliar Contable" style="align-text: center" id="dlgCrearAuxiliarContable"
+				widgetVar="dialogCrearAuxiliarContable" modal="true" height="300" width="50%" closable="true"
+				visible="#{gestionarAuxiliaresView.showCrearAuxiliarContable}">
+				<h:panelGrid columns="2">
+					<p:outputLabel value="Cuenta Contable*:"/>
+					<p:inputText value="#{gestionarAuxiliaresView.cuentaContableSeleccionadaLabel}" style="width:300px" readonly="true"/>
+					<p:outputLabel value="Código*:"/>
+					<p:inputText style="width:300px" value="#{gestionarAuxiliaresView.codigoAuxiliarContable}"/>
+					<p:outputLabel value="Descripción*:"/>
+					<p:inputText style="width:300px" value="#{gestionarAuxiliaresView.descripcionAuxiliarContable}"/>
+				</h:panelGrid>
+				<div align="center">
+					<p:commandButton value="Guardar" action="#{gestionarAuxiliaresView.guardarNuevoAuxiliarContable}" update="@([id$=pnlAuxiliaresContables]), dlgCrearAuxiliarContable"/>
+					<p:commandButton value="Limpiar" action="#{gestionarAuxiliaresView.limpiarCrearNuevoAuxiliarContable}" update="dlgCrearAuxiliarContable"/>
+				</div>
+				
+			</p:dialog> <!-- FIN DIÁLOGO CREAR AUXILIAR CONTABLE -->
+			
+			<!-- ************************************************** -->
+			<!-- **		DIÁLOGO MODIFICAR AUXILIAR CONTABLE	     ** -->
+			<!-- ************************************************** -->
+			<p:dialog header="Modificar Auxiliar Contable" style="align-text: center" id="dlgModificarAuxiliarContable"
+				widgetVar="dialogModificarAuxiliarContable" modal="true" height="300" width="50%" closable="true"
+				visible="#{gestionarAuxiliaresView.showModificarAuxiliarContable}">
+				<h:panelGrid columns="2">
+					<p:outputLabel value="Cuenta Contable*:"/>
+					<p:inputText value="#{gestionarAuxiliaresView.cuentaContableSeleccionadaLabel}" style="width:300px" readonly="true"/>
+					<p:outputLabel value="Código*:"/>
+					<p:inputText style="width:300px" value="#{gestionarAuxiliaresView.codigoAuxiliarContableModifica}"/>
+					<p:outputLabel value="Descripción*:"/>
+					<p:inputText style="width:300px" value="#{gestionarAuxiliaresView.descripcionAuxiliarContableModifica}"/>
+				</h:panelGrid>
+				
+				
+				<div align="center">
+					<p:commandButton value="Modificar" action="#{gestionarAuxiliaresView.modificarAuxiliarContable}" update="@([id$=pnlAuxiliaresContables]), dlgModificarAuxiliarContable"/>
+					<p:commandButton value="Limpiar" action="#{gestionarAuxiliaresView.limpiarDialogoModificarAuxiliarContable}" update="dlgModificarAuxiliarContable"/>
+				</div>
+				
+			</p:dialog> <!-- FIN DIÁLOGO MODIFICAR AUXILIAR CONTABLE -->
+			
+		</h:form>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

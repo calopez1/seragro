@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC
+"-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+    <session-factory>
+        <property name="hibernate.bytecode.use_reflection_optimizer">false</property>
+        <property name="hibernate.connection.driver_class">org.postgresql.Driver</property>
+        <property name="hibernate.connection.password">adminadmin</property>
+        <property name="hibernate.connection.url">jdbc:postgresql://localhost:5432/bancoideasseragroindustriales</property>
+        <property name="hibernate.connection.username">postgres</property>
+        <mapping resource="com/unilever/bancoideas/modelo/Departamento.hbm.xml" />
+        <mapping resource="com/unilever/bancoideas/modelo/LiquidacionHoraExtra.hbm.xml" />
+        <mapping resource="com/unilever/bancoideas/modelo/TipoIdentificacion.hbm.xml" />
+        <mapping resource="com/unilever/bancoideas/modelo/Empleado.hbm.xml" />
+        <mapping resource="com/unilever/bancoideas/modelo/Persona.hbm.xml" />
+        <mapping resource="com/unilever/bancoideas/modelo/TipoUsuario.hbm.xml" />
+        <mapping resource="com/unilever/bancoideas/modelo/DetalleNominaEmpleado.hbm.xml" />
+        <mapping resource="com/unilever/bancoideas/modelo/NominaEmpleado.hbm.xml" />
+        <mapping resource="com/unilever/bancoideas/modelo/Cargo.hbm.xml" />
+        <mapping resource="com/unilever/bancoideas/modelo/LiquidacionNomina.hbm.xml" />
+        <mapping resource="com/unilever/bancoideas/modelo/Usuario.hbm.xml" />
+        <mapping resource="com/unilever/bancoideas/modelo/TipoHoraExtra.hbm.xml" />
+    </session-factory>
+</hibernate-configuration>

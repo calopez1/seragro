@@ -1,0 +1,430 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" 
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	template="/WEB-INF/template.xhtml">
+
+	<ui:define name="content">
+		<script type="text/javascript">
+			function justNumbers(e) {
+					var keynum = window.event ? window.event.keyCode : e.which;
+					if ((keynum == 8) || (keynum == 46) || (keynum == 44))
+					return true;
+					 
+					return /\d/.test(String.fromCharCode(keynum));
+			}
+			PrimeFaces.locales['es'] = {
+				    closeText: 'Cerrar',
+				    prevText: 'Anterior',
+				    nextText: 'Siguiente',
+				    monthNames: ['Enero','Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+				    monthNamesShort: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun','Jul','Ago','Sep','Oct','Nov','Dic'],
+				    dayNames: ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'],
+				    dayNamesShort: ['Dom','Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab'],
+				    dayNamesMin: ['D','L','M','M','J','V','S'],
+				    weekHeader: 'Semana',
+				    firstDay: 1,
+				    isRTL: false,
+				    showMonthAfterYear: false,
+				    yearSuffix: '',
+				    timeOnlyTitle: 'Sólo hora',
+				    timeText: 'Tiempo',
+				    hourText: 'Hora',
+				    minuteText: 'Minuto',
+				    secondText: 'Segundo',
+				    currentText: 'Fecha actual',
+				    ampm: false,
+				    month: 'Mes',
+				    week: 'Semana',
+				    day: 'Día',
+				    allDayText : 'Todo el día'
+				};
+			
+		</script>
+		<style type="text/css">
+			.inputOnDataTable input {
+				    width: 200px !important;   
+			}
+		</style>
+		<f:view>
+			
+			<p:ajaxStatus onstart="PF('statusDialog').show()"
+				onsuccess="PF('statusDialog').hide()" />
+			<p:dialog modal="true" widgetVar="statusDialog"
+				header="Cargando Información" draggable="false" closable="false">
+				<p:graphicImage
+					value="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/ajaxloadingbar.gif" />
+			</p:dialog>
+
+			<!-- Expired session -->
+			<p:idleMonitor onactive="PF('sessionTimeOutDialog').show();"
+				timeout="#{session.maxInactiveInterval * 1000}" />
+			<p:dialog modal="true" widgetVar="sessionTimeOutDialog"
+				header="Sesión Caducada" draggable="false" closable="false">
+				<h:outputText value="La sesión ha finalizado" />
+				<input id="confirmBackToLogin" type="button" value="Iniciar Sesión"
+					onclick="window.location='#{facesContext.externalContext.requestContextPath}/index.jsp';" />
+			</p:dialog>
+
+			<h:form id="frm">
+				<p:growl id="msgDeim" autoUpdate="true" showDetail="false"/>
+				<p:panel id="pnlDescuentoImpuesto"
+					header="Descuentos de Impuestos" style="width: 99%;">
+					<div align="center">
+					<h:panelGrid columns="2" columnClasses="label,value" cellpadding="2">
+						<p:outputLabel value="Año Fiscal" for="txtAnoFiscal" />
+						<p:inputText id="txtAnoFiscal" readonly="true"
+							binding="#{gluoDescuentoImpuestoView.txtAnoFiscal}"
+							style="width: 200px;" />
+
+						<p:outputLabel value="Concepto de Impuesto"
+							for="txtConceptoImpuesto" />
+						<h:panelGrid columns="2">
+							<p:inputText id="txtConceptoImpuesto"
+								binding="#{gluoDescuentoImpuestoView.txtConceptoImpuesto}"
+								style="width: 200px;" placeholder="Concepto de Impuesto"/>
+							<p:commandButton icon="ui-icon-search"
+								onclick="PF('dialogoConceptoImpuesto').show();" />
+						</h:panelGrid>
+
+						<p:outputLabel value="Porcentaje" for="txtPorcentaje" />
+						<pe:inputNumber widgetVar="txtPorcentaje" 
+							id="txtPorcentaje" minValue="0.00" maxValue="100.00" decimalPlaces="2" 
+							decimalSeparator="." thousandSeparator=","
+							binding="#{gluoDescuentoImpuestoView.txtPorcentaje}"
+							value="#{gluoDescuentoImpuestoView.porcentaje}" 
+							symbol="%" symbolPosition="s" emptyValue="empty"
+							onkeypress="return justNumbers(event);" styleClass="inputOnDataTable">
+							<f:passThroughAttribute name="placeholder" value="Porcentaje"/>	
+						</pe:inputNumber> 
+						
+						
+
+						<p:outputLabel value="Fecha de Inicio" for="calendarFechaInicio" />
+						<p:calendar id="calendarFechaInicio"
+							binding="#{gluoDescuentoImpuestoView.txtFechaInicio}"
+							placeholder="Fecha de Inicio " size="32" locale="es"
+							navigator="true" pattern="yyyy-MM-dd" mask="true"
+							converterMessage="Fecha incorrecta">
+							<p:ajax event="dateSelect"
+									listener="#{gluoDescuentoImpuestoView.fechaInicio}" />
+							<f:converter converterId="timestampConverter" />
+						</p:calendar>
+
+						<p:outputLabel value="Fecha Fin" for="calendarFechaFin" />
+						<p:calendar id="calendarFechaFin"
+							binding="#{gluoDescuentoImpuestoView.txtFechaFin}"
+							placeholder="Fecha Fin " size="32" locale="es"
+							navigator="true" pattern="yyyy-MM-dd" mask="true"
+							converterMessage="Fecha incorrecta">
+							<p:ajax event="dateSelect"
+									listener="#{gluoDescuentoImpuestoView.fechaFin}" />
+							<f:converter converterId="timestampConverter" />
+						</p:calendar>
+
+						<p:outputLabel value="Cuenta Contable Débito"
+							for="txtCuentaContableDebito" />
+						<h:panelGrid columns="2">
+							<p:inputText id="txtCuentaContableDebito" placeholder="Cuenta Contable Débito"
+								binding="#{gluoDescuentoImpuestoView.txtCuentaContableDebito}"
+								style="width: 200px;" />
+							<p:commandButton icon="ui-icon-search"
+								onclick="PF('dialogCuentasContablesDebito').show();" />
+						</h:panelGrid>
+
+						<p:outputLabel value="Cuenta Contable Crédito"
+							for="txtCuentaContableCredito" />
+						<h:panelGrid columns="2">
+							<p:inputText id="txtCuentaContableCredito" placeholder="Cuenta Contable Crédito"
+								binding="#{gluoDescuentoImpuestoView.txtCuentaContableCredito}"
+								style="width: 200px;" />
+							<p:commandButton icon="ui-icon-search"
+								onclick="PF('dialogCuentasContablesCredito').show();" />
+						</h:panelGrid>
+
+						<p:outputLabel value="Estado"
+							for="sorEstado" />
+						<p:selectOneRadio id="sorEstado"
+							binding="#{gluoDescuentoImpuestoView.sorEstado}">
+							<f:selectItem itemLabel="Activo" itemValue="A" />
+							<f:selectItem itemLabel="Inactivo" itemValue="I" />
+						</p:selectOneRadio>
+
+					</h:panelGrid>
+					<div align="center">
+					<p:commandButton id="btnGuardar" value="Guardar"
+						action="#{gluoDescuentoImpuestoView.guardar}"
+						update=":frm, @([id$=pnlDescuentoImpuesto]), @([id$=panelDataTableGluoDescuentoImpuesto]),
+						 @([id$=dataTableDescuentoImpuesto]), @([id$=dialogoConceptoImpuesto]), @([id$=dialogCuentasContablesDebito]),
+						 @([id$=dialogCuentasContablesCredito])" />
+
+					<p:commandButton id="btnLimpiar" value="Limpiar"
+						action="#{gluoDescuentoImpuestoView.limpiar}"
+						update=":frm, @([id$=pnlDescuentoImpuesto]), @([id$=panelDataTableGluoDescuentoImpuesto]),
+						 @([id$=dataTableDescuentoImpuesto]), @([id$=dialogoConceptoImpuesto]), @([id$=dialogCuentasContablesDebito]),
+						 @([id$=dialogCuentasContablesCredito])" />
+					</div>	
+					</div>
+				</p:panel>
+
+				<p:panel id="panelDataTableGluoDescuentoImpuesto"
+					header="Descuentos de Impuestos">
+					<p:growl id="men" />
+					<p:dataTable id="dataTableDescuentoImpuesto" value="#{gluoDescuentoImpuestoView.data}" paginator="true"
+   						paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}" 
+   						rows="6" var="gluoDescuentoImpuesto"
+   						emptyMessage="No se han encontrado descuentos de impuestos registrados activos."
+   						filterDelay="1000">
+						
+						<p:column filterBy="#{gluoDescuentoImpuesto.fechaInicio}"
+							sortBy="#{gluoDescuentoImpuesto.fechaInicio}" width="31%"
+							filterMatchMode="contains">
+							<f:facet name="header">
+								<h:outputText value="Fecha de Inicio" />
+							</f:facet>
+							<h:outputText value="#{gluoDescuentoImpuesto.fechaInicio}" />
+						</p:column>
+						
+						<p:column filterBy="#{gluoDescuentoImpuesto.fechaFin}"
+							sortBy="#{gluoDescuentoImpuesto.fechaFin}" width="31%"
+							filterMatchMode="contains">
+							<f:facet name="header">
+								<h:outputText value="Fecha Fin" />
+							</f:facet>
+							<h:outputText value="#{gluoDescuentoImpuesto.fechaFin}" />
+						</p:column>
+
+						<p:column filterBy="#{gluoDescuentoImpuesto.porcentaje}"
+							sortBy="#{gluoDescuentoImpuesto.porcentaje}" width="31%"
+							filterMatchMode="contains">
+							<f:facet name="header">
+								<h:outputText value="Porcentaje"/>
+							</f:facet>
+							<h:outputText value="#{gluoDescuentoImpuesto.porcentaje}%"/>
+						</p:column>
+
+						<p:column filterBy="#{gluoDescuentoImpuesto.anofId_GluoAnoFiscal}"
+							sortBy="#{gluoDescuentoImpuesto.anofId_GluoAnoFiscal}" width="31%"
+							filterMatchMode="contains">
+							<f:facet name="header">
+								<h:outputText value="Año Fiscal" />
+							</f:facet>
+							<h:outputText
+								value="#{gluoDescuentoImpuesto.anofId_GluoAnoFiscal}" />
+						</p:column>
+
+						<p:column
+							filterBy="#{gluoDescuentoImpuesto.conceptoImpuestoDescripcion}"
+							sortBy="#{gluoDescuentoImpuesto.conceptoImpuestoDescripcion}" width="31%"
+							filterMatchMode="contains">
+							<f:facet name="header">
+								<h:outputText value="Concepto de Impuesto" />
+							</f:facet>
+							<h:outputText
+								value="#{gluoDescuentoImpuesto.conceptoImpuestoDescripcion}" />
+						</p:column>
+
+						<p:column
+							filterBy="#{gluoDescuentoImpuesto.cuentaContableCredito}"
+							sortBy="#{gluoDescuentoImpuesto.cuentaContableCredito}" width="31%"
+							filterMatchMode="contains">
+							<f:facet name="header">
+								<h:outputText value="Cuenta Contable Crédito" />
+							</f:facet>
+							<h:outputText
+								value="#{gluoDescuentoImpuesto.cuentaContableCredito}" />
+						</p:column>
+						
+						<p:column
+							filterBy="#{gluoDescuentoImpuesto.cuentaContableDebito}"
+							sortBy="#{gluoDescuentoImpuesto.cuentaContableDebito}" width="31%"
+							filterMatchMode="contains">
+							<f:facet name="header">
+								<h:outputText value="Cuenta Contable Débito" />
+							</f:facet>
+							<h:outputText
+								value="#{gluoDescuentoImpuesto.cuentaContableDebito}" />
+						</p:column>
+						
+						<p:column filterBy="#{gluoDescuentoImpuesto.activo}"
+							sortBy="#{gluoDescuentoImpuesto.activo}" width="31%"
+							filterMatchMode="contains">
+							<f:facet name="header">
+								<h:outputText value="Estado" />
+							</f:facet>
+							<h:outputText value="#{(gluoDescuentoImpuesto.activo.trim() eq 'A')?('Activo'):('Inactivo')}" />
+						</p:column>
+
+						<p:column headerText="Opciones" width="31%">
+							<p:commandButton id="btnEdit" icon="ui-icon-pencil"
+								update="@([id$=pnlDescuentoImpuesto])" title="Editar"
+								actionListener="#{gluoDescuentoImpuestoView.editar}">
+								<f:attribute name="selectedGluoDescuentoImpuesto"
+									value="#{gluoDescuentoImpuesto}" />
+							</p:commandButton>
+						</p:column>
+					</p:dataTable>
+				</p:panel>
+			</h:form>
+
+
+			<p:dialog id="dialogoConceptoImpuesto" appendTo="@(body)"
+				header="Concepto de Impuesto" draggable="true" closable="true"
+				widgetVar="dialogoConceptoImpuesto"
+				resizable="false" modal="true" height="400" width="90%">
+				<h:form id="formDialogConceptoImpuesto">
+					<div align="center">
+						<p:messages id="msg" showDetail="false" autoUpdate="true" closable="true"/>
+						<p:scrollPanel mode="native" style="width:100%; height:400px;">
+							<p:dataTable var="conceptoImpuesto" paginator="true"
+		   						paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}" 
+		   						rows="6" 
+								value="#{gluoDescuentoImpuestoView.conceptosImpuestos}"
+								selection="#{gluoDescuentoImpuestoView.conceptoImpuesto}"
+								selectionMode="single" rowKey="#{conceptoImpuesto.coimId}"
+								emptyMessage="No se han encontrado conceptos de impuestos registrados activos."
+								filterDelay="1000">
+
+								<p:ajax event="rowSelect"
+									listener="#{gluoDescuentoImpuestoView.onRowSelectConceptoImpuesto}"
+									update="@([id$=txtConceptoImpuesto])"
+									oncomplete="PF('dialogoConceptoImpuesto').hide();" />
+
+								<p:column headerText="Tipo Liquidación"
+									filterBy="#{conceptoImpuesto.gluoTipoLiquidacion}"
+									filterMatchMode="contains">
+									<h:outputText value="#{conceptoImpuesto.descripcionTipoLiquidacion}" />
+								</p:column>
+
+								<p:column headerText="Descripción" 
+									filterBy="#{conceptoImpuesto.descripcion}"
+									filterMatchMode="contains">
+									<h:outputText value="#{conceptoImpuesto.descripcion}" />
+								</p:column>
+
+								<p:column headerText="Porcentaje Tanto x Mil"
+									filterBy="#{conceptoImpuesto.porcentajeTantoXMil}"
+									filterMatchMode="contains">
+									<h:outputText value="#{(conceptoImpuesto.porcentajeTantoXMil.trim() eq 'P')?('Porcentaje'):('TantoXMil')}"/>
+								</p:column>
+
+								<p:column headerText="Valor"
+									filterBy="#{conceptoImpuesto.valor}"
+									filterMatchMode="contains">
+									<h:outputText value="#{conceptoImpuesto.valor}">
+										<f:convertNumber type="currency" currencySymbol="$" locale="es_CO"/>
+									</h:outputText>
+								</p:column>
+								
+								<p:column headerText="Activo" 
+									filterBy="#{conceptoImpuesto.activo}"
+									filterMatchMode="contains">
+									<h:outputText value="#{(conceptoImpuesto.activo.trim() eq 'A')?('Activo'):('Inactivo')}" />
+								</p:column>
+
+								<p:column headerText="Cuenta Contable Crédito"
+									filterBy="#{conceptoImpuesto.cuentaContableCredito}"
+									filterMatchMode="contains">
+									<h:outputText value="#{conceptoImpuesto.descripcionCuentaContableCredito}" />
+								</p:column>
+
+								<p:column headerText="Cuenta Contable Débito"
+									filterBy="#{conceptoImpuesto.cuentaContableDebito}"
+									filterMatchMode="contains">
+									<h:outputText value="#{conceptoImpuesto.descripcionCuentaContableDebito}"/>
+								</p:column>
+
+							</p:dataTable>
+						</p:scrollPanel>
+					</div>
+				</h:form>
+			</p:dialog>
+
+			<p:dialog id="dialogCuentasContablesDebito" header="Cuentas Contables Débito"
+				widgetVar="dialogCuentasContablesDebito" modal="true" height="420"
+				width="90%">
+				<h:form id="formDialogDebito">
+					<div align="center">
+						<p:messages id="msg" showDetail="false" autoUpdate="true" closable="true"/>
+						<p:scrollPanel mode="native" style="width:100%; height:400px;">
+							<p:dataTable var="cuentaContableDebito" paginator="true"
+		   						paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}" 
+		   						rows="6"
+								value="#{gluoDescuentoImpuestoView.cuentasContablesDebito}"
+								selection="#{gluoDescuentoImpuestoView.cuentaContableDebito}"
+								selectionMode="single" rowKey="#{cuentaContableDebito.cconId}"
+								emptyMessage="No se han encontrado cuentas contables débito registradas activas."
+								filterDelay="1000">
+
+								<p:ajax event="rowSelect"
+									listener="#{gluoDescuentoImpuestoView.onRowSelectCuentaContableDebito}"
+									update="@([id$=txtCuentaContableDebito])"
+									oncomplete="PF('dialogCuentasContablesDebito').hide();" />
+
+								<p:column headerText="Código"
+									filterBy="#{cuentaContableDebito.codigo}"
+									filterMatchMode="contains">
+									<h:outputText value="#{cuentaContableDebito.codigo}" />
+								</p:column>
+
+								<p:column headerText="Descripción"
+									filterBy="#{cuentaContableDebito.descripcion}"
+									filterMatchMode="contains">
+									<h:outputText value="#{cuentaContableDebito.descripcion}" />
+								</p:column>
+
+
+							</p:dataTable>
+						</p:scrollPanel>
+					</div>
+				</h:form>
+
+			</p:dialog>
+
+			<p:dialog id="dialogCuentasContablesCredito" header="Cuentas Contables Crédito"
+				widgetVar="dialogCuentasContablesCredito" modal="true" height="420"
+				width="90%">
+				<h:form id="formDialogCuentaCredito">
+					<div align="center">
+						<p:messages id="msg" showDetail="false" autoUpdate="true" closable="true"/>
+						<p:scrollPanel mode="native" style="width:100%; height:400px;">
+							<p:dataTable var="cuentaContableCredito" paginator="true"
+		   						paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}" 
+		   						rows="6"
+								value="#{gluoDescuentoImpuestoView.cuentasContablesCredito}"
+								selection="#{gluoDescuentoImpuestoView.cuentaContableCredito}"
+								selectionMode="single" rowKey="#{cuentaContableCredito.cconId}"
+								emptyMessage="No se han encontrado cuentas contables crédito registradas activas."
+								filterDelay="1000">
+
+								<p:ajax event="rowSelect"
+									listener="#{gluoDescuentoImpuestoView.onRowSelectCuentaContableCredito}"
+									update="@([id$=txtCuentaContableCredito])"
+									oncomplete="PF('dialogCuentasContablesCredito').hide();" />
+
+								<p:column headerText="Código"
+									filterBy="#{cuentaContableCredito.codigo}"
+									filterMatchMode="contains">
+									<h:outputText value="#{cuentaContableCredito.codigo}" />
+								</p:column>
+
+								<p:column headerText="Descripción"
+									filterBy="#{cuentaContableCredito.descripcion}"
+									filterMatchMode="contains">
+									<h:outputText value="#{cuentaContableCredito.descripcion}" />
+								</p:column>
+
+
+							</p:dataTable>
+						</p:scrollPanel>
+					</div>
+				</h:form>
+
+			</p:dialog>
+
+		</f:view>
+	</ui:define>
+
+</ui:composition>

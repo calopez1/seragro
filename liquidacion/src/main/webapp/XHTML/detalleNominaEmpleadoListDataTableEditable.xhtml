@@ -1,0 +1,277 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+
+	<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+	</h:head>
+
+	<h:body>
+	    <ui:composition template="/WEB-INF/facelets/template.xhtml">	
+		 
+		 	<ui:define name="body">	
+				<f:view>
+					<p:ajaxStatus onstart="PF('statusDialog').show()" onsuccess="PF('statusDialog').hide()"/>               
+					<p:dialog modal="true" widgetVar="statusDialog" header="Loading"  draggable="false" closable="false">  
+   						<p:graphicImage value="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/ajaxloadingbar.gif" />   
+					</p:dialog>
+					
+					
+					<!-- Expired session -->
+					<p:idleMonitor onactive="PF('sessionTimeOutDialog').show();" timeout="#{session.maxInactiveInterval * 1000}" />
+					<p:dialog modal="true" widgetVar="sessionTimeOutDialog" header="Expired session"  draggable="false" closable="false">  
+	   					<h:outputText value="The session is finished" />
+	                 	<input id="confirmBackToLogin" 
+	                 		type="button" 
+	                 		value="Sign in"
+	                    	onclick="window.location='#{facesContext.externalContext.requestContextPath}/index.jsp';" />   
+					</p:dialog>
+		 
+		 <h:form id="form">
+			
+			 
+			<p:panel id="msgProjectClientesTitle" header="DetalleNominaEmpleadoData">
+					<p:messages id="msg" />
+				<p:dataTable id ="tabla" value="#{detalleNominaEmpleadoView.data}" var="detalleNominaEmpleado"
+					paginator="true" rows="5"  editable="true" >
+					 
+					 <p:ajax event ="rowEdit" update=":form:msg,:form:tabla" listener="#{detalleNominaEmpleadoView.rowEventListener}" />
+					
+															<p:column filterBy="#{detalleNominaEmpleado.dnoeId}" sortBy="#{detalleNominaEmpleado.dnoeId}" headerText="dnoeId">
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{detalleNominaEmpleado.dnoeId}"/>
+							</f:facet>
+							<f:facet name="input">
+								<p:inputText value="#{detalleNominaEmpleado.dnoeId}"/>
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+                    										
+											
+						<p:column filterBy="#{detalleNominaEmpleado.auxilioAlimentacion}" sortBy="#{detalleNominaEmpleado.auxilioAlimentacion}" 
+							headerText="auxilioAlimentacion">
+							
+								<p:cellEditor>
+								
+								<f:facet name="output">
+									<h:outputText value="#{detalleNominaEmpleado.auxilioAlimentacion}"/>
+								</f:facet>
+							
+								<f:facet name="input">
+									<p:inputText value="#{detalleNominaEmpleado.auxilioAlimentacion}"/>
+								</f:facet>
+								</p:cellEditor>	
+							</p:column>
+						
+											
+						<p:column filterBy="#{detalleNominaEmpleado.auxilioTransporte}" sortBy="#{detalleNominaEmpleado.auxilioTransporte}" 
+							headerText="auxilioTransporte">
+							
+								<p:cellEditor>
+								
+								<f:facet name="output">
+									<h:outputText value="#{detalleNominaEmpleado.auxilioTransporte}"/>
+								</f:facet>
+							
+								<f:facet name="input">
+									<p:inputText value="#{detalleNominaEmpleado.auxilioTransporte}"/>
+								</f:facet>
+								</p:cellEditor>	
+							</p:column>
+						
+											
+						<p:column filterBy="#{detalleNominaEmpleado.estadoRegistro}" sortBy="#{detalleNominaEmpleado.estadoRegistro}" 
+							headerText="estadoRegistro">
+							
+								<p:cellEditor>
+								
+								<f:facet name="output">
+									<h:outputText value="#{detalleNominaEmpleado.estadoRegistro}"/>
+								</f:facet>
+							
+								<f:facet name="input">
+									<p:inputText value="#{detalleNominaEmpleado.estadoRegistro}"/>
+								</f:facet>
+								</p:cellEditor>	
+							</p:column>
+						
+											
+						<p:column filterBy="#{detalleNominaEmpleado.pension}" sortBy="#{detalleNominaEmpleado.pension}" 
+							headerText="pension">
+							
+								<p:cellEditor>
+								
+								<f:facet name="output">
+									<h:outputText value="#{detalleNominaEmpleado.pension}"/>
+								</f:facet>
+							
+								<f:facet name="input">
+									<p:inputText value="#{detalleNominaEmpleado.pension}"/>
+								</f:facet>
+								</p:cellEditor>	
+							</p:column>
+						
+											
+						<p:column filterBy="#{detalleNominaEmpleado.salarioLiquidado}" sortBy="#{detalleNominaEmpleado.salarioLiquidado}" 
+							headerText="salarioLiquidado">
+							
+								<p:cellEditor>
+								
+								<f:facet name="output">
+									<h:outputText value="#{detalleNominaEmpleado.salarioLiquidado}"/>
+								</f:facet>
+							
+								<f:facet name="input">
+									<p:inputText value="#{detalleNominaEmpleado.salarioLiquidado}"/>
+								</f:facet>
+								</p:cellEditor>	
+							</p:column>
+						
+											
+						<p:column filterBy="#{detalleNominaEmpleado.salud}" sortBy="#{detalleNominaEmpleado.salud}" 
+							headerText="salud">
+							
+								<p:cellEditor>
+								
+								<f:facet name="output">
+									<h:outputText value="#{detalleNominaEmpleado.salud}"/>
+								</f:facet>
+							
+								<f:facet name="input">
+									<p:inputText value="#{detalleNominaEmpleado.salud}"/>
+								</f:facet>
+								</p:cellEditor>	
+							</p:column>
+						
+											
+						<p:column filterBy="#{detalleNominaEmpleado.usuCreador}" sortBy="#{detalleNominaEmpleado.usuCreador}" 
+							headerText="usuCreador">
+							
+								<p:cellEditor>
+								
+								<f:facet name="output">
+									<h:outputText value="#{detalleNominaEmpleado.usuCreador}"/>
+								</f:facet>
+							
+								<f:facet name="input">
+									<p:inputText value="#{detalleNominaEmpleado.usuCreador}"/>
+								</f:facet>
+								</p:cellEditor>	
+							</p:column>
+						
+											
+						<p:column filterBy="#{detalleNominaEmpleado.usuModificador}" sortBy="#{detalleNominaEmpleado.usuModificador}" 
+							headerText="usuModificador">
+							
+								<p:cellEditor>
+								
+								<f:facet name="output">
+									<h:outputText value="#{detalleNominaEmpleado.usuModificador}"/>
+								</f:facet>
+							
+								<f:facet name="input">
+									<p:inputText value="#{detalleNominaEmpleado.usuModificador}"/>
+								</f:facet>
+								</p:cellEditor>	
+							</p:column>
+						
+											
+						<p:column filterBy="#{detalleNominaEmpleado.valorHorasExtras}" sortBy="#{detalleNominaEmpleado.valorHorasExtras}" 
+							headerText="valorHorasExtras">
+							
+								<p:cellEditor>
+								
+								<f:facet name="output">
+									<h:outputText value="#{detalleNominaEmpleado.valorHorasExtras}"/>
+								</f:facet>
+							
+								<f:facet name="input">
+									<p:inputText value="#{detalleNominaEmpleado.valorHorasExtras}"/>
+								</f:facet>
+								</p:cellEditor>	
+							</p:column>
+						
+											
+						<p:column filterBy="#{detalleNominaEmpleado.noemId_NominaEmpleado}" sortBy="#{detalleNominaEmpleado.noemId_NominaEmpleado}" 
+							headerText="noemId_NominaEmpleado">
+							
+								<p:cellEditor>
+								
+								<f:facet name="output">
+									<h:outputText value="#{detalleNominaEmpleado.noemId_NominaEmpleado}"/>
+								</f:facet>
+							
+								<f:facet name="input">
+									<p:inputText value="#{detalleNominaEmpleado.noemId_NominaEmpleado}"/>
+								</f:facet>
+								</p:cellEditor>	
+							</p:column>
+						
+										
+										   						 
+						 <p:column filterBy="#{detalleNominaEmpleado.fechaCreacion}" sortBy="#{detalleNominaEmpleado.fechaCreacion}" 
+							headerText="fechaCreacion">
+							
+								<p:cellEditor>
+								
+								<f:facet name="output">
+									<h:outputText value="#{detalleNominaEmpleado.fechaCreacion}">
+									  <f:convertDateTime  pattern="dd/MM/yyyy"/>
+									</h:outputText>		
+								</f:facet>
+							
+								<f:facet name="input">
+									<p:calendar value="#{detalleNominaEmpleado.fechaCreacion}" showOn="button" pattern="dd/MM/yyyy" navigator="true" >
+									  <f:convertDateTime  pattern="dd/MM/yyyy" timeZone="#{detalleNominaEmpleadoView.timeZone}" />	
+								    </p:calendar>		
+								</f:facet>
+								</p:cellEditor>	
+							</p:column>
+						
+					   						 
+						 <p:column filterBy="#{detalleNominaEmpleado.fechaModificacion}" sortBy="#{detalleNominaEmpleado.fechaModificacion}" 
+							headerText="fechaModificacion">
+							
+								<p:cellEditor>
+								
+								<f:facet name="output">
+									<h:outputText value="#{detalleNominaEmpleado.fechaModificacion}">
+									  <f:convertDateTime  pattern="dd/MM/yyyy"/>
+									</h:outputText>		
+								</f:facet>
+							
+								<f:facet name="input">
+									<p:calendar value="#{detalleNominaEmpleado.fechaModificacion}" showOn="button" pattern="dd/MM/yyyy" navigator="true" >
+									  <f:convertDateTime  pattern="dd/MM/yyyy" timeZone="#{detalleNominaEmpleadoView.timeZone}" />	
+								    </p:calendar>		
+								</f:facet>
+								</p:cellEditor>	
+							</p:column>
+						
+					   											
+					<p:column headerText="Options" >
+						<p:rowEditor id="row"/>
+						<p:tooltip for="row" value="Edit" showEffect="fade" hideEffect="fade" />
+						<p:tooltip for="btnDelete" value="Delete" showEffect="fade" hideEffect="fade" />
+						<p:commandButton id="btnDelete" actionListener="#{detalleNominaEmpleadoView.actionDeleteDataTableEditable}" title="Delete" onclick="if(!confirm('Do you really want to delete this Entry?')){return false;}" icon="ui-icon-trash" update=":form:msg,:form:tabla" >
+							<f:attribute name="selectedDetalleNominaEmpleado" value="#{detalleNominaEmpleado}" />  
+						</p:commandButton>
+						
+					</p:column>	
+				
+				</p:dataTable>	
+					
+				
+			</p:panel>
+				
+	   </h:form>
+		 </f:view>
+			</ui:define>		
+		</ui:composition>	
+	
+	</h:body>	
+	
+</html>	

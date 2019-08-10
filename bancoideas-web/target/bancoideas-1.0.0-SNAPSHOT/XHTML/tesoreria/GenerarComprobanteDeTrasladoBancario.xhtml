@@ -1,0 +1,292 @@
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+<ui:define name="content">
+
+<style type="text/css">
+	.ui-panel {
+		margin-top: 20px
+	}
+	
+	.ui-tabs-top{
+		background-color: #FFFFFF;
+	}
+</style>
+
+
+<div align="center">
+
+	<h:form id="formComprobanteTrasladoBancario" >
+		<p:growl id="messages" autoUpdate="true" life="8000" closable="true" />
+		<p:panel id="pnlComprobanteTrasladoBancario" header="Comprobante de Traslado Bancario" style="width: 90%;">
+			<h:panelGrid columns="2">
+			
+				<p:outputLabel value="Fecha traslado" for="txtFechaTraslado" />
+				<p:calendar id="txtFechaTraslado" value="#{gluoComprobanteTrasladoBancarioView.txtFechaTraslado}" navigator="true" />
+			
+				<p:outputLabel value="Valor a transferir $" for="txtValor" />
+				<p:inputText id="txtValor" value="#{gluoComprobanteTrasladoBancarioView.txtValor}" 
+					maxlength="100" style="width: 200px" >					
+					<f:convertNumber pattern="#,##0.00"  />
+					<p:ajax event="blur" update="@this" />
+				</p:inputText>
+				
+				<p:outputLabel value="Cuenta bancaria de origen" for="txtCuentaBancariaOrigen" />				
+				<h:panelGrid columns="2">
+					<p:inputText id="txtCuentaBancariaOrigen" value="#{gluoComprobanteTrasladoBancarioView.selectCuentaBancariaOrigen}"
+					 maxlength="100" style="width: 200px"  />
+					<p:commandButton  icon="ui-icon-search" onclick="PF('dialogCuentaBancariaOrigen').show();" />
+				</h:panelGrid>
+				
+				<p:outputLabel value="Cuentas Destino" />				
+				<h:panelGrid columns="2">					
+					<p:commandButton  icon="ui-icon-search" onclick="PF('dialogCuentaBancariaDestino').show();"
+						action="#{gluoComprobanteTrasladoBancarioView.action_show_cuentas_destinos}"
+						update=":formComprobanteTrasladoBancario,:formDialogCuentaBancariaDestino" />
+				</h:panelGrid>
+				
+				<p:outputLabel value="Justificación" for="txtJustificacion" />
+				<p:inputTextarea id="txtJustificacion" value="#{gluoComprobanteTrasladoBancarioView.txtJustificacion}" 
+					cols="30" rows="6" />
+				
+			</h:panelGrid>
+			
+			<br/><br/>
+				
+			<p:dataTable var="cuentasDestino" value="#{gluoComprobanteTrasladoBancarioView.detalleComprobanteTrasladoBancarios}"					
+					 style="text-align: center;">
+					 
+				<p:column headerText="Banco">
+					<h:outputText value="#{cuentasDestino.gluoCuentaBancaria.gluoBanco.nombre}" />
+				</p:column>
+			
+				<p:column headerText="Tipo cuenta">
+					<h:outputText value="#{cuentasDestino.gluoCuentaBancaria.nombre}" />
+				</p:column>
+				
+				<p:column headerText="No. cuenta">
+					<h:outputText value="#{cuentasDestino.gluoCuentaBancaria.numeroCuenta}" />
+				</p:column>
+				
+				<p:column headerText="Valor" >
+					<p:inputText id="txtValorDetalleComprobante" value="#{cuentasDestino.valor}">					
+						<f:convertNumber pattern="#,##0.00"  />
+						<p:ajax event="blur" update="@this" />
+					</p:inputText>
+				</p:column>
+				
+				<p:column headerText="No. cheque" >
+					<p:inputText id="txtNumeroCheque" value="#{cuentasDestino.gluoChequeUsado.numeroCheque}" />					
+				</p:column>
+				
+				<p:column headerText="Eliminar">
+					<p:commandButton id="btnEliminarCuentaDestino" icon="ui-icon-close"
+						title="Eliminar" update=":formComprobanteTrasladoBancario"
+						actionListener="#{gluoComprobanteTrasladoBancarioView.listenerBorrarCuentaDestino}">
+						<f:attribute name="selectedDeleteDetalleComprobanteTrasladoBancario" value="#{cuentasDestino}" />
+					</p:commandButton>
+				</p:column>				
+			</p:dataTable>	
+			
+			<br/><br/>
+			
+			<!-- Se eliminó porque generaba conficto a la hora de mostrar los mensajes => oncomplete="PF('tblComprobante').filter();" -->
+			<p:commandButton id="btnGuardar" value="Guardar"
+				action="#{gluoComprobanteTrasladoBancarioView.action_guardar}"
+				update=":formComprobanteTrasladoBancario,:formComprobanteTrasladoBancario:pnlListaComprobanteTrasladoBancario,:formComprobanteTrasladoBancario:pnlListaComprobanteTrasladoBancario" />
+				
+			<p:commandButton id="btnLimpiar" value="Limpiar"
+				action="#{gluoComprobanteTrasladoBancarioView.action_limpiar}"					
+				update=":formComprobanteTrasladoBancario,:formComprobanteTrasladoBancario:pnlListaComprobanteTrasladoBancarioDataTable" />
+			
+		</p:panel>
+		
+		<p:dialog modal="true" widgetVar="dlgGenerarReportes" header="Reporte Comprobante Traslado Bancario" draggable="false" closable="false" resizable="true" width="90%" >
+			<div align="center">
+				<h:panelGrid columns="4">
+					<p:commandButton value="Generar Reporte en PDF" onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)" icon="ui-icon-arrowthichk-s">
+						<p:fileDownload value="#{gluoComprobanteTrasladoBancarioView.reporteCDPPdf}" />
+					</p:commandButton>
+					
+					<p:commandButton value="Generar Reporte en XLS" onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)" icon="ui-icon-arrowthichk-s">
+						<p:fileDownload value="#{gluoComprobanteTrasladoBancarioView.reporteCDPXls}" />
+					</p:commandButton>
+					
+					<p:commandButton value="Generar Reporte en XLSX" onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)" icon="ui-icon-arrowthichk-s">
+						<p:fileDownload value="#{gluoComprobanteTrasladoBancarioView.reporteCDPXlsx}" />
+					</p:commandButton>
+					
+					<p:commandButton value="He terminado! Cerrar" oncomplete="PF('dlgGenerarReportes').hide();" action="#{gluoComprobanteTrasladoBancarioView.action_limpiar}"/>
+				</h:panelGrid>
+			</div>
+		<div class="EmptyBox20" />
+	</p:dialog>
+	
+	<!-- DataTable Comprobante traslado bancario -->
+	<p:panel id="pnlListaComprobanteTrasladoBancario"
+		header="Listado de Comprobantes Traslado Bancarios" style="width: 90%;">
+		<p:dataTable id="pnlListaComprobanteTrasladoBancarioDataTable" value="#{gluoComprobanteTrasladoBancarioView.dataComprobanteTrasladoBancariosNoAnulados}"
+			var="comprobantesTraslados" widgetVar="tblComprobante" paginator="true" rows="10"
+			scrollable="true" scrollWidth="100%" scrollHeight="500"
+			filterDelay="1000">
+			
+			<p:column headerText="No. Comprobante"
+				filterBy="#{comprobantesTraslados.consecutivo}"
+				filterMatchMode="contains"
+				style="text-align:center">
+				<p:outputLabel value="#{comprobantesTraslados.consecutivo}" />
+			</p:column>
+
+			<p:column headerText="Fecha Traslado"
+				filterBy="#{comprobantesTraslados.fechaTraslado}"
+				filterMatchMode="contains"
+				style="text-align:center">
+				<p:outputLabel value="#{comprobantesTraslados.fechaTraslado}" >
+					<f:convertDateTime type="date" pattern="dd-MM-yyyy"/>
+				</p:outputLabel>
+			</p:column>
+
+			<p:column headerText="Justificación"
+				filterBy="#{comprobantesTraslados.descripcion}"
+				filterMatchMode="contains"
+				style="text-align:center">
+				<p:outputLabel value="#{comprobantesTraslados.descripcion}" />
+			</p:column>
+							
+			<p:column headerText="Valor"
+				filterBy="#{comprobantesTraslados.valor}"
+				filterMatchMode="contains"
+				style="text-align:center">
+				<p:outputLabel value="#{comprobantesTraslados.valor}" >
+					<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+				</p:outputLabel>
+			</p:column>
+			
+			<p:column headerText="Cuenta Bancaria"
+				filterBy="#{comprobantesTraslados.nombreCuentaBancaria}"
+				filterMatchMode="contains"
+				style="text-align:center">
+				<p:outputLabel value="#{comprobantesTraslados.nombreCuentaBancaria}" />
+			</p:column>
+			
+			
+		</p:dataTable>
+	</p:panel> <!-- DataTable Comprobante traslado bancario -->
+		
+	</h:form>
+	
+	
+	<!--  **************************************************************************** -->
+	<!--  **					Dialogo Cuenta Bancaria Origen						** -->
+	<!--  **************************************************************************** -->
+	<p:dialog header="Cuenta Bancaria Origen"
+		widgetVar="dialogCuentaBancariaOrigen" modal="true" height="400" width="80%">
+		
+		<div style="text-align: center;">
+		<h:form id="formDialogCuentaBancariaOrigen">
+			
+			<p:scrollPanel mode="native" style="width:100%; height:400px;">
+				<p:dataTable var="cuentaBancariaOrigen"
+					value="#{gluoComprobanteTrasladoBancarioView.dataCuentaBancaria}"
+					selectionMode="single"
+					selection="#{gluoComprobanteTrasladoBancarioView.selectedGluoCuentaBancariaOrigen}"
+					rowKey="#{cuentaBancariaOrigen.cubaId}"
+					paginator="true"
+					rows="10" 
+					filterDelay="1000">
+
+					<p:ajax event="rowSelect"
+						listener="#{gluoComprobanteTrasladoBancarioView.onRowSelectCuentaBancariaOrigen}"	
+						update=":formComprobanteTrasladoBancario"								
+						oncomplete="PF('dialogCuentaBancariaOrigen').hide();" />
+
+
+					<p:column headerText="Número Cuenta" filterBy="#{cuentaBancariaOrigen.numeroCuenta}" 
+						filterMatchMode="contains">
+						<h:outputText value="#{cuentaBancariaOrigen.numeroCuenta}" />
+					</p:column>
+					
+					<p:column headerText="Nombre" filterBy="#{cuentaBancariaOrigen.nombre}" 
+						filterMatchMode="contains">
+						<h:outputText value="#{cuentaBancariaOrigen.nombre}" />
+					</p:column>
+					
+					<p:column headerText="Banco" filterBy="#{cuentaBancariaOrigen.bancoNombre}" 
+						filterMatchMode="contains">
+						<h:outputText value="#{cuentaBancariaOrigen.bancoNombre}" />
+					</p:column>
+					
+					<p:column headerText="Tipo Cuenta" filterBy="#{cuentaBancariaOrigen.nombre_GluoTipoCuentaBancaria}" 
+						filterMatchMode="contains">
+						<h:outputText value="#{cuentaBancariaOrigen.nombre_GluoTipoCuentaBancaria}" />
+					</p:column>
+					
+				</p:dataTable>	
+			</p:scrollPanel>	
+						
+		</h:form>			
+		</div>
+	</p:dialog> <!-- Dialogo para Cuenta Bancaria Origen -->
+	
+	
+	
+	
+	<!--  **************************************************************************** -->
+	<!--  **					Dialogo Cuentas Bancarias Destino					** -->
+	<!--  **************************************************************************** -->
+	<p:dialog header="Cuentas Bancarias Destino"
+		widgetVar="dialogCuentaBancariaDestino" modal="true" height="400" width="80%">
+		
+		<div style="text-align: center;">
+		<h:form id="formDialogCuentaBancariaDestino">
+			
+			<p:scrollPanel mode="native" style="width:100%; height:300px;">
+				<p:dataTable var="cuentaBancariaDestino"
+					value="#{gluoComprobanteTrasladoBancarioView.dataCuentaBancaria}"					
+					selection="#{gluoComprobanteTrasladoBancarioView.cuentasBancariasDestino}"
+					rowKey="#{cuentaBancariaDestino.cubaId}" style="margin-bottom:0"
+					paginator="true"
+					rows="10"
+					filterDelay="1000">
+					
+					<p:column selectionMode="multiple" style="width:30px;text-align:center"/>
+
+					<p:column headerText="Número Cuenta" filterBy="#{cuentaBancariaDestino.numeroCuenta}" 
+						filterMatchMode="contains">
+						<h:outputText value="#{cuentaBancariaDestino.numeroCuenta}" />
+					</p:column>
+					
+					<p:column headerText="Nombre" filterBy="#{cuentaBancariaDestino.nombre}" 
+						filterMatchMode="contains">
+						<h:outputText value="#{cuentaBancariaDestino.nombre}" />
+					</p:column>
+					
+					<p:column headerText="Banco" filterBy="#{cuentaBancariaDestino.bancoNombre}" 
+						filterMatchMode="contains">
+						<h:outputText value="#{cuentaBancariaDestino.bancoNombre}" />
+					</p:column>
+					
+					<p:column headerText="Tipo Cuenta" filterBy="#{cuentaBancariaDestino.nombre_GluoTipoCuentaBancaria}" 
+						filterMatchMode="contains">
+						<h:outputText value="#{cuentaBancariaDestino.nombre_GluoTipoCuentaBancaria}" />
+					</p:column>
+					
+				</p:dataTable>	
+			</p:scrollPanel>	
+			
+			<p:commandButton id="btnAgregarCuentas" value="Agregar Cuentas"								
+					update=":formComprobanteTrasladoBancario"
+					onclick="PF('dialogCuentaBancariaDestino').hide();" />						
+		</h:form>			
+		</div>
+	</p:dialog> <!-- Dialogo para Cuenta Bancaria Destino -->
+	
+	
+
+</div>	
+</ui:define>
+</ui:composition>

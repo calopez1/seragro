@@ -1,0 +1,783 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+	<ui:define name="content">
+		<f:view>
+			<p:ajaxStatus onstart="PF('statusDialog').show()"
+				onsuccess="PF('statusDialog').hide()" />
+			<p:dialog modal="true" widgetVar="statusDialog"
+				header="Cargando Informacion" draggable="false" closable="false">
+				<p:graphicImage
+					value="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/ajaxloadingbar.gif" />
+			</p:dialog>
+
+			<!-- Expired session -->
+			<p:idleMonitor onactive="PF('sessionTimeOutDialog').show();"
+				timeout="#{session.maxInactiveInterval * 1000}" />
+			<p:dialog modal="true" widgetVar="sessionTimeOutDialog"
+				header="Expired session" draggable="false" closable="false">
+				<h:outputText value="The session is finished" />
+				<input id="confirmBackToLogin" type="button" value="Sign in"
+					onclick="window.location='#{facesContext.externalContext.requestContextPath}/index.jsp';" />
+			</p:dialog>
+
+
+			<h:form id="formRecibo">
+				<p:messages id="msg" autoUpdate="true" />
+
+				<div align="center">
+					<p:panel id="panelGluoRecibo" header="RECIBO DE CAJA"
+						style="width:90%;">
+
+						<h:panelGrid columns="2" id="panelGrid">
+
+
+							<h:outputText value="Fecha" style="width: 100%;" />
+							<p:calendar value="#{reciboCajaView.fechaRecibo}"
+								timeZone="GMT-5" style="width: 100%;" disabled="false"
+								navigator="true" />
+
+
+
+							<h:outputText value="Recibido de: " />
+							<h:panelGrid columns="4" columnClasses="two,one"
+								style="width: 100%;">
+								<p:autoComplete id="completeTercero"
+									value="#{reciboCajaView.terceroSeleccionado}"
+									completeMethod="#{reciboCajaView.completeText}" size="50">
+
+									<p:ajax event="itemSelect"
+										listener="#{reciboCajaView.onItemSelect}" update=":formRecibo"/>
+								</p:autoComplete>
+								<p:spacer width="3"></p:spacer>
+								<p:commandButton icon="ui-icon-search"
+									oncomplete="PF('dialogoTercero').show();" style="width:100%" />
+								<h:outputText id="txtNombreTercero"
+									value="#{reciboCajaView.nombreTercero}" />
+							</h:panelGrid>
+
+							<h:outputText value="Valor Total:" />
+							<h:outputText value="#{reciboCajaView.valorTotalRecibo}">
+								<f:convertNumber type="currency" maxFractionDigits="2"
+									currencySymbol="$" />
+							</h:outputText>
+
+
+							<h:outputText value="Observación: "></h:outputText>
+
+							<h:panelGrid columns="1" style="width: 100%;">
+								<p:inputTextarea style="width: 100%;" counter="counterObjeto"
+									maxlength="2000" counterTemplate="{0} caracteres restantes."
+									disabled="false" autoResize="false"
+									value="#{reciboCajaView.observacion}" />
+								<p:outputLabel id="counterObjeto" />
+							</h:panelGrid>
+
+							<h:outputText
+								value="Desea pagar con la forma de pago por defecto?" />
+							<h:panelGrid columns="2" columnClasses="two,one"
+								style="width: 100%;">
+								<p:selectOneRadio id="sorPagarDefault"
+									binding="#{reciboCajaView.sorPagarDefault}" value="S">
+									<f:selectItem itemLabel="Si" itemValue="S" />
+									<f:selectItem itemLabel="No" itemValue="N" />
+									<p:ajax listener="#{reciboCajaView.listener_pagoDefault}"
+										update=":formRecibo" />
+								</p:selectOneRadio>
+								<p:outputLabel
+									value="Forma de pago por defecto -> #{reciboCajaView.nombreFormaPagoDefecto}" />
+							</h:panelGrid>
+
+						</h:panelGrid>
+					</p:panel>
+				</div>
+				<p:spacer height="20"></p:spacer>
+
+				<div align="center">
+					<p:panel style="width:90%;">
+
+
+						<p:accordionPanel multiple="true">
+							<p:tab title="CONCEPTOS DE RENTA">
+
+
+								<p:dataTable id="presupuestoGastosData" var="concepto"
+									value="#{reciboCajaView.lstConceptoRentaPropiaPrincipal}"
+									rows="10" paginator="true"
+									paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+									rowsPerPageTemplate="10,15,20,30"
+									emptyMessage="No existen conceptos de renta propia"
+									filterDelay="1000">
+
+
+									<p:column headerText="Concepto Renta"
+										sortBy="#{concepto.codigoConcepto}"
+										filterBy="#{concepto.codigoConcepto}"
+										filterMatchMode="startsWith">
+										<h:outputText value="#{concepto.codigoConcepto}" />
+									</p:column>
+
+									<p:column headerText="Cantidad" sortBy="#{concepto.cantidad}"
+										filterBy="#{concepto.cantidad}" filterMatchMode="contains">
+										<p:inputText value="#{concepto.cantidad}">
+											<p:ajax event="blur" update=":formRecibo"
+												listener="#{reciboCajaView.calcularValorTotal}">
+												<f:setPropertyActionListener value="#{concepto}"
+													target="#{reciboCajaView.conceptoSeleccionado}" />
+											</p:ajax>
+										</p:inputText>
+									</p:column>
+
+									<p:column headerText="Valor Unitario" sortBy="#{concepto.valorUnitario}" filterBy="#{concepto.valorUnitario}" filterMatchMode="contains">
+										<div align="right">
+											<p:inputText value="#{concepto.valorUnitario}" style="text-align: right;" readonly="#{concepto.soloLectura}">
+												<f:convertNumber pattern="#,##0.00" />
+												<p:ajax event="blur" update=":formRecibo" listener="#{reciboCajaView.calcularValorTotal}">
+													<f:setPropertyActionListener value="#{concepto}" target="#{reciboCajaView.conceptoSeleccionado}" />
+												</p:ajax>
+											</p:inputText>
+										</div>
+									</p:column>
+
+									<p:column headerText="Valor Total"
+										sortBy="#{concepto.valorTotal}"
+										filterBy="#{concepto.valorTotal}" filterMatchMode="contains">
+										<div align="right">
+											<h:outputText value="#{concepto.valorTotal}">
+												<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+											</h:outputText>
+										</div>
+									</p:column>
+
+									<p:column headerText="Valor Pendiente Pago"
+										sortBy="#{concepto.valorRestante}"
+										filterBy="#{concepto.valorRestante}"
+										filterMatchMode="contains">
+										<div align="right">
+											<h:outputText value="#{concepto.valorRestante}">
+												<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+											</h:outputText>
+										</div>
+									</p:column>
+
+
+									<p:column headerText="Adicionar Forma Pago"
+										style="width:150px;text-align: center"
+										rendered="#{reciboCajaView.mostrarBotonDeSeleccionDeFormaPago}">
+										<p:commandButton update=":frmCar"
+											oncomplete="PF('carDialog').show()" title="View"
+											value="Forma de Pago"
+											action="#{reciboCajaView.cargarValorAPagar}">
+											<f:setPropertyActionListener value="#{concepto}"
+												target="#{reciboCajaView.conceptoSeleccionado}" />
+										</p:commandButton>
+									</p:column>
+
+
+
+								</p:dataTable>
+
+								<p:commandButton value="Adicionar Concepto de Renta"
+									icon="ui-icon-plus" oncomplete="PF('dlgRubros').show();"
+									update=":frmConceptoRenta" />
+
+
+								<p:spacer height="40"></p:spacer>
+
+
+							</p:tab>
+							<p:tab title="TOTALES RECIBO">
+
+								<p:spacer height="10"></p:spacer>
+
+								<div align="center">
+									<p:dataTable var="total"
+										value="#{reciboCajaView.lstTotalesFormaPago}"
+										emptyMessage="No se han registrado formas de pago">
+
+										<f:facet name="header">
+					        Totales Forma de Pago
+					    </f:facet>
+
+										<p:column headerText="Código">
+											<h:outputText value="#{total.codigo}" />
+										</p:column>
+
+										<p:column headerText="Nombre">
+											<h:outputText value="#{total.descripcion}" />
+										</p:column>
+
+										<p:column headerText="Valor">
+											<h:outputText value="#{total.valorTotal}">
+												<f:convertNumber type="currency" maxFractionDigits="2"
+													currencySymbol="$" />
+											</h:outputText>
+										</p:column>
+
+									</p:dataTable>
+
+									<p:spacer height="10"></p:spacer>
+
+									<h:panelGrid columns="2">
+
+										<h:outputText value="Valor Total Formas de Pago: " />
+										<h:outputText value="#{reciboCajaView.valorTotalFormasPago}">
+											<f:convertNumber type="currency" maxFractionDigits="2"
+												currencySymbol="$" />
+										</h:outputText>
+
+										<h:outputText value="Valor Total Recibo: " />
+										<h:outputText value="#{reciboCajaView.valorTotalRecibo}">
+											<f:convertNumber type="currency" maxFractionDigits="2"
+												currencySymbol="$" />
+										</h:outputText>
+
+										<h:outputText value="Valor Pendiente de Pago: " />
+										<h:outputText value="#{reciboCajaView.valorTotalRestante}">
+											<f:convertNumber type="currency" maxFractionDigits="2"
+												currencySymbol="$" />
+										</h:outputText>
+
+									</h:panelGrid>
+
+								</div>
+
+							</p:tab>
+
+						</p:accordionPanel>
+
+						<p:spacer height="15"></p:spacer>
+
+						<h:panelGrid columns="3">
+
+							<p:commandButton value="Guardar Recibo"
+								action="#{reciboCajaView.guardarReciboDefinitivo}"
+								update=":formRecibo, :frmDescargar" />
+
+
+							<p:commandButton value="Nuevo" action="#{reciboCajaView.limpiar}"
+								update=":formRecibo" />
+
+
+						</h:panelGrid>
+					</p:panel>
+				</div>
+				<p:spacer height="40"></p:spacer>
+
+
+
+			</h:form>
+
+			<!-- Crear el tercero -->
+			<!-- **************************** -->
+			<p:dialog id="idDialogoTercero" widgetVar="dialogoTercero"
+				draggable="true" closable="true" modal="true" visible="false"
+				resizable="false" height="400" width="80%" position="center"
+				header="Registrar Tercero">
+
+				<h:form id="frmTercero" enctype="multipart/form-data">
+
+					<p:messages id="msg" autoUpdate="true" showDetail="false"
+						closable="true" />
+
+					<p:tabView id="crearConsultarTercero">
+
+						<p:tab id="crearTerceroTab" title="Crear un tercero">
+
+							<div class="Container100">
+								<div class="ContainerIndent">
+
+									<h:panelGrid columns="5" columnClasses="one, two"
+										style="width: 100%;" id="pnlDatosTercero">
+
+										<p:outputLabel for="tipoTercero" value="Tipo Tercero: " />
+										<p:selectOneRadio id="tipoTercero"
+											value="#{reciboCajaView.tipoTercero}" style="width:80%">
+											<f:selectItems value="#{reciboCajaView.lstTipoTerceroItems}" />
+											<p:ajax listener="#{reciboCajaView.listener_tipoPersona}"
+												update=":frmTercero" process="@this" />
+										</p:selectOneRadio>
+
+										<p:spacer width="10"></p:spacer>
+
+
+										<p:outputLabel for="municipio" value="Municipio: " />
+										<p:selectOneMenu id="municipio"
+											value="#{reciboCajaView.municipio}" style="width:80%"
+											filter="true" filterMatchMode="contains">
+											<f:selectItem itemLabel="Seleccionar" itemValue="-1" />
+											<f:selectItems value="#{reciboCajaView.lstMunicipiosItems}" />
+										</p:selectOneMenu>
+
+
+										<h:outputText value="Identificación:" />
+										<p:inputText id="txtIdentificacion" disabled="false"
+											style="width: 95%;" value="#{reciboCajaView.identificacion}" />
+
+										<p:spacer width="10"></p:spacer>
+
+										<p:outputLabel for="cmbTipoIdentificacion"
+											value="Tipo Identificación: " style="width: 100%;" />
+										<p:selectOneMenu id="cmbTipoIdentificacion"
+											value="#{reciboCajaView.tipoIdentificacionSeleccionada}"
+											style="width:100%">
+											<f:selectItem itemLabel="Seleccionar" itemValue="" />
+											<f:selectItems
+												value="#{reciboCajaView.lstTipoIdentificacionItems}" />
+										</p:selectOneMenu>
+
+
+										<h:outputText id="lblPrimerNombre" value="Primer Nombre:" />
+										<p:inputText id="txtPrimerNombre" style="width: 95%;"
+											value="#{reciboCajaView.primerNombre}"
+											disabled="#{reciboCajaView.showPersonaNatural}" />
+
+										<p:spacer width="10"></p:spacer>
+
+										<h:outputText id="lblSegundoNombre" value="Segundo Nombre:" />
+										<p:inputText id="txtSegundoNombre" style="width: 95%;"
+											value="#{reciboCajaView.segundoNombre}"
+											disabled="#{reciboCajaView.showPersonaNatural}" />
+
+										<h:outputText id="lblPrimerApellido" value="Primer Apellido:" />
+										<p:inputText id="txtPrimerApellido" style="width: 95%;"
+											value="#{reciboCajaView.primerApellido}"
+											disabled="#{reciboCajaView.showPersonaNatural}" />
+
+										<p:spacer width="10"></p:spacer>
+
+										<h:outputText id="lblSegundoApellido"
+											value="Segundo Apellido:" />
+										<p:inputText id="txtSegundoApellido" style="width: 95%;"
+											value="#{reciboCajaView.segundoApellido}"
+											disabled="#{reciboCajaView.showPersonaNatural}" />
+
+										<h:outputText id="lblRazonSocial" value="Razón Social: " />
+										<p:inputText id="txtRazonSocial" style="width: 95%;"
+											value="#{reciboCajaView.razonSocial}"
+											disabled="#{!reciboCajaView.showPersonaNatural}" />
+
+									</h:panelGrid>
+
+									<div align="center">
+										<h:panelGrid columns="2" style="margin-bottom:10px"
+											cellpadding="5">
+											<p:outputLabel for="genero" value="Género: " />
+											<p:selectOneRadio id="genero"
+												value="#{reciboCajaView.genero}">
+												<f:selectItem itemLabel="Masculino"
+													itemValue="#{reciboCajaView.masculino}" />
+												<f:selectItem itemLabel="Femenino"
+													itemValue="#{reciboCajaView.femenino}" />
+											</p:selectOneRadio>
+										</h:panelGrid>
+
+										<h:panelGrid columns="4" style="margin-bottom:10px"
+											cellpadding="5">
+
+
+
+
+											<h:outputText id="lblTelefonoUno" value="Teléfono 1:" />
+											<p:inputText id="txtTelefonoUno" style="width: 95%;"
+												value="#{reciboCajaView.telefonoUno}" />
+
+											<h:outputText id="lblTelefonoDos" value="Teléfono 2:" />
+											<p:inputText id="txtTelefonoDos" style="width: 95%;"
+												value="#{reciboCajaView.telefonoDos}" />
+
+											<h:outputText id="lblTelefonoTres" value="Teléfono 3:" />
+											<p:inputText id="txtTelefonoTres" style="width: 95%;"
+												value="#{reciboCajaView.telefonoTres}" />
+
+											<h:outputText id="lblDireccion" value="Dirección:" />
+											<p:inputText id="txtDireccion" style="width: 95%;"
+												value="#{reciboCajaView.direccion}" />
+
+
+										</h:panelGrid>
+
+									</div>
+
+								</div>
+							</div>
+
+
+
+							<div align="center">
+								<p:commandButton id="btnSave" value="Guardar Tercero"
+									actionListener="#{reciboCajaView.guardarTercero}"
+									update=":frmTercero:crearConsultarTercero, :formRecibo:txtNombreTercero"
+									oncomplete="$('#formRecibo\\:terceroSeleccionado').val($('#frmTercero\\:crearConsultarTercero\\:txtIdentificacion').val()); PF('dialogoTercero').hide();" />
+
+							</div>
+						</p:tab>
+
+
+						<p:tab id="consultarTerceroTab" title="Consultar un tercero">
+							<p:scrollPanel mode="native" style="width:100%; height:400px">
+								<p:dataTable id="dataTableTercero"
+									value="#{reciboCajaView.lstTerceros}"
+									emptyMessage="No se han encontrado terceros registrados"
+									rows="5" var="tercero" paginator="true"
+									rowsPerPageTemplate="5,10,15" filterDelay="1000">
+
+									<p:column filterBy="#{tercero.identificacion}"
+										sortBy="#{tercero.identificacion}">
+										<f:facet name="header">
+											<h:outputText value="Identificación" />
+										</f:facet>
+										<h:outputText value="#{tercero.identificacion}" />
+									</p:column>
+
+									<p:column filterBy="#{tercero.primerNombre}"
+										sortBy="#{tercero.primerNombre}">
+										<f:facet name="header">
+											<h:outputText value="Primer Nombre" />
+										</f:facet>
+										<h:outputText value="#{tercero.primerNombre}" />
+									</p:column>
+
+									<p:column filterBy="#{tercero.segundoNombre}"
+										sortBy="#{tercero.segundoNombre}">
+										<f:facet name="header">
+											<h:outputText value="Segundo Nombre" />
+										</f:facet>
+										<h:outputText value="#{tercero.segundoNombre}" />
+									</p:column>
+
+									<p:column filterBy="#{tercero.primerApellido}"
+										sortBy="#{tercero.primerApellido}">
+										<f:facet name="header">
+											<h:outputText value="Primer Apellido" />
+										</f:facet>
+										<h:outputText value="#{tercero.primerApellido}" />
+									</p:column>
+
+									<p:column filterBy="#{tercero.segundoApellido}"
+										sortBy="#{tercero.segundoApellido}">
+										<f:facet name="header">
+											<h:outputText value="Segundo Apellido" />
+										</f:facet>
+										<h:outputText value="#{tercero.segundoApellido}" />
+									</p:column>
+
+									<p:column filterBy="#{tercero.gluoEmpresa.razonSocial}"
+										sortBy="#{tercero.gluoEmpresa.razonSocial}">
+										<f:facet name="header">
+											<h:outputText value="Empresa" />
+										</f:facet>
+										<h:outputText value="#{tercero.gluoEmpresa.razonSocial}" />
+									</p:column>
+
+									<p:column filterBy="#{tercero.gluoTipoTercero.nombre}"
+										sortBy="#{tercero.gluoTipoTercero.nombre}">
+										<f:facet name="header">
+											<h:outputText value="Tipo Tercero" />
+										</f:facet>
+										<h:outputText value="#{tercero.gluoTipoTercero.nombre}" />
+									</p:column>
+
+
+									<p:column headerText="Seleccionar">
+
+										<p:commandButton title="Seleccionar" icon="ui-icon-check"
+											oncomplete="PF('dialogoTercero').hide();"
+											update=":formRecibo"
+											action="#{reciboCajaView.consultarNombreTercero}">
+
+											<f:setPropertyActionListener
+												value="#{tercero.identificacion}"
+												target="#{reciboCajaView.terceroSeleccionado}" />
+
+										</p:commandButton>
+
+									</p:column>
+								</p:dataTable>
+							</p:scrollPanel>
+
+						</p:tab>
+					</p:tabView>
+
+
+
+				</h:form>
+			</p:dialog>
+
+			<!-- Rubros presupuestales a adicionar en el CDP -->
+			<!-- ******************************************* -->
+			<p:dialog modal="true" widgetVar="dlgRubros"
+				header="Concepto de Renta Propia" draggable="false" closable="true"
+				resizable="true" width="90%" height="200px;" position="center">
+
+				<h:form id="frmConceptoRenta" enctype="multipart/form-data">
+
+					<p:scrollPanel mode="native" style="width:100%; height:400px">
+						<p:dataTable id="presupuestoGastosData" var="concepto"
+							value="#{reciboCajaView.lstConceptoRentaPropia}" rows="10"
+							paginator="true"
+							paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+							rowsPerPageTemplate="10,15,20,30"
+							emptyMessage="No existen conceptos de renta propia" reflow="true"
+							rowKey="#{concepto.pacoId}"
+							selection="#{reciboCajaView.lstConceptoRentaPropiaSeleccionados}"
+							filterDelay="1000">
+
+							<p:column selectionMode="multiple"
+								style="width:5%; text-align:center" />
+
+							<p:column headerText="Concepto Renta"
+								sortBy="#{concepto.codigoConcepto}" style="width: 15%"
+								filterBy="#{concepto.codigoConcepto}" filterMatchMode="contains">
+								<div align="center">
+									<h:outputText value="#{concepto.codigoConcepto}" />
+								</div>
+							</p:column>
+
+							<p:column headerText="Tarifa" sortBy="#{concepto.tarifa}"
+								style="width: 15%" filterBy="#{concepto.tarifa}"
+								filterMatchMode="contains">
+								<div align="center">
+									<h:outputText value="#{concepto.tarifa}">
+										<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+									</h:outputText>
+								</div>
+							</p:column>
+
+							<p:column headerText="Rubro Presupuesto"
+								sortBy="#{concepto.detallePptoDescripcion}" style="width: 15%"
+								filterBy="#{concepto.detallePptoDescripcion}"
+								filterMatchMode="contains">
+								<div align="center">
+									<h:outputText value="#{concepto.detallePptoDescripcion}">
+
+									</h:outputText>
+								</div>
+							</p:column>
+
+
+							<p:column headerText="Identificación Tercero"
+								sortBy="#{concepto.identificacionTercero}" style="width: 15%"
+								filterBy="#{concepto.identificacionTercero}"
+								filterMatchMode="contains">
+								<div align="center">
+									<h:outputText value="#{concepto.identificacionTercero}">
+
+									</h:outputText>
+								</div>
+							</p:column>
+
+							<p:column headerText="Nombre Tercero"
+								sortBy="#{concepto.nombreTercero}" style="width: 15%"
+								filterBy="#{concepto.nombreTercero}" filterMatchMode="contains">
+								<div align="center">
+									<h:outputText value="#{concepto.nombreTercero}">
+
+									</h:outputText>
+								</div>
+							</p:column>
+
+
+						</p:dataTable>
+					</p:scrollPanel>
+
+					<br />
+
+					<div align="center">
+						<p:commandButton
+							value="Adicionar Conceptos de Renta Seleccionados"
+							icon="ui-icon-plus" oncomplete="PF('dlgRubros').hide();"
+							action="#{reciboCajaView.action_adicionarConceptos}"
+							update=":frmConceptoRenta,:formRecibo" />
+
+					</div>
+					<div class="EmptyBox20" />
+
+				</h:form>
+			</p:dialog>
+
+
+			<p:dialog header="Forma de Pago" widgetVar="carDialog" modal="true"
+				showEffect="fade" hideEffect="fade" resizable="false">
+				<h:form id="frmCar">
+					<p:messages id="msg2" autoUpdate="true" />
+					<p:outputPanel id="carDetail" style="text-align:left;">
+						<h:panelGrid columns="2" rendered="true"
+							columnClasses="label,value">
+
+							<h:outputText value="Forma de Pago" />
+							<p:selectOneMenu id="formaPago"
+								value="#{reciboCajaView.tipoFormaPagoSeleccionado}">
+								<f:selectItem itemLabel="Seleccionar" itemValue="" />
+								<f:selectItems value="#{reciboCajaView.lstTipoFormaPagoItems}" />
+								<p:ajax event="change"
+									listener="#{reciboCajaView.cambiarTipoTransaccion}"
+									update=":frmCar" />
+							</p:selectOneMenu>
+
+							<h:outputText value="Banco" />
+							<p:selectOneMenu id="banco"
+								value="#{reciboCajaView.bancoSeleccionado}"
+								disabled="#{reciboCajaView.bloquearBanco}">
+								<f:selectItem itemLabel="Seleccionar" itemValue="" />
+								<f:selectItems value="#{reciboCajaView.lstBancoItems}" />
+							</p:selectOneMenu>
+
+							<h:outputText value="Número Documento: " style="width: 100%;" />
+							<p:inputText id="txtNumeroRecibo"
+								value="#{reciboCajaView.numeroDocumento}" style="width: 100%;"
+								disabled="#{reciboCajaView.bloquearNumero}" />
+
+							<h:outputText value="Fecha" style="width: 100%;" />
+							<p:calendar value="#{reciboCajaView.fechaConsignacion}"
+								timeZone="GMT-5" style="width: 100%;"
+								disabled="#{reciboCajaView.bloquearNumero}" />
+
+
+						</h:panelGrid>
+
+						<p:spacer height="10"></p:spacer>
+						<p:separator></p:separator>
+
+						<h:panelGrid columns="2" rendered="true"
+							columnClasses="label,value">
+
+							<h:outputText value="Valor Total a Pagar:  " />
+							<h:outputText
+								value="#{reciboCajaView.conceptoSeleccionado.valorTotal}"
+								style="width: 100%; text-align:right;">
+								<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+							</h:outputText>
+
+							<h:outputText value="Valor Restante: " style="width: 100%;" />
+							<h:outputText
+								value="#{reciboCajaView.conceptoSeleccionado.valorRestante}"
+								style="width: 100%;">
+								<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+							</h:outputText>
+
+							<h:outputText value="Valor a pagar: " style="width: 100%;" />
+
+
+							<p:inputText value="#{reciboCajaView.valorAPagar}"
+								style="width: 100%; text-align:left;">
+
+							</p:inputText>
+
+
+						</h:panelGrid>
+
+						<p:spacer height="10"></p:spacer>
+
+						<div align="center">
+							<p:commandButton value="Adicionar Forma Pago" icon="ui-icon-plus"
+								action="#{reciboCajaView.adicionarFormaPago}"
+								update=":frmCar, :formRecibo" />
+						</div>
+
+					</p:outputPanel>
+				</h:form>
+			</p:dialog>
+
+
+			<!-- Dialogo presupuestos gastos para contra credito -->
+			<!-- **************************** -->
+			<p:dialog header="Recibos Provisionales" style="align-text: center"
+				widgetVar="dialogoRecibosProvisionales" modal="true" height="400"
+				width="80%">
+
+				<h:form id="frmDialogoRecibosProvisionales">
+
+					<p:dataTable var="item"
+						value="#{reciboCajaView.lstRecibosProvisionales}"
+						selectionMode="single"
+						selection="#{reciboCajaView.reciboProvisionalSeleccionado}"
+						rowKey="#{item.rcboId}" filterDelay="1000">
+
+						<p:ajax event="rowSelect"
+							listener="#{reciboCajaView.onRowSelectRecibosProvisionales}"
+							update=":frmDialogoRecibosProvisionales, :formRecibo"
+							oncomplete="PF('dialogoRecibosProvisionales').hide();" />
+
+
+						<p:column headerText="Consecutivo" filterBy="#{item.consecutivo}"
+							filterMatchMode="contains">
+							<h:outputText value="#{item.consecutivo}" />
+						</p:column>
+
+						<p:column headerText="Fecha" filterBy="#{item.fechaRecibo}"
+							filterMatchMode="contains">
+							<h:outputText value="#{item.fechaRecibo}" />
+						</p:column>
+
+						<p:column headerText="Valor Total" filterBy="#{item.valorTotal}"
+							filterMatchMode="contains">
+							<h:outputText value="#{item.valorTotal}"
+								style="text-align: right;">
+								<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+							</h:outputText>
+						</p:column>
+
+
+					</p:dataTable>
+
+				</h:form>
+
+			</p:dialog>
+
+			<!-- Descargar CDP Generado -->
+			<!-- ******************************************* -->
+			<p:dialog modal="true" widgetVar="dlgDescargarRecibo"
+				header="Descargar archivo Recibo Caja" draggable="false"
+				closable="true" resizable="true" width="90%" height="200px;"
+				position="center">
+
+				<h:form id="frmDescargar">
+					<p:outputLabel
+						value="Se ha generado un recibo de caja.  Desea descargarlo ahora?" />
+
+					<br />
+					<br />
+
+					<h:panelGrid columns="4">
+						<p:commandButton value="Generar informe en archivo XLS"
+							onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)"
+							icon="ui-icon-arrowthichk-s">
+
+							<p:fileDownload value="#{reciboCajaView.rporteXLS}" />
+
+						</p:commandButton>
+
+						<p:commandButton value="Generar informe en archivo XLSX"
+							onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)"
+							icon="ui-icon-arrowthichk-s">
+
+							<p:fileDownload value="#{reciboCajaView.rporteXLSX}" />
+
+						</p:commandButton>
+
+						<p:commandButton value="Generar informe en archivo PDF"
+							onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)"
+							icon="ui-icon-arrowthichk-s">
+
+							<p:fileDownload value="#{reciboCajaView.rportePDF}" />
+
+						</p:commandButton>
+
+						<p:commandButton value="He terminado! Cerrar"
+							oncomplete="PF('dlgDescargarRecibo').hide();" />
+
+					</h:panelGrid>
+
+					<div class="EmptyBox20" />
+				</h:form>
+			</p:dialog>
+
+
+		</f:view>
+	</ui:define>
+
+</ui:composition>

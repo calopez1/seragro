@@ -1,0 +1,150 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+
+<ui:define name="content">
+<f:view>
+
+	<p:ajaxStatus onstart="PF('statusDialog').show()"
+		onsuccess="PF('statusDialog').hide()" />
+	<p:dialog modal="true" widgetVar="statusDialog" header="Cargando"
+		draggable="false" closable="false">
+		<p:graphicImage
+			value="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/ajaxloadingbar.gif" />
+	</p:dialog>
+
+	<!-- Expired session -->
+<p:idleMonitor onactive="PF('sessionTimeOutDialog').show();"
+	timeout="#{session.maxInactiveInterval * 1000}" />
+<p:dialog modal="true" widgetVar="sessionTimeOutDialog"
+	header="Sesión terminada" draggable="false" closable="false">
+	<h:outputText value="La sesión ha finalizado" />
+	<input id="confirmBackToLogin" type="button" value="Iniciar sesión"
+		onclick="window.location='#{facesContext.externalContext.requestContextPath}/index.jsp';" />
+</p:dialog>
+
+<script type="text/javascript">
+function showStatus() {
+    statusDialog.show();
+}
+ 
+function hideStatus() {
+    statusDialog.hide();
+}
+</script>
+
+<style type="text/css">
+.ui-panel {
+	margin-top: 20px
+}
+
+.ui-tabs-top {
+	background-color: #FFFFFF;
+}
+
+.one {
+	width: 40%;
+}
+
+.two {
+	width: 60%;
+}
+
+.col50Left {
+	width: 10%;
+	text-align: left;
+}
+
+.col50Right {
+	width: 10%;
+	text-align: right;
+}
+
+.txt100 {
+	width: 100%;
+}
+</style>
+
+<div align="center">
+<h:form id="frmGestionarCierreContable" >
+
+	<p:growl id="messages" autoUpdate="true" closable="true" />
+		
+	<p:panel id="pnlGestionarCierreContable" header="Gestionar Cierre Contable"
+			 style="width: 90%;" >
+	
+		<h:panelGrid columns="2">
+		
+			<p:outputLabel value="Año Fiscal:" for="txtAnioFiscal" />
+			<p:inputText id="txtAnioFiscal" value="#{gluoCierreContableView.txtAnioFiscal}" />
+		
+			<p:outputLabel value="Mes:" for="txtMes" />
+			<p:selectOneMenu id="txtMes" value="#{gluoCierreContableView.txtMes}" >
+				<f:selectItem itemLabel="-- SELECCIONAR --" itemValue="-1" />
+				<f:selectItem itemLabel="Enero" itemValue="ENE" />
+				<f:selectItem itemLabel="Febrero" itemValue="FEB" />
+				<f:selectItem itemLabel="Marzo" itemValue="MAR" />
+				<f:selectItem itemLabel="Abril" itemValue="ABR" />
+				<f:selectItem itemLabel="Mayo" itemValue="MAY" />
+				<f:selectItem itemLabel="Junio" itemValue="JUN" />
+				<f:selectItem itemLabel="Julio" itemValue="JUL" />
+				<f:selectItem itemLabel="Agosto" itemValue="AGO" />
+				<f:selectItem itemLabel="Septiembre" itemValue="SEP" />
+				<f:selectItem itemLabel="Octubre" itemValue="OCT" />
+				<f:selectItem itemLabel="Noviembre" itemValue="NOV" />
+				<f:selectItem itemLabel="Diciembre" itemValue="DIC" />
+			</p:selectOneMenu>
+		
+		</h:panelGrid>
+		
+		<br/>
+		
+		<p:commandButton id="btnGuardar" value="Guardar"
+						 action="#{gluoCierreContableView.action_guardar}"
+						 update=":frmGestionarCierreContable" />
+						 
+		<p:commandButton id="btnLimpiar" value="Limpiar"
+						 action="#{gluoCierreContableView.action_limpiar}"
+						 update=":frmGestionarCierreContable" />						 		
+	
+	</p:panel>
+	
+	<p:panel id="pnlListaGestionarCierreContable" header="Lista de Cierres Contables"
+			 style="width: 90%; text-align: center;" >
+	
+		<p:dataTable id="pnlListaGestionarCierreContableDataTable"
+					 var="cierreContable"
+					 paginator="true"
+					 rows="10"
+					 value="#{gluoCierreContableView.listCierreContableDTOs}"
+					 rowKey="#{cierreContable.cicoId}" 
+					 filterDelay="1000">
+					 
+					 <p:column headerText="Mes" filterBy="#{cierreContable.nombre}" >
+						<h:outputText value="#{cierreContable.nombre}" />
+					 </p:column>
+					 
+					 <p:column headerText="Año Fiscal" filterBy="#{cierreContable.anioFiscal}" >
+						<h:outputText value="#{cierreContable.anioFiscal}" />
+					 </p:column>
+					 
+					 <p:column headerText="Fecha de Cierre" filterBy="#{cierreContable.fechaCreacion}" >
+						<h:outputText value="#{cierreContable.fechaCreacion}" >
+							<f:convertDateTime type="date" pattern="dd-MM-yyyy"/>
+						</h:outputText>
+					 </p:column>
+				
+		</p:dataTable>
+	
+	</p:panel>
+	
+	
+</h:form>
+</div>
+
+</f:view>
+</ui:define>
+</ui:composition>

@@ -1,0 +1,237 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+<ui:define name="content">
+<f:view>
+	<p:ajaxStatus onstart="PF('statusDialog').show()"
+		onsuccess="PF('statusDialog').hide()" />
+	<p:dialog modal="true" widgetVar="statusDialog" header="Cargando"
+		draggable="false" closable="false">
+		<p:graphicImage
+			value="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/ajaxloadingbar.gif" />
+	</p:dialog>
+
+	<!-- Expired session -->
+	<p:idleMonitor onactive="PF('sessionTimeOutDialog').show();"
+		timeout="#{session.maxInactiveInterval * 1000}" />
+	<p:dialog modal="true" widgetVar="sessionTimeOutDialog"
+		header="Sesión Finalizada" draggable="false" closable="false">
+		<h:outputText value="La sesión ha caducado." />
+		<input id="confirmBackToLogin" type="button" value="Iniciar Sesión"
+			onclick="window.location='#{facesContext.externalContext.requestContextPath}/index.jsp';" />
+	</p:dialog>
+	
+<div align="center">
+<h:form id="frmDeducciones">
+
+	<p:growl id="growl" autoUpdate="true" />
+
+	<p:panel id="pnlDeducciones" header="Gestionar Deducciones" style="width: 90%;">
+		<h:panelGrid columns="2">
+		
+			<p:outputLabel value="Consultar Empleado:" for="txtIdentificacionEmpleadoSeleccionada" />		
+			<h:panelGrid columns="2">			
+			<p:inputText id="txtIdentificacionEmpleadoSeleccionada" 
+				binding="#{gluoDeduccionXEmpleadoView.txtIdentificacionEmpleadoSeleccionada}"
+				readonly="true" />
+			<p:commandButton style="width:100%" icon="ui-icon-search"
+								onclick="PF('dialogEmpleados').show();" />
+			</h:panelGrid>
+			
+			<p:outputLabel value="Tipo Deducción:" for="tipoDeduccion" />
+			<p:selectOneMenu id="tipoDeduccion" binding="#{gluoDeduccionXEmpleadoView.selectTipoDeduccion}" >
+				<f:selectItem itemLabel="-- SELECCIONAR --" itemValue="-1" />
+				<f:selectItems value="#{gluoDeduccionXEmpleadoView.itemsTipoDeducciones}" />
+				<p:ajax event="change" 
+					listener="#{gluoDeduccionXEmpleadoView.listener_seleccionar_tipo_deduccion}"
+					update=":frmDeducciones" />
+			</p:selectOneMenu>
+			
+			<p:outputLabel value="Pesos:" for="txtPesos" />
+			<p:inputText id="txtPesos" binding="#{gluoDeduccionXEmpleadoView.txtPesos}"
+				disabled="true" >
+				<f:convertNumber pattern="#,##0.00"  />
+				<p:ajax event="blur" update="@this" />
+			</p:inputText>
+			
+			<p:outputLabel value="Porcentaje:" for="txtPorcentaje" />
+			<p:inputText id="txtPorcentaje" binding="#{gluoDeduccionXEmpleadoView.txtPorcentaje}"
+				disabled="true" >			
+			</p:inputText>
+			
+			<p:outputLabel value="No. Cuotas:" for="txtNumeroCuotas" />
+			<p:inputText id="txtNumeroCuotas" binding="#{gluoDeduccionXEmpleadoView.txtNumeroCuotas}"
+				disabled="true" >			
+			</p:inputText>
+			
+			<p:outputLabel value="Fecha Inicio:" for="txtFechaInicio" />
+			<p:calendar id="txtFechaInicio" binding="#{gluoDeduccionXEmpleadoView.txtFechaInicio}"
+				navigator="true" disabled="true" />
+				
+			<p:outputLabel value="Fecha Fin:" for="txtFechaFin" />
+			<p:calendar id="txtFechaFin" binding="#{gluoDeduccionXEmpleadoView.txtFechaFin}"
+				navigator="true" disabled="true" />
+				
+			<p:outputLabel value="Estado:" for="selectEstado" />
+			<p:selectOneRadio id="selectEstado" binding="#{gluoDeduccionXEmpleadoView.selectEstado}">
+				<f:selectItem itemLabel="Activo" itemValue="A" />
+				<f:selectItem itemLabel="Inactivo" itemValue="I" />
+			</p:selectOneRadio>
+			
+		</h:panelGrid>
+		
+		<br/>
+		<p:commandButton id="btnGuardar" value="Guardar"
+			action="#{gluoDeduccionXEmpleadoView.action_guardar}" update=":frmDeducciones" />
+			
+		<p:commandButton id="btnLimpiar" value="Limpiar"
+			action="#{gluoDeduccionXEmpleadoView.action_limpiar}" update=":frmDeducciones" />
+		
+	</p:panel>
+	
+	<p:panel id="pnlListadoDeduccionesXEmpleado" header="Listado Deducciones por Empleado" style="width: 90%;">
+		<p:dataTable id="listadoDeduccionesXEmpleadoDataTable" style="text-align: center;"
+			var="deduccion"
+			value="#{gluoDeduccionXEmpleadoView.listDeduccionXEmpleadoDTOs}"
+			selection="#{gluoDeduccionXEmpleadoView.deduccionXEmpleadoDTO}"
+			selectionMode="single"
+			paginator="true"
+			rows="10"
+			rowKey="#{deduccion.deemId}"
+			filterDelay="1000">
+			
+			<p:column selectionMode="single" style="width: 28px;"/>
+			
+			<p:ajax event="rowSelect"
+				listener="#{gluoDeduccionXEmpleadoView.listener_seleccionar_deduccion_x_empleado}"
+				update=":frmDeducciones" />
+			
+			<p:column headerText="Tipo Identificación:" filterBy="#{deduccion.tipoIdentificacion}"
+				filterMatchMode="startsWith">
+				<p:outputLabel value="#{deduccion.tipoIdentificacion}" />
+			</p:column>
+			
+			<p:column headerText="Identificación:" filterBy="#{deduccion.identificacion}"
+				filterMatchMode="startsWith">
+				<p:outputLabel value="#{deduccion.identificacion}" />
+			</p:column>
+			
+			<p:column headerText="Nombre Empleado:" filterBy="#{deduccion.nombreCompleto}"
+				filterMatchMode="contains">
+				<p:outputLabel value="#{deduccion.nombreCompleto}" />
+			</p:column>
+			
+			<p:column headerText="Tipo Deducción:" filterBy="#{deduccion.tipoDeduccionNomina}"
+				filterMatchMode="contains">
+				<p:outputLabel value="#{deduccion.tipoDeduccionNomina}" />
+			</p:column>
+			
+			<p:column headerText="Valor:" filterBy="#{deduccion.valor}"
+				filterMatchMode="startsWith">
+				<p:outputLabel value="#{deduccion.valor}" />
+			</p:column>
+			
+			<p:column headerText="Porcentaje:" filterBy="#{deduccion.porcentaje}"
+				filterMatchMode="startsWith">
+				<p:outputLabel value="#{deduccion.porcentaje}" />
+			</p:column>
+			
+			<p:column headerText="No. Cuotas:" filterBy="#{deduccion.porcentaje}"
+				filterMatchMode="startsWith">
+				<p:outputLabel value="#{deduccion.porcentaje}" />
+			</p:column>
+			
+			<p:column headerText="Fecha Inicio:" filterBy="#{deduccion.fechaInicio}"
+				filterMatchMode="startsWith">
+				<p:outputLabel value="#{deduccion.fechaInicio}" >
+					<f:convertDateTime type="date" pattern="yyyy-MM-dd" />
+				</p:outputLabel>
+			</p:column>
+			
+			<p:column headerText="Fecha Fin:" filterBy="#{deduccion.fechaFin}"
+				filterMatchMode="startsWith">
+				<p:outputLabel value="#{deduccion.fechaFin}" >
+					<f:convertDateTime type="date" pattern="yyyy-MM-dd" />
+				</p:outputLabel>
+			</p:column>
+			
+			<p:column headerText="Estado:" filterBy="#{deduccion.activo}"
+				filterMatchMode="startsWith">
+				<p:outputLabel value="#{(deduccion.activo == 'A' ? 'Activo' : 'Inactivo')}" />
+			</p:column>
+		
+		</p:dataTable>
+	</p:panel>
+	
+	<!-- ************************************************** -->
+	<!-- **				DIÁLOGO EMPLEADOS		     	 ** -->
+	<!-- ************************************************** -->
+	<p:dialog header="Empleados" style="align-text: center"
+		widgetVar="dialogEmpleados" modal="true" height="400" width="90%">
+
+		<p:scrollPanel mode="native" style="width:100%; height:400px">
+			<p:dataTable id="listarEmpleadosDataTable"
+				var="empleado"
+				value="#{gluoDeduccionXEmpleadoView.listEmpleadoDTOs}"
+				paginator="true"
+				rows="10"		
+				selectionMode="single"		
+				selection="#{gluoDeduccionXEmpleadoView.selectedEmpleadoDTO}"
+				rowKey="#{empleado.emplId}"
+				filterDelay="1000">
+				
+				<p:column selectionMode="single" style="width: 28px;" />
+				
+				<p:ajax event="rowSelect" 
+						listener="#{gluoDeduccionXEmpleadoView.listener_seleccionar_empleado}" 						
+						oncomplete="PF('dialogEmpleados').hide();"
+						update=":frmDeducciones" />			
+				
+				<p:column headerText="Tipo Identificación" filterBy="#{empleado.tipoIdentifiacion}"
+					filterMatchMode="startsWith">
+					<p:outputLabel value="#{empleado.tipoIdentifiacion}" />
+				</p:column>
+				
+				<p:column headerText="Identificación" filterBy="#{empleado.identificacion}"
+					filterMatchMode="startsWith">
+					<p:outputLabel value="#{empleado.identificacion}" />
+				</p:column>
+				
+				<p:column headerText="Código" filterBy="#{empleado.codigo}"
+					filterMatchMode="startsWith">
+					<p:outputLabel value="#{empleado.codigo}" />
+				</p:column>
+				
+				<p:column headerText="Primer Nombre" filterBy="#{empleado.primerNombre}"
+					filterMatchMode="startsWith">
+					<p:outputLabel value="#{empleado.primerNombre}" />
+				</p:column>
+				
+				<p:column headerText="Segundo Nombre" filterBy="#{empleado.segundoNombre}"
+					filterMatchMode="startsWith">
+					<p:outputLabel value="#{empleado.segundoNombre}" />
+				</p:column>
+				
+				<p:column headerText="Primer Apellido" filterBy="#{empleado.primerApellido}"
+					filterMatchMode="startsWith">
+					<p:outputLabel value="#{empleado.primerApellido}" />
+				</p:column>
+				
+				<p:column headerText="Segundo Apellido" filterBy="#{empleado.segundoApellido}"
+					filterMatchMode="startsWith">
+					<p:outputLabel value="#{empleado.segundoApellido}" />
+				</p:column>
+				
+			</p:dataTable>			
+		</p:scrollPanel>
+	</p:dialog> <!-- FIN DIÁLOGO EMPLEADOS -->
+		
+</h:form>
+</div>
+</f:view>
+</ui:define>
+
+</ui:composition>

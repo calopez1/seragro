@@ -1,0 +1,284 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+	<ui:define name="content">
+		<f:view>
+			<p:ajaxStatus onstart="PF('statusDialog').show()"
+				onsuccess="PF('statusDialog').hide()" />
+			<p:dialog modal="true" widgetVar="statusDialog" header="Cargando"
+				draggable="false" closable="false">
+				<p:graphicImage
+					value="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/ajaxloadingbar.gif" />
+			</p:dialog>
+
+			<!-- Expired session -->
+			<p:idleMonitor onactive="PF('sessionTimeOutDialog').show();"
+				timeout="#{session.maxInactiveInterval * 1000}" />
+			<p:dialog modal="true" widgetVar="sessionTimeOutDialog"
+				header="Sesión terminada" draggable="false" closable="false">
+				<h:outputText value="La sesión ha finalizado" />
+				<input id="confirmBackToLogin" type="button" value="Iniciar sesión"
+					onclick="window.location='#{facesContext.externalContext.requestContextPath}/index.jsp';" />
+			</p:dialog>
+
+			<style type="text/css">
+.colA {
+	width: 5%;
+}
+
+.colB {
+	width: 30%;
+}
+</style>
+
+			<h:form id="frm" enctype="multipart/form-data">
+
+				<p:panel id="panelEjecucionPresupuestalGasto">
+					<p:growl id="growlEPG" autoUpdate="true" showDetail="false" />
+					<h:panelGrid columns="1" id="pnlCargarArchivo" style="width: 100%;">
+						<h:panelGrid columns="1" style="width: 100%;">
+							<div class="ContainerIndent">
+
+
+								<p:panel id="panelContenedor"
+									rendered="#{ejecucionPresupuestalDeGastoView.showTextEjecucionPresupuestal}">
+
+									<div class="ContainerIndent">
+										<h:outputText value="Informes de presupuesto"
+											styleClass="FontBold Fs18 hardblue" />
+									</div>
+
+
+									<div class="Container100">
+										<div class="ContainerIndent">
+											<h:panelGrid columns="2" cellpadding="10" style="width: 90%;">
+
+												<h:panelGrid columns="2" columnClasses="colA,colB"
+													style="width: 100%;">
+
+													<div />
+													<p:commandButton
+														value="Deseo consultar documentos CDP, CRP u OP usando filtros de búsqueda"
+														update="@([id$=panelContenedor])" style="width: 500px"
+														action="consultarDocumentosPresupuesto.xhtml" />
+												</h:panelGrid>
+
+												<h:panelGrid columns="2" columnClasses="colA,colB"
+													style="width: 100%;">
+
+													<div />
+													<p:commandButton
+														value="Deseo consultar la todos los CDPs del año fiscal vigente (Con CRPs)"
+														update="@([id$=panelContenedor])" style="width: 500px"
+														action="generarReporteCDPsConCrps.xhtml" />
+												</h:panelGrid>
+
+												<h:panelGrid columns="2" columnClasses="colA,colB"
+													style="width: 100%;">
+
+													<div />
+													<p:commandButton
+														value="Deseo consultar todas las OPs, con su CRP y CDP relacionados"
+														update="@([id$=panelContenedor])" style="width: 500px"
+														action="generarReporteOpsConCrpsConCdps.xhtml" />
+												</h:panelGrid>
+
+												<h:panelGrid columns="2" columnClasses="colA,colB"
+													style="width: 100%;">
+
+													<div />
+													<p:commandButton
+														value="Deseo generar un Informe de Cascada de Recursos"
+														update="@([id$=panelContenedor])" style="width: 500px"
+														action="InformeCascadaRecursos.xhtml" />
+												</h:panelGrid>
+	
+												<h:panelGrid columns="2" columnClasses="colA,colB"
+													style="width: 100%;">
+
+													<div />
+													<p:commandButton
+														value="Deseo generar un Informe de Cascada de Ingresos"
+														update="@([id$=panelContenedor])" style="width: 500px"
+														action="InformeCascadaIngresos.xhtml" />
+												</h:panelGrid>
+	
+												<h:panelGrid columns="2" columnClasses="colA,colB"
+													style="width: 100%;">
+
+													<div />
+													<p:commandButton
+														value="Deseo generar un Informe de Ejecución de Gastos"
+														update="@([id$=panelContenedor])" style="width: 500px"
+														action="InformeEjecucionGastos.xhtml" />
+												</h:panelGrid>
+
+												<h:panelGrid columns="2" columnClasses="colA,colB"
+													style="width: 100%;">
+
+													<div />
+													<p:commandButton
+														value="Deseo generar un Informe de Ejecución de Ingresos"
+														update="@([id$=panelContenedor])" style="width: 500px"
+														action="InformeEjecucionIngresosAmpliado.xhtml" />
+												</h:panelGrid>
+
+												<h:panelGrid columns="2" columnClasses="colA,colB"
+													style="width: 100%;">
+
+													<div />
+													<p:commandButton
+														value="Deseo generar un Informe para Reservas presupuestales"
+														update="@([id$=panelContenedor])" style="width: 500px"
+														action="InformeReservasPresupuestales.xhtml" />
+												</h:panelGrid>
+
+												<h:panelGrid columns="2" columnClasses="colA,colB"
+													style="width: 100%;">
+
+													<div />
+													<p:commandButton
+														value="Deseo generar un Informe de Reserva de Caja"
+														update="@([id$=panelContenedor])" style="width: 500px"
+														action="InformeReservaDeCaja.xhtml" />
+												</h:panelGrid>
+
+												<h:panelGrid columns="2" columnClasses="colA,colB"
+													style="width: 100%;">
+
+													<div />
+													<p:commandButton
+														value="Deseo generar un Informe de Disponibilidades del Periodo"
+														update="@([id$=panelContenedor])" style="width: 500px"
+														action="InformeDisponibilidadesDelPeriodo.xhtml" />
+												</h:panelGrid>
+
+												<h:panelGrid columns="2" columnClasses="colA,colB"
+													style="width: 100%;">
+
+													<div />
+													<p:commandButton
+														value="Deseo generar un Informe de Disponibilidades con Saldo"
+														update="@([id$=panelContenedor])" style="width: 500px"
+														action="InformeDisponibilidadesConSaldo.xhtml" />
+												</h:panelGrid>
+
+												<h:panelGrid columns="2" columnClasses="colA,colB"
+													style="width: 100%;">
+
+													<div />
+													<p:commandButton
+														value="Deseo generar un Informe de Disponibilidades sin Comprometer"
+														update="@([id$=panelContenedor])" style="width: 500px"
+														action="InformeDisponibilidadesSinComprometer.xhtml" />
+												</h:panelGrid>
+
+												<h:panelGrid columns="2" columnClasses="colA,colB"
+													style="width: 100%;">
+
+													<div />
+													<p:commandButton
+														value="Deseo generar un Informe de Cuentas por Pagar"
+														update="@([id$=panelContenedor])" style="width: 500px"
+														action="InformeCuentasPorPagar.xhtml" />
+												</h:panelGrid>
+
+												<h:panelGrid columns="2" columnClasses="colA,colB"
+													style="width: 100%;">
+
+													<div />
+													<p:commandButton
+														value="Deseo generar un Informe de Cuentas por Pagar de Nómina"
+														update="@([id$=panelContenedor])" style="width: 500px"
+														action="InformeCuentasPorPagarNomina.xhtml" />
+												</h:panelGrid>
+
+
+												<h:panelGrid columns="2" columnClasses="colA,colB"
+													style="width: 100%;">
+
+													<div />
+													<p:commandButton
+														value="Deseo generar un Informe de Ingresos no Propios Presupuesto"
+														update="@([id$=panelContenedor])" style="width: 500px"
+														action="InformeIngresosNoPropiosPresupuesto.xhtml" />
+												</h:panelGrid>
+
+												<h:panelGrid columns="2" columnClasses="colA,colB"
+													style="width: 100%;">
+
+													<div />
+													<p:commandButton
+														value="Deseo generar un Informe de Adiciones/Reducciones Presupuestales"
+														update="@([id$=panelContenedor])" style="width: 500px"
+														action="InformeAdicionesReduccionesPresupuestales.xhtml" />
+												</h:panelGrid>
+
+												<h:panelGrid columns="2" columnClasses="colA,colB"
+													style="width: 100%;">
+
+													<div />
+													<p:commandButton
+														value="Deseo generar un Informe de Traslados/Correcciones Presupuestales"
+														update="@([id$=panelContenedor])" style="width: 500px"
+														action="InformeTrasladosCorreccionesPresupuestales.xhtml" />
+												</h:panelGrid>
+
+												<h:panelGrid columns="2" columnClasses="colA,colB"
+													style="width: 100%;">
+
+													<div />
+													<p:commandButton
+														value="Deseo generar un Informe de Aplazamientos/Desaplazamientos"
+														update="@([id$=panelContenedor])" style="width: 500px"
+														action="InformeAplazamientosDesaplazamientos.xhtml" />
+												</h:panelGrid>
+
+												<h:panelGrid columns="2" columnClasses="colA,colB"
+													style="width: 100%;">
+
+													<div />
+													<p:commandButton
+														value="Deseo generar un Informe de Anulación CDP"
+														update="@([id$=panelContenedor])" style="width: 500px"
+														action="InformeAnulacionCDP.xhtml" />
+												</h:panelGrid>
+												
+												<h:panelGrid columns="2" columnClasses="colA,colB"
+													style="width: 100%;">
+
+													<div />
+													<p:commandButton
+														value="Deseo Cambiar Objeto en CDP"
+														update="@([id$=panelContenedor])" style="width: 500px"
+														action="editarObjetoEnCDP.xhtml" />
+												</h:panelGrid>
+												
+												<h:panelGrid columns="2" columnClasses="colA,colB"
+													style="width: 100%;">
+
+													<div />
+													<p:commandButton
+														value="Deseo Consultar Familia de Documentos"
+														update="@([id$=panelContenedor])" style="width: 500px"
+														action="consultarDocumentosContable.xhtml" />
+												</h:panelGrid>
+
+											</h:panelGrid>
+										</div>
+									</div>
+								</p:panel>
+							</div>
+						</h:panelGrid>
+					</h:panelGrid>
+				</p:panel>
+
+			</h:form>
+
+		</f:view>
+	</ui:define>
+
+</ui:composition>

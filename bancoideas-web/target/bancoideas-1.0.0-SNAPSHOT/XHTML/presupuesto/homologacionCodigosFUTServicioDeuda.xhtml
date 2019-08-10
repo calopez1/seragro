@@ -1,0 +1,153 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+	<ui:define name="content">
+		
+			<p:ajaxStatus onstart="PF('statusDialog').show()"
+				onsuccess="PF('statusDialog').hide()" />
+			<p:dialog modal="true" widgetVar="statusDialog" header="Cargando"
+				draggable="false" closable="false">
+				<p:graphicImage
+					value="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/ajaxloadingbar.gif" />
+			</p:dialog>
+
+			<!-- Expired session -->
+			<p:idleMonitor onactive="PF('sessionTimeOutDialog').show();"
+				timeout="#{session.maxInactiveInterval * 1000}" />
+			<p:dialog modal="true" widgetVar="sessionTimeOutDialog"
+				header="Sesión terminada" draggable="false" closable="false">
+				<h:outputText value="La sesión ha finalizado" />
+				<input id="confirmBackToLogin" type="button" value="Iniciar sesión"
+					onclick="window.location='#{facesContext.externalContext.requestContextPath}/index.jsp';" />
+			</p:dialog>
+
+			<script type="text/javascript">
+				function showStatus() {
+				    statusDialog.show();
+				}
+				 
+				function hideStatus() {
+				    statusDialog.hide();
+				}
+			</script>
+		
+		
+		<style type="text/css">
+			.ui-panel {
+				margin-top: 20px
+			}
+			
+			.ui-tabs-top {
+				background-color: #FFFFFF;
+			}
+			
+			.ui-autocomplete-input.ui-inputfield
+			{
+			   width : 160px !important;
+			}
+			
+			.ui-autocomplete-panel {
+			   width: 600px !important;
+			}
+		</style>
+
+		<h:form id="frmParametrizarCodigosPresupuesto">
+
+		<p:growl id="men" showDetail="false" />
+
+		  <p:panel id="pnlCentral" columns="1" style="border:none;">
+			
+			<p:tabView id="presupuestosTabView">
+
+				<p:tab id="presupuestoGastosTab" title="Presupuesto de Gastos">
+					<h:panelGrid columns="1" id="pnlPresupuestoGastosData">
+						<h:panelGrid columns="1"
+							rendered="#{homologacionCodigosFutServicioDeudaView.presupuestoGastosDTO != null}">
+							<div class="Container100">
+								<div class="ContainerIndent">
+
+									<div class="Container100">
+										<div class="ContainerIndent">
+
+											<p:dataTable id="presupuestoGastosData" var="cuentaGastos"
+												value="#{homologacionCodigosFutServicioDeudaView.presupuestoGastosDTO.detallePresupuestoDTOs}"
+												rows="20" paginator="true"
+												paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+												emptyMessage="No existen cuentas del presupuesto"
+												reflow="true">
+												
+												<p:ajax event="filter" delay="1000" />
+												
+												<f:facet name="header">
+				                                   Homologación de codigos FUT de Servicio de Deuda
+				                                </f:facet>
+
+												<p:columnGroup type="header">
+													<p:row>
+														<p:column headerText="Cuenta" filterBy="#{cuentaGastos.codigoCuenta}" filterMatchMode="startsWith" sortBy="#{cuentaGastos.codigoCuenta}"/>
+														<p:column headerText="Descripción" filterBy="#{cuentaGastos.descripcionCuenta}" filterMatchMode="contains" sortBy="#{cuentaGastos.descripcionCuenta}"/>
+														<p:column headerText="Código Fut" />
+														<p:column headerText="Tipo de Deuda" />
+														<p:column headerText="Fuente de Financiación" />
+														<p:column headerText="Tipo de Operación" />
+													</p:row>
+												</p:columnGroup>
+
+												<p:column headerText="Cuenta">
+													<h:outputText value="#{cuentaGastos.codigoCuenta}" />
+												</p:column>
+												<p:column headerText="Descripción">
+													<h:outputText value="#{cuentaGastos.descripcionCuenta}" />
+												</p:column>
+												<p:column headerText="Código FUT">
+													<p:autoComplete id="txtCodigosFutInversionGastos" minQueryLength="1" value="#{cuentaGastos.codigoFut}"
+																	completeMethod="#{homologacionCodigosFutServicioDeudaView.action_autoCompleteCodigosFUT}" 
+																	update=":frmParametrizarCodigosPresupuesto:men" effect="fade" style="width: 400px;"
+																	forceSelection="true" rendered="#{cuentaGastos.hoja}" emptyMessage="No hay coincidencias"
+																	queryDelay="1000" maxResults="10">
+														<p:ajax event="itemSelect" listener="#{homologacionCodigosFutServicioDeudaView.handleSelect}" update="@this, :frmParametrizarCodigosPresupuesto:men" />
+													</p:autoComplete>
+												</p:column>
+												<p:column headerText="Tipo de Deuda">
+													<p:selectOneMenu value="#{cuentaGastos.idTipoDeudaSeleccionada}" update=":frmParametrizarCodigosPresupuesto:men" rendered="#{cuentaGastos.hoja}" style="width: 150px;">
+														<f:selectItems value="#{homologacionCodigosFutServicioDeudaView.losTipoDeuda}"/>
+													</p:selectOneMenu>
+												</p:column>
+												<p:column headerText="Fuente Financiación">
+													<p:autoComplete id="txtFuenteFinanciacionInversionGastos" minQueryLength="1" value="#{cuentaGastos.fuenteFinanciacion}"
+																	completeMethod="#{homologacionCodigosFutServicioDeudaView.action_autoCompleteFuenteFinanciacionServicioDeuda}" 
+																	update=":frmParametrizarCodigosPresupuesto:men" effect="fade" style="width: 400px;"
+																	forceSelection="true" rendered="#{cuentaGastos.hoja}" emptyMessage="No hay coincidencias"
+																	queryDelay="1000" maxResults="10"/>
+												</p:column>
+												<p:column headerText="Tipo de Operación">
+													<p:selectOneMenu value="#{cuentaGastos.idTipoOperacionSeleccionada}" update=":frmParametrizarCodigosPresupuesto:men" rendered="#{cuentaGastos.hoja}" style="width: 150px;">
+														<f:selectItems value="#{homologacionCodigosFutServicioDeudaView.losTipoOperacion}"/>
+													</p:selectOneMenu>
+												</p:column>
+											</p:dataTable>
+											<div class="EmptyBox20"></div>
+
+
+										</div>
+									</div>
+
+									<h:panelGrid columns="3">
+										<p:commandButton id="btnActualizarGastos" value="Homologar Rubros" action="#{homologacionCodigosFutServicioDeudaView.action_actualizarCodigosGastos}" update=":frmParametrizarCodigosPresupuesto:men"/>
+										<p:commandButton id="btnClearGastos" value="Limpiar" action="#{homologacionCodigosFutServicioDeudaView.action_clearGastos()}" update="presupuestoGastosData"/>
+									</h:panelGrid>
+									
+									<div class="EmptyBox20"></div>
+								</div>
+							</div>
+						</h:panelGrid>
+					</h:panelGrid>
+				</p:tab>
+			</p:tabView>
+		</p:panel>
+	   </h:form>
+	</ui:define>
+</ui:composition>

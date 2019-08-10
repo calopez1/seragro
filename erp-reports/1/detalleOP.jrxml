@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.2.2.final using JasperReports Library version 6.2.2  -->
+<!-- 2016-06-08T09:54:08 -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="detalleOP" pageWidth="612" pageHeight="792" columnWidth="612" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="88c8cc51-7b5b-48b9-b30f-6112726c3e3b">
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.unit." value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageHeight" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.topMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.bottomMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.leftMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.rightMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnSpacing" value="pixel"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="GluERP"/>
+	<parameter name="P_MAOP_ID" class="java.lang.Integer">
+		<parameterDescription><![CDATA[]]></parameterDescription>
+		<defaultValueExpression><![CDATA[2]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT	MOCO.DOCO_ID,
+		MOCO.ID_DOCUMENTO_MAESTRO,
+		MAOP.MAOP_ID,
+		CCON.CODIGO CODIGO_CUENTA,
+		CCON.DESCRIPCION DESCRIPCION_CUENTA, 
+		CASE WHEN MOCO.NATURALEZA = 'D' THEN
+			MOCO.VALOR_CONTABILIZAR
+		ELSE
+			null
+		END VALOR_DEBITO, 
+		CASE 
+			WHEN MOCO.NATURALEZA = 'C' AND MOCO.DOCO_ID IN (2,3) THEN
+				MOCO.VALOR_CONTABILIZAR - COALESCE ((SELECT	MOCO2.VALOR_CONTABILIZAR
+											FROM	GLUO_MAESTRO_OP MAOP2	
+											INNER	JOIN GLUO_MOVIMIENTO_CONTABLE MOCO2 ON MOCO2.ID_DOCUMENTO_MAESTRO=MAOP2.MAOP_ID  AND MOCO2.DOCO_ID_MAESTRO IN (2, 3)
+											INNER	JOIN GLUO_CUENTA_CONTABLE CCON2 ON CCON2.CCON_ID = MOCO2.CCON_ID
+											WHERE	MOCO2.ID_DOCUMENTO_MAESTRO=MOCO.ID_DOCUMENTO_MAESTRO
+											AND		MOCO2.DOCO_ID IN (29, 30)
+											AND		MOCO2.NATURALEZA = 'D'
+											AND		MAOP.MAOP_ID= $P{P_MAOP_ID} 
+											AND		MOCO2.AUXILIAR = MOCO.AUXILIAR
+											LIMIT 1) , 0) 
+			WHEN MOCO.NATURALEZA = 'C' AND MOCO.DOCO_ID NOT IN (2,3) THEN
+				MOCO.VALOR_CONTABILIZAR
+			ELSE
+				null
+		END VALOR_CREDITO,
+		MOCO.AUXILIAR, MOCO.NATURALEZA, MOCO.SALDO_ANTERIOR, MOCO.SALDO_FINAL
+FROM	GLUO_MAESTRO_OP MAOP	
+INNER	JOIN GLUO_MOVIMIENTO_CONTABLE MOCO ON MOCO.ID_DOCUMENTO_MAESTRO=MAOP.MAOP_ID  AND MOCO.DOCO_ID_MAESTRO=2
+INNER	JOIN GLUO_CUENTA_CONTABLE CCON ON CCON.CCON_ID = MOCO.CCON_ID
+WHERE	MOCO.DOCO_ID NOT IN (29, 30)
+AND		MAOP.MAOP_ID= $P{P_MAOP_ID}]]>
+	</queryString>
+	<field name="doco_id" class="java.lang.Integer"/>
+	<field name="id_documento_maestro" class="java.lang.Integer"/>
+	<field name="maop_id" class="java.lang.Integer"/>
+	<field name="codigo_cuenta" class="java.lang.String"/>
+	<field name="descripcion_cuenta" class="java.lang.String"/>
+	<field name="valor_debito" class="java.math.BigDecimal"/>
+	<field name="valor_credito" class="java.math.BigDecimal"/>
+	<field name="auxiliar" class="java.lang.String"/>
+	<field name="naturaleza" class="java.lang.String"/>
+	<field name="saldo_anterior" class="java.math.BigDecimal"/>
+	<field name="saldo_final" class="java.math.BigDecimal"/>
+	<variable name="valor_debito1" class="java.math.BigDecimal" resetType="Column" calculation="Sum">
+		<variableExpression><![CDATA[$F{valor_debito}]]></variableExpression>
+	</variable>
+	<variable name="valor_credito1" class="java.math.BigDecimal" resetType="Column" calculation="Sum">
+		<variableExpression><![CDATA[$F{valor_credito}]]></variableExpression>
+	</variable>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+		</band>
+	</title>
+	<pageHeader>
+		<band splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="15" splitType="Stretch">
+			<staticText>
+				<reportElement mode="Opaque" x="0" y="0" width="70" height="15" backcolor="#FFFFFF" uuid="63241d1e-ffc8-43e1-ae87-899ee6a39593">
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.2" lineStyle="Solid"/>
+					<leftPen lineWidth="0.2" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.2" lineStyle="Solid"/>
+					<rightPen lineWidth="0.2" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Cuenta]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="70" y="0" width="280" height="15" backcolor="#FFFFFF" uuid="3fc515f7-e632-49e9-a76c-d23cbe23c8b5">
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.2" lineStyle="Solid"/>
+					<leftPen lineWidth="0.2" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.2" lineStyle="Solid"/>
+					<rightPen lineWidth="0.2" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Descripción]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="350" y="0" width="100" height="15" backcolor="#FFFFFF" uuid="ff73653f-764c-42f6-87ac-84ef34361079">
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.2" lineStyle="Solid"/>
+					<leftPen lineWidth="0.2" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.2" lineStyle="Solid"/>
+					<rightPen lineWidth="0.2" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Débito]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="450" y="0" width="130" height="15" backcolor="#FFFFFF" uuid="279403ea-cba3-4685-96aa-921f64138132">
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.2" lineStyle="Solid"/>
+					<leftPen lineWidth="0.2" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.2" lineStyle="Solid"/>
+					<rightPen lineWidth="0.2" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Crédito]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="15" splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+			<textField>
+				<reportElement x="0" y="0" width="70" height="15" uuid="d2929a9a-e47c-45fc-8148-2a5eb6ef658d">
+					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+				</reportElement>
+				<box topPadding="0" leftPadding="2" bottomPadding="0" rightPadding="2">
+					<topPen lineWidth="0.2" lineStyle="Solid"/>
+					<leftPen lineWidth="0.2" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.2" lineStyle="Solid"/>
+					<rightPen lineWidth="0.2" lineStyle="Solid"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{codigo_cuenta}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="70" y="0" width="280" height="15" uuid="d4404eb6-bebd-4148-888e-c34000f10c83">
+					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+				</reportElement>
+				<box topPadding="0" leftPadding="2" bottomPadding="0" rightPadding="2">
+					<topPen lineWidth="0.2" lineStyle="Solid"/>
+					<leftPen lineWidth="0.2" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.2" lineStyle="Solid"/>
+					<rightPen lineWidth="0.2" lineStyle="Solid"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{descripcion_cuenta}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00#" isBlankWhenNull="true">
+				<reportElement x="350" y="0" width="100" height="15" uuid="8a6a61a5-c785-4bbd-9ad2-efa891b191ff"/>
+				<box leftPadding="2" rightPadding="2">
+					<topPen lineWidth="0.2" lineStyle="Solid"/>
+					<leftPen lineWidth="0.2" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.2" lineStyle="Solid"/>
+					<rightPen lineWidth="0.2" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{valor_debito}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00#" isBlankWhenNull="true">
+				<reportElement x="450" y="0" width="130" height="15" uuid="308bb171-fbb0-48ce-a98e-29d2207a9b22"/>
+				<box leftPadding="2" rightPadding="2">
+					<topPen lineWidth="0.2" lineStyle="Solid"/>
+					<leftPen lineWidth="0.2" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.2" lineStyle="Solid"/>
+					<rightPen lineWidth="0.2" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{valor_credito}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="15" splitType="Stretch">
+			<textField pattern="#,##0.00#" isBlankWhenNull="true">
+				<reportElement x="350" y="0" width="100" height="15" uuid="eb9d2b80-64e9-4c3d-9254-6e50cdaaeea1">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.2" lineStyle="Solid"/>
+					<leftPen lineWidth="0.2" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.2" lineStyle="Solid"/>
+					<rightPen lineWidth="0.2" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{valor_debito1}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00#" isBlankWhenNull="true">
+				<reportElement x="450" y="0" width="130" height="15" uuid="3a4e25ec-69d0-4dce-8ea7-2fae580b2676">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.2" lineStyle="Solid"/>
+					<leftPen lineWidth="0.2" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.2" lineStyle="Solid"/>
+					<rightPen lineWidth="0.2" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{valor_credito1}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement mode="Opaque" x="70" y="0" width="280" height="15" backcolor="#FFFFFF" uuid="1860993b-e82d-4ba0-9739-cd8878a536ee">
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+				</reportElement>
+				<box rightPadding="2">
+					<topPen lineWidth="0.2" lineStyle="Solid"/>
+					<leftPen lineWidth="0.2" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.2" lineStyle="Solid"/>
+					<rightPen lineWidth="0.2" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Sumas Iguales]]></text>
+			</staticText>
+		</band>
+	</columnFooter>
+	<pageFooter>
+		<band splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+		</band>
+	</pageFooter>
+	<summary>
+		<band splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+		</band>
+	</summary>
+</jasperReport>

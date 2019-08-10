@@ -1,0 +1,2493 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:ps="http://primefaces.org/sentinel"
+	xmlns:p="http://primefaces.org/ui"
+	 template="/WEB-INF/template.xhtml">
+
+	<ui:define name="content">
+		<style type="text/css">
+.ui-panel {
+	margin-top: 20px
+}
+
+.ui-tabs-top {
+	background-color: #FFFFFF;
+}
+</style>
+
+		<!--  /////////////////////////////////////////////////////////////////////////////////    -->
+		<!--  ////////////////////////FORMULARIO PRINCIPAL ////////////////////    -->
+		<!--  /////////////////////////////////////////////////////////////////////////////////    -->
+
+
+		<h:form id="frmCargarCuentasPresupuesto" >
+			<p:messages showDetail="false" autoUpdate="true" closable="true" />
+		<p:growl id="growlModificacion" autoUpdate="true" ></p:growl>
+		<!--  /////////////////////////////////////////////////////////////////////////////////    -->
+		<!--  ////////////////////////PANEL PARA SELECCIONAR ////////////////////    -->
+		<!--  /////////////////////////////////////////////////////////////////////////////////    -->
+		
+		
+		<p:panel rendered="#{modificarPresupuestoView.pintarSeleccionar}">
+			<div align="center">
+				<p:panel  id="pnlSeleccionar"  header="MODIFICAR PRESUPUESTO" style="width:90%;">
+
+					<h:panelGrid columns="2">
+						<p:outputLabel value="Tipo Transacción"></p:outputLabel>
+						<p:selectOneMenu id="cmbTipoTransaccionSeleccionar"
+							value="#{modificarPresupuestoView.tipoTransaccionSeleccionada}" style="width:90%">
+							<f:selectItem itemLabel="Seleccionar Tipo de Transacción"
+								itemValue="" />
+							<f:selectItems
+								value="#{modificarPresupuestoView.listTipoTransaccion}" />
+								<p:ajax event="change"
+										listener="#{modificarPresupuestoView.cambiarTipoTransaccion}" 
+										update=":frmCargarCuentasPresupuesto, :fmrActiAdministrativoTraslado"/>
+						</p:selectOneMenu>
+						
+					</h:panelGrid>
+				</p:panel>
+			</div>
+			</p:panel>
+		
+		
+		
+			
+		<!--  /////////////////////////////////////////////////////////////////////////////////    -->
+		<!--  ////////////////////////PANEL PARA ADICIONES Y REDUCCIONES ////////////////////    -->
+		<!--  /////////////////////////////////////////////////////////////////////////////////    -->
+		
+		<p:panel rendered="#{modificarPresupuestoView.pintarAdicionReduccion}">
+			<div align="center">
+				<p:panel  id="pnlInfoTransaccion"  header="MODIFICAR PRESUPUESTO" style="width:90%;">
+					
+					<h:panelGrid columns="2">
+						<p:outputLabel value="Tipo Transacción"></p:outputLabel>
+						<p:selectOneMenu id="cmbTipoTransaccion"
+							value="#{modificarPresupuestoView.tipoTransaccionSeleccionada}" style="width:90%">
+							<f:selectItem itemLabel="Seleccionar Tipo de Transacción"
+								itemValue="" />
+							<f:selectItems
+								value="#{modificarPresupuestoView.listTipoTransaccion}" />
+								<p:ajax event="change"
+										listener="#{modificarPresupuestoView.cambiarTipoTransaccion}" 
+										update=":frmCargarCuentasPresupuesto, :fmrActiAdministrativoTraslado"/>
+						</p:selectOneMenu>
+
+						<p:outputLabel value="Valor de la Transacción"></p:outputLabel>
+						<p:inputText style="width:90%; text-align: right;" value="#{modificarPresupuestoView.valorTransaccion}"
+							 >
+							<f:convertNumber pattern="#,##0.00"/>
+							<p:ajax event="blur" update="@this, :frmCargarCuentasPresupuesto:panelTransaccion" listener="#{modificarPresupuestoView.calcularValorTransaccion}" />
+							</p:inputText>
+							
+							<h:outputText value="Acto Administrativo" />
+									
+									<h:panelGrid columns="3" columnClasses="two,one" style="width: 100%;">
+										<p:inputText style="width: 100%;" id="actoAdministrativoSeleccionado" 
+											value="#{modificarPresupuestoView.consecutivoActoAdministrativo}"  >
+											<p:ajax />
+										</p:inputText>
+										<p:spacer width="5"></p:spacer>
+										<p:commandButton icon="ui-icon-search" 
+											oncomplete="PF('dialogGluoActoAdministrativoTraslado').show();" style="width:100%"/>
+									</h:panelGrid>
+							
+							<h:outputText value="Fecha Expedición" style="width: 100%;"/>
+							<p:calendar navigator="true" value="#{modificarPresupuestoView.fechaExpedicionMovimientos}" timeZone="GMT-5" style="width: 100%;" disabled="false"/>		
+							
+					</h:panelGrid>
+				</p:panel>
+			</div>
+
+
+			<div align="center">
+				<p:panel id="panelTransaccion" style="width:90%;">
+
+
+					<p:accordionPanel multiple="true">
+						<p:tab title="  PRESUPUESTO RENTA">
+							<p:dataTable id="tblPresupuestoRenta" var="item"
+								value="#{modificarPresupuestoView.lstModificacionRenta}">
+
+
+								<p:column headerText="Cuenta">
+									<h:outputText
+										value="#{item.gluoDetallePresupuesto.codigoCuenta}" />
+								</p:column>
+								<p:column headerText="Descripción">
+									<h:outputText
+										value="#{item.gluoDetallePresupuesto.descripcionCuenta}" />
+								</p:column>
+								<p:column headerText="Saldo Anterior">
+									<h:outputText value="#{item.saldoAnterior}" style="text-align: right;">
+										<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+									</h:outputText>
+								</p:column>
+								<p:column headerText="Nuevo Saldo">
+									<h:outputText value="#{item.nuevoSaldo}" style="text-align: right;">
+										<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+									</h:outputText>
+								</p:column>
+								<p:column headerText="Saldo Modificar">
+									<p:inputText value="#{item.valorAAfectar}" style="text-align: right;">
+									<f:convertNumber pattern="#,##0.00"/>
+										<p:ajax event="blur"
+											listener="#{modificarPresupuestoView.calcularValorPendienteRenta}" update=":frmCargarCuentasPresupuesto">
+											<f:setPropertyActionListener value="#{item}"
+												target="#{modificarPresupuestoView.modificacionRenta}" />			
+										</p:ajax>
+									</p:inputText>
+								</p:column>
+
+								<p:column style="width:32px;text-align: center">
+						             <p:commandButton update=":frmCargarCuentasPresupuesto, :formDialogEliminarRenta" oncomplete="PF('dialogoEliminarRenta').show()" icon="ui-icon-trash" title="View">
+						                <f:setPropertyActionListener value="#{item}" target="#{modificarPresupuestoView.modificacionRenta}" />
+						            </p:commandButton>
+						        </p:column>	
+
+								<f:facet name="footer">
+								<p:panelGrid columns="2">
+								<h:outputText
+										value="Valor Pendiente: " />
+								<h:outputText
+										value="#{modificarPresupuestoView.pendienteRenta}" >
+										<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+								</h:outputText>
+								</p:panelGrid>
+						       	   
+						   		 </f:facet>
+
+							</p:dataTable>
+							<h:panelGrid columns="1" style="width:40%">
+									<p:spacer ></p:spacer>
+									<p:commandButton value="Adicionar Rubro Presupuesto de Renta" style="width:100%"
+										onclick="PF('dialogAdicionRenta').show();" ></p:commandButton>
+									<p:spacer ></p:spacer>
+							</h:panelGrid>
+						</p:tab>
+						<p:tab title="PRESUPUESTO GASTOS">
+							<p:dataTable id="tblPresupuestoGastos" var="item"
+								value="#{modificarPresupuestoView.lstModificacionGastos}">
+
+								<p:column headerText="Cuenta">
+									<h:outputText
+										value="#{item.gluoDetallePresupuesto.codigoCuenta}" />
+								</p:column>
+								<p:column headerText="Descripción">
+									<h:outputText
+										value="#{item.gluoDetallePresupuesto.descripcionCuenta}" />
+								</p:column>
+								<p:column headerText="Saldo Anterior">
+									<h:outputText value="#{item.saldoAnterior}" style="text-align: right;">
+										<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+									</h:outputText>
+								</p:column>
+								<p:column headerText="Nuevo Saldo">
+									<h:outputText value="#{item.nuevoSaldo}" style="text-align: right;">
+										<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+									</h:outputText>
+								</p:column>
+								<p:column headerText="Saldo Modificar">
+									<p:inputText value="#{item.valorAAfectar}" style="text-align: right;">
+									<f:convertNumber pattern="#,##0.00"/>
+										<p:ajax event="blur" update=":frmCargarCuentasPresupuesto"
+											listener="#{modificarPresupuestoView.calcularValorPendienteGasto}" >
+											<f:setPropertyActionListener value="#{item}"
+												target="#{modificarPresupuestoView.modificacionGasto}" />
+											</p:ajax>
+											
+									</p:inputText>
+								</p:column>
+								
+								<p:column style="width:32px;text-align: center">
+						             <p:commandButton update=":frmCargarCuentasPresupuesto, :formDialogEliminarGasto" oncomplete="PF('dialogoEliminarGasto').show()" icon="ui-icon-trash" title="View">
+						                <f:setPropertyActionListener value="#{item}" target="#{modificarPresupuestoView.modificacionGasto}" />
+						            </p:commandButton>
+						        </p:column>	
+								
+								<f:facet name="footer">
+								<p:panelGrid columns="2">
+								<h:outputText
+										value="Valor Pendiente: " />
+								<h:outputText
+										value="#{modificarPresupuestoView.pendienteGasto}" >
+										<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+										</h:outputText>
+								</p:panelGrid>
+						       	   
+						   		 </f:facet>
+							</p:dataTable>
+							
+							<h:panelGrid columns="1" style="width:40%">
+									<p:spacer ></p:spacer>
+									<p:commandButton value="Adicionar Rubro Presupuesto de Gasto" style="width:100%"
+								onclick="PF('dlg3').show();"></p:commandButton>
+									<p:spacer ></p:spacer>
+							</h:panelGrid>
+							
+							
+
+						</p:tab>
+					</p:accordionPanel>
+
+					<p:spacer height="40"></p:spacer>
+
+					<p:commandButton value="Guardar" style="width:40%"
+						onclick="PF('dialogoConfirmarGuardar').show()"
+						update=":frmCargarCuentasPresupuesto, :formDialogConfirmarGuardar"></p:commandButton>
+
+					<p:spacer height="40"></p:spacer>
+					
+				</p:panel>
+			</div>
+			
+			<br/><br/>
+			
+			<!-- ************************************************** -->
+			<!-- **					LISTA ADICIONES				 ** -->
+			<!-- ************************************************** -->		
+			<div align="center">	
+			<p:panel id="pnlListaAdiciones" header="Lista Adiciones" 
+				rendered="#{modificarPresupuestoView.showAdicionDataTable}"
+				style="width: 90%; text-align: center;">
+				
+				<p:dataTable id="listaAdicionesDataTable"
+					emptyMessage="No hay adiciones encontradas"
+					paginator="true" 
+					rows="10"				
+					var="adiciones"
+					value="#{modificarPresupuestoView.listAdicionRubroPptoDTOs}"
+					rowKey="#{adiciones.dmrpId}" filterDelay="1000">
+					
+					<p:column headerText="Código Cuenta" 
+						filterBy="#{adiciones.codigoCuentaDetallePresupuesto}"
+						filterMatchMode="startsWith" >
+						<h:outputText value="#{adiciones.codigoCuentaDetallePresupuesto}" />
+					</p:column>
+					
+					<p:column headerText="Descripción Cuenta" 
+						filterBy="#{adiciones.descripcionDetallePresupuesto}"
+						filterMatchMode="contains">
+						<h:outputText value="#{adiciones.descripcionDetallePresupuesto}" />						
+					</p:column>
+				
+					<p:column headerText="Saldo Anterior" 
+						filterBy="#{adiciones.saldoAnterior}"
+						filterMatchMode="startsWith" >
+						<h:outputText value="#{adiciones.saldoAnterior}" >
+							<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+						</h:outputText>
+					</p:column>
+					
+					<p:column headerText="Valor a Afectar" 
+						filterBy="#{adiciones.valorAAfectar}"
+						filterMatchMode="startsWith" >
+						<h:outputText value="#{adiciones.valorAAfectar}" >
+							<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+						</h:outputText>
+					</p:column>
+					
+					<p:column headerText="Nuevo Saldo" 
+						filterBy="#{adiciones.nuevoSaldo}"
+						filterMatchMode="startsWith" >
+						<h:outputText value="#{adiciones.nuevoSaldo}" >
+							<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+						</h:outputText>
+					</p:column>
+					
+				</p:dataTable>
+			</p:panel>
+			
+			
+			<!-- ************************************************** -->
+			<!-- **				LISTA REDUCCIONES				 ** -->
+			<!-- ************************************************** -->
+			<p:panel id="pnlListaReducciones" header="Lista Reducciones" 
+				rendered="#{modificarPresupuestoView.showReduccionDataTable}"
+				style="width: 90%; text-align: center;">
+				
+				<p:dataTable id="listaReduccionesDataTable"
+					emptyMessage="No hay reducciones encontradas"
+					paginator="true" 
+					rows="10"				
+					var="reducciones"
+					value="#{modificarPresupuestoView.listReduccionRubroPptoDTOs}"
+					rowKey="#{reducciones.dmrpId}" >
+					
+					<p:column headerText="Código Cuenta" 
+						filterBy="#{reducciones.codigoCuentaDetallePresupuesto}"
+						filterMatchMode="startsWith" >
+						<h:outputText value="#{reducciones.codigoCuentaDetallePresupuesto}" />
+					</p:column>
+					
+					<p:column headerText="Descripción Cuenta" 
+						filterBy="#{reducciones.descripcionDetallePresupuesto}"
+						filterMatchMode="contains">
+						<h:outputText value="#{reducciones.descripcionDetallePresupuesto}" />						
+					</p:column>
+				
+					<p:column headerText="Saldo Anterior" 
+						filterBy="#{reducciones.saldoAnterior}"
+						filterMatchMode="startsWith" >
+						<h:outputText value="#{reducciones.saldoAnterior}" >
+							<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+						</h:outputText>
+					</p:column>
+					
+					<p:column headerText="Valor a Afectar" 
+						filterBy="#{reducciones.valorAAfectar}"
+						filterMatchMode="startsWith" >
+						<h:outputText value="#{reducciones.valorAAfectar}" >
+							<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+						</h:outputText>
+					</p:column>
+					
+					<p:column headerText="Nuevo Saldo" 
+						filterBy="#{reducciones.nuevoSaldo}"
+						filterMatchMode="startsWith" >
+						<h:outputText value="#{reducciones.nuevoSaldo}" >
+							<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+						</h:outputText>
+					</p:column>
+					
+				</p:dataTable>
+			</p:panel>						
+			</div>
+		</p:panel>
+		
+		
+		
+		
+		
+		<!--  /////////////////////////////////////////////////////////////////////////////////    -->
+		<!--  ////////////////////////PANEL PARA TRASLADOS /////////////////////////    -->
+		<!--  /////////////////////////////////////////////////////////////////////////////////    -->
+			
+		<p:panel rendered="#{modificarPresupuestoView.pintarTraslado}">
+			<div align="center">
+				<p:panel  id="pnlInfoTransaccionTraslado"  header="TRASLADOS" style="width:90%;">
+
+					<h:panelGrid columns="2">
+						<p:outputLabel value="Tipo Transacción"></p:outputLabel>
+						<p:selectOneMenu id="cmbTipoTransaccionTraslado"
+							value="#{modificarPresupuestoView.tipoTransaccionSeleccionada}" style="width:90%">
+							<f:selectItem itemLabel="Seleccionar Tipo de Transacción"
+								itemValue="" />
+							<f:selectItems
+								value="#{modificarPresupuestoView.listTipoTransaccion}" />
+								<p:ajax event="change"
+											listener="#{modificarPresupuestoView.cambiarTipoTransaccion}" update=":frmCargarCuentasPresupuesto, :fmrActiAdministrativoTraslado"/>
+						</p:selectOneMenu>
+
+					
+							
+							<h:outputText value="Acto Administrativo" />
+									
+									<h:panelGrid columns="3" columnClasses="two,one" style="width: 100%;">
+										<p:inputText style="width: 100%;" id="actoAdministrativoSeleccionadoTraslado"
+											value="#{modificarPresupuestoView.consecutivoActoAdministrativo}"  >
+											<p:ajax />
+										</p:inputText>
+										<p:spacer width="5"></p:spacer>
+										<p:commandButton icon="ui-icon-search" 
+											oncomplete="PF('dialogGluoActoAdministrativoTraslado').show();" style="width:100%"/>
+									</h:panelGrid>
+									
+							<h:outputText value="Fecha Expedición" style="width: 100%;"/>
+							<p:calendar navigator="true" value="#{modificarPresupuestoView.fechaExpedicionMovimientos}" timeZone="GMT-5" style="width: 100%;" disabled="false"/>		
+							
+									
+							
+					</h:panelGrid>
+				</p:panel>
+			</div>
+
+
+			<div align="center">
+				<p:panel id="panelTransaccionTraslado" style="width:90%;">
+
+
+					<p:accordionPanel multiple="true">
+						<p:tab title="CONTRA-CRÉDITO">
+							<p:dataTable id="tblPresupuestoGastosTraslados" var="item"
+								value="#{modificarPresupuestoView.lstCredito}">
+
+								<p:column headerText="Cuenta">
+									<h:outputText
+										value="#{item.gluoDetallePresupuesto.codigoCuenta}" />
+								</p:column>
+								<p:column headerText="Descripción">
+									<h:outputText
+										value="#{item.gluoDetallePresupuesto.descripcionCuenta}" />
+								</p:column>
+								<p:column headerText="Saldo Anterior">
+									<h:outputText value="#{item.saldoAnterior}" style="text-align: right;">
+										<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+									</h:outputText>
+								</p:column>
+								<p:column headerText="Nuevo Saldo">
+									<h:outputText value="#{item.nuevoSaldo}" style="text-align: right;">
+										<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+									</h:outputText>
+								</p:column>
+								<p:column headerText="Saldo Modificar">
+									<p:inputText value="#{item.valorTraslado}" style="text-align: right;">
+									<f:convertNumber pattern="#,##0.00"/>
+										<p:ajax event="blur" update=":frmCargarCuentasPresupuesto"
+											listener="#{modificarPresupuestoView.calcularValorTotalCredito}" >
+											<f:setPropertyActionListener value="#{item}"
+												target="#{modificarPresupuestoView.trasladoCredito}" />
+											</p:ajax>
+											
+									</p:inputText>
+								</p:column>
+								
+								<p:column style="width:32px;text-align: center">
+						             <p:commandButton update=":frmCargarCuentasPresupuesto, :formDialogEliminarCredito" oncomplete="PF('dialogoEliminarCredito').show()" icon="ui-icon-trash" title="View">
+						                <f:setPropertyActionListener value="#{item}" target="#{modificarPresupuestoView.trasladoCredito}" />
+						            </p:commandButton>
+						        </p:column>	
+								
+								<f:facet name="footer">
+								<p:panelGrid columns="2">
+								<h:outputText
+										value="Valor Total: " />
+								<h:outputText
+										value="#{modificarPresupuestoView.totalCredito}" >
+										<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+										</h:outputText>
+								</p:panelGrid>
+						       	   
+						   		 </f:facet>
+							</p:dataTable>
+							<h:panelGrid columns="1" style="width:40%">
+									<p:spacer ></p:spacer>
+									<p:commandButton value="Seleccionar Rubro Presupuesto a Contra Crédito" style="width:100%"
+								onclick="PF('gastosCredito').show();"></p:commandButton>
+									<p:spacer ></p:spacer>
+							</h:panelGrid>
+						</p:tab>
+						<p:tab title="CRÉDITO">
+							<p:dataTable id="tblPresupuestoGastosContraCredito" var="item"
+								value="#{modificarPresupuestoView.lstContraCredito}">
+
+								<p:column headerText="Cuenta">
+									<h:outputText
+										value="#{item.gluoDetallePresupuesto.codigoCuenta}" />
+								</p:column>
+								<p:column headerText="Descripción">
+									<h:outputText
+										value="#{item.gluoDetallePresupuesto.descripcionCuenta}" />
+								</p:column>
+								<p:column headerText="Saldo Anterior">
+									<h:outputText value="#{item.saldoAnterior}" style="text-align: right;">
+										<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+									</h:outputText>
+								</p:column>
+								<p:column headerText="Nuevo Saldo">
+									<h:outputText value="#{item.nuevoSaldo}" style="text-align: right;">
+										<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+									</h:outputText>
+								</p:column>
+								<p:column headerText="Saldo Modificar">
+									<p:inputText value="#{item.valorTraslado}" style="text-align: right;">
+									<f:convertNumber pattern="#,##0.00"/>
+										<p:ajax event="blur" update=":frmCargarCuentasPresupuesto"
+											listener="#{modificarPresupuestoView.calcularValorTotalContraCredito}" >
+											<f:setPropertyActionListener value="#{item}"
+												target="#{modificarPresupuestoView.trasladoContraCredito}" />
+											</p:ajax>
+											
+									</p:inputText>
+								</p:column>
+								
+								<p:column style="width:32px;text-align: center">
+						             <p:commandButton update=":frmCargarCuentasPresupuesto, :formDialogEliminarContraCredito" oncomplete="PF('dialogoEliminarContraCredito').show()" icon="ui-icon-trash" title="View">
+						                <f:setPropertyActionListener value="#{item}" target="#{modificarPresupuestoView.trasladoContraCredito}" />
+						            </p:commandButton>
+						        </p:column>	
+								
+								<f:facet name="footer">
+								<p:panelGrid columns="2">
+								<h:outputText
+										value="Valor Total: " />
+								<h:outputText
+										value="#{modificarPresupuestoView.totalContraCredito}" >
+										<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+										</h:outputText>
+								</p:panelGrid>
+						       	   
+						   		 </f:facet>
+							</p:dataTable>
+							
+							<h:panelGrid columns="1" style="width:40%">
+									<p:spacer ></p:spacer>
+									<p:commandButton value="Seleccionar Rubro Presupuesto a Crédito" style="width:100%"
+								onclick="PF('gastosContraCredito').show();"></p:commandButton>
+									<p:spacer ></p:spacer>
+							</h:panelGrid>
+							
+							
+
+						</p:tab>
+					</p:accordionPanel>
+
+					<p:spacer height="40"></p:spacer>
+
+					<p:commandButton value="Guardar" style="width:40%"
+						onclick="PF('dialogoConfirmarGuardarTraslado').show()"
+						update=":frmCargarCuentasPresupuesto, :formDialogConfirmarGuardarTraslado"></p:commandButton>
+
+					<p:spacer height="40"></p:spacer>
+					
+				</p:panel>
+			</div>
+			
+			
+			<!-- ************************************************** -->
+			<!-- **					LISTA TRASLADOS				 ** -->
+			<!-- ************************************************** -->
+			<p:panel id="pnlListaTraslados" header="Lista Traslados" 
+				rendered="#{modificarPresupuestoView.showTrasladoDataTable}"
+				style="width: 90%; text-align: center;">
+				
+				<p:dataTable id="listaTrasladosDataTable"
+					emptyMessage="No hay traslados encontrados"
+					paginator="true" 
+					rows="10"				
+					var="traslados"
+					value="#{modificarPresupuestoView.listDetalleTrasladoDTOs}"
+					rowKey="#{traslados.detrId}" 
+					filterDelay="1000">
+					
+					<p:column headerText="Código Cuenta" 
+						filterBy="#{traslados.codigoCuenta}"
+						filterMatchMode="startsWith" >
+						<h:outputText value="#{traslados.codigoCuenta}" />
+					</p:column>
+					
+					<p:column headerText="Descripción Cuenta" 
+						filterBy="#{traslados.descripcionCuenta}"
+						filterMatchMode="contains">
+						<h:outputText value="#{traslados.descripcionCuenta}" />						
+					</p:column>							
+					
+					<p:column headerText="Valor Traslado" 
+						filterBy="#{traslados.valorTraslado}"
+						filterMatchMode="startsWith" >
+						<h:outputText value="#{traslados.valorTraslado}" >
+							<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+						</h:outputText>
+					</p:column>
+					
+					<p:column headerText="Saldo Anterior" 
+						filterBy="#{traslados.saldoAnterior}"
+						filterMatchMode="startsWith" >
+						<h:outputText value="#{traslados.saldoAnterior}" >
+							<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+						</h:outputText>
+					</p:column>
+					
+					<p:column headerText="Nuevo Saldo" 
+						filterBy="#{traslados.nuevoSaldo}"
+						filterMatchMode="startsWith" >
+						<h:outputText value="#{traslados.nuevoSaldo}" >
+							<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+						</h:outputText>
+					</p:column>
+					
+					<p:column headerText="Tipo Operación" 
+						filterBy="#{traslados.nombreTipoOperación}"
+						filterMatchMode="startsWith" >
+						<h:outputText value="#{traslados.nombreTipoOperación}" >
+							<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+						</h:outputText>
+					</p:column>
+					
+				</p:dataTable>
+			</p:panel>
+			
+
+		</p:panel>
+		
+		
+		<!--  /////////////////////////////////////////////////////////////////////////////////    -->
+		<!--  ////////////////////////PANEL PARA CORRECCIONES /////////////////////////    -->
+		<!--  /////////////////////////////////////////////////////////////////////////////////    -->
+		
+		<p:panel rendered="#{modificarPresupuestoView.pintarCorreccion}">
+		<div align="center">
+			<p:panel  id="pnlInfoCorreccion"  header="CORRECCIONES" style="width:90%;">
+
+				<h:panelGrid columns="2">
+					<p:outputLabel value="Tipo Transacción"></p:outputLabel>
+					<p:selectOneMenu id="cmbTipoTransaccionCorreccion" value="#{modificarPresupuestoView.tipoTransaccionSeleccionada}" style="width:90%">
+						<f:selectItem itemLabel="Seleccionar Tipo de Transacción" itemValue="" />
+						<f:selectItems value="#{modificarPresupuestoView.listTipoTransaccion}" />
+						<p:ajax event="change" listener="#{modificarPresupuestoView.cambiarTipoTransaccion}" update=":frmCargarCuentasPresupuesto, :fmrActiAdministrativoTraslado"/>
+					</p:selectOneMenu>
+						
+					<h:outputText value="Acto Administrativo" />
+						<h:panelGrid columns="3" columnClasses="two,one" style="width: 100%;">
+							<p:inputText id="actoAdministrativoSeleccionadoCorreccion"  style="width: 100%;" value="#{modificarPresupuestoView.consecutivoActoAdministrativo}">
+								<p:ajax />
+							</p:inputText>
+							<p:spacer width="5"></p:spacer>
+							<p:commandButton icon="ui-icon-search" oncomplete="PF('dialogGluoActoAdministrativoTraslado').show();" style="width:100%"/>
+							</h:panelGrid>
+							
+							<h:outputText value="Fecha Expedición" style="width: 100%;"/>
+						<p:calendar navigator="true" value="#{modificarPresupuestoView.fechaExpedicionMovimientos}" timeZone="GMT-5" style="width: 100%;" disabled="false"/>		
+				
+				</h:panelGrid>
+				
+						
+			</p:panel>
+		</div>
+
+		<div align="center">
+			<p:panel id="panelTransaccionCorreccion" style="width:90%;">
+
+
+				<p:accordionPanel multiple="true">
+					<p:tab title="CRÉDITO">
+						<p:dataTable id="tblPresupuestoRentasCorreccion" var="item" value="#{modificarPresupuestoView.lstCreditoCorrecciones}">
+
+							<p:column headerText="Cuenta">
+								<h:outputText value="#{item.gluoDetallePresupuesto.codigoCuenta}" />
+							</p:column>
+							<p:column headerText="Descripción">
+								<h:outputText value="#{item.gluoDetallePresupuesto.descripcionCuenta}" />
+							</p:column>
+							<p:column headerText="Saldo Anterior">
+								<h:outputText value="#{item.saldoAnterior}" style="text-align: right;">
+									<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+								</h:outputText>
+							</p:column>
+							<p:column headerText="Nuevo Saldo">
+								<h:outputText value="#{item.nuevoSaldo}" style="text-align: right;">
+									<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+								</h:outputText>
+							</p:column>
+							<p:column headerText="Saldo Modificar">
+								<p:inputText value="#{item.valorTraslado}" style="text-align: right;">
+								<f:convertNumber pattern="#,##0.00"/>
+									<p:ajax event="blur" update=":frmCargarCuentasPresupuesto" listener="#{modificarPresupuestoView.calcularValorTotalCreditoCorreccion}" >
+										<f:setPropertyActionListener value="#{item}" target="#{modificarPresupuestoView.trasladoCreditoCorrecciones}" />
+										</p:ajax>
+								</p:inputText>
+							</p:column>
+							
+							<p:column style="width:32px;text-align: center">
+					             <p:commandButton update=":frmCargarCuentasPresupuesto, :formDialogEliminarRentaCorreccion" oncomplete="PF('dialogoEliminarRentaCreditoCorrecciones').show()" icon="ui-icon-trash" title="View">
+					                <f:setPropertyActionListener value="#{item}" target="#{modificarPresupuestoView.trasladoCreditoCorrecciones}" />
+					            </p:commandButton>
+					        </p:column>	
+							
+							<f:facet name="footer">
+							<p:panelGrid columns="2">
+							<h:outputText
+									value="Valor Total: " />
+							<h:outputText
+									value="#{modificarPresupuestoView.totalCredito}" >
+									<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+									</h:outputText>
+							</p:panelGrid>
+					       	   
+					   		 </f:facet>
+						</p:dataTable>
+						<h:panelGrid columns="1" style="width:40%">
+								<p:spacer ></p:spacer>
+								<p:commandButton value="Seleccionar Rubro Presupuesto a Crédito" style="width:100%"
+							onclick="PF('rentasCreditoCorrecciones').show();"></p:commandButton>
+								<p:spacer ></p:spacer>
+						</h:panelGrid>
+					</p:tab>
+					
+					
+					<p:tab title="CONTRA-CRÉDITO">
+						<p:dataTable id="tblPresupuestoGastosContraCreditoCorreccion" var="item" value="#{modificarPresupuestoView.lstContraCreditoCorrecciones}">
+
+							<p:column headerText="Cuenta">
+								<h:outputText
+									value="#{item.gluoDetallePresupuesto.codigoCuenta}" />
+							</p:column>
+							<p:column headerText="Descripción">
+								<h:outputText
+									value="#{item.gluoDetallePresupuesto.descripcionCuenta}" />
+							</p:column>
+							<p:column headerText="Saldo Anterior">
+								<h:outputText value="#{item.saldoAnterior}" style="text-align: right;">
+									<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+								</h:outputText>
+							</p:column>
+							<p:column headerText="Nuevo Saldo">
+								<h:outputText value="#{item.nuevoSaldo}" style="text-align: right;">
+									<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+								</h:outputText>
+							</p:column>
+							<p:column headerText="Saldo Modificar">
+								<p:inputText value="#{item.valorTraslado}" style="text-align: right;">
+								<f:convertNumber pattern="#,##0.00"/>
+									<p:ajax event="blur" update=":frmCargarCuentasPresupuesto"
+										listener="#{modificarPresupuestoView.calcularValorTotalContraCreditoCorrecciones}" >
+										<f:setPropertyActionListener value="#{item}" target="#{modificarPresupuestoView.trasladoContraCreditoCorrecciones}" />
+										</p:ajax>
+								</p:inputText>
+							</p:column>
+							
+							<p:column style="width:32px;text-align: center">
+					             <p:commandButton update=":frmCargarCuentasPresupuesto, :formDialogEliminarContraCreditoCorreccion" oncomplete="PF('dialogoEliminarRentaContraCreditoCorrecciones').show()" icon="ui-icon-trash" title="View">
+					                <f:setPropertyActionListener value="#{item}" target="#{modificarPresupuestoView.trasladoContraCreditoCorrecciones}" />
+					            </p:commandButton>
+					        </p:column>	
+							
+							<f:facet name="footer">
+							<p:panelGrid columns="2">
+							<h:outputText
+									value="Valor Total: " />
+							<h:outputText
+									value="#{modificarPresupuestoView.totalContraCredito}" >
+									<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+									</h:outputText>
+							</p:panelGrid>
+					       	   
+					   		 </f:facet>
+						</p:dataTable>
+						
+						<h:panelGrid columns="1" style="width:40%">
+								<p:spacer ></p:spacer>
+								<p:commandButton value="Seleccionar Rubro Presupuesto a Contra-Crédito" style="width:100%"
+							onclick="PF('rentasContraCreditoCorreccion').show();"></p:commandButton>
+								<p:spacer ></p:spacer>
+						</h:panelGrid>
+					
+
+					</p:tab>
+				</p:accordionPanel>
+
+				<p:spacer height="40"></p:spacer>
+
+				<p:commandButton value="Guardar Correccion" style="width:40%"
+					onclick="PF('dialogoConfirmarGuardarCorreccion').show()"
+					update=":frmCargarCuentasPresupuesto, :formDialogConfirmarGuardarCorreccion"></p:commandButton>
+
+				<p:spacer height="40"></p:spacer>
+				
+			</p:panel>
+		</div>
+		
+		
+		
+		<!-- ************************************************** -->
+		<!-- **				LISTA CORRECCIONES				 ** -->
+		<!-- ************************************************** -->
+		<p:panel id="pnlListaCorrecciones" header="Lista Correcciones" 
+			rendered="#{modificarPresupuestoView.showCorreccionDataTable}"
+			style="width: 90%; text-align: center;">
+			
+			<p:dataTable id="listaCorreccionesDataTable"
+				emptyMessage="No hay correcciones encontradas"
+				paginator="true" 
+				rows="10"				
+				var="correcciones"
+				value="#{modificarPresupuestoView.listDetalleCorreccionDTOs}"
+				rowKey="#{correcciones.detrId}" filterDelay="1000">
+				
+				<p:column headerText="Código Cuenta" 
+					filterBy="#{correcciones.codigoCuenta}"
+					filterMatchMode="startsWith" >
+					<h:outputText value="#{correcciones.codigoCuenta}" />
+				</p:column>
+				
+				<p:column headerText="Descripción Cuenta" 
+					filterBy="#{correcciones.descripcionCuenta}"
+					filterMatchMode="contains">
+					<h:outputText value="#{correcciones.descripcionCuenta}" />						
+				</p:column>							
+				
+				<p:column headerText="Valor Traslado" 
+					filterBy="#{correcciones.valorTraslado}"
+					filterMatchMode="startsWith" >
+					<h:outputText value="#{correcciones.valorTraslado}" >
+						<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+					</h:outputText>
+				</p:column>
+				
+				<p:column headerText="Saldo Anterior" 
+					filterBy="#{correcciones.saldoAnterior}"
+					filterMatchMode="startsWith" >
+					<h:outputText value="#{correcciones.saldoAnterior}" >
+						<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+					</h:outputText>
+				</p:column>
+				
+				<p:column headerText="Nuevo Saldo" 
+					filterBy="#{correcciones.nuevoSaldo}"
+					filterMatchMode="startsWith" >
+					<h:outputText value="#{correcciones.nuevoSaldo}" >
+						<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+					</h:outputText>
+				</p:column>
+				
+				<p:column headerText="Tipo Operación" 
+					filterBy="#{correcciones.nombreTipoOperación}"
+					filterMatchMode="startsWith" >
+					<h:outputText value="#{correcciones.nombreTipoOperación}" >
+						<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+					</h:outputText>
+				</p:column>
+				
+			</p:dataTable>
+		</p:panel>				
+
+	</p:panel>
+		
+		
+		<!--  /////////////////////////////////////////////////////////////////////////////////    -->
+		<!--  ////////////////////////PANEL PARA APLAZAMIENTOS /////////////////////////    -->
+		<!--  /////////////////////////////////////////////////////////////////////////////////    -->
+		
+			
+			
+		<p:panel rendered="#{modificarPresupuestoView.pintarAplazamiento}">
+		<div align="center">
+		
+		<p:panel  id="pnlInfoTransaccionAplazamiento"  header="APLAZAMIENTO" style="width:90%;">
+	
+				<h:panelGrid columns="2">
+					<p:outputLabel value="Tipo Transacción"></p:outputLabel>
+					<p:selectOneMenu id="cmbTipoTransaccionAplazamiento"
+						value="#{modificarPresupuestoView.tipoTransaccionSeleccionada}" style="width:90%">
+						<f:selectItem itemLabel="Seleccionar Tipo de Transacción"
+							itemValue="" />
+						<f:selectItems
+							value="#{modificarPresupuestoView.listTipoTransaccion}" />
+							<p:ajax event="change"
+										listener="#{modificarPresupuestoView.cambiarTipoTransaccion}" update=":frmCargarCuentasPresupuesto, :fmrActiAdministrativoTraslado"/>
+					</p:selectOneMenu>
+	
+				
+						
+						<h:outputText value="Acto Administrativo" />
+								
+								<h:panelGrid columns="3" columnClasses="two,one" style="width: 100%;">
+									<p:inputText style="width: 100%;" id="actoAdministrativoSeleccionadoAplazamiento" 
+										value="#{modificarPresupuestoView.consecutivoActoAdministrativo}"  >
+										<p:ajax />
+									</p:inputText>
+									<p:spacer width="5"></p:spacer>
+									<p:commandButton icon="ui-icon-search" 
+										oncomplete="PF('dialogGluoActoAdministrativoTraslado').show();" style="width:100%"/>
+								</h:panelGrid>
+						
+						
+						
+				</h:panelGrid>
+			</p:panel>
+			</div>
+			<div align="center">
+			<p:panel  id="pnlTransaccionAplazamiento"  header="APLAZAMIENTO" style="width:90%;">
+			<div >
+					<div >
+	
+						<p:panel id="pnlEncabezadoCDP">
+							<p:messages showDetail="false" autoUpdate="true" closable="true" />
+	
+							<div>
+								<div>
+	
+									<h:panelGrid columns="2" columnClasses="one, two"
+										style="width: 100%;">
+	
+										<h:outputText value="Fecha Expedición:" />
+										<p:calendar navigator="true" value="#{modificarPresupuestoView.fechaExpedicion}" timeZone="GMT-5"/>
+	
+										<h:outputText value="Fecha Vencimiento:" />
+										<p:calendar navigator="true" value="#{modificarPresupuestoView.fechaVencimiento}" timeZone="GMT-5" readonly="true" disabled="true"/>
+										
+										<h:outputText value="Objeto:" />
+										<h:panelGrid columns="1" style="width: 100%;">
+											<p:inputTextarea styleClass="Wid50" 
+												counter="counterObjeto" maxlength="2000"
+												counterTemplate="{0} caracteres restantes." disabled="false"
+												autoResize="false"
+												value="#{modificarPresupuestoView.objeto}"/>
+											<p:outputLabel id="counterObjeto" />
+										</h:panelGrid>
+	
+									</h:panelGrid>
+	
+	
+								</div>
+							</div>
+						</p:panel>
+	 						
+						<p:spacer height="10"></p:spacer>
+	
+						<p:accordionPanel id="pnlDetallesCDP" multiple="true">
+						<p:tab title="RUBROS DE PRESUPUESTO A APLAZAR">
+							
+							<p:dataTable id="rubrosCDP" var="rubro" rows="200"
+								value="#{modificarPresupuestoView.detallesCdp}"
+								paginator="false"
+								paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+								rowsPerPageTemplate="300,400,500"
+								emptyMessage="No hay rubros presupuestales adicionados"
+								reflow="true"
+								rowKey="#{rubro.dptoId}"
+								selection="#{modificarPresupuestoView.detallesCdpSeleccionados}"
+								rendered="#{modificarPresupuestoView.rubrosColapsados==false}"
+								filterDelay="1000">
+					       		
+	                       		<p:column selectionMode="multiple"
+										style="width:10%; text-align:center" />
+		
+								<p:column headerText="Rubro" sortBy="#{rubro.codigoCuenta}"
+									style="width: 20%" filterBy="#{rubro.codigoCuenta}"
+									filterMatchMode="startsWith">
+									<h:outputText value="#{rubro.codigoCuenta}" />
+								</p:column>
+								
+								<p:column headerText="Descripción" sortBy="#{rubro.descripcionCuenta}"
+									style="width: 40%" filterBy="#{rubro.descripcionCuenta}"
+									filterMatchMode="startsWith">
+									<h:outputText value="#{rubro.descripcionCuenta}" />
+								</p:column>
+								
+								<p:column headerText="Valor CDP" 
+									style="width: 20%" >
+									<p:inputText value="#{rubro.valorCertificado}" 
+										validatorMessage="Monto no válido"
+										style="text-align: right;">
+										<f:convertNumber pattern="#,##0.00" currencySymbol="$" />
+										<p:ajax event="blur" update="@this"/>
+									</p:inputText>
+								</p:column>
+								
+								<p:column headerText="Eliminar" 
+									style="width: 10%" >
+									<p:commandButton icon="ui-icon-close" update=":frmCargarCuentasPresupuesto:pnlDetallesCDP">
+										<f:setPropertyActionListener value="#{rubro}" target="#{modificarPresupuestoView.rubroSeleccionadoParaEliminar}"/>
+									</p:commandButton>
+								</p:column>
+	
+							</p:dataTable>
+							<p:commandButton value="Adicionar rubros" icon="ui-icon-plus"
+								oncomplete="PF('dlgRubros').show();" 
+								process=":frmCargarCuentasPresupuesto:pnlDetallesCDP"/>
+							
+							</p:tab>
+						</p:accordionPanel>
+	
+	
+						<div class="EmptyBox20" />
+		
+						<p:commandButton actionListener="#{modificarPresupuestoView.action_guardarCDP}"
+							update=":frmCargarCuentasPresupuesto"
+							value="Guardar Aplazamiento"/>
+		
+					</div>
+				</div>
+						
+			</p:panel>			
+			</div>
+			
+			
+			
+		<!-- ************************************************** -->
+		<!-- **				LISTA APLAZAMIENTOS				 ** -->
+		<!-- ************************************************** -->
+		<div align="center">
+		<p:panel id="pnlListaAplazamientos" header="Lista Aplazamientos" 
+			rendered="#{modificarPresupuestoView.showAplazamientoDataTable}"
+			style="width: 90%; text-align: center;">
+			
+			<p:dataTable id="listaAplazamientosDataTable"
+				emptyMessage="No hay aplazamientos encontrados"
+				paginator="true" 
+				rows="10"				
+				var="aplazamientos"
+				value="#{modificarPresupuestoView.listAplazamientosDTOs}"
+				rowKey="#{aplazamientos.dcdpId}" filterDelay="1000">
+				
+				<p:column headerText="Código Cuenta" 
+					filterBy="#{aplazamientos.codigoCuenta}"
+					filterMatchMode="startsWith" >
+					<h:outputText value="#{aplazamientos.codigoCuenta}" />
+				</p:column>
+				
+				<p:column headerText="Descripción Cuenta" 
+					filterBy="#{aplazamientos.descripcionCuenta}"
+					filterMatchMode="contains">
+					<h:outputText value="#{aplazamientos.descripcionCuenta}" />						
+				</p:column>							
+								
+				<p:column headerText="Valor Disponible" 
+					filterBy="#{aplazamientos.valorDisponible}"
+					filterMatchMode="startsWith" >
+					<h:outputText value="#{aplazamientos.valorDisponible}" >
+						<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+					</h:outputText>
+				</p:column>
+				
+				<p:column headerText="Nuevo Saldo" 
+					filterBy="#{aplazamientos.nuevoSaldo}"
+					filterMatchMode="startsWith" >
+					<h:outputText value="#{aplazamientos.nuevoSaldo}" >
+						<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+					</h:outputText>
+				</p:column>
+				
+				<p:column headerText="Valor Certificado" 
+					filterBy="#{aplazamientos.valorCertificado}"
+					filterMatchMode="startsWith" >
+					<h:outputText value="#{aplazamientos.valorCertificado}" >
+						<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+					</h:outputText>
+				</p:column>
+			
+			</p:dataTable>
+		</p:panel>
+		</div>
+		
+		
+		</p:panel>
+		
+		
+		<!--  /////////////////////////////////////////////////////////////////////////////////    -->
+		<!--  ////////////////////////PANEL PARA DES-APLAZAMIENTOS /////////////////////////    -->
+		<!--  /////////////////////////////////////////////////////////////////////////////////    -->
+		
+			
+			
+			<p:panel rendered="#{modificarPresupuestoView.pintarDesAplazamiento}">
+			<div align="center">
+			
+				<p:panel  id="pnlInfoTransaccionDesAplazamiento"  header="DES-APLAZAMIENTO" style="width:90%;">
+
+					<h:panelGrid columns="2">
+						<p:outputLabel value="Tipo Transacción"></p:outputLabel>
+						<p:selectOneMenu id="cmbTipoTransaccionDesAplazamiento"
+							value="#{modificarPresupuestoView.tipoTransaccionSeleccionada}" style="width:90%">
+							<f:selectItem itemLabel="Seleccionar Tipo de Transacción"
+								itemValue="" />
+							<f:selectItems
+								value="#{modificarPresupuestoView.listTipoTransaccion}" />
+								<p:ajax event="change"
+											listener="#{modificarPresupuestoView.cambiarTipoTransaccion}" update=":frmCargarCuentasPresupuesto, :fmrActiAdministrativoTraslado"/>
+						</p:selectOneMenu>
+
+					
+							
+							<h:outputText value="Acto Administrativo" />
+									
+									<h:panelGrid columns="3" columnClasses="two,one" style="width: 100%;">
+										<p:inputText style="width: 100%;" id="actoAdministrativoSeleccionadoDesAplazamiento" 
+											value="#{modificarPresupuestoView.consecutivoActoAdministrativo}"  >
+											<p:ajax />
+										</p:inputText>
+										<p:spacer width="5"></p:spacer>
+										<p:commandButton icon="ui-icon-search" 
+											oncomplete="PF('dialogGluoActoAdministrativoTraslado').show();" style="width:100%"/>
+									</h:panelGrid>
+							
+					</h:panelGrid>
+				</p:panel>
+			</div>
+				
+			<div align="center">
+			
+			<p:panel id="pnlAnularCDP" header="DES-APLAZAMIENTO" style="width:90%;">
+				
+				<p:spacer height="10"></p:spacer>
+				
+					<p:panelGrid columns="3">
+					
+						<p:outputLabel value="Certificado de Disponibilidad Presupuestal - CDP: " />
+						
+							<p:inputText id="txtConsecutivo" value="#{modificarPresupuestoView.consecutivo}"
+							 maxlength="100" style="width: 200px" />
+							<p:commandButton style="width:100%" icon="ui-icon-search"
+								onclick="PF('dlgAnular').show();"></p:commandButton>
+						
+						
+					</p:panelGrid>
+					
+					<p:spacer height="10"></p:spacer>
+					
+					<h:panelGrid columns="2">
+					
+						
+						
+						<p:outputLabel value="Valor Total: " />
+						<p:outputLabel value="#{modificarPresupuestoView.cdpAnular.valorTotalCdp}" >
+						<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+						</p:outputLabel>
+						
+						<p:outputLabel value="Valor Disponible: " />
+						<p:outputLabel value="#{modificarPresupuestoView.cdpAnular.valorTotalDisponible}" >
+						<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+						</p:outputLabel>
+						
+						<p:outputLabel value="Fecha Expedición :" />
+						<p:outputLabel value="#{modificarPresupuestoView.cdpAnular.fechaExpedicion}" >
+						<f:convertDateTime type="date" pattern="dd-MM-yyyy"/>
+						</p:outputLabel>
+						
+    					<p:outputLabel value="Fecha Vencimiento :" />
+						<p:outputLabel value="#{modificarPresupuestoView.cdpAnular.fechaVencimiento}" >
+						<f:convertDateTime type="date" pattern="dd-MM-yyyy"/>
+						</p:outputLabel>
+						
+						
+					</h:panelGrid>
+					
+					
+						<p:dialog header="Certificados de Disponibilidad Presupuestal" style="align-text: center"
+						widgetVar="dlgAnular" modal="true" height="400" width="80%">
+						
+							<h:form id="formDialogoAnularCDP">
+							
+								<p:dataTable var="cdp"
+								value="#{modificarPresupuestoView.lstCdpParaAnular}"
+								selectionMode="single"
+								selection="#{modificarPresupuestoView.cdpAnular}"
+								rowKey="#{cdp.cdpId}" filterDelay="1000">
+								
+									<p:ajax event="rowSelect"
+									listener="#{modificarPresupuestoView.onRowSelectDesaplazamiento}"	
+									update=":frmCargarCuentasPresupuesto"								
+									oncomplete="PF('dlgAnular').hide();" />
+									
+									<p:column headerText="Consecutivo" filterBy="#{cdp.consecutivo}"
+										filterMatchMode="contains" style="text-align: center;">
+										<h:outputText value="#{cdp.consecutivo}" />
+									</p:column>
+									
+									<p:column headerText="Objeto" filterBy="#{cdp.objeto}"
+										filterMatchMode="contains" style="text-align: center;">
+										<h:outputText value="#{cdp.objeto}" />
+									</p:column>
+									
+									<p:column headerText="Valor Total" filterBy="#{cdp.valorTotalCdp}"
+										filterMatchMode="contains" style="text-align: center;">
+										<h:outputText value="#{cdp.valorTotalCdp}" >
+										<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+										</h:outputText>
+									</p:column>
+									
+									<p:column headerText="Valor Disponible" filterBy="#{cdp.valorTotalDisponible}"
+										filterMatchMode="contains" style="text-align: center;">
+										<h:outputText value="#{cdp.valorTotalDisponible}" >
+										<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+										</h:outputText>
+									</p:column>
+									
+									<p:column headerText="Fecha Expedición" filterBy="#{cdp.fechaExpedicion}"
+										filterMatchMode="contains" style="text-align: center;">
+										<h:outputText value="#{cdp.fechaExpedicion}" >
+										<f:convertDateTime type="date" pattern="dd-MM-yyyy"/>
+										</h:outputText>
+									</p:column>
+									
+									<p:column headerText="Fecha Vencimiento" filterBy="#{cdp.fechaVencimiento}"
+										filterMatchMode="contains" style="text-align: center;">
+										<h:outputText value="#{cdp.fechaVencimiento}" >
+										<f:convertDateTime type="date" pattern="dd-MM-yyyy"/>
+										</h:outputText>
+									</p:column>
+									
+									
+								
+								</p:dataTable>
+							
+							</h:form>
+						
+						</p:dialog>		
+					
+					
+					
+					
+						<!-- Botones -->
+						<br/>
+	
+						<p:commandButton id="btnAnular" value="Guardar"
+								action="#{modificarPresupuestoView.action_anular_cdp}"
+								update=":frmCargarCuentasPresupuesto" />
+								
+						<p:commandButton id="btnDetalleCdp" value="Detalle"
+								action="#{modificarPresupuestoView.action_detalle_cdp}"
+								update=":frmCargarCuentasPresupuesto, :formDialogoDetalleCdp" 
+								oncomplete="PF('dlgDetalleCdp').show();"/>		
+								
+						
+					
+				</p:panel>
+				
+				
+				<p:panel id="listarAnularCDP">
+					
+					
+					
+				</p:panel>
+			
+			</div>	
+			
+			
+		<!-- ************************************************** -->
+		<!-- **				LISTA DESAPLAZAMIENTOS			 ** -->
+		<!-- ************************************************** -->
+		<div align="center">
+		<p:panel id="pnlListaDesAplazamientos" header="Lista DesAplazamientos" 
+			rendered="#{modificarPresupuestoView.showDesAplazamientoDataTable}"
+			style="width: 90%; text-align: center;">
+			
+			<p:dataTable id="listaDesAplazamientosDataTable"
+				emptyMessage="No hay Desaplazamientos encontrados"
+				paginator="true" 
+				rows="10"				
+				var="desaplazamientos"
+				value="#{modificarPresupuestoView.listDesAplazamientosDTOs}"
+				rowKey="#{desaplazamientos.dcdpId}" filterDelay="1000">
+				
+				<p:column headerText="Código Cuenta" 
+					filterBy="#{desaplazamientos.codigoCuenta}"
+					filterMatchMode="startsWith" >
+					<h:outputText value="#{desaplazamientos.codigoCuenta}" />
+				</p:column>
+				
+				<p:column headerText="Descripción Cuenta" 
+					filterBy="#{desaplazamientos.descripcionCuenta}"
+					filterMatchMode="contains">
+					<h:outputText value="#{desaplazamientos.descripcionCuenta}" />						
+				</p:column>							
+								
+				<p:column headerText="Valor Disponible" 
+					filterBy="#{desaplazamientos.valorDisponible}"
+					filterMatchMode="startsWith" >
+					<h:outputText value="#{desaplazamientos.valorDisponible}" >
+						<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+					</h:outputText>
+				</p:column>
+				
+				<p:column headerText="Nuevo Saldo" 
+					filterBy="#{desaplazamientos.nuevoSaldo}"
+					filterMatchMode="startsWith" >
+					<h:outputText value="#{desaplazamientos.nuevoSaldo}" >
+						<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+					</h:outputText>
+				</p:column>
+				
+				<p:column headerText="Valor Certificado" 
+					filterBy="#{desaplazamientos.valorCertificado}"
+					filterMatchMode="startsWith" >
+					<h:outputText value="#{desaplazamientos.valorCertificado}" >
+						<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+					</h:outputText>
+				</p:column>
+			
+			</p:dataTable>
+		</p:panel>
+		</div>
+				
+				
+		</p:panel>
+		
+		
+		<!-- Rubros presupuestales a adicionar en el CDP -->
+			<!-- ******************************************* -->
+			<p:dialog modal="true" widgetVar="dlgRubros"
+				header="Rubros presupuestales a adicionar al CDP" draggable="false" closable="true"
+				resizable="true" width="90%" height="200px;" position="center">
+					
+					<p:scrollPanel mode="native" style="width:100%; height:400px">
+						<p:dataTable id="presupuestoGastosData" var="cuenta"
+							value="#{modificarPresupuestoView.presupuestoGastosDTO.detallesPresupuesto}"
+							rows="10" paginator="true"
+							paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+							rowsPerPageTemplate="10,15,20,30"
+							emptyMessage="No existen cuentas del presupuesto" reflow="true"
+							rowKey="#{cuenta.dptoId}"
+							selection="#{modificarPresupuestoView.rubrosSeleccionados}"
+							filterDelay="1000">
+							
+	                        <p:column selectionMode="multiple"
+									style="width:5%; text-align:center" />
+	
+							<p:column headerText="Cuenta" sortBy="#{cuenta.codigoCuenta}"
+								style="width: 15%" filterBy="#{cuenta.codigoCuenta}"
+								filterMatchMode="startsWith">
+								<h:outputText value="#{cuenta.codigoCuenta}" />
+							</p:column>
+							
+							<p:column headerText="Descripción"
+								sortBy="#{cuenta.descripcionCuenta}" style="width: 50%" filterBy="#{cuenta.descripcionCuenta}"
+								filterMatchMode="contains">
+								<h:outputText value="#{cuenta.descripcionCuenta}" />
+							</p:column>
+							
+							<p:column headerText="Valor Inicial" style="width: 10%">
+								<div align="right">
+									<h:outputText value="#{cuenta.valorInicial}">
+										<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+									</h:outputText>
+								</div>
+							</p:column>
+							
+							<p:column headerText="Saldo para CDPs" style="width: 10%">
+								<div align="right">
+									<h:outputText value="#{cuenta.saldoEnCdps}">
+										<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+									</h:outputText>
+								</div>
+							</p:column>
+							
+							<p:column headerText="% Disponible" style="width: 10%">
+								<div align="right">
+									<h:outputText value="#{cuenta.saldoEnCdps/cuenta.valorInicial}">
+										<f:convertNumber type="percent" maxFractionDigits="1"/>
+									</h:outputText>
+								</div>
+							</p:column>
+	
+						</p:dataTable>
+					</p:scrollPanel>
+
+					<br />
+					<p:commandButton value="Adicionar rubros seleccionados"
+						icon="ui-icon-plus" oncomplete="PF('dlgRubros').hide();" 
+						actionListener="#{modificarPresupuestoView.action_adicionarRubrosACDP}"
+						update=":frmCargarCuentasPresupuesto:pnlDetallesCDP"/>
+
+					<div class="EmptyBox20" />
+
+			</p:dialog>
+			<!-- Rubros presupuestales a adicionar en el CDP -->
+			
+			
+			
+			<!-- Descargar CDP Generado -->
+			<!-- ******************************************* -->
+			<p:dialog modal="true" widgetVar="dlgDescargarCDP"
+				header="Descargar archivo C.D.P" draggable="false" closable="true"
+				resizable="true" width="90%" height="200px;" position="center">
+
+					<p:outputLabel value="Se ha generado un C.D.P.  Desea descargarlo ahora?"/>
+
+					<br />
+					<br />
+					
+					<h:panelGrid columns="4">
+						<p:commandButton value="Si, en Archivo PDF"
+							onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)"
+							icon="ui-icon-arrowthichk-s">
+							
+							<p:fileDownload value="#{modificarPresupuestoView.reporteCDPPdf}" />
+								
+						</p:commandButton>
+						
+						<p:commandButton value="Si, en Archivo XLS"
+							onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)"
+							icon="ui-icon-arrowthichk-s">
+							
+							<p:fileDownload value="#{modificarPresupuestoView.reporteCDPXls}" />
+								
+						</p:commandButton>
+						
+						
+						<p:commandButton value="Si, en Archivo XLSX"
+							onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)"
+							icon="ui-icon-arrowthichk-s">
+							
+							<p:fileDownload value="#{modificarPresupuestoView.reporteCDPXlsx}" />
+								
+						</p:commandButton>
+						
+						<p:commandButton value="He terminado! Cerrar"
+							oncomplete="PF('dlgDescargarCDP').hide();"/>
+						
+					</h:panelGrid>
+
+					<div class="EmptyBox20" />
+
+			</p:dialog>
+			<!-- Descargar CDP Generado -->
+			
+
+			<div class="EmptyBox20"></div>
+		
+		</h:form>
+
+			<!--  ////////////////////////////////////////////////////////////////////////// -->
+		<!--  /////////////////////////////Dialogo para adiciones renta ////////////////////    -->
+		<!--  ////////////////////////////////////////////////////////////////////////// -->
+
+		<p:dialog header="Detalle Cdp" style="align-text: center"
+			widgetVar="dlgDetalleCdp" modal="true" height="400" width="80%">
+
+			<h:form id="formDialogoDetalleCdp">
+
+				<p:dataTable var="item"
+					value="#{modificarPresupuestoView.lstDetalleCdp}"
+					filterDelay="1000">
+					
+					<p:column headerText="Código Cuenta" filterBy="#{item.gluoDetallePresupuesto.codigoCuenta}"
+						filterMatchMode="contains">
+						<h:outputText value="#{item.gluoDetallePresupuesto.codigoCuenta}" />
+					</p:column>
+					
+					<p:column headerText="Valor Disponible" filterBy="#{item.valorDisponible}"
+						filterMatchMode="contains">
+						<h:outputText value="#{item.valorDisponible}" >
+						<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+						</h:outputText>
+					</p:column>
+
+					<p:column headerText="Saldo Anterior" filterBy="#{item.saldoAnterior}"
+						filterMatchMode="contains">
+						<h:outputText value="#{item.saldoAnterior}" >
+						<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+						</h:outputText>
+					</p:column>
+
+					<p:column headerText="Valor Certificado" filterBy="#{item.valorCertificado}"
+						filterMatchMode="contains">
+						<h:outputText value="#{item.valorCertificado}" >
+						<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+						</h:outputText>
+					</p:column>
+					
+					<p:column headerText="Nuevo Saldo" filterBy="#{item.nuevoSaldo}"
+						filterMatchMode="contains">
+						<h:outputText value="#{item.nuevoSaldo}" >
+						
+					<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+					</h:outputText>
+					</p:column>
+
+				</p:dataTable>
+
+			</h:form>
+
+		</p:dialog>
+
+
+
+		<!--  ////////////////////////////////////////////////////////////////////////// -->
+		<!--  /////////////////////////////Dialogo para adiciones renta ////////////////////    -->
+		<!--  ////////////////////////////////////////////////////////////////////////// -->
+
+		<p:dialog header="Presupuesto Renta" style="align-text: center"
+			widgetVar="dialogAdicionRenta" modal="true" height="400" width="80%">
+
+			<h:form id="formDialogoAdicionRenta">
+
+				<p:dataTable var="item"
+					value="#{modificarPresupuestoView.presupuestoRentasDTO.detallesPresupuesto}"
+					selectionMode="single"
+					selection="#{modificarPresupuestoView.presupuestoRentaSeleccionado}"
+					rowKey="#{item.codigoCuenta}"
+					filterDelay="1000">
+
+					<p:ajax event="rowSelect"
+						listener="#{modificarPresupuestoView.onRowSelect}"
+						update=":formDialogoAdicionRenta, :frmCargarCuentasPresupuesto"
+						oncomplete="PF('dialogAdicionRenta').hide();" />
+
+					<p:column headerText="Código" filterBy="#{item.codigoCuenta}"
+						filterMatchMode="contains">
+						<h:outputText value="#{item.codigoCuenta}" />
+					</p:column>
+
+					<p:column headerText="Descripción"
+						filterBy="#{item.descripcionCuenta}" filterMatchMode="contains">
+						<h:outputText value="#{item.descripcionCuenta}" />
+					</p:column>
+
+					<p:column headerText="Valor Inicial"
+						filterBy="#{item.valorInicial}" filterMatchMode="contains">
+						<h:outputText value="#{item.valorInicial}" style="text-align: right;">
+							<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+						</h:outputText>
+					</p:column>
+
+					<p:column headerText="Saldo en CDP" filterBy="#{item.saldoEnCdps}"
+						filterMatchMode="contains">
+						<h:outputText value="#{item.saldoEnCdps}" style="text-align: right;">
+							<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+						</h:outputText>
+					</p:column>
+
+					<p:column headerText="Valor Actual"
+						filterBy="#{item.valorDespuesDeModificaciones}"
+						filterMatchMode="contains">
+						<h:outputText value="#{item.valorDespuesDeModificaciones}" style="text-align: right;">
+							<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+						</h:outputText>
+					</p:column>
+
+					<p:column headerText="Valor Aplazado"
+						filterBy="#{item.valorAplazado}" filterMatchMode="contains">
+						<h:outputText value="#{item.valorAplazado}" style="text-align: right;">
+							<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+						</h:outputText>
+					</p:column>
+
+
+				</p:dataTable>
+
+			</h:form>
+
+		</p:dialog>
+
+		<p:dialog header="Presupuesto Gastos" style="align-text: center"
+			widgetVar="dlg3" modal="true" height="400" width="80%">
+
+			<h:form id="formDialogoAdicionGasto">
+
+				<p:dataTable var="item"
+					value="#{modificarPresupuestoView.presupuestoGastosDTO.detallesPresupuesto}"
+					selectionMode="single"
+					selection="#{modificarPresupuestoView.presupuestoGastosSeleccionado}"
+					rowKey="#{item.codigoCuenta}"
+					filterDelay="1000">
+
+					<p:ajax event="rowSelect"
+						listener="#{modificarPresupuestoView.onRowSelectGastos}"
+						update=":formDialogoAdicionGasto, :frmCargarCuentasPresupuesto"
+						oncomplete="PF('dlg3').hide();" />
+
+					<p:column headerText="Código" filterBy="#{item.codigoCuenta}"
+						filterMatchMode="contains">
+						<h:outputText value="#{item.codigoCuenta}" />
+					</p:column>
+
+					<p:column headerText="Descripción"
+						filterBy="#{item.descripcionCuenta}" filterMatchMode="contains">
+						<h:outputText value="#{item.descripcionCuenta}" />
+					</p:column>
+
+					<p:column headerText="Valor Inicial"
+						filterBy="#{item.valorInicial}" filterMatchMode="contains">
+						<h:outputText value="#{item.valorInicial}" style="text-align: right;">
+							<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+						</h:outputText>
+					</p:column>
+
+					<p:column headerText="Saldo en CDP" filterBy="#{item.saldoEnCdps}"
+						filterMatchMode="contains">
+						<h:outputText value="#{item.saldoEnCdps}" style="text-align: right;">
+							<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+						</h:outputText>
+					</p:column>
+
+					<p:column headerText="Valor Actual"
+						filterBy="#{item.valorDespuesDeModificaciones}"
+						filterMatchMode="contains">
+						<h:outputText value="#{item.valorDespuesDeModificaciones}" style="text-align: right;">
+							<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+						</h:outputText>
+					</p:column>
+
+					<p:column headerText="Valor Aplazado"
+						filterBy="#{item.valorAplazado}" filterMatchMode="contains">
+						<h:outputText value="#{item.valorAplazado}" style="text-align: right;">
+							<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+						</h:outputText>
+					</p:column>
+
+
+				</p:dataTable>
+
+			</h:form>
+
+		</p:dialog>
+		
+		
+		<!-- Dialogo presupuestos gastos para credito -->
+		<!-- **************************** -->
+		<p:dialog header="Rubros Presupuestales" style="align-text: center"
+			widgetVar="gastosCredito" modal="true" height="400" width="80%">
+
+			<h:form id="formDialogoGastoCredito">
+
+				<p:dataTable var="item"
+					value="#{modificarPresupuestoView.presupuestoGastosDTO.detallesPresupuesto}"
+					selectionMode="single"
+					selection="#{modificarPresupuestoView.presupuestoGastosCreditoSeleccionado}"
+					rowKey="#{item.codigoCuenta}"
+					filterDelay="1000">
+
+					<p:ajax event="rowSelect"
+						listener="#{modificarPresupuestoView.onRowSelectGastosCredito}"
+						update=":formDialogoGastoCredito, :frmCargarCuentasPresupuesto"
+						oncomplete="PF('gastosCredito').hide();" />
+
+					<p:column headerText="Código" filterBy="#{item.codigoCuenta}"
+						filterMatchMode="contains">
+						<h:outputText value="#{item.codigoCuenta}" />
+					</p:column>
+
+					<p:column headerText="Descripción"
+						filterBy="#{item.descripcionCuenta}" filterMatchMode="contains">
+						<h:outputText value="#{item.descripcionCuenta}" />
+					</p:column>
+
+					<p:column headerText="Valor Inicial"
+						filterBy="#{item.valorInicial}" filterMatchMode="contains">
+						<h:outputText value="#{item.valorInicial}" style="text-align: right;">
+							<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+						</h:outputText>
+					</p:column>
+
+					<p:column headerText="Saldo en CDP" filterBy="#{item.saldoEnCdps}"
+						filterMatchMode="contains">
+						<h:outputText value="#{item.saldoEnCdps}" style="text-align: right;">
+							<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+						</h:outputText>
+					</p:column>
+
+					<p:column headerText="Valor Actual"
+						filterBy="#{item.valorDespuesDeModificaciones}"
+						filterMatchMode="contains">
+						<h:outputText value="#{item.valorDespuesDeModificaciones}" style="text-align: right;">
+							<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+						</h:outputText>
+					</p:column>
+
+					<p:column headerText="Valor Aplazado"
+						filterBy="#{item.valorAplazado}" filterMatchMode="contains">
+						<h:outputText value="#{item.valorAplazado}" style="text-align: right;">
+							<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+						</h:outputText>
+					</p:column>
+
+
+				</p:dataTable>
+
+			</h:form>
+
+		</p:dialog>
+		
+		<!-- Dialogo presupuestos gastos para contra credito -->
+		<!-- **************************** -->
+		<p:dialog header="Rubros Presupuestales" style="align-text: center"
+			widgetVar="gastosContraCredito" modal="true" height="400" width="80%">
+
+			<h:form id="formDialogoGastoContraCredito">
+
+				<p:dataTable var="item"
+					value="#{modificarPresupuestoView.presupuestoGastosDTO.detallesPresupuesto}"
+					selectionMode="single"
+					selection="#{modificarPresupuestoView.presupuestoGastosContraCreditoSeleccionado}"
+					rowKey="#{item.codigoCuenta}"
+					filterDelay="1000">
+
+					<p:ajax event="rowSelect"
+						listener="#{modificarPresupuestoView.onRowSelectGastosContraCredito}"
+						update=":formDialogoGastoContraCredito, :frmCargarCuentasPresupuesto"
+						oncomplete="PF('gastosContraCredito').hide();" />
+
+					<p:column headerText="Código" filterBy="#{item.codigoCuenta}"
+						filterMatchMode="contains">
+						<h:outputText value="#{item.codigoCuenta}" />
+					</p:column>
+
+					<p:column headerText="Descripción"
+						filterBy="#{item.descripcionCuenta}" filterMatchMode="contains">
+						<h:outputText value="#{item.descripcionCuenta}" />
+					</p:column>
+
+					<p:column headerText="Valor Inicial"
+						filterBy="#{item.valorInicial}" filterMatchMode="contains">
+						<h:outputText value="#{item.valorInicial}" style="text-align: right;">
+							<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+						</h:outputText>
+					</p:column>
+
+					<p:column headerText="Saldo en CDP" filterBy="#{item.saldoEnCdps}"
+						filterMatchMode="contains">
+						<h:outputText value="#{item.saldoEnCdps}" style="text-align: right;">
+							<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+						</h:outputText>
+					</p:column>
+
+					<p:column headerText="Valor Actual"
+						filterBy="#{item.valorDespuesDeModificaciones}"
+						filterMatchMode="contains">
+						<h:outputText value="#{item.valorDespuesDeModificaciones}" style="text-align: right;">
+							<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+						</h:outputText>
+					</p:column>
+
+					<p:column headerText="Valor Aplazado"
+						filterBy="#{item.valorAplazado}" filterMatchMode="contains">
+						<h:outputText value="#{item.valorAplazado}" style="text-align: right;">
+							<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+						</h:outputText>
+					</p:column>
+
+
+				</p:dataTable>
+
+			</h:form>
+
+		</p:dialog>
+		
+		
+		
+		<!-- Crear el acto Administrativo Traslado -->
+		<!-- **************************** -->
+		<p:dialog id="dialogGluoActoAdministrativoTraslado" widgetVar="dialogGluoActoAdministrativoTraslado"
+			draggable="true" closable="true" modal="true"
+			visible="#{actoAdministrativoView.showDialog}" resizable="false"
+			height="400" width="80%" position="center" header="Registrar Acto Administrativo">
+			
+			<h:form id="fmrActiAdministrativoTraslado" enctype="multipart/form-data">
+			
+				<p:messages id="msg" autoUpdate="true" showDetail="false" closable="true" />
+				
+				<p:tabView id="crearConsultarActoAdministrativoTabTraslado">
+			
+					<p:tab id="crearActoAdministrativoTabTraslado" title="Crear un acto administrativo">
+							
+						<div class="Container100">
+							<div class="ContainerIndent">
+		
+								<h:panelGrid columns="2" columnClasses="one, two"
+									style="width: 100%;" id="pnlDatosActoAdministrativoTraslado">
+									
+									<h:outputText value="Consecutivo" />
+									<p:inputText id="txtConsecutivoTraslado" disabled="true" style="width: 40%;"
+										value="#{actoAdministrativoView.consecutivo}" />
+									
+									<h:outputText id="msgNombreOperacionTraslado" value="Nombre de la operacion" />
+									<p:inputText id="txtNombreOperacionTraslado" disabled="false" style="width: 95%;"
+										binding="#{actoAdministrativoView.txtNombreOperacion}" />
+										
+									<h:outputText id="msgFundamentoLegalTraslado" value="Fundamento Legal" />
+									<h:panelGrid columns="1" style="width: 100%;">
+										<p:inputTextarea id="txtFundamentoLegalTraslado" 
+											counter="displayFundamentoTraslado" maxlength="2000" styleClass="Wid50" 
+											counterTemplate="{0} caracteres restantes." disabled="false"
+											autoResize="false"
+											binding="#{actoAdministrativoView.txtFundamentoLegal}" />
+										<h:outputText id="displayFundamentoTraslado" />
+									</h:panelGrid>
+									
+									<h:outputText id="msgRazon" value="Razón" />
+									<h:panelGrid columns="1" style="width: 100%;">
+										<p:inputTextarea id="txtRazonTraslado" 
+											counter="displayRazonTraslado" maxlength="2000" styleClass="Wid50" 
+											counterTemplate="{0} caracteres restantes." disabled="false"
+											autoResize="false"
+											binding="#{actoAdministrativoView.txtRazon}" />
+										<h:outputText id="displayRazonTraslado" />
+									</h:panelGrid>
+									
+									<h:outputText id="msgFechaActoAdministrativoTraslado"
+										value="Fecha del Acto Administrativo" />
+									<p:calendar navigator="true" locale="en" size="30"
+										binding="#{actoAdministrativoView.txtFechaActoAdministrativo}" />
+									
+									<h:outputText id="msgArchivoTraslado"
+										value="Archivo adjunto" />
+										
+									<p:fileUpload
+										fileUploadListener="#{actoAdministrativoView.upload}"
+										auto="true"
+										value="#{actoAdministrativoView.file}" 
+										mode="advanced"
+										sizeLimit="10485760" fileLimit="1"
+										allowTypes="/(\.|\/)(xls|xlsx|pdf|doc|docx|ppt|pptx)$/"
+										label="Escoger archivo de mi computador"
+										uploadLabel="Validar Archivo de presupuesto"
+										cancelLabel="Cancelar" 
+										invalidFileMessage="Archivo no válido"
+										invalidSizeMessage="Tamaño no válido"/>
+									
+								</h:panelGrid>
+							</div>
+						</div>
+							
+						
+						<div align="center">
+							<p:commandButton id="btnSaveTraslado"
+								value="Guardar Acto Administrativo"
+								actionListener="#{actoAdministrativoView.uploadAndSaveActoAdministrativo}"
+								update=":fmrActiAdministrativoTraslado:crearConsultarActoAdministrativoTabTraslado"
+								rendered="#{modificarPresupuestoView.pintarTraslado}" oncomplete="$('#frmCargarCuentasPresupuesto\\:actoAdministrativoSeleccionadoTraslado').val($('#fmrActiAdministrativoTraslado\\:crearConsultarActoAdministrativoTabTraslado\\:txtConsecutivoTraslado').val()); PF('dialogGluoActoAdministrativoTraslado').hide();"/>
+								
+							<p:commandButton id="btnSave"
+								value="Guardar Acto Administrativo"
+								actionListener="#{actoAdministrativoView.uploadAndSaveActoAdministrativo}"
+								update=":fmrActiAdministrativoTraslado:crearConsultarActoAdministrativoTabTraslado"
+								rendered="#{modificarPresupuestoView.pintarAdicionReduccion}" oncomplete="$('#frmCargarCuentasPresupuesto\\:actoAdministrativoSeleccionado').val($('#fmrActiAdministrativoTraslado\\:crearConsultarActoAdministrativoTabTraslado\\:txtConsecutivoTraslado').val()); PF('dialogGluoActoAdministrativoTraslado').hide();"/>
+							
+							<p:commandButton id="btnSaveCorrecion"
+								value="Guardar Acto Administrativo"
+								actionListener="#{actoAdministrativoView.uploadAndSaveActoAdministrativo}"
+								update=":fmrActiAdministrativoTraslado:crearConsultarActoAdministrativoTabTraslado"
+								rendered="#{modificarPresupuestoView.pintarCorreccion}"	oncomplete="$('#frmCargarCuentasPresupuesto\\:actoAdministrativoSeleccionadoCorreccion').val($('#fmrActiAdministrativoTraslado\\:crearConsultarActoAdministrativoTabTraslado\\:txtConsecutivoTraslado').val()); PF('dialogGluoActoAdministrativoTraslado').hide();"/>
+							
+							<p:commandButton id="btnSaveAplazamiento"
+								value="Guardar Acto Administrativo"
+								actionListener="#{actoAdministrativoView.uploadAndSaveActoAdministrativo}"
+								update=":fmrActiAdministrativoTraslado:crearConsultarActoAdministrativoTabTraslado"
+								rendered="#{modificarPresupuestoView.pintarAplazamiento}"	oncomplete="$('#frmCargarCuentasPresupuesto\\:actoAdministrativoSeleccionadoAplazamiento').val($('#fmrActiAdministrativoTraslado\\:crearConsultarActoAdministrativoTabTraslado\\:txtConsecutivoTraslado').val()); PF('dialogGluoActoAdministrativoTraslado').hide();"/>
+							
+							<p:commandButton id="btnSaveDesAplazamiento"
+								value="Guardar Acto Administrativo"
+								actionListener="#{actoAdministrativoView.uploadAndSaveActoAdministrativo}"
+								update=":fmrActiAdministrativoTraslado:crearConsultarActoAdministrativoTabTraslado"
+								rendered="#{modificarPresupuestoView.pintarDesAplazamiento}"	oncomplete="$('#frmCargarCuentasPresupuesto\\:actoAdministrativoSeleccionadoDesAplazamiento').val($('#fmrActiAdministrativoTraslado\\:crearConsultarActoAdministrativoTabTraslado\\:txtConsecutivoTraslado').val()); PF('dialogGluoActoAdministrativoTraslado').hide();"/>
+							
+								
+							
+							
+						</div>
+						
+					</p:tab>
+					
+					
+					<p:tab id="consultarActoAdministrativoTabTraslado" title="Consultar un acto administrativo existente">
+						<p:scrollPanel mode="native" style="width:100%; height:400px">		
+								<p:dataTable id="dataTableActoAdministrativoTraslado" value="#{gluoActoAdministrativoView.actosAdministrativosPresupuesto}" 
+									emptyMessage="No se han encontrado actos administrativos registrados"
+									rows="5"
+									var="gluoActoAdministrativo" paginator="true" rowsPerPageTemplate="5,10,15"
+									filterDelay="1000">
+									
+									<p:column filterBy="#{gluoActoAdministrativo.nombreOperacion}"
+										sortBy="#{gluoActoAdministrativo.nombreOperacion}">
+										<f:facet name="header">
+											<h:outputText value="Nombre de la Operacion" />
+										</f:facet>
+										<h:outputText value="#{gluoActoAdministrativo.nombreOperacion}" />
+									</p:column>
+									
+									<p:column filterBy="#{gluoActoAdministrativo.consecutivo}"
+										sortBy="#{gluoActoAdministrativo.consecutivo}">
+										<f:facet name="header">
+											<h:outputText value="Consecutivo" />
+										</f:facet>
+										<h:outputText value="#{gluoActoAdministrativo.consecutivo}" />
+									</p:column>
+			
+									<p:column
+										filterBy="#{gluoActoAdministrativo.fechaActoAdministrativo}"
+										sortBy="#{gluoActoAdministrativo.fechaActoAdministrativo}">
+										<f:facet name="header">
+											<h:outputText value="Fecha del Acto Administrativo" />
+										</f:facet>
+										<h:outputText
+											value="#{gluoActoAdministrativo.fechaActoAdministrativo}" />
+									</p:column>
+			
+									<p:column filterBy="#{gluoActoAdministrativo.fundamentoLegal}"
+										sortBy="#{gluoActoAdministrativo.fundamentoLegal}">
+										<f:facet name="header">
+											<h:outputText value="Fundamento Legal" />
+										</f:facet>
+										<h:outputText value="#{gluoActoAdministrativo.fundamentoLegal}" />
+									</p:column>
+			
+									<p:column filterBy="#{gluoActoAdministrativo.razon}"
+										sortBy="#{gluoActoAdministrativo.razon}">
+										<f:facet name="header">
+											<h:outputText value="Razon" />
+										</f:facet>
+										<h:outputText value="#{gluoActoAdministrativo.razon}" />
+									</p:column>
+			
+									<p:column filterBy="#{gluoActoAdministrativo.nombreEmpresa}"
+										sortBy="#{gluoActoAdministrativo.nombreEmpresa}">
+										<f:facet name="header">
+											<h:outputText value="Empresa" />
+										</f:facet>
+										<h:outputText
+											value="#{gluoActoAdministrativo.nombreEmpresa}" />
+									</p:column>
+			
+									<p:column headerText="Seleccionar">
+										
+										<p:commandButton title="Seleccionar"  
+							            	icon="ui-icon-check" 
+							            	oncomplete="PF('dialogGluoActoAdministrativoTraslado').hide();"
+							            	update=":frmCargarCuentasPresupuesto">
+							            	
+							            	<f:setPropertyActionListener value="#{gluoActoAdministrativo.consecutivo}" target="#{modificarPresupuestoView.consecutivoActoAdministrativo}" />
+							            	
+							            </p:commandButton>
+							             
+									</p:column>
+								</p:dataTable>
+							</p:scrollPanel>
+							
+					</p:tab>
+				</p:tabView>
+			
+				
+			</h:form>
+		</p:dialog>
+
+		<!-- Dialogo elminar presupuesto de renta -->
+		<!-- **************************** -->
+		<p:dialog header="Desea eliminar el siguiente registro?" widgetVar="dialogoEliminarRenta" modal="true"  >
+		        <h:form id="formDialogEliminarRenta">
+		        <p:outputPanel id="eliminarRentaDetalle" style="text-align:left;">
+		            
+		               
+		                <p:panelGrid columns="2">
+		                
+		                <h:outputText value="Cuenta"></h:outputText>
+		                <h:outputText value="#{modificarPresupuestoView.modificacionRenta.gluoDetallePresupuesto.codigoCuenta}"></h:outputText>
+
+						<h:outputText value="Descripción" ></h:outputText>
+		                <h:outputText value="#{modificarPresupuestoView.modificacionRenta.gluoDetallePresupuesto.descripcionCuenta}"></h:outputText>
+		                
+		                <h:outputText value="Saldo Anterior"></h:outputText>
+		                <h:outputText value="#{modificarPresupuestoView.modificacionRenta.saldoAnterior}">
+		                <f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+		                </h:outputText>
+		                		                
+		                <h:outputText value="Nuevo Saldo"></h:outputText>
+		                <h:outputText value="#{modificarPresupuestoView.modificacionRenta.nuevoSaldo}">
+		                <f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+		                </h:outputText>
+		                
+		                <h:outputText value="Valor a Modificar"></h:outputText>
+		                <h:outputText value="#{modificarPresupuestoView.modificacionRenta.valorAAfectar}">
+		                <f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+		                </h:outputText>
+		                
+		                </p:panelGrid>
+		                
+		                <p:spacer height="10px"></p:spacer>
+		                <div align="center">
+		                <h:panelGrid columns="2">
+		                <p:commandButton title="Eliminar"  
+							            	value="Eliminar"
+							            	oncomplete="PF('dialogoEliminarRenta').hide();"
+							            	update=":frmCargarCuentasPresupuesto"
+							            	action="#{modificarPresupuestoView.action_eliminar_renta}">
+						</p:commandButton>
+		                <p:commandButton title="Cancelar"  
+							            	value="Cancelar"
+							            	oncomplete="PF('dialogoEliminarRenta').hide();"
+							            	update=":frmCargarCuentasPresupuesto">
+						</p:commandButton>
+		                
+		                
+		                </h:panelGrid>
+		 </div>
+		        </p:outputPanel>
+		        </h:form>
+		    </p:dialog>
+		    
+		    <!-- Dialogo elminar presupuesto de renta -->
+		<!-- **************************** -->
+		<p:dialog header="Desea eliminar el siguiente registro?" widgetVar="dialogoEliminarGasto" modal="true" >
+		        <h:form id="formDialogEliminarGasto">
+		        <p:outputPanel id="eliminarGastoDetalle" style="text-align:left;">
+		            
+		               
+		                <p:panelGrid columns="2">
+		                
+		                <h:outputText value="Cuenta"></h:outputText>
+		                <h:outputText value="#{modificarPresupuestoView.modificacionGasto.gluoDetallePresupuesto.codigoCuenta}"></h:outputText>
+
+						<h:outputText value="Descripción" ></h:outputText>
+		                <h:outputText value="#{modificarPresupuestoView.modificacionGasto.gluoDetallePresupuesto.descripcionCuenta}"></h:outputText>
+		                
+		                <h:outputText value="Saldo Anterior"></h:outputText>
+		                <h:outputText value="#{modificarPresupuestoView.modificacionGasto.saldoAnterior}">
+		                <f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+		                </h:outputText>
+		                		                
+		                <h:outputText value="Nuevo Saldo"></h:outputText>
+		                <h:outputText value="#{modificarPresupuestoView.modificacionGasto.nuevoSaldo}">
+		                <f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+		                </h:outputText>
+		                
+		                <h:outputText value="Valor a Modificar"></h:outputText>
+		                <h:outputText value="#{modificarPresupuestoView.modificacionGasto.valorAAfectar}">
+		                <f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+		                </h:outputText>
+		                
+		                </p:panelGrid>
+		                
+		                <p:spacer height="10px"></p:spacer>
+		                <div align="center">
+		                <h:panelGrid columns="2">
+		                <p:commandButton title="Eliminar"  
+							            	value="Eliminar"
+							            	oncomplete="PF('dialogoEliminarGasto').hide();"
+							            	update=":frmCargarCuentasPresupuesto"
+							            	action="#{modificarPresupuestoView.action_eliminar_gasto}">
+						</p:commandButton>
+		                <p:commandButton title="Cancelar"  
+							            	value="Cancelar"
+							            	oncomplete="PF('dialogoEliminarGasto').hide();"
+							            	update=":frmCargarCuentasPresupuesto">
+						</p:commandButton>
+		                
+		                
+		                </h:panelGrid>
+		 </div>
+		        </p:outputPanel>
+		        </h:form>
+		    </p:dialog>
+		    
+		    
+		      <!-- Dialogo elminar credito -->
+		<!-- **************************** -->
+		<p:dialog header="Desea eliminar el siguiente registro?" widgetVar="dialogoEliminarCredito" modal="true" >
+		        <h:form id="formDialogEliminarCredito">
+		        <p:outputPanel id="eliminarCreditoDetalle" style="text-align:left;">
+		            
+		               
+		                <p:panelGrid columns="2">
+		                
+		                <h:outputText value="Cuenta"></h:outputText>
+		                <h:outputText value="#{modificarPresupuestoView.trasladoCredito.gluoDetallePresupuesto.codigoCuenta}"></h:outputText>
+
+						<h:outputText value="Descripción" ></h:outputText>
+		                <h:outputText value="#{modificarPresupuestoView.trasladoCredito.gluoDetallePresupuesto.descripcionCuenta}"></h:outputText>
+		                
+		                <h:outputText value="Saldo Anterior"></h:outputText>
+		                <h:outputText value="#{modificarPresupuestoView.trasladoCredito.saldoAnterior}">
+		                <f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+		                </h:outputText>
+		                		                
+		                <h:outputText value="Nuevo Saldo"></h:outputText>
+		                <h:outputText value="#{modificarPresupuestoView.trasladoCredito.nuevoSaldo}">
+		                <f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+		                </h:outputText>
+		                
+		                <h:outputText value="Valor a Modificar"></h:outputText>
+		                <h:outputText value="#{modificarPresupuestoView.trasladoCredito.valorTraslado}">
+		                <f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+		                </h:outputText>
+		                
+		                </p:panelGrid>
+		                
+		                <p:spacer height="10px"></p:spacer>
+		                <div align="center">
+		                <h:panelGrid columns="2">
+		                <p:commandButton title="Eliminar"  
+							            	value="Eliminar"
+							            	oncomplete="PF('dialogoEliminarCredito').hide();"
+							            	update=":frmCargarCuentasPresupuesto"
+							            	action="#{modificarPresupuestoView.action_eliminar_credito}">
+						</p:commandButton>
+		                <p:commandButton title="Cancelar"  
+							            	value="Cancelar"
+							            	oncomplete="PF('dialogoEliminarCredito').hide();"
+							            	update=":frmCargarCuentasPresupuesto">
+						</p:commandButton>
+		                
+		                
+		                </h:panelGrid>
+		 </div>
+		        </p:outputPanel>
+		        </h:form>
+		    </p:dialog>
+		    
+		    <!-- Dialogo elminar contra credito -->
+		<!-- **************************** -->
+		<p:dialog header="Desea eliminar el siguiente registro?" widgetVar="dialogoEliminarContraCredito" modal="true" >
+		        <h:form id="formDialogEliminarContraCredito">
+		        <p:outputPanel id="eliminarCreditoDetalle" style="text-align:left;">
+		            
+		               
+		                <p:panelGrid columns="2">
+		                
+		                <h:outputText value="Cuenta"></h:outputText>
+		                <h:outputText value="#{modificarPresupuestoView.trasladoContraCredito.gluoDetallePresupuesto.codigoCuenta}"></h:outputText>
+
+						<h:outputText value="Descripción" ></h:outputText>
+		                <h:outputText value="#{modificarPresupuestoView.trasladoContraCredito.gluoDetallePresupuesto.descripcionCuenta}"></h:outputText>
+		                
+		                <h:outputText value="Saldo Anterior"></h:outputText>
+		                <h:outputText value="#{modificarPresupuestoView.trasladoContraCredito.saldoAnterior}">
+		                <f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+		                </h:outputText>
+		                		                
+		                <h:outputText value="Nuevo Saldo"></h:outputText>
+		                <h:outputText value="#{modificarPresupuestoView.trasladoContraCredito.nuevoSaldo}">
+		                <f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+		                </h:outputText>
+		                
+		                <h:outputText value="Valor a Modificar"></h:outputText>
+		                <h:outputText value="#{modificarPresupuestoView.trasladoContraCredito.valorTraslado}">
+		                <f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+		                </h:outputText>
+		                
+		                </p:panelGrid>
+		                
+		                <p:spacer height="10px"></p:spacer>
+		                <div align="center">
+		                <h:panelGrid columns="2">
+		                <p:commandButton title="Eliminar"  
+							            	value="Eliminar"
+							            	oncomplete="PF('dialogoEliminarContraCredito').hide();"
+							            	update=":frmCargarCuentasPresupuesto"
+							            	action="#{modificarPresupuestoView.action_eliminar_contra_credito}">
+						</p:commandButton>
+		                <p:commandButton title="Cancelar"  
+							            	value="Cancelar"
+							            	oncomplete="PF('dialogoEliminarContraCredito').hide();"
+							            	update=":frmCargarCuentasPresupuesto">
+						</p:commandButton>
+		                
+		                
+		                </h:panelGrid>
+		 </div>
+		        </p:outputPanel>
+		        </h:form>
+		    </p:dialog>
+		    
+		   
+		    
+		    
+		    <!-- Dialogo confirmacion guardar -->
+		<!-- **************************** -->
+		<p:dialog header="Mensaje de confirmación" widgetVar="dialogoConfirmarGuardar" modal="true" >
+		        <h:form id="formDialogConfirmarGuardar">
+		        <p:outputPanel id="confirmarGuardar" style="text-align:center;">
+		            
+		               
+		                <p:panelGrid columns="1">
+		                
+		                <h:outputText value="Desea guardar la modificación del presupuesto?"></h:outputText>
+		                
+		                </p:panelGrid>
+		                
+		                <p:spacer height="10px"></p:spacer>
+		                <div align="center">
+		                <h:panelGrid columns="2">
+		                <p:commandButton title="Guardar"  
+							            	value="Guardar"
+							            	oncomplete="PF('dialogoConfirmarGuardar').hide();"
+							            	update=":frmCargarCuentasPresupuesto"
+							            	action="#{modificarPresupuestoView.action_guardar()}">
+						</p:commandButton>
+		                <p:commandButton title="Cancelar"  
+							            	value="Cancelar"
+							            	oncomplete="PF('dialogoConfirmarGuardar').hide();"
+							            	update=":frmCargarCuentasPresupuesto">
+						</p:commandButton>
+		                
+		                
+		                </h:panelGrid>
+		 </div>
+		        </p:outputPanel>
+		        </h:form>
+		    </p:dialog>
+		    
+		      <!-- Dialogo confirmacion guardar traslado-->
+		<!-- **************************** -->
+		<p:dialog header="Mensaje de confirmación" widgetVar="dialogoConfirmarGuardarTraslado" modal="true" >
+		        <h:form id="formDialogConfirmarGuardarTraslado">
+		        <p:outputPanel id="confirmarGuardarTraslado" style="text-align:center;">
+		            
+		               
+		                <p:panelGrid columns="1">
+		                
+		                <h:outputText value="Desea guardar el traslado de presupuesto?"></h:outputText>
+		                
+		                </p:panelGrid>
+		                
+		                <p:spacer height="10px"></p:spacer>
+		                <div align="center">
+		                <h:panelGrid columns="2">
+		                <p:commandButton title="Guardar"  
+							            	value="Guardar"
+							            	oncomplete="PF('dialogoConfirmarGuardarTraslado').hide();"
+							            	update=":frmCargarCuentasPresupuesto"
+							            	action="#{modificarPresupuestoView.action_guardar_traslado()}">
+						</p:commandButton>
+		                <p:commandButton title="Cancelar"  
+							            	value="Cancelar"
+							            	oncomplete="PF('dialogoConfirmarGuardarTraslado').hide();"
+							            	update=":frmCargarCuentasPresupuesto">
+						</p:commandButton>
+		                
+		                
+		                </h:panelGrid>
+		 </div>
+		        </p:outputPanel>
+		        </h:form>
+		    </p:dialog>
+
+      <!-- Dialogo confirmacion guardar Correccion-->
+		<!-- **************************** -->
+		<p:dialog header="Mensaje de confirmación" widgetVar="dialogoConfirmarGuardarCorreccion" modal="true" >
+		        <h:form id="formDialogConfirmarGuardarCorreccion">
+		        <p:outputPanel id="confirmarGuardarCorreccion" style="text-align:center;">
+		            
+		               
+		                <p:panelGrid columns="1">
+		                
+		                <h:outputText value="Desea guardar la correccion de presupuesto?"></h:outputText>
+		                
+		                </p:panelGrid>
+		                
+		                <p:spacer height="10px"></p:spacer>
+		                <div align="center">
+		                <h:panelGrid columns="2">
+		                <p:commandButton title="Guardar"  
+							            	value="Guardar"
+							            	oncomplete="PF('dialogoConfirmarGuardarCorreccion').hide();"
+							            	update=":frmCargarCuentasPresupuesto"
+							            	action="#{modificarPresupuestoView.action_guardar_correccion()}">
+						</p:commandButton>
+		                <p:commandButton title="Cancelar"  
+							            	value="Cancelar"
+							            	oncomplete="PF('dialogoConfirmarGuardarCorreccion').hide();"
+							            	update=":frmCargarCuentasPresupuesto">
+						</p:commandButton>
+		                
+		                
+		                </h:panelGrid>
+		 </div>
+		        </p:outputPanel>
+		        </h:form>
+		    </p:dialog>
+
+	<!--  ////////////////////////////////////////////////////////////////////////// -->
+		<!--  /////////////////////////////Dialogo para adiciones renta ////////////////////    -->
+		<!--  ////////////////////////////////////////////////////////////////////////// -->
+
+		<p:dialog header="Presupuestos de Renta" style="align-text: center"
+			widgetVar="rentasCreditoCorrecciones" modal="true" height="400" width="80%">	
+
+			<h:form id="formDialogoAdicionRentaCorreccion1">
+
+				<p:dataTable var="item"
+					value="#{modificarPresupuestoView.presupuestoRentasDTO.detallesPresupuesto}"
+					selectionMode="single"
+					selection="#{modificarPresupuestoView.presupuestoRentaCreditoSeleccionadoCorreccion}"
+					rowKey="#{item.codigoCuenta}"
+					filterDelay="1000">
+
+					<p:ajax event="rowSelect"
+						listener="#{modificarPresupuestoView.onRowSelectRentasCredito}"
+						update=":formDialogoAdicionRentaCorreccion1, :frmCargarCuentasPresupuesto"
+						oncomplete="PF('rentasCreditoCorrecciones').hide();" />
+
+					<p:column headerText="Código" filterBy="#{item.codigoCuenta}"
+						filterMatchMode="contains">
+						<h:outputText value="#{item.codigoCuenta}" />
+					</p:column>
+
+					<p:column headerText="Descripción"
+						filterBy="#{item.descripcionCuenta}" filterMatchMode="contains">
+						<h:outputText value="#{item.descripcionCuenta}" />
+					</p:column>
+
+					<p:column headerText="Valor Inicial"
+						filterBy="#{item.valorInicial}" filterMatchMode="contains">
+						<h:outputText value="#{item.valorInicial}" style="text-align: right;">
+							<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+						</h:outputText>
+					</p:column>
+
+					<p:column headerText="Saldo en CDP" filterBy="#{item.saldoEnCdps}"
+						filterMatchMode="contains">
+						<h:outputText value="#{item.saldoEnCdps}" style="text-align: right;">
+							<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+						</h:outputText>
+					</p:column>
+
+					<p:column headerText="Valor Actual"
+						filterBy="#{item.valorDespuesDeModificaciones}"
+						filterMatchMode="contains">
+						<h:outputText value="#{item.valorDespuesDeModificaciones}" style="text-align: right;">
+							<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+						</h:outputText>
+					</p:column>
+
+					<p:column headerText="Valor Aplazado"
+						filterBy="#{item.valorAplazado}" filterMatchMode="contains">
+						<h:outputText value="#{item.valorAplazado}" style="text-align: right;">
+							<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+						</h:outputText>
+					</p:column>
+
+
+				</p:dataTable>
+
+			</h:form>
+
+		</p:dialog>
+		
+		
+			<!--  ////////////////////////////////////////////////////////////////////////// -->
+		<!--  /////////////////////////////Dialogo para adiciones renta ////////////////////    -->
+		<!--  ////////////////////////////////////////////////////////////////////////// -->
+
+		<p:dialog header="Presupuesto Renta" style="align-text: center"
+			widgetVar="rentasContraCreditoCorreccion" modal="true" height="400" width="80%">
+
+			<h:form id="formDialogoAdicionRentaCorreccion">
+
+				<p:dataTable var="item"
+					value="#{modificarPresupuestoView.presupuestoRentasDTO.detallesPresupuesto}"
+					selectionMode="single"
+					selection="#{modificarPresupuestoView.presupuestoRentaContraCreditoSeleccionadoCorreccion}"
+					rowKey="#{item.codigoCuenta}"
+					filterDelay="1000">
+
+					<p:ajax event="rowSelect"
+						listener="#{modificarPresupuestoView.onRowSelectRentaContraCredito}"
+						update=":formDialogoAdicionRentaCorreccion, :frmCargarCuentasPresupuesto"
+						oncomplete="PF('rentasContraCreditoCorreccion').hide();" />
+
+					<p:column headerText="Código" filterBy="#{item.codigoCuenta}"
+						filterMatchMode="contains">
+						<h:outputText value="#{item.codigoCuenta}" />
+					</p:column>
+
+					<p:column headerText="Descripción"
+						filterBy="#{item.descripcionCuenta}" filterMatchMode="contains">
+						<h:outputText value="#{item.descripcionCuenta}" />
+					</p:column>
+
+					<p:column headerText="Valor Inicial"
+						filterBy="#{item.valorInicial}" filterMatchMode="contains">
+						<h:outputText value="#{item.valorInicial}" style="text-align: right;">
+							<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+						</h:outputText>
+					</p:column>
+
+					<p:column headerText="Saldo en CDP" filterBy="#{item.saldoEnCdps}"
+						filterMatchMode="contains">
+						<h:outputText value="#{item.saldoEnCdps}" style="text-align: right;">
+							<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+						</h:outputText>
+					</p:column>
+
+					<p:column headerText="Valor Actual"
+						filterBy="#{item.valorDespuesDeModificaciones}"
+						filterMatchMode="contains">
+						<h:outputText value="#{item.valorDespuesDeModificaciones}" style="text-align: right;">
+							<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+						</h:outputText>
+					</p:column>
+
+					<p:column headerText="Valor Aplazado"
+						filterBy="#{item.valorAplazado}" filterMatchMode="contains">
+						<h:outputText value="#{item.valorAplazado}" style="text-align: right;">
+							<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+						</h:outputText>
+					</p:column>
+
+
+				</p:dataTable>
+
+			</h:form>
+		</p:dialog>
+		
+		
+		<!-- Dialogo elminar presupuesto de renta -->
+		<!-- **************************** -->
+		<p:dialog header="Desea eliminar el siguiente registro?" widgetVar="dialogoEliminarRentaCreditoCorrecciones" modal="true" >
+		        <h:form id="formDialogEliminarRentaCorreccion">
+		        <p:outputPanel id="eliminarRentaDetalleCorr" style="text-align:left;">
+		            
+		               
+		                <p:panelGrid columns="2">
+		                	<h:outputText value="Cuenta"></h:outputText>
+			                <h:outputText value="#{modificarPresupuestoView.trasladoCreditoCorrecciones.gluoDetallePresupuesto.codigoCuenta}"></h:outputText>
+	
+							<h:outputText value="Descripción" ></h:outputText>
+			                <h:outputText value="#{modificarPresupuestoView.trasladoCreditoCorrecciones.gluoDetallePresupuesto.descripcionCuenta}"></h:outputText>
+			                
+			                <h:outputText value="Saldo Anterior"></h:outputText>
+			                <h:outputText value="#{modificarPresupuestoView.trasladoCreditoCorrecciones.saldoAnterior}">
+			                <f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+			                </h:outputText>
+			                		                
+			                <h:outputText value="Nuevo Saldo"></h:outputText>
+			                <h:outputText value="#{modificarPresupuestoView.trasladoCreditoCorrecciones.nuevoSaldo}">
+			                <f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+			                </h:outputText>
+		                </p:panelGrid>
+		                
+		                <p:spacer height="10px"></p:spacer>
+		                <div align="center">
+		                <h:panelGrid columns="2">
+		                <p:commandButton title="Eliminar"  
+							            	value="Eliminar"
+							            	oncomplete="PF('dialogoEliminarRentaCreditoCorrecciones').hide();"
+							            	update=":frmCargarCuentasPresupuesto"
+							            	action="#{modificarPresupuestoView.action_eliminar_credito_correccion}">
+						</p:commandButton>
+		                <p:commandButton title="Cancelar"  
+							            	value="Cancelar"
+							            	oncomplete="PF('dialogoEliminarRentaCreditoCorrecciones').hide();"
+							            	update=":frmCargarCuentasPresupuesto">
+						</p:commandButton>
+		                
+		                
+		                </h:panelGrid>
+		 </div>
+		        </p:outputPanel>
+		        </h:form>
+		    </p:dialog>
+		
+		<!-- Dialogo elminar presupuesto de renta -->
+		<!-- **************************** -->
+		<p:dialog header="Desea eliminar el siguiente registro?" widgetVar="dialogoEliminarRentaContraCreditoCorrecciones" modal="true" >
+		        <h:form id="formDialogEliminarContraCreditoCorreccion">
+		        <p:outputPanel id="eliminarRentaDetalleCorr2" style="text-align:left;">
+		            
+		                <p:panelGrid columns="2">
+		                	<h:outputText value="Cuenta"></h:outputText>
+			                <h:outputText value="#{modificarPresupuestoView.trasladoContraCreditoCorrecciones.gluoDetallePresupuesto.codigoCuenta}"></h:outputText>
+	
+							<h:outputText value="Descripción" ></h:outputText>
+			                <h:outputText value="#{modificarPresupuestoView.trasladoContraCreditoCorrecciones.gluoDetallePresupuesto.descripcionCuenta}"></h:outputText>
+			                
+			                <h:outputText value="Saldo Anterior"></h:outputText>
+			                <h:outputText value="#{modificarPresupuestoView.trasladoContraCreditoCorrecciones.saldoAnterior}">
+			                <f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+			                </h:outputText>
+			                		                
+			                <h:outputText value="Nuevo Saldo"></h:outputText>
+			                <h:outputText value="#{modificarPresupuestoView.trasladoContraCreditoCorrecciones.nuevoSaldo}">
+			                <f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+			                </h:outputText>
+		                </p:panelGrid>
+		                
+		                <p:spacer height="10px"></p:spacer>
+		                <div align="center">
+		                <h:panelGrid columns="2">
+		                <p:commandButton title="Eliminar"  
+							            	value="Eliminar"
+							            	oncomplete="PF('dialogoEliminarRentaContraCreditoCorrecciones').hide();"
+							            	update=":frmCargarCuentasPresupuesto"
+							            	action="#{modificarPresupuestoView.action_eliminar_contra_credito_correccion}">
+						</p:commandButton>
+		                <p:commandButton title="Cancelar"  
+							            	value="Cancelar"
+							            	oncomplete="PF('dialogoEliminarRentaContraCreditoCorrecciones').hide();"
+							            	update=":frmCargarCuentasPresupuesto">
+						</p:commandButton>
+		                
+		                
+		                </h:panelGrid>
+				 </div>
+		        </p:outputPanel>
+		        </h:form>
+		    </p:dialog>
+
+	</ui:define>
+
+</ui:composition>

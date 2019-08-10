@@ -1,0 +1,908 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+	<ui:define name="content">
+		<f:view>
+		
+			<style type="text/css">
+		
+		       	.table-no-select-all .ui-chkbox-all {
+				     display: none !important;
+				}
+		       	
+			</style>
+		
+			<p:ajaxStatus onstart="PF('statusDialog').show()"
+				onsuccess="PF('statusDialog').hide()" />
+			<p:dialog modal="true" widgetVar="statusDialog" header="Loading"
+				draggable="false" closable="false">
+				<p:graphicImage
+					value="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/ajaxloadingbar.gif" />
+			</p:dialog>
+
+			<!-- Expired session -->
+			<p:idleMonitor onactive="PF('sessionTimeOutDialog').show();"
+				timeout="#{session.maxInactiveInterval * 1000}" />
+			<p:dialog modal="true" widgetVar="sessionTimeOutDialog"
+				header="Expired session" draggable="false" closable="false">
+				<h:outputText value="The session is finished" />
+				<input id="confirmBackToLogin" type="button" value="Sign in"
+					onclick="window.location='#{facesContext.externalContext.requestContextPath}/index.jsp';" />
+			</p:dialog>
+
+
+			<h:form id="formRecibo">
+				<p:messages id="msg" autoUpdate="true" />
+				<p:growl id="men" autoUpdate="true" showDetail="false" />
+
+				<div align="center">
+					<p:panel id="panelGluoRecibo"
+						header="Ajuste Liquidación predial" style="width:90%;">
+
+						<h:panelGrid columns="2" id="panelGrid">
+
+							<h:outputText value="Archivos de soporte:" />
+									<p:fileUpload 
+										mode="advanced"
+										auto="true" 
+										dragDropSupport="true"
+                          				allowTypes="/(\.|\/)(gif|jpe?g|png|pdf|doc|docx|xls|xlsx)$/" 
+                          				cancelLabel="Cancelar"
+                          				invalidFileMessage="Tipo de archivo no válido. Solo pdf, Doc(x), Xls(x), gif, jpg, png )"
+                          				invalidSizeMessage="Archivo demasiado grande. Tamaño máximo: 3MB"
+                          				label="Adicionar un nuevo archivo"
+                          				sizeLimit="3145728"
+                          				uploadLabel="Cargar"
+                          				fileUploadListener="#{ajustePredialView.fileUploadListener}"
+                          				update="formRecibo"
+                          				process="panelGluoRecibo"
+                          				/>	
+							<h:outputText value="Observación: " />
+
+							<h:panelGrid columns="1" style="width: 100%;">
+								<p:inputTextarea style="width: 100%;" counter="counterObjeto"
+									maxlength="2000" counterTemplate="{0} caracteres restantes."
+									disabled="false" autoResize="false" 
+									value="#{ajustePredialView.observacion}"/>
+								<p:outputLabel id="counterObjeto" />
+							</h:panelGrid>
+							
+
+						</h:panelGrid>
+
+						<h:panelGrid columns="1" style="width:40%">
+							<p:spacer></p:spacer>
+							<p:commandButton value="Adicionar Predio" style="width:100%"
+								onclick="PF('adicionarPredioDialog').show();"></p:commandButton>
+						</h:panelGrid>
+
+					</p:panel>
+				</div>
+
+				<p:spacer height="20"></p:spacer>
+
+				<div align="center">
+					<p:panel style="width:90%;">
+
+						<p:accordionPanel multiple="true">
+							<p:tab title="Información del predio seleccionado">
+
+								<p:spacer height="20" />
+
+								<!-- Datos generales del predio seleccionado -->
+								<h:panelGrid columns="8">
+
+									<h:outputText value="Número del predio: " />
+									<h:outputText value="#{ajustePredialView.predioSeleccionado.numeroPredio}"/>
+									<p:spacer width="20"></p:spacer>
+									<h:outputText value="Dirección: " />
+									<h:outputText value="#{ajustePredialView.predioSeleccionado.direccion}"/>
+
+								
+									<p:spacer width="20"></p:spacer>
+									<h:outputText value="Avalúo:" />
+									<h:outputText value="#{ajustePredialView.predioSeleccionado.avaluoPredio}">
+										<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+									</h:outputText>
+
+								</h:panelGrid>
+
+								<p:spacer height="10"></p:spacer>
+
+								<!-- Datos del pago a aplicar en el recibo -->
+								<h:panelGrid columns="2" id="pnlInfoPredio">
+
+									<h:outputText value="Total por Concepto Predial (Bruto):" />
+										<h:outputText value="#{ajustePredialView.totalPredioBruto}"
+											style="text-align: right; color:blue;">
+											<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+										</h:outputText>
+
+									<h:outputText value="Total Otros Conceptos:" />
+									<h:outputText value="#{ajustePredialView.totalOtrosConceptos}"
+										style="text-align: right; color:blue;">
+										<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+									</h:outputText>
+
+									<h:outputText value="Total intereses de cartera:" />
+									<h:outputText value="#{ajustePredialView.totalCarteraVencida}"
+										style="text-align: right; color:blue;">
+										<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+									</h:outputText>
+
+									
+									
+								</h:panelGrid>
+								<p:spacer height="20"></p:spacer>
+								
+								<p:dataTable var="item"
+						value="#{ajustePredialView.lstAplicacionPagoAnoFiscal}"
+						rowKey="#{item.anoFiscal}"
+						selection="#{ajustePredialView.lstAplicacionPagoAnoFiscalSeleccionados}"
+						styleClass="table-no-select-all">
+
+						<f:facet name="header">
+				           Modificar Saldo Liquidación Predial
+				        </f:facet>
+				        
+						 
+						<p:column style="width:16px">
+							<p:rowToggler />
+						</p:column>
+
+						<p:column headerText="Año" style="text-align: center; width: 30%">
+							<h:outputText value="#{item.anoFiscal}" />
+						</p:column>
+						
+
+						<p:rowExpansion>
+
+							<p:dataTable var="aplicacion" value="#{item.lstAplicacionPago}">
+
+								<p:column headerText="Concepto"
+									style="text-align: center; width: 30%">
+									<div align="left">
+										<h:outputText value="#{aplicacion.descripcionConcepto}"
+											style="text-align: left;" />
+									</div>
+								</p:column>
+
+								<p:column headerText="Saldo Concepto"
+									style="text-align: center; width: 10%">
+									<div align="right">
+										<h:outputText value="#{aplicacion.saldoConcepto}"
+											style="text-align: right;">
+										</h:outputText>
+									</div>
+								</p:column>
+
+								<p:column headerText="Nuevo Saldo"
+									style="text-align: center; width: 10%">
+									<div align="right">
+										<p:inputText id="txtSaldoPago" value="#{aplicacion.saldoPago}" style="text-align: right;"  >
+										<p:ajax event="blur" update="txtSaldoPago" />
+										</p:inputText>
+									</div>
+								</p:column>
+
+							</p:dataTable>
+
+
+						</p:rowExpansion>
+					</p:dataTable>
+								
+
+							</p:tab>
+
+
+						</p:accordionPanel>
+
+						<p:spacer height="15"></p:spacer>
+
+						<h:panelGrid columns="3">
+
+							<p:commandButton value="Guardar Ajuste"
+							onclick="PF('dlgCondonarDeuda').show();"
+								update=":formRecibo, :formDialogoPredio, :frmCondonarDeuda" disabled="false" />
+
+
+							<p:commandButton value="Limpiar"
+								action="#{ajustePredialView.action_limpiar}"
+								update=":formRecibo, :formDialogoPredio" />
+
+
+						</h:panelGrid>
+					</p:panel>
+				</div>
+				<p:spacer height="40"></p:spacer>
+
+			</h:form>
+
+
+			<!-- Crear el tercero -->
+			<!-- **************************** -->
+			<p:dialog id="idDialogoTercero" widgetVar="dialogoTercero"
+				draggable="true" closable="true" modal="true" visible="false"
+				resizable="false" height="500" width="80%" position="center"
+				header="Registrar Tercero">
+
+				<h:form id="frmTercero" enctype="multipart/form-data">
+
+					<p:messages id="msg" autoUpdate="true" showDetail="false"
+						closable="true" />
+
+					<p:tabView id="crearConsultarTercero">
+
+						<p:tab id="crearTerceroTab" title="Crear un tercero">
+
+							<div class="Container100">
+								<div class="ContainerIndent">
+
+									<h:panelGrid id="pnlDatosTercero" columns="5" columnClasses="one, two" style="width: 100%;" >
+
+										<p:outputLabel for="municipio" value="Municipio: " />
+										<p:selectOneMenu id="municipio" value="#{ajustePredialView.municipio}" style="width:80%" filter="true" filterMatchMode="contains">
+											<f:selectItem itemLabel="Seleccionar" itemValue="-1" />
+											<f:selectItems value="#{ajustePredialView.lstMunicipiosItems}" />
+										</p:selectOneMenu>
+
+										<p:spacer width="10"></p:spacer>
+
+										<p:outputLabel for="tipoTercero" value="Tipo Tercero: " />
+										<p:selectOneMenu id="tipoTercero" value="#{ajustePredialView.tipoTercero}" style="width:80%">
+											<f:selectItem itemLabel="Seleccionar" itemValue="" />
+											<f:selectItems value="#{ajustePredialView.lstTipoTerceroItems}" />
+											<p:ajax listener="#{ajustePredialView.listener_tipoPersona}" update="txtPrimerNombre, txtSegundoNombre, txtPrimerApellido, txtSegundoApellido, txtRazonSocial" />
+										</p:selectOneMenu>
+
+										<h:outputText value="Identificación:" />
+										<p:inputText id="txtIdentificacion" disabled="false" style="width: 95%;" value="#{ajustePredialView.identificacion}" />
+
+										<p:spacer width="10"></p:spacer>
+
+										<p:outputLabel for="cmbTipoIdentificacion" value="Tipo Identificación: " style="width: 100%;" />
+										<p:selectOneMenu id="cmbTipoIdentificacion"	value="#{ajustePredialView.tipoIdentificacionSeleccionada}"	style="width:100%">
+											<f:selectItem itemLabel="Seleccionar" itemValue="" />
+											<f:selectItems value="#{ajustePredialView.lstTipoIdentificacionItems}" />
+										</p:selectOneMenu>
+
+
+										<h:outputText id="lblPrimerNombre" value="Primer Nombre:" />
+										<p:inputText id="txtPrimerNombre" style="width: 95%;"
+											value="#{ajustePredialView.primerNombre}"
+											disabled="#{ajustePredialView.showPersonaNatural}" />
+
+										<p:spacer width="10"></p:spacer>
+
+										<h:outputText id="lblSegundoNombre" value="Segundo Nombre:" />
+										<p:inputText id="txtSegundoNombre" style="width: 95%;"
+											value="#{ajustePredialView.segundoNombre}"
+											disabled="#{ajustePredialView.showPersonaNatural}" />
+
+										<h:outputText id="lblPrimerApellido" value="Primer Apellido:" />
+										<p:inputText id="txtPrimerApellido" style="width: 95%;"
+											value="#{ajustePredialView.primerApellido}"
+											disabled="#{ajustePredialView.showPersonaNatural}" />
+
+										<p:spacer width="10" />
+
+										<h:outputText id="lblSegundoApellido"
+											value="Segundo Apellido:" />
+										<p:inputText id="txtSegundoApellido" style="width: 95%;"
+											value="#{ajustePredialView.segundoApellido}"
+											disabled="#{ajustePredialView.showPersonaNatural}" />
+
+										<h:outputText id="lblRazonSocial" value="Razón Social: " />
+										<p:inputText id="txtRazonSocial" style="width: 95%;"
+											value="#{ajustePredialView.razonSocial}"
+											disabled="#{!ajustePredialView.showPersonaNatural}" />
+
+									</h:panelGrid>
+
+									<div align="center">
+										<h:panelGrid columns="2" style="margin-bottom:10px"
+											cellpadding="5">
+											<p:outputLabel for="genero" value="Género: " />
+											<p:selectOneRadio id="genero" value="#{ajustePredialView.genero}">
+												<f:selectItem itemLabel="Masculino"	itemValue="M" />
+												<f:selectItem itemLabel="Femenino" itemValue="F" />
+											</p:selectOneRadio>
+										</h:panelGrid>
+
+										<h:panelGrid columns="4" style="margin-bottom:10px"
+											cellpadding="5">
+
+											<h:outputText id="lblTelefonoUno" value="Teléfono 1:" />
+											<p:inputText id="txtTelefonoUno" style="width: 95%;"
+												value="#{ajustePredialView.telefonoUno}" />
+
+											<h:outputText id="lblTelefonoDos" value="Teléfono 2:" />
+											<p:inputText id="txtTelefonoDos" style="width: 95%;"
+												value="#{ajustePredialView.telefonoDos}" />
+
+											<h:outputText id="lblTelefonoTres" value="Teléfono 3:" />
+											<p:inputText id="txtTelefonoTres" style="width: 95%;"
+												value="#{ajustePredialView.telefonoTres}" />
+
+											<h:outputText id="lblDireccion" value="Dirección:" />
+											<p:inputText id="txtDireccion" style="width: 95%;"
+												value="#{ajustePredialView.direccion}" />
+
+
+										</h:panelGrid>
+
+									</div>
+
+								</div>
+							</div>
+
+
+							<div align="center">
+								<p:commandButton id="btnSave" value="Guardar Tercero"
+									actionListener="#{ajustePredialView.action_guardarTercero}"
+									update=":frmTercero:crearConsultarTercero, :formDialogoPredio"
+									oncomplete="$('#formRecibo\\:terceroSeleccionado').val($('#frmTercero\\:crearConsultarTercero\\:txtIdentificacion').val()); PF('dialogoTercero').hide();" />
+
+							</div>
+
+						</p:tab>
+
+
+						<p:tab id="consultarTerceroTab" title="Consultar un tercero">
+							<p:scrollPanel mode="native" style="width:100%; height:400px">
+								<p:dataTable id="dataTableTercero"
+									value="#{ajustePredialView.lstTerceros}"
+									emptyMessage="No se han encontrado terceros registrados"
+									rows="5" var="tercero" paginator="true"
+									rowsPerPageTemplate="5,10,15" filterDelay="1000">
+
+									<p:column filterBy="#{tercero.identificacion}"
+										filterMatchMode="contains" sortBy="#{tercero.identificacion}">
+										<f:facet name="header">
+											<h:outputText value="Identificación" />
+										</f:facet>
+										<h:outputText value="#{tercero.identificacion}" />
+									</p:column>
+
+									<p:column filterBy="#{tercero.primerNombre}"
+										filterMatchMode="contains" sortBy="#{tercero.primerNombre}">
+										<f:facet name="header">
+											<h:outputText value="Primer Nombre" />
+										</f:facet>
+										<h:outputText value="#{tercero.primerNombre}" />
+									</p:column>
+
+									<p:column filterBy="#{tercero.segundoNombre}"
+										filterMatchMode="contains" sortBy="#{tercero.segundoNombre}">
+										<f:facet name="header">
+											<h:outputText value="Segundo Nombre" />
+										</f:facet>
+										<h:outputText value="#{tercero.segundoNombre}" />
+									</p:column>
+
+									<p:column filterBy="#{tercero.primerApellido}"
+										filterMatchMode="contains" sortBy="#{tercero.primerApellido}">
+										<f:facet name="header">
+											<h:outputText value="Primer Apellido" />
+										</f:facet>
+										<h:outputText value="#{tercero.primerApellido}" />
+									</p:column>
+
+									<p:column filterBy="#{tercero.segundoApellido}"
+										filterMatchMode="contains" sortBy="#{tercero.segundoApellido}">
+										<f:facet name="header">
+											<h:outputText value="Segundo Apellido" />
+										</f:facet>
+										<h:outputText value="#{tercero.segundoApellido}" />
+									</p:column>
+
+									<p:column filterBy="#{tercero.gluoEmpresa.razonSocial}"
+										filterMatchMode="contains"
+										sortBy="#{tercero.gluoEmpresa.razonSocial}">
+										<f:facet name="header">
+											<h:outputText value="Empresa" />
+										</f:facet>
+										<h:outputText value="#{tercero.gluoEmpresa.razonSocial}" />
+									</p:column>
+
+									<p:column filterBy="#{tercero.gluoTipoTercero.nombre}"
+										filterMatchMode="contains"
+										sortBy="#{tercero.gluoTipoTercero.nombre}">
+										<f:facet name="header">
+											<h:outputText value="Tipo Tercero" />
+										</f:facet>
+										<h:outputText value="#{tercero.gluoTipoTercero.nombre}" />
+									</p:column>
+
+
+									<p:column headerText="Seleccionar">
+
+										<p:commandButton title="Seleccionar" icon="ui-icon-check"
+											oncomplete="PF('dialogoTercero').hide();"
+											update=":formRecibo,:formDialogoPredio"
+											action="#{ajustePredialView.consultarPrediosTerceroSeleccionado()}">
+
+											<f:setPropertyActionListener
+												value="#{tercero.identificacion}"
+												target="#{ajustePredialView.terceroSeleccionado}" />
+												
+											<f:setPropertyActionListener
+												value="#{tercero.tercId}"
+												target="#{ajustePredialView.tercId}" />
+
+										</p:commandButton>
+
+									</p:column>
+								</p:dataTable>
+							</p:scrollPanel>
+
+						</p:tab>
+					</p:tabView>
+
+				</h:form>
+			</p:dialog>
+
+
+			<p:dialog header="Predios" style="align-text: center"
+				widgetVar="adicionarPredioDialog" modal="true" height="400"
+				width="80%">
+
+				<h:form id="formDialogoPredio">
+					<h:panelGrid columns="5">
+
+						<h:outputText value="Número Predio Corto: " />
+						<p:inputText style="width: 95%;"
+							value="#{ajustePredialView.numeroPredioCorto}" />
+						<p:spacer width="10"></p:spacer>
+						<h:outputText value="  Número Predio largo: " />
+						<p:inputText style="width: 95%;"
+							value="#{ajustePredialView.numeroPredioLargo}" />
+
+						<h:outputText value="Identificación Propietario: " />
+						<p:inputText style="width: 95%;"
+							value="#{ajustePredialView.identificacionPropietario}" />
+
+					</h:panelGrid>
+
+					<p:spacer height="5"></p:spacer>
+					<h:panelGrid columns="1">
+						<p:commandButton value="Consultar"
+							action="#{ajustePredialView.consultarPrediosPropietario()}"
+							update=":formDialogoPredio" />
+					</h:panelGrid>
+					<p:spacer height="5" />
+
+					<p:dataTable var="item" value="#{ajustePredialView.lstPredios}"
+						selectionMode="single"
+						selection="#{ajustePredialView.predioSeleccionado}"
+						rowKey="#{item.prafId}" filterDelay="1000" paginator="true"
+						paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+						rows="10">
+
+						<p:ajax event="rowSelect"
+							listener="#{ajustePredialView.action_seleccionar_predio}"
+							update=":formDialogoPredio, :formRecibo"
+							oncomplete="PF('adicionarPredioDialog').hide();" />
+
+						<p:column headerText="Ano Fiscal" filterBy="#{item.anoFiscal}"
+							filterMatchMode="contains" style="text-align: center; width: 5%">
+							<h:outputText value="#{item.anoFiscal}" />
+						</p:column>
+
+						<p:column headerText="Número Predio"
+							filterBy="#{item.numeroPredio}" filterMatchMode="contains"
+							style="text-align: center; width: 30%">
+							<h:outputText value="#{item.numeroPredio}" />
+						</p:column>
+
+						<p:column headerText="Avalúo" filterBy="#{item.avaluoPredio}"
+							style="text-align: center; width: 10%">
+							<h:outputText value="#{item.avaluoPredio}">
+								<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+							</h:outputText>
+						</p:column>
+
+
+						<p:column headerText="Dirección" filterBy="#{item.direccion}"
+							filterMatchMode="contains" style="text-align: center;">
+							<h:outputText value="#{item.direccion}"
+								style="text-align: center; width: 10%" />
+						</p:column>
+
+						<p:column headerText="Propietario"
+							filterBy="#{item.nombrePropietario}" filterMatchMode="contains"
+							style="text-align: center;">
+							<h:outputText value="#{item.nombrePropietario}"
+								style="text-align: center; width: 10%">
+
+							</h:outputText>
+						</p:column>
+
+
+						<p:column headerText="Zona" filterBy="#{item.descripcionZona}"
+							filterMatchMode="contains" style="text-align: center; width: 10%">
+							<h:outputText value="#{item.descripcionZona}"
+								style="text-align: center;">
+							</h:outputText>
+						</p:column>
+
+						<p:column headerText="Identificación Propietario"
+							filterBy="#{item.identificacionPropietario}"
+							filterMatchMode="contains" style="text-align: center; width: 10%">
+							<h:outputText value="#{item.identificacionPropietario}"
+								style="text-align: center;">
+							</h:outputText>
+						</p:column>
+
+
+
+					</p:dataTable>
+
+				</h:form>
+
+			</p:dialog>
+
+
+
+
+			<p:dialog header="Detalle Pago" style="align-text: center"
+				widgetVar="detalleAplicacionPagoDialog" modal="true" height="500"
+				width="80%">
+
+				<h:form id="frmDetalleAplicacionPago">
+
+
+					<p:dataTable var="item"
+						value="#{ajustePredialView.lstAplicacionPagoAnoFiscal}"
+						rowKey="#{item.anoFiscal}"
+						selection="#{ajustePredialView.lstAplicacionPagoAnoFiscalSeleccionados}"
+						styleClass="table-no-select-all">
+
+						<f:facet name="header">
+				            Aplicación Pago
+				        </f:facet>
+				        
+				        <p:ajax event="rowSelectCheckbox" listener="#{ajustePredialView.action_seleccionarParaAjustar}" 
+				        	update=":frmDetalleAplicacionPago"/>
+						<p:ajax event="rowUnselectCheckbox" listener="#{ajustePredialView.action_seleccionarParaAjustar}" 
+							update=":frmDetalleAplicacionPago"/>
+						  
+						<p:column selectionMode="multiple" style="width:10%; text-align:center" 
+							headerText="Ajustar Año?"/>
+
+						<p:column style="width:16px">
+							<p:rowToggler />
+						</p:column>
+
+						<p:column headerText="Año" style="text-align: center; width: 30%">
+							<h:outputText value="#{item.anoFiscal}" />
+						</p:column>
+
+						<p:column headerText="Valor Total" style="text-align: center; width: 30%">
+							<h:outputText value="#{item.valorTotal}">
+
+								<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+
+							</h:outputText>
+							<h:outputText rendered="#{item.esAnoVigente == true}"
+								value="#{item.valorTotal / 12}">
+
+								<f:convertNumber pattern=" ---> (¤#,##0.00 Por mes)"
+									currencySymbol="$" />
+
+							</h:outputText>
+						</p:column>
+
+						<p:column headerText="Abonado a este recibo"
+							style="text-align: center; width: 30%">
+							<h:outputText value="#{item.saldoPago}">
+
+								<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+
+							</h:outputText>
+						</p:column>
+
+						<p:rowExpansion>
+
+							<p:dataTable var="aplicacion" value="#{item.lstAplicacionPago}">
+
+								<p:column headerText="Concepto"
+									style="text-align: center; width: 30%">
+									<div align="left">
+										<h:outputText value="#{aplicacion.descripcionConcepto}"
+											style="text-align: left;" />
+									</div>
+								</p:column>
+
+								<p:column headerText="Saldo Concepto"
+									style="text-align: center; width: 10%">
+									<div align="right">
+										<h:outputText value="#{aplicacion.saldoConcepto}"
+											style="text-align: right;">
+											<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+										</h:outputText>
+									</div>
+								</p:column>
+
+								<p:column headerText="Valor a Pagar"
+									style="text-align: center; width: 10%">
+									<div align="right">
+										<h:outputText value="#{aplicacion.valorPago}"
+											style="text-align: right;">
+											<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+										</h:outputText>
+									</div>
+								</p:column>
+
+								<p:column headerText="Descuento"
+									style="text-align: center; width: 10%">
+									<div align="right">
+										<h:outputText
+											value="(-#{aplicacion.descuentoAplicado != null ? aplicacion.descuentoAplicado.porcentaje : 0}% = "
+											style="text-align: right;" />
+
+										<h:outputText value="#{aplicacion.valorDescuento}"
+											style="text-align: right;">
+											<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+										</h:outputText>
+
+										<h:outputText value=")" />
+
+									</div>
+								</p:column>
+
+								<p:column headerText="Vr. Neto Pagar"
+									style="text-align: center; width: 10%">
+									<div align="right">
+										<h:outputText value="#{aplicacion.valorDespuesDeDescuento}"
+											style="text-align: right;">
+											<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+										</h:outputText>
+									</div>
+								</p:column>
+
+								<p:column headerText="Meses a pagar"
+									style="text-align: center; width: 10%"
+									rendered="#{item.esAnoVigente == true}">
+									<div align="right">
+										<h:outputText
+											value="#{aplicacion.cantidadDeMesesQuePagaEsteConceptoParaVigenciaActual}"
+											style="text-align: right;" />
+									</div>
+								</p:column>
+
+								<p:column headerText="Nuevo Saldo"
+									style="text-align: center; width: 10%">
+									<div align="right">
+										<h:outputText value="#{aplicacion.saldoPago}"
+											style="text-align: right;">
+											<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+										</h:outputText>
+									</div>
+								</p:column>
+
+							</p:dataTable>
+
+
+						</p:rowExpansion>
+					</p:dataTable>
+					
+					
+					<p:panel id="pnlCondonarDeuda">
+							
+						<p:commandButton value="Solicitar Ajuste al Sistema Anterior"
+							oncomplete="PF('detalleAplicacionPagoDialog').hide(); PF('dlgCondonarDeuda').show()"/>
+					
+					</p:panel>
+
+				</h:form>
+
+			</p:dialog>
+			
+			
+			
+			
+			<!-- Formas de pago -->
+			<!-- **************************** -->
+			<p:dialog header="Forma de Pago" widgetVar="formaPagoDialog" modal="true" showEffect="fade" hideEffect="fade" resizable="false" 
+			width="90%" height="400px">
+	        <h:form id="frmFormaPago" >
+	        <p:messages id="msg2" autoUpdate="true"/>
+	        <p:outputPanel id="carDetail" style="text-align:left;">
+	            <h:panelGrid  columns="2" rendered="true" columnClasses="label,value">
+	             
+	                <h:outputText value="Forma de Pago" />
+	                <p:selectOneMenu id="formaPago" value="#{ajustePredialView.tipoFormaPagoSeleccionado}">
+						       <f:selectItem itemLabel="Seleccionar" itemValue="" />
+           						<f:selectItems value="#{ajustePredialView.lstTipoFormaPagoItems}" />
+           						<p:ajax event="change"
+											listener="#{ajustePredialView.cambiarTipoTransaccion}" update=":frmFormaPago"/>
+           			</p:selectOneMenu>
+           			
+           			<h:outputText value="Banco" />
+	                <p:selectOneMenu id="banco" value="#{ajustePredialView.bancoSeleccionado}" disabled="#{ajustePredialView.bloquearBanco}">
+						       <f:selectItem itemLabel="Seleccionar" itemValue="" />
+           						<f:selectItems value="#{ajustePredialView.lstBancoItems}" />
+           			</p:selectOneMenu>
+           			
+           			<h:outputText value="Número Documento: " style="width: 100%;"/>
+					<p:inputText id="txtNumeroRecibo"  value="#{ajustePredialView.numeroDocumento}" style="width: 100%;" disabled="#{ajustePredialView.bloquearNumero}"/>
+					
+					<h:outputText value="Fecha" style="width: 100%;"/>
+					<p:calendar value="#{ajustePredialView.fechaConsignacion}" timeZone="GMT-5" style="width: 100%;" disabled="#{ajustePredialView.bloquearNumero}"/>		
+							
+	 
+	            </h:panelGrid>
+	            
+	            <p:spacer height="10"></p:spacer>
+	            <p:separator></p:separator>
+	            
+	            <h:panelGrid  columns="2" rendered="true" columnClasses="label,value">
+	             
+	                <h:outputText value="Valor Total a Pagar:  " />
+	              	<h:outputText value="#{ajustePredialView.valorAPagarIngresadoPorElUsuario}" style="width: 100%; text-align:right;">
+	              	<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+	              	</h:outputText>
+           			
+           			<h:outputText value="Valor Restante: " style="width: 100%;"/>
+					<h:outputText  value="#{ajustePredialView.valorRestante}" style="width: 100%;" >
+					<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+					</h:outputText>
+							
+					<h:outputText value="Valor a pagar: " style="width: 100%;"/>
+										
+	                  <pe:inputNumber id="txtValorBase" 
+											value="#{ajustePredialView.valorAAbonarEnFormaDePago}"  
+											style="text-align: right;" 
+											symbol=" $" symbolPosition="p"  
+	                            			decimalSeparator="," thousandSeparator="."
+	                            			minValue="0" validatorMessage="Valor no válido"
+	                            			decimalPlaces="2"/>  
+                    
+					
+	 
+	            </h:panelGrid>
+	            
+	            <p:spacer height="10"></p:spacer>
+	            
+	            <div align="center">
+	            <p:commandButton value="Adicionar Forma Pago"
+						icon="ui-icon-plus" 
+						action="#{ajustePredialView.adicionarFormaPago}" 
+						update=":frmFormaPago, :formRecibo"/>
+	            </div>
+	            
+	        </p:outputPanel>
+	        </h:form>
+	    </p:dialog>
+
+
+			<!-- Dialogo elminar forma pago-->
+			<!-- **************************** -->
+			<p:dialog header="Desea eliminar el siguiente registro?"
+				widgetVar="dialogoEliminarFormaPago" modal="true" width="90%"
+				height="400px">
+				<h:form id="formDialogEliminarFormaPago">
+					<p:outputPanel id="eliminarFormaPago" style="text-align:left;">
+
+
+						<p:panelGrid columns="2">
+
+							<h:outputText value="Código"></h:outputText>
+							<h:outputText
+								value="#{ajustePredialView.formaPagoSeleccionada.codigo}"></h:outputText>
+
+							<h:outputText value="Nombre"></h:outputText>
+							<h:outputText
+								value="#{ajustePredialView.formaPagoSeleccionada.descripcion}"></h:outputText>
+
+							<h:outputText value="Valor"></h:outputText>
+							<h:outputText
+								value="#{ajustePredialView.formaPagoSeleccionada.valorTotal}">
+								<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+							</h:outputText>
+
+						</p:panelGrid>
+
+						<p:spacer height="10px"></p:spacer>
+						<div align="center">
+							<h:panelGrid columns="2">
+								<p:commandButton title="Eliminar" value="Eliminar"
+									oncomplete="PF('dialogoEliminarFormaPago').hide();"
+									update=":formRecibo"
+									action="#{ajustePredialView.action_eliminar_forma_pago}">
+								</p:commandButton>
+								<p:commandButton title="Cancelar" value="Cancelar"
+									oncomplete="PF('dialogoEliminarFormaPago').hide();"
+									update=":formRecibo">
+								</p:commandButton>
+
+
+							</h:panelGrid>
+						</div>
+					</p:outputPanel>
+				</h:form>
+			</p:dialog>
+
+
+			<p:dialog modal="true" widgetVar="dlgGenerarReportes"
+				header="Reporte Recibo de Caja Impuesto" draggable="false"
+				closable="false" resizable="true" width="90%">
+				<h:form id="frmDialogReportes">
+					<div align="center">
+						<h:panelGrid columns="4">
+							<p:commandButton value="Generar Reporte en PDF"
+								onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)"
+								icon="ui-icon-arrowthichk-s">
+								<p:fileDownload value="#{ajustePredialView.reporteCDPPdf}" />
+							</p:commandButton>
+
+							<p:commandButton value="Generar Reporte en XLS"
+								onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)"
+								icon="ui-icon-arrowthichk-s">
+								<p:fileDownload value="#{ajustePredialView.reporteCDPXls}" />
+							</p:commandButton>
+
+							<p:commandButton value="Generar Reporte en XLSX"
+								onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)"
+								icon="ui-icon-arrowthichk-s">
+								<p:fileDownload value="#{ajustePredialView.reporteCDPXlsx}" />
+							</p:commandButton>
+
+							<p:commandButton value="He terminado! Cerrar"
+								oncomplete="PF('dlgGenerarReportes').hide();" />
+						</h:panelGrid>
+					</div>
+					<div class="EmptyBox20" />
+				</h:form>
+			</p:dialog>
+			
+			
+			
+			<p:dialog modal="true" widgetVar="dlgCondonarDeuda"
+				header="Está seguro que desea realizar el ajuste en la liquidación de predial?" draggable="false"
+				closable="false" resizable="true" width="90%">
+				<h:form id="frmCondonarDeuda">
+					<div align="center">
+						
+						<p:outputLabel escape="false" value="Está seguro que desea realizar el ajuste en la liquidación de predial?, PREDIO: "/>
+						
+						<h:panelGrid columns="8">
+
+									<h:outputText value="Número del predio: " />
+									<h:outputText value="#{ajustePredialView.predioSeleccionado.numeroPredio}"/>
+									<p:spacer width="20"></p:spacer>
+									<h:outputText value="Dirección: " />
+									<h:outputText value="#{ajustePredialView.predioSeleccionado.direccion}"/>
+
+								
+									<p:spacer width="20"></p:spacer>
+									<h:outputText value="Avalúo:" />
+									<h:outputText value="#{ajustePredialView.predioSeleccionado.avaluoPredio}">
+										<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+									</h:outputText>
+
+								</h:panelGrid>
+						
+						<div class="EmptyBox20" />
+						
+						<p:commandButton value="Guardar Ajsute"
+							action="#{ajustePredialView.action_guardarReciboPredial}"
+							update=":formDialogoPredio, :formRecibo" />
+							
+						<p:commandButton value="Cancelar" oncomplete="PF('dlgCondonarDeuda').hide();"/>
+						
+					</div>
+					<div class="EmptyBox20" />
+				</h:form>
+			</p:dialog>
+
+
+
+		</f:view>
+	</ui:define>
+
+</ui:composition>

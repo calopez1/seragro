@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.1.1.final using JasperReports Library version 6.1.1  -->
+<!-- 2016-06-28T10:40:39 -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="detalleDetalleCDP" pageWidth="595" pageHeight="842" columnWidth="595" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="25670d3d-4f6f-430e-9f31-12e346ff806c">
+	<property name="com.jaspersoft.studio.unit." value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageHeight" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.topMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.bottomMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.leftMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.rightMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnSpacing" value="pixel"/>
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="erp-datasource"/>
+	<parameter name="P_CODIGO_CUENTA" class="java.lang.String"/>
+	<parameter name="P_VALOR_CERTIFICADO" class="java.lang.Double" isForPrompting="false">
+		<parameterDescription><![CDATA[]]></parameterDescription>
+		<defaultValueExpression><![CDATA[0D]]></defaultValueExpression>
+	</parameter>
+	<parameter name="P_SALDO_ANTERIOR" class="java.lang.Double" isForPrompting="false">
+		<parameterDescription><![CDATA[]]></parameterDescription>
+		<defaultValueExpression><![CDATA[0D]]></defaultValueExpression>
+	</parameter>
+	<parameter name="P_NUEVO_SALDO" class="java.lang.Double" isForPrompting="false">
+		<parameterDescription><![CDATA[]]></parameterDescription>
+		<defaultValueExpression><![CDATA[0D]]></defaultValueExpression>
+	</parameter>
+	<parameter name="P_SUBREPORT_DIR" class="java.lang.String">
+		<parameterDescription><![CDATA[]]></parameterDescription>
+		<defaultValueExpression><![CDATA["/Users/johan/Documents/JaspersoftWorkspace/erp-reports/1/"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="P_ANOF_ID" class="java.lang.Integer"/>
+	<queryString>
+		<![CDATA[WITH 	RECURSIVE path(codigo_cuenta, descripcion_cuenta,                    path,     parent,      dpto_id,         dpto_id_padre) AS 
+		(
+		SELECT 	DPTO.codigo_cuenta, DPTO.descripcion_cuenta descripcion_cuenta, '/' path, null parent, DPTO.dpto_id dpto_id, DPTO.dpto_id_padre dpto_id_padre 
+		FROM 	gluo_detalle_presupuesto DPTO
+		INNER	JOIN GLUO_PRESUPUESTO PPTO ON PPTO.PPTO_ID = DPTO.PPTO_ID
+		WHERE	PPTO.ANOF_ID =  $P{P_ANOF_ID} 
+		AND		DPTO.dpto_id IN 
+				(
+						select	dpto.dpto_id
+						from	gluo_detalle_presupuesto dpto
+						INNER	JOIN GLUO_PRESUPUESTO PPTO ON PPTO.PPTO_ID = DPTO.PPTO_ID
+						WHERE	dpto.codigo_cuenta IN 
+						(
+								select  substring(  $P{P_CODIGO_CUENTA}   from 1 for position('.' in  $P{P_CODIGO_CUENTA} )-1)
+						)
+						AND		PPTO.ANOF_ID =  $P{P_ANOF_ID} 
+						
+				)
+				UNION
+				SELECT	dpto.codigo_cuenta, dpto.descripcion_cuenta,
+						parentpath.path || CASE parentpath.path WHEN '/' THEN '' ELSE '/' END || dpto.descripcion_cuenta,
+						parentpath.path, dpto.dpto_id, dpto.dpto_id_padre
+				FROM 	gluo_detalle_presupuesto dpto, path as parentpath, GLUO_PRESUPUESTO PPTO
+				WHERE 	dpto.dpto_id_padre = parentpath.dpto_id
+				AND		PPTO.PPTO_ID = DPTO.PPTO_ID
+				AND		PPTO.ANOF_ID =  $P{P_ANOF_ID} 
+		)
+		SELECT	* 
+		FROM 	path
+		where	 $P{P_CODIGO_CUENTA}  like codigo_cuenta||'%'
+		order 	by dpto_id]]>
+	</queryString>
+	<field name="codigo_cuenta" class="java.lang.String"/>
+	<field name="descripcion_cuenta" class="java.lang.String"/>
+	<field name="path" class="java.lang.String"/>
+	<field name="parent" class="java.lang.String"/>
+	<field name="dpto_id" class="java.lang.Integer"/>
+	<field name="dpto_id_padre" class="java.lang.Integer"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+		</band>
+	</title>
+	<pageHeader>
+		<band splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="15" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="0" width="100" height="15" uuid="d8f2c045-7897-42a5-abbd-c69fbad1b8df">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				</reportElement>
+				<box topPadding="0" leftPadding="2" bottomPadding="0" rightPadding="2">
+					<topPen lineWidth="0.1" lineStyle="Dashed" lineColor="#000000"/>
+					<leftPen lineWidth="0.1" lineStyle="Dashed" lineColor="#000000"/>
+					<bottomPen lineWidth="0.1" lineStyle="Dashed" lineColor="#000000"/>
+					<rightPen lineWidth="0.1" lineStyle="Dashed" lineColor="#000000"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{codigo_cuenta}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="100" y="0" width="200" height="15" uuid="ae6d77d1-ab0d-4ee4-b2de-d31e501b5436"/>
+				<box topPadding="0" leftPadding="2" bottomPadding="0" rightPadding="2">
+					<topPen lineWidth="0.1" lineStyle="Dashed" lineColor="#000000"/>
+					<leftPen lineWidth="0.1" lineStyle="Dashed" lineColor="#000000"/>
+					<bottomPen lineWidth="0.1" lineStyle="Dashed" lineColor="#000000"/>
+					<rightPen lineWidth="0.1" lineStyle="Dashed" lineColor="#000000"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{descripcion_cuenta}]]></textFieldExpression>
+			</textField>
+			<textField pattern="¤#,##0.##;¤-#,##0.##" isBlankWhenNull="true">
+				<reportElement x="300" y="0" width="89" height="15" uuid="6e95352e-6e1f-4cb7-a87c-160e1b6ce7e1"/>
+				<box topPadding="0" leftPadding="2" bottomPadding="0" rightPadding="2">
+					<topPen lineWidth="0.1" lineStyle="Dashed" lineColor="#000000"/>
+					<leftPen lineWidth="0.1" lineStyle="Dashed" lineColor="#000000"/>
+					<bottomPen lineWidth="0.1" lineStyle="Dashed" lineColor="#000000"/>
+					<rightPen lineWidth="0.1" lineStyle="Dashed" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{P_CODIGO_CUENTA}.equals($F{codigo_cuenta})?$P{P_SALDO_ANTERIOR}:null]]></textFieldExpression>
+			</textField>
+			<textField pattern="¤#,##0.##;¤-#,##0.##" isBlankWhenNull="true">
+				<reportElement x="389" y="0" width="91" height="15" uuid="b936e769-9e84-4823-a84f-7ac90e0a459f"/>
+				<box topPadding="0" leftPadding="2" bottomPadding="0" rightPadding="2">
+					<topPen lineWidth="0.1" lineStyle="Dashed" lineColor="#000000"/>
+					<leftPen lineWidth="0.1" lineStyle="Dashed" lineColor="#000000"/>
+					<bottomPen lineWidth="0.1" lineStyle="Dashed" lineColor="#000000"/>
+					<rightPen lineWidth="0.1" lineStyle="Dashed" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{P_CODIGO_CUENTA}.equals($F{codigo_cuenta})?$P{P_VALOR_CERTIFICADO}:null]]></textFieldExpression>
+			</textField>
+			<textField pattern="¤#,##0.##;¤-#,##0.##" isBlankWhenNull="true">
+				<reportElement x="480" y="0" width="89" height="15" uuid="133636bf-26e8-4712-a1af-3dc7f7e8ccff"/>
+				<box topPadding="0" leftPadding="2" bottomPadding="0" rightPadding="2">
+					<topPen lineWidth="0.1" lineStyle="Dashed" lineColor="#000000"/>
+					<leftPen lineWidth="0.1" lineStyle="Dashed" lineColor="#000000"/>
+					<bottomPen lineWidth="0.1" lineStyle="Dashed" lineColor="#000000"/>
+					<rightPen lineWidth="0.1" lineStyle="Dashed" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{P_CODIGO_CUENTA}.equals($F{codigo_cuenta})?$P{P_NUEVO_SALDO}:null]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="10" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+		</band>
+	</pageFooter>
+	<summary>
+		<band splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+		</band>
+	</summary>
+</jasperReport>

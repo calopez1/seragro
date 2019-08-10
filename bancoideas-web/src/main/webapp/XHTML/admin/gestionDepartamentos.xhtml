@@ -1,0 +1,153 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:pe="http://primefaces.org/ui/extensions" 
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+<ui:define name="content">
+		<f:view>
+			<p:ajaxStatus onstart="PF('statusDialog').show()" onsuccess="PF('statusDialog').hide()"/>               
+			<p:dialog modal="true" widgetVar="statusDialog" header="Loading"  draggable="false" closable="false">  
+   				<p:graphicImage value="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/ajaxloadingbar.gif" />   
+			</p:dialog>
+			
+			<!-- Expired session -->
+					<p:idleMonitor onactive="PF('sessionTimeOutDialog').show();" timeout="#{session.maxInactiveInterval * 1000}" />
+					<p:dialog modal="true" widgetVar="sessionTimeOutDialog" header="Expired session"  draggable="false" closable="false">  
+	   					<h:outputText value="The session is finished" />
+	                 	<input id="confirmBackToLogin" 
+	                 		type="button" 
+	                 		value="Sign in"
+	                    	onclick="window.location='#{facesContext.externalContext.requestContextPath}/index.jsp';" />   
+					</p:dialog>
+			
+			
+			<h:form id="formDialog" >
+				<p:messages id="msg" />
+				<p:growl id="men"/>
+				<div align="center">
+					<p:panel id="panelDepartamento" header="Gestión de departamentos" style="width:90%">							
+						
+						<div align="left">
+						
+						<h:panelGrid columns="2" id="panelGrid" >
+						
+							<h:outputText id="msgCodigo" value="Código:" style="width:100%"/>
+							<p:inputText id="txtCodigo" disabled="#{departamentoView.deshabilitadoModificacion}" value="#{departamentoView.codigo}" style="width:100%">
+								<p:ajax update="panelDepartamento,msg,panelBotones" listener="#{departamentoView.listener_codigo}"/>
+							</p:inputText>
+							
+							<h:outputText id="msgNombre" value="Nombre:" style="width:100%"/>
+							<p:inputText id="txtNombre" disabled="#{departamentoView.deshabilitadoModificacion}" value="#{departamentoView.nombre}" style="width:100%"/>
+									
+							<h:outputText id="msgDescripcion" value="Descripción:" style="width:100%"/>
+							<p:inputTextarea  rows="5" cols="30" counter="display" maxlength="255" style="width:100%" counterTemplate="{0} caracteres restantes." autoResize="true" id="txtDescripcion" disabled="false" value="#{departamentoView.descripcion}"/>
+							
+							<p:spacer width="10"></p:spacer>
+							<h:outputText id="display" />
+									
+							<h:outputText value="Estado:" style="width:100%"/>
+							<p:selectOneRadio id="city2" value="#{departamentoView.estadoRegistro}" layout="responsive" columns="5" style="width:100%">
+          						 <f:selectItem itemLabel="Activo" itemValue="A" />
+                       			 <f:selectItem itemLabel="Inactivo" itemValue="I" />            
+						    </p:selectOneRadio>				
+										
+						</h:panelGrid>	
+						
+						
+						
+						<h:panelGrid columns="1" >
+							
+						</h:panelGrid>
+						</div>
+						
+											
+					</p:panel>
+					
+		   			<p:panel id="panelBotones" style="width:90%">
+							<p:commandButton id="btnSave" binding="#{departamentoView.btnSave}" disabled="true" value="Guardar" action="#{departamentoView.action_save()}" update="panelDepartamento,panelDataTableDepartamento,msg,panelBotones" oncomplete="PF('tblDepartamento').filter()"/>
+							<p:commandButton id="btnClear" value="Limpiar" action="#{departamentoView.action_clear()}" update="panelDepartamento,msg,panelBotones" />
+					</p:panel>		
+				
+						
+			
+			
+				
+				<p:panel id="panelDataTableDepartamento" header="Consulta Departamentos" style="width:90%" >
+				
+							<p:dataTable id="tblDepartamento"  widgetVar="tblDepartamento"  selectionMode="single" selection="#{departamentoView.selectedDepartamento}" rowKey="#{departamento.codigo}" value="#{departamentoView.data}" var="departamento" paginator="true" rows="10"
+							filterDelay="1000" paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}">
+										
+										<p:ajax event="rowSelect" listener="#{departamentoView.action_cargar_departamento}" update="formDialog" />		
+												
+										<f:facet name="{Exporters}">
+								            <div style="float:right;padding-top: 5px;">
+								                <h:commandLink>
+								                    <img src="../../images/excel.png"/>
+								                    <p:dataExporter type="xls" target="tblDepartamento" fileName="departamentos" />
+								                </h:commandLink>
+								 
+								                <h:commandLink>
+								              		<img src="../../images/pdf.png"/>
+								                    <p:dataExporter type="pdf" target="tblDepartamento" fileName="departamentos"/>
+								                </h:commandLink>
+								 
+								                <h:commandLink>
+								                	<img src="../../images/csv.png"/>
+								                    <p:dataExporter type="csv" target="tblDepartamento" fileName="departamentos" />
+								                </h:commandLink>
+								 
+								                <h:commandLink>
+								                	<img src="../../images/xml.png"/>
+								                    <p:dataExporter type="xml" target="tblDepartamento" fileName="departamentos" />
+								                </h:commandLink>
+								            </div>
+								        </f:facet>		
+																															
+										<p:column  filterBy="#{departamento.codigo}" sortBy="#{departamento.codigo}"  filterMatchMode="contains">
+											 <f:facet name="header">
+											<h:outputText value="Código"/>
+											</f:facet>
+											 <h:outputText value="#{departamento.codigo}"/>
+										</p:column>   
+						 						
+			                    		<p:column filterBy="#{departamento.nombre}" sortBy="#{departamento.nombre}" filterMatchMode="contains">
+											 <f:facet name="header">
+												<h:outputText value="Nombre"/>
+												</f:facet>
+											 <h:outputText value="#{departamento.nombre}"/>
+										</p:column>   
+													
+										<p:column filterBy="#{departamento.descripcion}" sortBy="#{departamento.descripcion}" filterMatchMode="contains">
+											<f:facet name="header">
+												<h:outputText value="Descripción"/>
+										    </f:facet>
+											<h:outputText value="#{departamento.descripcion}"/>
+										</p:column>   
+			                    									
+										<p:column filterBy="#{departamento.estadoRegistro}" sortBy="#{departamento.estadoRegistro}" >
+											<f:facet name="header">
+												<h:outputText value="Estado"/>
+											</f:facet>
+											<f:facet name="filter">
+								                <p:selectOneMenu onchange="PF('tblDepartamento').filter()" styleClass="custom-filter">
+								                    <f:selectItem itemLabel="Seleccionar" itemValue="#{null}" noSelectionOption="true" />
+								                    <f:selectItem itemLabel="ACTIVO" itemValue="A" noSelectionOption="false" />
+								                    <f:selectItem itemLabel="INACTIVO" itemValue="I" noSelectionOption="false" />
+								                  
+								                </p:selectOneMenu>
+								            </f:facet>
+											 <h:outputText value="#{(departamento.estadoRegistro == 'A') ? 'ACTIVO':'INACTIVO'}"/>
+										</p:column>       			                    
+												                    
+							</p:dataTable>	
+						</p:panel>
+					</div>	
+				
+				
+				
+			</h:form>
+		</f:view>
+	</ui:define>		
+</ui:composition>	

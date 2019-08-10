@@ -1,0 +1,129 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+	<ui:define name="content">
+
+		<p:ajaxStatus onstart="PF('statusDialog').show()"
+			onsuccess="PF('statusDialog').hide()" />
+		<p:dialog modal="true" widgetVar="statusDialog" header="Cargando"
+			draggable="false" closable="false">
+			<p:graphicImage
+				value="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/ajaxloadingbar.gif" />
+		</p:dialog>
+
+		<!-- Expired session -->
+		<p:idleMonitor onactive="PF('sessionTimeOutDialog').show();"
+			timeout="#{session.maxInactiveInterval * 1000}" />
+		<p:dialog modal="true" widgetVar="sessionTimeOutDialog"
+			header="Sesión terminada" draggable="false" closable="false">
+			<h:outputText value="La sesión ha finalizado" />
+			<input id="confirmBackToLogin" type="button" value="Iniciar sesión"
+				onclick="window.location='#{facesContext.externalContext.requestContextPath}/index.jsp';" />
+		</p:dialog>
+
+		<script type="text/javascript">
+			function showStatus() {
+				statusDialog.show();
+			}
+
+			function hideStatus() {
+				statusDialog.hide();
+			}
+		</script>
+
+		<div align="center">
+			<h:form id="frmInformesNomina">
+
+				<p:growl id="growl" autoUpdate="true" life="3000" />
+
+				<p:panel id="pnlInformesNomina"
+					header="Informe Consolidado de Aportes Parafiscales"
+					style="width: 90%; align: center;">
+
+					<h:panelGrid columns="2">
+						<h:panelGrid columns="1">
+							<p:selectOneMenu id="somPeriodoLiquidacion" style="width:250px"
+								binding="#{informeConsolidadoAportesParafiscalesView.somPeriodoLiquidacion}">
+								<f:selectItem itemLabel="Seleccione periodo de liquidación"
+									itemValue="0" />
+								<f:selectItems
+									value="#{informeConsolidadoAportesParafiscalesView.periodosLiquidacion}" />
+							</p:selectOneMenu>
+
+							<p:selectOneMenu id="somTipoEntidad" style="width:250px"
+								binding="#{informeConsolidadoAportesParafiscalesView.somTipoEntidad}">
+								<f:selectItem
+									itemLabel="Seleccione un Tipo de Entidad de Nómina"
+									itemValue="0" />
+								<f:selectItems
+									value="#{informeConsolidadoAportesParafiscalesView.tiposEntidades}" />
+								<p:ajax event="change"
+									listener="#{informeConsolidadoAportesParafiscalesView.buscarEntidadNominaDadoTipoEntidad}"
+									update="somEntidadExterna" />
+							</p:selectOneMenu>
+
+							<p:selectOneMenu id="somEntidadExterna" style="width:250px"
+								binding="#{informeConsolidadoAportesParafiscalesView.somEntidadExterna}"
+								disabled="true">
+								<f:selectItem itemLabel="Seleccione una Entidad Externa"
+									itemValue="0" />
+								<f:selectItems
+									value="#{informeConsolidadoAportesParafiscalesView.entidadesNomina}" />
+							</p:selectOneMenu>
+						</h:panelGrid>
+						<h:panelGrid columns="1">
+							<p:outputLabel value="Seleccione los tipos de nómina" />
+							<p:dataTable id="tblTiposNomina" var="tipoNomina"
+								value="#{informeConsolidadoAportesParafiscalesView.tiposNominaDto}"
+								emptyMessage="No se encontraron Tipos de Nómina" reflow="true"
+								rowKey="#{tipoNomina.codigo}"
+								selection="#{informeConsolidadoAportesParafiscalesView.seleccionTipoNomina}"
+								filterDelay="1000" style="width:60%; text-align:center">
+
+								<p:column selectionMode="multiple"
+									style="width:10%; text-align:center">
+								</p:column>
+								<p:column headerText="Tipo Nómina">
+									<h:outputText value="#{tipoNomina.descripcion}" />
+								</p:column>
+							</p:dataTable>
+						</h:panelGrid>
+					</h:panelGrid>
+
+					<h:panelGrid columns="3" id="pnlBotonesDescarga">
+
+						<p:commandButton id="btnPDF" value="Descarga Reporte PDF"
+							onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)"
+							ajax="false" update="@([id$=growl])">
+							<p:fileDownload
+								value="#{informeConsolidadoAportesParafiscalesView.reportePdf}" />
+						</p:commandButton>
+
+						<p:commandButton id="btnXLS" value="Descarga Reporte XLS"
+							onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)"
+							ajax="false" update="@([id$=growl])">
+							<p:fileDownload
+								value="#{informeConsolidadoAportesParafiscalesView.reporteXls}" />
+						</p:commandButton>
+
+						<p:commandButton id="btnXLSX" value="Descarga Reporte XLSX"
+							onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)"
+							ajax="false" update="@([id$=growl])">
+							<p:fileDownload
+								value="#{informeConsolidadoAportesParafiscalesView.reporteXlsx}" />
+						</p:commandButton>
+
+					</h:panelGrid>
+
+
+				</p:panel>
+
+
+			</h:form>
+		</div>
+	</ui:define>
+</ui:composition>

@@ -1,0 +1,183 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+	<ui:define name="content">
+		<f:view>
+			<p:ajaxStatus onstart="PF('statusDialog').show()"
+				onsuccess="PF('statusDialog').hide()" />
+			<p:dialog modal="true" widgetVar="statusDialog" header="Cargando"
+				draggable="false" closable="false">
+				<p:graphicImage
+					value="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/ajaxloadingbar.gif" />
+			</p:dialog>
+
+			<!-- Expired session -->
+			<p:idleMonitor onactive="PF('sessionTimeOutDialog').show();"
+				timeout="#{session.maxInactiveInterval * 1000}" />
+			<p:dialog modal="true" widgetVar="sessionTimeOutDialog"
+				header="Sesión Finalizada" draggable="false" closable="false">
+				<h:outputText value="La sesión ha caducado." />
+				<input id="confirmBackToLogin" type="button" value="Iniciar Sesión"
+					onclick="window.location='#{facesContext.externalContext.requestContextPath}/index.jsp';" />
+			</p:dialog>
+
+			<h:form id="frm">
+
+				<p:panel id="panelDataTableGluoSituacionAdministrativa"
+					header="Gestionar Tipos de Situación Administrativa">
+					<p:growl id="men" autoUpdate="true" showDetail="false" />
+					<p:dataTable value="#{gluoSituacionAdministrativaView.data}"
+						var="gluoSituacionAdministrativa" paginator="true" rows="5"
+						emptyMessage="No se encontraron tipo de situaciones administrativas registradas actualmente para su empresa"
+						scrollable="true" scrollWidth="100%" scrollHeight="250"
+						filterDelay="1000">
+						
+						<p:column filterBy="#{gluoSituacionAdministrativa.descripcion}" width="200px"
+							sortBy="#{gluoSituacionAdministrativa.descripcion}"
+							filterMatchMode="contains">
+							<f:facet name="header">
+								<h:outputText value="Descripción" />
+							</f:facet>
+							<h:outputText value="#{gluoSituacionAdministrativa.descripcion}" />
+						</p:column>
+						
+						<p:column width="200px"
+							filterBy="#{gluoSituacionAdministrativa.afectaLiquidacion}"
+							sortBy="#{gluoSituacionAdministrativa.afectaLiquidacion}"
+							filterMatchMode="contains"
+							style="text-align: center;">
+							<f:facet name="header">
+								<h:outputText value="Afecta Liquidacion" />
+							</f:facet>
+							<h:outputText
+								value="#{(gluoSituacionAdministrativa.afectaLiquidacion.trim() eq 'S')?'Si':'No'}" />
+						</p:column>
+
+
+						<p:column filterBy="#{gluoSituacionAdministrativa.signo}" width="200px"
+							sortBy="#{gluoSituacionAdministrativa.signo}"
+							filterMatchMode="contains"
+							style="text-align: center;">
+							<f:facet name="header">
+								<h:outputText value="Signo" />
+							</f:facet>
+							<h:outputText value="#{gluoSituacionAdministrativa.signo}" />
+						</p:column>
+
+						<p:column width="200px"
+							filterBy="#{gluoSituacionAdministrativa.requiereArchivoSoporte}"
+							sortBy="#{gluoSituacionAdministrativa.requiereArchivoSoporte}"
+							filterMatchMode="contains"
+							style="text-align: center;">
+							<f:facet name="header">
+								<h:outputText value="Requiere Archivo Soporte" />
+							</f:facet>
+							<h:outputText
+								value="#{(gluoSituacionAdministrativa.requiereArchivoSoporte.trim() eq 'S')?'Si':'No'}" />
+						</p:column>
+						
+						<p:column filterBy="#{gluoSituacionAdministrativa.activo}" width="200px"
+							sortBy="#{gluoSituacionAdministrativa.activo}"
+							filterMatchMode="contains"
+							style="text-align: center;">
+							<f:facet name="header">
+								<h:outputText value="Estado" />
+							</f:facet>
+							<h:outputText value="#{(gluoSituacionAdministrativa.activo.trim() eq 'A')?'Activo':'Inactivo'}" />
+						</p:column>
+						
+						<p:column headerText="Opciones" width="80px">
+							<p:commandButton id="btnEdit" icon="ui-icon-pencil"
+								update=":dialogGluoSituacionAdministrativa" title="Editar"
+								actionListener="#{gluoSituacionAdministrativaView.action_edit}">
+								<f:attribute name="selectedGluoSituacionAdministrativa"
+									value="#{gluoSituacionAdministrativa}" />
+							</p:commandButton>
+						</p:column>
+					</p:dataTable>
+				</p:panel>
+				<p:panel id="panelBoton">
+					<div align="center">
+						<p:commandButton id="btnNew" value="Crear"
+							action="#{gluoSituacionAdministrativaView.action_new()}"
+							update=":dialogGluoSituacionAdministrativa" />
+					</div>
+				</p:panel>
+			</h:form>
+			<p:dialog id="dialogGluoSituacionAdministrativa" widgetVar="dialogGluoSituacionAdministrativa" appendTo="@(body)"
+				draggable="true" closable="false"
+				visible="#{gluoSituacionAdministrativaView.showDialog}"
+				resizable="false" modal="true" width="700">
+				<h:form id="formDialog">
+					<p:messages id="msg" autoUpdate="true" showDetail="false" closable="true"/>
+					<p:panel id="panelGluoSituacionAdministrativa"
+						header="Gestionar Tipo de Situación Administrativa">
+						<h:panelGrid columns="2" id="panelGrid">
+						
+							<h:outputText id="msgDescripcion" value=" Descripcion" />
+							
+							<h:panelGrid columns="1" id="panelGridDescripcion">
+								<p:inputTextarea id="txtDescripcion" rows="2" cols="50"
+									counter="displayDescripcion" maxlength="255"
+									counterTemplate="{0} caracteres restantes."
+									disabled="#{gluoSituacionAdministrativaView.selectedGluoSituacionAdministrativa == null ? false : true}"
+									autoResize="false" binding="#{gluoSituacionAdministrativaView.txtDescripcion}" />
+								<h:outputText id="displayDescripcion" />
+							</h:panelGrid>
+							
+							<h:outputText id="msgAfectaLiquidacion"
+								value=" Afecta la Liquidacion del Salario ?" />
+        					<p:selectBooleanCheckbox value="#{gluoSituacionAdministrativaView.afectaLiquidacion}"
+        					disabled="#{gluoSituacionAdministrativaView.selectedGluoSituacionAdministrativa == null ? false : true}">
+        						<p:ajax update="@([id$=msgSigno]), @([id$=sorSigno]), @([id$=panelGridSigno])"/>
+        					</p:selectBooleanCheckbox>
+							<br />
+							<h:panelGrid columns="1" id="panelGridSigno">
+								<h:outputText id="msgSigno" value=" Signo" style=""
+									rendered="#{gluoSituacionAdministrativaView.afectaLiquidacion}" />
+								<p:selectOneRadio id="sorSigno"
+									binding="#{gluoSituacionAdministrativaView.sorSigno}"
+									rendered="#{gluoSituacionAdministrativaView.afectaLiquidacion}"
+									disabled="#{gluoSituacionAdministrativaView.selectedGluoSituacionAdministrativa == null ? false : true}">
+									<f:selectItem itemLabel="+" itemValue="+" />
+									<f:selectItem itemLabel="-" itemValue="-" />
+								</p:selectOneRadio>
+							</h:panelGrid>
+							<h:outputText id="msgRequiereArchivoSoporte"
+								value=" Requiere Archivo Soporte ?" />
+							<p:selectBooleanCheckbox
+								value="#{gluoSituacionAdministrativaView.requiereArchivoSoporte}"
+								disabled="#{gluoSituacionAdministrativaView.selectedGluoSituacionAdministrativa == null ? false : true}" />
+
+							<h:outputText id="msgActivo" value=" Estado" />
+							<p:selectOneRadio id="sorEstado"
+								binding="#{gluoSituacionAdministrativaView.sorEstado}">
+								<f:selectItem itemLabel="Activo" itemValue="A" />
+								<f:selectItem itemLabel="Inactivo" itemValue="I" />
+							</p:selectOneRadio>
+						</h:panelGrid>
+					</p:panel>
+					<p:panel id="panelBotones">
+						<div align="center">
+							<p:commandButton id="btnSave"
+								binding="#{gluoSituacionAdministrativaView.btnSave}"
+								value="Guardar"
+								action="#{gluoSituacionAdministrativaView.action_save()}"
+								update=":dialogGluoSituacionAdministrativa :frm:panelDataTableGluoSituacionAdministrativa" />
+							<p:commandButton id="btnClear" value="Limpiar"
+								action="#{gluoSituacionAdministrativaView.action_clear()}"
+								update=":dialogGluoSituacionAdministrativa" />
+							<p:commandButton id="btnExit" value="Salir"
+								action="#{gluoSituacionAdministrativaView.action_closeDialog()}"
+								update=":dialogGluoSituacionAdministrativa" />
+						</div>
+					</p:panel>
+				</h:form>
+			</p:dialog>
+		</f:view>
+	</ui:define>
+
+</ui:composition>

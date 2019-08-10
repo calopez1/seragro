@@ -1,0 +1,475 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+<ui:define name="content">
+
+<p:ajaxStatus onstart="PF('statusDialog').show()"
+	onsuccess="PF('statusDialog').hide()" />
+<p:dialog modal="true" widgetVar="statusDialog" header="Cargando"
+	draggable="false" closable="false">
+	<p:graphicImage
+		value="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/ajaxloadingbar.gif" />
+</p:dialog>
+
+<!-- Expired session -->
+<p:idleMonitor onactive="PF('sessionTimeOutDialog').show();"
+	timeout="#{session.maxInactiveInterval * 1000}" />
+<p:dialog modal="true" widgetVar="sessionTimeOutDialog"
+	header="Sesión terminada" draggable="false" closable="false">
+	<h:outputText value="La sesión ha finalizado" />
+	<input id="confirmBackToLogin" type="button" value="Iniciar sesión"
+		onclick="window.location='#{facesContext.externalContext.requestContextPath}/index.jsp';" />
+</p:dialog>
+
+<script type="text/javascript">
+	function showStatus() {
+	    statusDialog.show();
+	}
+	 
+	function hideStatus() {
+	    statusDialog.hide();
+	}
+</script>
+
+
+<style type="text/css">
+	.ui-panel {
+		margin-top: 20px
+	}
+	
+	.ui-tabs-top {
+		background-color: #FFFFFF;
+	}
+	
+	.one {
+		width: 10%;
+	}
+	
+	.two {
+		width: 90%;
+	}
+	
+	.col50Left{
+		width: 10%;
+		text-align: left;
+	}
+	
+	.col50Right{
+		width: 10%;
+		text-align: right;
+	}
+	
+	.txt100{
+		width: 100%;
+	}
+	
+</style>
+
+<div align="center">
+
+<h:form id="formDetalleRecibo">
+				<p:messages id="msg" autoUpdate="true"/>
+				
+				<div align="center">
+				<p:panel id="panelGluoRecibo" header="CONSULTA RECIBO DE CAJA" style="width:90%;">							
+				
+				<h:panelGrid columns="2" id="panelGrid" >
+																		
+							<h:outputText value="Recibo Número: " style="width: 100%;font-size: 30%;"/>
+							<h:panelGrid columns="3" columnClasses="three,two,one" style="width: 100%;">
+								<h:outputText value="#{informeReciboCajaView.reciboCajaSeleccionado.consecutivo}"
+								style="font-size: 200%;"></h:outputText>
+
+										<p:spacer width="5"></p:spacer>
+										<p:commandButton value="Seleccionar Recibo" icon="ui-icon-search" 
+											oncomplete="PF('dialogoConsultarRecibo').show();" style="width:100%" rendered="true"/>
+							</h:panelGrid>
+							
+							
+							<h:outputText value="Fecha" style="width: 100%;"/>
+			               	<p:outputLabel value="#{informeReciboCajaView.reciboCajaSeleccionado.fechaRecibo}" >
+								<f:convertDateTime type="date" pattern="yyyy-MM-dd"/>
+							</p:outputLabel>							
+				
+						
+							<h:outputText value="Recibido de: "></h:outputText>
+							<p:outputLabel value="#{informeReciboCajaView.reciboCajaSeleccionado.identificacionTercero} - #{informeReciboCajaView.reciboCajaSeleccionado.nombreTercero}" >
+							</p:outputLabel>
+							
+							
+							<h:outputText value="Valor Total: "></h:outputText>
+						<p:outputLabel value="#{informeReciboCajaView.reciboCajaSeleccionado.valorTotal}" style="color:blue; font-height:bold">
+							<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+						</p:outputLabel>							
+				
+						<h:outputText value="Observación: " ></h:outputText>
+						<h:outputText value="#{informeReciboCajaView.reciboCajaSeleccionado.observacion}" />
+							
+						
+													
+				   </h:panelGrid>
+				   
+				   <p:spacer height="10"></p:spacer>
+				   
+				</p:panel>
+				</div>
+	   			
+	   			<p:panel id="panelExport"  style="width:90%;">							
+				
+				   
+				   <p:spacer height="10"></p:spacer>
+				   
+				   <p:commandButton value="Generar informe en archivo XLS"
+						onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)"
+						icon="ui-icon-arrowthichk-s">
+						
+						<p:fileDownload value="#{informeReciboCajaView.rporteXLS}" />
+							
+					</p:commandButton>
+					
+					<p:commandButton value="Generar informe en archivo XLSX"
+						onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)"
+						icon="ui-icon-arrowthichk-s">
+						
+						<p:fileDownload value="#{informeReciboCajaView.rporteXLSX}" />
+							
+					</p:commandButton>
+					
+					<p:commandButton value="Generar informe en archivo PDF"
+						onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)"
+						icon="ui-icon-arrowthichk-s">
+						
+						<p:fileDownload value="#{informeReciboCajaView.rportePDF}" />
+							
+					</p:commandButton>
+				</p:panel>
+				<p:panel  style="width:90%;">
+
+
+					<p:accordionPanel multiple="true">
+						<p:tab title="CONCEPTOS DE RENTA">
+						
+						
+						<p:dataTable id="tblRecibos" var="reciboSeleccion"
+							value="#{informeReciboCajaView.lstDetalleRecibo}"
+							rows="10" paginator="true"
+							paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+							rowsPerPageTemplate="10,15,20,30"
+							emptyMessage="No existen conceptos de renta propia para el recibo seleccionado" 
+							filterDelay="1000">
+							
+							<p:column headerText="Codigo Concepto Renta" sortBy="#{reciboSeleccion.codigoCuenta}"
+								 filterBy="#{reciboSeleccion.codigoCuenta}"
+								filterMatchMode="startsWith">
+								<h:outputText value="#{reciboSeleccion.codigoCuenta}" />
+							</p:column>
+							
+							<p:column headerText="Concepto Renta" sortBy="#{reciboSeleccion.descripcionCuenta}"
+								 filterBy="#{reciboSeleccion.descripcionCuenta}"
+								filterMatchMode="startsWith">
+								<h:outputText value="#{reciboSeleccion.descripcionCuenta}" />
+							</p:column>
+							
+							<p:column headerText="Cantidad"
+								sortBy="#{reciboSeleccion.cantidad}" filterBy="#{reciboSeleccion.cantidad}"
+								filterMatchMode="contains">
+								<h:outputText value="#{reciboSeleccion.cantidad}" >
+								</h:outputText>
+							</p:column>
+							
+							<p:column headerText="Valor Unitario" sortBy="#{reciboSeleccion.valorUnitario}" filterBy="#{reciboSeleccion.valorUnitario}"
+								filterMatchMode="contains">
+								<div align="right">
+									
+									<h:outputText value="#{reciboSeleccion.valorUnitario}">
+										<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+									</h:outputText>
+									
+									
+								</div>
+							</p:column>
+							
+							<p:column headerText="Valor Total" sortBy="#{reciboSeleccion.valorTotal}" filterBy="#{reciboSeleccion.valorTotal}"
+								filterMatchMode="contains">
+								<div align="right">
+									<h:outputText value="#{reciboSeleccion.valorTotal}">
+										<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+									</h:outputText>
+								</div>
+							</p:column>
+							
+							<p:column style="width:32px;text-align: center">
+					             <p:commandButton update=":frmFormaPago" oncomplete="PF('formaPagoDialog').show()" icon="ui-icon-search" title="Ver formas de pago"
+					           >
+					                <f:setPropertyActionListener value="#{reciboSeleccion}" target="#{informeReciboCajaView.detalleReciboSeleccionado}" />
+					            </p:commandButton>
+					        </p:column>
+							
+							
+							
+						</p:dataTable>
+						
+							
+						
+						<p:spacer height="10"></p:spacer>
+						
+							
+						</p:tab>
+						
+						<p:tab title="TOTALES RECIBO">
+						
+						<p:spacer height="10"></p:spacer>
+						
+						<div align="center">
+						<p:dataTable var="total" value="#{informeReciboCajaView.lstTotalesFormaPago}" emptyMessage="No se han registrado formas de pago">
+						
+						 <f:facet name="header">
+					        Totales Forma de Pago
+					    </f:facet>
+						
+						    <p:column headerText="Código">
+						        <h:outputText value="#{total.codigo}" />
+						    </p:column>
+						 
+						    <p:column headerText="Nombre">
+						        <h:outputText value="#{total.descripcion}" />
+						    </p:column>
+						 
+						    <p:column headerText="Valor">
+						        <h:outputText value="#{total.valorTotal}" >
+						        <f:convertNumber type="currency" maxFractionDigits="2" currencySymbol="$" />
+						        </h:outputText>
+						    </p:column>
+						 
+						</p:dataTable>
+						
+						<p:spacer height="10"></p:spacer>
+						
+						<h:panelGrid columns="2">
+						
+						        
+						<h:outputText value="Valor Total Recibo: " style="color:blue; font-height:bold; font-size: 150%"/>
+						<h:outputText value="#{informeReciboCajaView.valorTotalRecibo}" style="color:blue; font-height:bold; font-size: 150%" >
+						        <f:convertNumber type="currency" maxFractionDigits="2" currencySymbol="$" />
+						        </h:outputText>
+						        
+						     
+						</h:panelGrid>
+						
+						</div>
+						
+						</p:tab>
+						
+					</p:accordionPanel>
+
+					<p:spacer height="10"></p:spacer>
+
+				</p:panel>
+	   					
+			</h:form>
+			
+			
+			<!-- Dialogo consultar formas de pago -->
+			<!-- **************************** -->
+			<p:dialog header="Forma de Pago" widgetVar="formaPagoDialog" modal="true" showEffect="fade" hideEffect="fade" resizable="false" width="90%" height="400px" >
+	        <h:form id="frmFormaPago" >
+	        
+	        <p:outputPanel id="pnlFormaPago" style="text-align:left;">
+	            
+	            <h:panelGrid columns="2" id="panelGrid" >
+									
+							<h:outputText value="Concepto Renta: " style="width: 100%;"/>
+			               	<p:outputLabel value="#{informeReciboCajaView.detalleReciboSeleccionado.codigoCuenta} - #{informeReciboCajaView.detalleReciboSeleccionado.descripcionCuenta}" >
+							</p:outputLabel>							
+				
+						
+							<h:outputText value="Cantidad: "></h:outputText>
+							<p:outputLabel value="#{informeReciboCajaView.detalleReciboSeleccionado.cantidad}" >
+							</p:outputLabel>
+							
+							
+							<h:outputText value="Valor Total: "></h:outputText>
+						<p:outputLabel value="#{informeReciboCajaView.detalleReciboSeleccionado.valorTotal}"  style="color:blue; font-height:bold">
+							<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+						</p:outputLabel>							
+				
+							
+						
+													
+				   </h:panelGrid>
+	            
+	            <p:spacer height="10"></p:spacer>
+	            
+	            <p:dataTable id="tblFormapago" var="formaPago"
+							value="#{informeReciboCajaView.detalleReciboSeleccionado.lstFormaPago}"
+							rows="10" paginator="true"
+							paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+							rowsPerPageTemplate="10,15,20,30"
+							emptyMessage="No existen formas de pago para el concepto seleccionado" 
+							filterDelay="1000">
+							
+							<p:column headerText="Codigo Forma Pago" sortBy="#{formaPago.codigo}"
+								 filterBy="#{formaPago.codigo}"
+								filterMatchMode="startsWith">
+								<h:outputText value="#{formaPago.codigo}" />
+							</p:column>
+							
+							<p:column headerText="Nombre Forma Pago" sortBy="#{formaPago.descripcion}"
+								 filterBy="#{formaPago.descripcion}"
+								filterMatchMode="startsWith">
+								<h:outputText value="#{formaPago.descripcion}" />
+							</p:column>
+							
+							<p:column headerText="Valor" sortBy="#{formaPago.valorTotal}" filterBy="#{formaPago.valorTotal}"
+								filterMatchMode="contains">
+								<div align="right">
+									
+									<h:outputText value="#{formaPago.valorTotal}">
+										<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+									</h:outputText>
+									
+									
+								</div>
+							</p:column>
+							
+							
+						</p:dataTable>
+	            
+	            <p:spacer height="10"></p:spacer>
+	            <div align="center">
+	            <p:commandButton value="Salir"
+						icon="ui-icon-close" oncomplete="PF('formaPagoDialog').hide()"/>
+	            </div>
+	            
+	        </p:outputPanel>
+	        </h:form>
+	    </p:dialog>
+
+  
+
+	<!-- Dialogo consultar recibo -->
+		<!-- **************************** -->
+		<p:dialog header="Detalle Recibo Caja" widgetVar="dialogoConsultarRecibo" modal="true"  width="90%" height="400px" >
+		       <h:form id="frmInformeReciboCaja">
+
+				
+				<p:panel id="pnlInformeReciboCaja" header="Informe Recibo de Caja" style="width: 95%;" >
+				
+					<h:panelGrid columns="5">
+					
+						<p:outputLabel value="Fecha Inicial:" for="calFechaInicial" />			
+						<p:calendar id="calFechaInicial" value="#{informeReciboCajaView.fechaInicial}"
+							navigator="true" timeZone="GMT-5" style="width: 100%;" disabled="false"/>
+			            
+			            <p:spacer width="10"></p:spacer>
+			            
+						<p:outputLabel value="Fecha Final:" for="calFechaFinal" />
+						<p:calendar id="calFechaFinal"  value="#{informeReciboCajaView.fechaFin}"
+							navigator="true"  timeZone="GMT-5" style="width: 100%;" disabled="false"/>
+					
+						<p:outputLabel value="Identificación:" for="txtIdentificacion" />			
+						<p:inputText id="txtIdentificacion" value="#{informeReciboCajaView.identificacion}" style="width: 90%;" disabled="false"/>
+			            
+			            <p:spacer width="10"></p:spacer>
+			            
+						<p:outputLabel value="Nombre:" for="txtNombre" />
+						<p:inputText id="txtNombre"  value="#{informeReciboCajaView.nombre}"  style="width: 90%;" disabled="false"/>
+					
+						<p:outputLabel value="Consecutivo:" for="txtConsecutivo" />
+						<p:inputText id="txtConsecutivo"  value="#{informeReciboCajaView.consecutivo}"  style="width: 90%;" disabled="false"/>
+						
+						<p:spacer width="10"></p:spacer>
+						
+						<p:outputLabel value="Forma de pago: " for="tipoFormaPago" />
+						<p:selectOneMenu id="tipoFormaPago" value="#{informeReciboCajaView.tipoFormaPago}" filter="true" >
+							<f:selectItem itemLabel="- Seleccionar -" itemValue="-1" />
+							<f:selectItems value="#{informeReciboCajaView.itemsTipoFormaPago}" />
+						</p:selectOneMenu>					
+					
+					</h:panelGrid>
+					
+					<br/>
+					
+					<p:commandButton id="btnConsultar" value="Consultar"
+									 action="#{informeReciboCajaView.action_consultar}"
+									 update=":frmInformeReciboCaja" />
+					
+					<p:commandButton id="btnLimpiar" value="Limpiar" 
+									 action="#{informeReciboCajaView.action_limpiar}"
+									 update=":frmInformeReciboCaja" />
+				
+				</p:panel>
+				
+				<p:panel id="pnlListaReciboCaja" style="width: 95%;" header="Informe Recibo de Caja">
+				
+					<p:dataTable id="pnlListaReciboCajaDataTable" value="#{informeReciboCajaView.lstReciboCaja}"
+							var="recibo" paginator="true" rows="20"
+							paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+							emptyMessage="No se encontraron recibos de caja " reflow="true"
+							scrollable="true" scrollWidth="100%"				
+							selectionMode="single"
+							selection="#{informeReciboCajaView.reciboCajaSeleccionado}"
+							rowKey="#{recibo.rcboId}"
+							filterDelay="1000">
+							
+							<p:ajax event="rowSelect"
+							listener="#{informeReciboCajaView.action_seleccionar_recibo}"
+							update=":frmInformeReciboCaja, :formDetalleRecibo"
+							 oncomplete="PF('dialogoConsultarRecibo').hide()" 
+							 />
+							
+							<p:column headerText="Consecutivo"
+								filterBy="#{recibo.consecutivo}"
+								style="text-align:center">
+								<p:outputLabel value="#{recibo.consecutivo}" />							
+							</p:column>
+							
+							<p:column headerText="Fecha"
+								filterBy="#{recibo.fechaRecibo}"
+								style="text-align:center">
+								<p:outputLabel value="#{recibo.fechaRecibo}" >
+									<f:convertDateTime type="date" pattern="dd-MM-yyyy"/>
+								</p:outputLabel>									
+							</p:column>
+							
+							<p:column headerText="Valor"
+								filterBy="#{recibo.valorTotal}"
+								style="text-align:center">
+								<p:outputLabel value="#{recibo.valorTotal}" >
+									<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+								</p:outputLabel>							
+							</p:column>
+							
+							<p:column headerText="Identificación"
+								filterBy="#{recibo.identificacionTercero}"
+								style="text-align:center">
+								<p:outputLabel value="#{recibo.identificacionTercero}" />							
+							</p:column>
+							
+							<p:column headerText="Tercero"
+								filterBy="#{recibo.nombreTercero}"
+								style="text-align:center">
+								<p:outputLabel value="#{recibo.nombreTercero}" />							
+							</p:column>
+							
+							<p:column headerText="Forma de pago"
+								filterBy="#{recibo.formaPagoDescripcion}"
+								style="text-align:center">
+								<p:outputLabel value="#{recibo.formaPagoDescripcion}" />							
+							</p:column>
+							
+					        
+					</p:dataTable>
+					
+				</p:panel>
+						
+			</h:form>
+		    </p:dialog>
+		   
+
+</div>
+</ui:define>
+</ui:composition>

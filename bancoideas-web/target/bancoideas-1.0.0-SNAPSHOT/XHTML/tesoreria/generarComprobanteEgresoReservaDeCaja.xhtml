@@ -1,0 +1,936 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" 
+	template="/WEB-INF/template.xhtml"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+
+	<ui:define name="content">
+
+		<p:ajaxStatus onstart="PF('statusDialog').show()"
+			onsuccess="PF('statusDialog').hide()" />
+		<p:dialog modal="true" widgetVar="statusDialog" header="Cargando"
+			draggable="false" closable="false">
+			<p:graphicImage
+				value="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/ajaxloadingbar.gif" />
+		</p:dialog>
+
+		<!-- Expired session -->
+		<p:idleMonitor onactive="PF('sessionTimeOutDialog').show();"
+			timeout="#{session.maxInactiveInterval * 1000}" />
+		<p:dialog modal="true" widgetVar="sessionTimeOutDialog"
+			header="Sesión terminada" draggable="false" closable="false">
+			<h:outputText value="La sesión ha finalizado" />
+			<input id="confirmBackToLogin" type="button" value="Iniciar sesión"
+				onclick="window.location='#{facesContext.externalContext.requestContextPath}/index.jsp';" />
+		</p:dialog>
+		
+		<script type="text/javascript">
+			function showStatus() {
+			    statusDialog.show();
+			}
+			 
+			function hideStatus() {
+			    statusDialog.hide();
+			}
+		</script>
+		
+
+		<style type="text/css">
+			.ui-panel {
+				margin-top: 20px
+			}
+			
+			.ui-tabs-top {
+				background-color: #FFFFFF;
+			}
+			
+			.one {
+				width: 20%;
+			}
+			
+			.two {
+				width: 80%;
+			}
+			
+        	.colAFiltro{width: 10%; }
+        	.colBFiltro{width: 50%; }
+			
+			.col50Left{
+				width: 10%;
+				text-align: left;
+			}
+			
+			.col50Right{
+				width: 10%;
+				text-align: right;
+			}
+			
+			.txt100{
+				width: 100%;
+			}
+			
+			.col30{width: 30%;}
+        	.col70{width: 70%;}
+        	
+        	.tachado {
+			    position: relative;
+			}
+			
+			.tachado:before {
+			    border-bottom: 1px solid red;
+			    position: absolute;
+			    content: "";
+			    width: 100%;
+			    height: 50%;
+			
+		</style>
+			<h:form id="formDialog">
+			
+			<div>
+				<div>
+				
+					<p:panel>
+						<h:outputText
+							value="Comprobantes de Egreso de Reserva de caja" styleClass="FontBold Fs18 hardblue" />
+					</p:panel>
+				
+					<p:panel id="panelComprobante" header="Comprobantes de Egreso">
+					
+						<p:growl id="men" showDetail="false" sticky="false"/>
+
+							<br />
+							
+							<div align="left">
+								<h:panelGrid id="pnlInfoDatosCE" columns="2" columnClasses="one,two" style="width: 100%;">
+
+									<h:outputText value="Banco: "/>
+									<p:selectOneMenu id="cmbBancos"	value="#{gluoCeReservaDeCajaView.bancoSeleccionado}" style="width: 290px;">
+										<f:selectItem itemLabel="--- Seleccione un Banco ---" itemValue="-1"/>
+										<f:selectItems value="#{gluoCeReservaDeCajaView.bancos}"/>	
+										<p:ajax event="change" listener="#{gluoCeReservaDeCajaView.listener_cargarCuentasBanciaras}"											
+											update=":formDialog, @this"/>
+									</p:selectOneMenu>
+									
+									<h:outputText value="Tipo Cuenta:"/>
+									<p:selectOneMenu id="cmbTiposDeCuenta" value="#{gluoCeReservaDeCajaView.tipoCuentaBancariaSeleccionada}"
+										style="width: 290px;" disabled="#{gluoCeReservaDeCajaView.showTipoCuenta}" >
+										<f:selectItem itemLabel="-- Seleccione un tipo de cuenta --" itemValue="-1" />
+										<f:selectItems value="#{gluoCeReservaDeCajaView.tiposCuentasBancarias}" />	
+										<p:ajax event="change" listener="#{gluoCeReservaDeCajaView.listener_cargarCuentasBanciaras}"											
+											update=":formDialog, @this"/>									
+									</p:selectOneMenu>
+									
+									<h:outputText value="Cuenta Bancaria:"/>
+									<p:selectOneMenu id="cmbCuentas" value="#{gluoCeReservaDeCajaView.cuentaBancariaSeleccionada}" 
+										filter="true" filterMatchMode="contains" style="width: 290px;"
+										disabled="#{gluoCeReservaDeCajaView.showCuentaBancaria}">
+										<f:selectItem itemLabel="--- Seleccione una cuenta bancaria ---" itemValue="-1"/>
+										<f:selectItems value="#{gluoCeReservaDeCajaView.cuentasBancarias}"/>
+										<p:ajax listener="#{gluoCeReservaDeCajaView.listener_cargarTipoMovimiento}" update=":formDialog, @this"/>
+									</p:selectOneMenu>
+									
+									<h:outputText value="Tipo Movimiento:" rendered="#{gluoCeReservaDeCajaView.showTipoMovimiento}"/>
+									<p:selectOneMenu id="cmbTiposDeMovimiento" value="#{gluoCeReservaDeCajaView.tipoMovimientoSeleccionado}" 
+										filter="true" filterMatchMode="contains" style="width: 290px;"
+										rendered="#{gluoCeReservaDeCajaView.showTipoMovimiento}">
+										<f:selectItem itemLabel="--- Seleccione una tipo de movimiento ---" itemValue="-1"/>
+										<f:selectItem itemLabel="Transaccion" itemValue="transaccion"/>
+										<f:selectItem itemLabel="Cheque" itemValue="cheque"/>
+										<p:ajax listener="#{gluoCeReservaDeCajaView.listener_cargarChequeOTransaccion}" update=":formDialog, @this"/>
+									</p:selectOneMenu>
+									
+									<h:outputText value="Chequera: " rendered="#{gluoCeReservaDeCajaView.showCheque}"/>
+									<p:selectOneMenu id="somChequera" value="#{gluoCeReservaDeCajaView.chequeraSeleccionada}" rendered="#{gluoCeReservaDeCajaView.showCheque}"
+										filter="true" filterMatchMode="contains" style="width: 290px;">
+										<f:selectItem itemLabel="--- Seleccione una chequera ---" itemValue="-1"/>
+										<f:selectItems value="#{gluoCeReservaDeCajaView.listChequeras}"/>										
+									</p:selectOneMenu>
+									
+									<h:outputText value="Número de cheque:" rendered="#{gluoCeReservaDeCajaView.showCheque}"/>
+									<p:inputText id="txtNumeroCheque" binding="#{gluoCeReservaDeCajaView.txtNumeroCheque}" rendered="#{gluoCeReservaDeCajaView.showCheque}"
+										maxlength="10" style="width:290px;"/>
+									
+									<h:outputText value="Código de Transacción:" rendered="#{gluoCeReservaDeCajaView.showTransaccion}"/>
+									<p:inputText id="txtCodigoTransaccion" binding="#{gluoCeReservaDeCajaView.txtCodigoTransaccion}" rendered="#{gluoCeReservaDeCajaView.showTransaccion}"
+										maxlength="10" style="width:290px;"/>
+										
+									<h:outputText value="Fecha Transacción:" rendered="#{gluoCeReservaDeCajaView.showTransaccion}"/>
+									<p:calendar value="#{gluoCeReservaDeCajaView.fechaTransaccion}" timeZone="GMT-5" rendered="#{gluoCeReservaDeCajaView.showTransaccion}"/>
+										
+									<h:outputText value="Fecha Expedición:" rendered="#{gluoCeReservaDeCajaView.showCheque or gluoCeReservaDeCajaView.showTransaccion}" />
+									<p:calendar value="#{gluoCeReservaDeCajaView.fechaExpedicion}" timeZone="GMT-5" rendered="#{gluoCeReservaDeCajaView.showCheque or gluoCeReservaDeCajaView.showTransaccion}"/>
+									
+								</h:panelGrid>
+								
+								<br />
+								
+								<h:panelGrid id="panelDataTable" columns="1">
+									<p:dataTable id="opDataSelected" var="opsSelected"
+											value="#{gluoCeReservaDeCajaView.obligacionesSeleccionadas}"
+											rows="10" paginator="true"
+											paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+											rowsPerPageTemplate="10,15,20,30"
+											emptyMessage="No hay registros disponibles"
+											reflow="true" rowKey="#{opSelected.maopId}" 
+											onExpandStart="true" rowExpandMode="multiple"
+											filterDelay="1000">
+											
+											<f:facet name="header">
+										       Obligaciones a pagar Seleccionadas
+										    </f:facet>
+											
+											<p:column style="width:16px">
+						            			<p:rowToggler />
+						        			</p:column>
+											
+											<p:column headerText="Consecutivo" sortBy="#{opsSelected.consecutivo}"
+												style="width: 15%" filterBy="#{opsSelected.consecutivo}"
+												filterMatchMode="startsWith">
+												<h:outputText value="#{opsSelected.consecutivo}" />
+											</p:column>
+											
+											<p:column headerText="Concepto"
+												sortBy="#{opsSelected.concepto}" style="width: 25%" filterBy="#{opsSelected.concepto}"
+												filterMatchMode="startsWith">
+												<h:outputText value="#{opsSelected.concepto}" />
+											</p:column>
+											
+											<p:column headerText="Tercero" style="width: 20%">
+												<h:outputText value="#{opsSelected.terceroDTO.identificacion}" />
+											</p:column>
+											
+											<p:column headerText="Valor Obligacion" style="width: 15%">
+												<div align="right">
+													<h:outputText id="valorTotalOpMaestra" value="#{opsSelected.valorTotal}">
+														<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+													</h:outputText>
+												</div>
+											</p:column>
+											
+											<p:column headerText="Valor Deducciones" style="width: 15%">
+												<div align="right">
+													<h:outputText value="#{opsSelected.saldoDeducciones}">
+														<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+													</h:outputText>
+												</div>
+											</p:column>
+											
+											<p:column headerText="Saldo Por Pagar" style="width: 15%">
+												<div align="right">
+													<h:outputText value="#{opsSelected.saldoPorPagar}">
+														<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+													</h:outputText>
+												</div>
+											</p:column>
+											
+											<p:column headerText="Valor Total" style="width: 15%">
+												<div align="right">
+													<h:outputText id="valorAPagarPorOPMaster" value="#{opsSelected.valorPagarPorOp}">
+														<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+													</h:outputText>
+												</div>
+											</p:column>
+											
+											<p:rowExpansion>
+						        			 	<h:panelGrid columns="2" style="width:100%">
+						        			 		<p:dataTable id="tablaDetalleOP" var="detalleOP" rows="10"
+						        			 					 value="#{opsSelected.detalleOpDTO}"
+						        			 					 emptyMessage="No hay registros disponibles"
+						        			 					 paginator="false" reflow="true"
+						        			 					 rowKey="#{detalleOP.glopId}">
+						        			 					 
+								        			 		<p:column headerText="Codigo Rubro">
+													            <h:outputText value="#{detalleOP.codigoRubro}" />
+													        </p:column>
+													        
+													   		<p:column headerText="Descripcion Rubro">
+													            <h:outputText value="#{detalleOP.descripcionRubro}" />
+													        </p:column>
+													        
+													        <p:column headerText="Valor Original">
+													          <div align="right">
+																 <h:outputText value="#{detalleOP.valorTotal}">
+																	<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+																</h:outputText>
+															 </div>
+													        </p:column>
+													        
+													         <p:column headerText="Saldo Por Pagar">
+													          <div align="right">
+																 <h:outputText value="#{detalleOP.saldoDeduccionesDetalle}">
+																	<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+																</h:outputText>
+															 </div>
+													        </p:column>
+													        
+													         <p:column headerText="Valor Deducciones">
+													          <div align="right">
+																 <h:outputText value="#{detalleOP.valorDeducciones}">
+																	<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+																</h:outputText>
+															 </div>
+													        </p:column>
+													        
+													        <p:column headerText="Tipo Recurso">
+													        	<div align="center">
+													        		<h:outputLabel value="#{detalleOP.nombreTipoRecurso}" />
+													        	</div>
+													        </p:column>
+													        
+													        <p:column headerText="Valor a Pagar">
+													          <div align="right">
+																<pe:inputNumber id="idValPagar" disabled="false"
+																	value="#{detalleOP.valorAPagar}" 
+																	styleClass="Wid20" style="text-align: right;" 
+																	symbol="$ " symbolPosition="p"  
+							                            			decimalSeparator="," thousandSeparator="."
+							                            			maxValue="#{gluoCeReservaDeCajaView.action_calcularMaxValue(detalleOP)}"
+							                            			validatorMessage="Valor no válido" 
+							                            			decimalPlaces="2">
+							                            				<p:ajax event="blur" listener="#{gluoCeReservaDeCajaView.action_recalcularTotalCE}" 
+							                            						update="@([id$=valorAPagarPorOPMaster]), @([id$=lblValorCE]), @([id$=men]),@([id$=idValPagar])"/>
+																</pe:inputNumber>
+															 </div>
+													        </p:column>
+						        			 		</p:dataTable>
+						        			 	</h:panelGrid>
+						        			 </p:rowExpansion>
+											
+											<f:facet name="footer">
+												<h:panelGrid columns="3">
+											        	<p:commandButton id="btnAddOP" icon="ui-icon-plus" value="Agregar Obligación" oncomplete="PF('dlgObligaciones').show();"/>
+											        	<h:outputText value="Valor Total del Comprobante:"/>
+											        	<h:outputText id="lblValorCE" value="#{gluoCeReservaDeCajaView.valorComprobanteEgreso}">
+															<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+														</h:outputText>
+												</h:panelGrid>
+										    </f:facet>
+									</p:dataTable>
+								</h:panelGrid>
+								
+							</div>	
+							
+							<br />
+							
+							<div align="left">
+								<h:panelGrid id="panelBotones" columns="2">
+									<p:commandButton id="btnSave" value="Guardar Comprobante de Egreso" action="#{gluoCeReservaDeCajaView.action_create()}"
+													 update=":formDialog:panelComprobante, men, :formDialog:opData" />
+													 		 
+									<p:commandButton id="btnClear" value="Limpiar" action="#{gluoCeReservaDeCajaView.action_clear()}" 
+				 									 update=":formDialog:panelComprobante, men, :formDialog:opData" />
+								</h:panelGrid>
+							</div>	
+						</p:panel>
+				</div>
+			</div>
+			
+			<!--        Dialog de Obligaciones       -->
+			<!-- ************************* -->
+			<p:dialog modal="true" widgetVar="dlgObligaciones" header="Obligaciones de años fiscales anteriores" draggable="false" closable="true"
+						resizable="true" width="90%" height="200px;" position="center"> 
+					
+						<p:growl id="menObligaciones" showDetail="false"/>
+				
+						<div align="center">
+							<h:panelGrid columns="3">
+								<h:outputText value="Tercero: "/>
+								<p:inputText id="txtIdentTercero" value="#{gluoCeReservaDeCajaView.identificacionTerceroSeleccionado}" readonly="true"/>
+								<p:commandButton icon="ui-icon-search" oncomplete="PF('dlgTercero').show();"/>
+							</h:panelGrid>
+						</div>
+						
+						<div class="EmptyBox20" />
+						
+						<div align="center">
+							<h:panelGrid id="btnConsultarOPs" columns="2">
+								<p:commandButton id="btnGetOps" value="Consultar Obligaciones de Tercero" action="#{gluoCeReservaDeCajaView.action_consultarOPsDeTercero()}" update="menObligaciones, opData"/>
+								<p:commandButton id="btnClearOps" value="Limpiar" action="#{gluoCeReservaDeCajaView.action_limpiarOPsDeTercero()}" update="txtIdentTercero, opData"/>
+							</h:panelGrid>
+						</div>
+						
+						<br/>
+					
+						<p:scrollPanel mode="native" style="width:100%; height:400px">
+						       <p:dataTable id="opData" var="op"
+											value="#{gluoCeReservaDeCajaView.listaOps}"
+											rows="10" paginator="true"
+											paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+											rowsPerPageTemplate="10,15,20,30"
+											emptyMessage="No existen Obligaciones" reflow="true"
+											rowKey="#{op.maopId}"
+											selection="#{gluoCeReservaDeCajaView.obligacionesSeleccionadasDialog}"
+											filterDelay="1000">
+											
+											<f:facet name="header">Obligaciones del Tercero Seleccionado</f:facet>
+											
+					                        <p:column selectionMode="multiple" style="width:5%; text-align:center" />
+					
+											<p:column style="width:16px">
+						            			<p:rowToggler />
+						        			</p:column>
+						        			
+											<p:column headerText="Consecutivo" sortBy="#{op.consecutivo}"
+												style="width: 15%" filterBy="#{op.consecutivo}"
+												filterMatchMode="startsWith">
+												<h:outputText value="#{op.consecutivo}" />
+											</p:column>
+											
+											<p:column headerText="Concepto"
+												sortBy="#{op.concepto}" style="width: 25%" filterBy="#{op.concepto}"
+												filterMatchMode="startsWith">
+												<h:outputText value="#{op.concepto}" />
+											</p:column>
+											
+											<p:column headerText="Tercero" style="width: 20%" >
+												<h:outputText value="#{op.terceroDTO.identificacion}" />
+											</p:column>
+											
+											<p:column headerText="Año Fiscal" style="width: 15%">
+												<div align="right">
+													<h:outputText value="#{op.anoFiscal}"/>
+												</div>
+											</p:column>
+											
+											<p:column headerText="Valor Obligacion" style="width: 15%">
+												<div align="right">
+													<h:outputText value="#{op.valorTotal}">
+														<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+													</h:outputText>
+												</div>
+											</p:column>
+											
+											<p:column headerText="Valor Deducciones" style="width: 15%">
+												<div align="right">
+													<h:outputText value="#{op.saldoDeducciones}">
+														<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+													</h:outputText>
+												</div>
+											</p:column>
+											
+											<p:column headerText="Saldo Por Pagar" style="width: 15%">
+												<div align="right">
+													<h:outputText value="#{op.saldoPorPagar}">
+														<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+													</h:outputText>
+												</div>
+											</p:column>
+									
+											<p:column headerText="Valor Total" style="width: 15%">
+													<div align="right">
+														<h:outputText value="#{op.valorPagarPorOp}">
+															<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+														</h:outputText>
+													</div>
+											</p:column>
+											
+											<p:column headerText="Ver Deducciones" style="width: 15%">
+												<div align="center">
+													<p:commandButton icon="ui-icon-search" action="#{gluoCeReservaDeCajaView.action_verDeduccionesDeOp(op)}" 
+																	 update=":formDialog:menObligaciones, :formDialog:panelConfirmacion, :formDialog:pnlDeducciones"
+																	 disabled="#{op.deshabilitarVerDeducciones}"/>
+												</div>
+											</p:column>
+											
+											<p:rowExpansion>
+						        			 	<h:panelGrid columns="2" style="width:100%">
+						        			 		<p:dataTable id="tablaDetalleOPDialog" var="dtlOp" rows="10"
+						        			 					 value="#{op.detalleOpDTO}"
+						        			 					 emptyMessage="No hay registros disponibles"
+						        			 					 paginator="false" reflow="true"
+						        			 					 rowKey="#{op.glopId}">
+						        			 					 
+								        			 		 <p:column headerText="Codigo Rubro">
+													            <h:outputText value="#{dtlOp.codigoRubro}" />
+													        </p:column>
+													        
+													   		<p:column headerText="Descripcion Rubro">
+													            <h:outputText value="#{dtlOp.descripcionRubro}" />
+													        </p:column>
+													        
+													        <p:column headerText="Valor Original">
+													          <div align="right">
+																 <h:outputText value="#{dtlOp.valorTotal}">
+																	<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+																</h:outputText>
+															 </div>
+													        </p:column>
+													        
+													         <p:column headerText="Saldo Por Pagar">
+													          <div align="right">
+																 <h:outputText value="#{dtlOp.saldoDeduccionesDetalle}">
+																	<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+																</h:outputText>
+															 </div>
+													        </p:column>
+													        
+													         <p:column headerText="Valor Deducciones">
+													          <div align="right">
+																 <h:outputText value="#{dtlOp.valorDeducciones}">
+																	<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+																</h:outputText>
+															 </div>
+													        </p:column>
+						        			 		</p:dataTable>
+					        			 	</h:panelGrid>
+					        			 </p:rowExpansion>
+								</p:dataTable>
+							</p:scrollPanel>
+							
+							<div align="center">
+								<h:panelGrid id="btnSeleccionaVariasOP" columns="2">
+									<p:commandButton id="btnSeleccionarVariasOP" value="Agregar Obligaciones seleccionadas"
+										icon="ui-icon-plus" action="#{gluoCeReservaDeCajaView.action_validarOPs()}" 
+										update="menObligaciones, :formDialog:opDataSelected"/>
+								</h:panelGrid>
+							</div>
+				
+							<div class="EmptyBox20" />
+					</p:dialog>
+			<!-- ************************* -->	
+			
+			
+			
+			<!-- Tercero -->
+						<!-- ************************* -->
+			<p:dialog modal="true" widgetVar="dlgTercero" header="Tercero"
+				draggable="false" closable="true" resizable="true"
+				width="90%" height="500px">
+				
+				<p:scrollPanel id="pnlTerceros" mode="native" style="width:100%; height:400px">
+					<div class="ContainerIndent"/>
+					
+					<p:outputLabel value="Criterios de búsqueda para terceros:"/>
+					
+					<h:panelGrid columns="2" columnClasses="colAFiltro, colBFiltro" style="width: 100%;">
+								
+						<p:outputLabel value="Identificación: "/>
+						<p:inputText styleClass="Wid50"
+							value="#{gluoCeReservaDeCajaView.identificacionFiltro}"/>
+						
+						<p:outputLabel value="Nombre/Razón Social:"/>
+						<p:inputText styleClass="Wid50"
+							value="#{gluoCeReservaDeCajaView.nombreRazonSocialFiltro}"/>
+						
+					</h:panelGrid>
+					
+					<p:commandButton value="Buscar Tercero" icon="ui-icon-search"
+						actionListener="#{gluoCeReservaDeCajaView.action_buscarTercero}" update=":formDialog:pnlTerceros"/>
+					
+					<br/>
+				
+					<p:dataTable id="tercerosEncontrados" var="tercero" rows="350" style="width: 100%;"
+						value="#{gluoCeReservaDeCajaView.terceros}"
+						paginator="true"
+						paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+						rowsPerPageTemplate="300,400,500"
+						emptyMessage="No hay terceros encontrados"
+						reflow="true" filterDelay="1000">
+						
+						<f:facet name="header">
+                             Terceros
+                         </f:facet>
+                         
+                   		<p:column headerText="Identificación" sortBy="#{tercero.identificacion}"
+							style="width: 10%" filterBy="#{tercero.identificacion}"
+							filterMatchMode="startsWith">
+							<h:outputText value="#{tercero.identificacion}"/>
+						</p:column>
+						
+						<p:column headerText="Razon Social" sortBy="#{tercero.razonSocial}"
+							style="width: 10%" filterBy="#{tercero.razonSocial}"
+							filterMatchMode="contains">
+							<h:outputText value="#{tercero.razonSocial}"/>
+						</p:column>
+						
+						<p:column headerText="Primer Nombre" sortBy="#{tercero.primerNombre}"
+							style="width: 10%" filterBy="#{tercero.primerNombre}"
+							filterMatchMode="contains">
+							<h:outputText value="#{tercero.primerNombre}"/>
+						</p:column>
+						
+						<p:column headerText="Segundo Nombre" sortBy="#{tercero.segundoNombre}"
+							style="width: 10%" filterBy="#{tercero.segundoNombre}"
+							filterMatchMode="contains">
+							<h:outputText value="#{tercero.segundoNombre}"/>
+						</p:column>
+						
+						<p:column headerText="Primer Apellido" sortBy="#{tercero.primerApellido}"
+							style="width: 10%" filterBy="#{tercero.primerApellido}"
+							filterMatchMode="contains">
+							<h:outputText value="#{tercero.primerApellido}"/>
+						</p:column>
+						
+						<p:column headerText="Segundo Apellido" sortBy="#{tercero.segundoApellido}"
+							style="width: 10%" filterBy="#{tercero.segundoApellido}"
+							filterMatchMode="contains">
+							<h:outputText value="#{tercero.segundoApellido}"/>
+						</p:column>
+						
+						<p:column headerText="Seleccionar" 
+							style="width: 5%">
+							<p:commandButton title="Seleccionar"  
+				            	icon="ui-icon-check" 
+				            	oncomplete="PF('dlgTercero').hide();"
+				            	update=":formDialog:txtIdentTercero" action="#{gluoCeReservaDeCajaView.action_seleccionarTercero(tercero)}">
+				            </p:commandButton>
+						</p:column>
+                         
+
+					</p:dataTable>
+					
+				</p:scrollPanel>
+
+
+				<div class="EmptyBox20" />
+				
+			</p:dialog>
+			<!--        Tercero            -->
+			<!-- ************************* -->
+			
+			
+			<!-- Dialog Deducciones -->	
+			<p:dialog modal="true" widgetVar="dlgDeducciones" header="Deducciones" draggable="false" closable="false" resizable="true" width="90%" height="500">
+				
+				<p:growl id="menDeducciones" showDetail="false"/>
+				
+				<div align="center">
+					<p:panel id="panelConfirmacion">
+						<h:panelGrid columns="2">
+							<h:outputText value="Con que deducciones desea trabajar?" />
+							<p:selectOneRadio id="sorDeduccionesTrabajar" binding="#{gluoCeReservaDeCajaView.sorDeduccionesTrabajar}" value="1">
+								<f:selectItem itemLabel="Deducciones asociadas a la OP seleccionada" itemValue="1" />
+								<f:selectItem itemLabel="Deducciones del año fiscal vigente" itemValue="2" />
+								<p:ajax listener="#{gluoCeReservaDeCajaView.listener_tipoDeduccion}" update=":formDialog:pnlDeducciones, :formDialog:menDeducciones" />
+							</p:selectOneRadio>
+						</h:panelGrid>
+					</p:panel>
+
+					<p:scrollPanel id="pnlDeducciones" mode="native" style="width:100%; height:370px" rendered="true">
+
+						<br/>
+	
+						<p:panelGrid id="panelSeleccionConceptoPagoNuevo">
+							<h:outputText value="Concepto de Pago: " />
+							<p:panelGrid>
+								<p:selectOneMenu id="somConceptoPago" binding="#{gluoCeReservaDeCajaView.somConceptosPago}" filter="true" disabled="#{gluoCeReservaDeCajaView.deshabilitarCombo}">
+									<f:selectItem itemLabel="----- Seleccione ------" itemValue="-1"/>
+									<f:selectItems value="#{gluoCeReservaDeCajaView.conceptosDePago}"/>
+									<p:ajax listener="#{gluoCeReservaDeCajaView.listener_conceptosPago}" event="change" update="tblDeducciones, somConceptoPago, pnlResumenOP"/>
+								</p:selectOneMenu>
+							</p:panelGrid>
+						</p:panelGrid>
+
+						<br/>
+
+						<p:dataTable id="tblDeducciones" var="deduccion" rows="200"
+							style="width: 100%;"
+							value="#{gluoCeReservaDeCajaView.deducciones}"
+							emptyMessage="No hay deducciones asociadas al concepto de pago"
+							reflow="true" rowKey="#{deduccion.deduId}">
+
+							<f:facet name="header"> Deducciones </f:facet>
+
+							<p:column headerText="Deducción" style="width:30%;">
+								<h:outputText value="#{deduccion.concepto}"
+									styleClass="#{deduccion.aplicaDescuentoPorValorBase?'':'tachado'}" />
+							</p:column>
+
+							<p:column headerText="Tipo" style="width:10%;">
+								<h:outputText
+									value="#{(deduccion.tipoDeduccion == 'P'?'Porcentaje':(deduccion.tipoDeduccion == 'V'?'Valor Fijo':(deduccion.tipoDeduccion == 'I'?'Ingreso Valor':'?')))}"
+									styleClass="#{deduccion.aplicaDescuentoPorValorBase?'':'tachado'}" />
+							</p:column>
+
+							<p:column headerText="Valor" style="width:10%;">
+								<div align="right">
+									<h:outputText value="#{deduccion.porcentaje} %"
+										rendered="#{deduccion.tipoDeduccion == 'P'}"
+										styleClass="#{deduccion.aplicaDescuentoPorValorBase?'':'tachado'}" />
+									<h:outputText value="#{deduccion.tarifa}"
+										rendered="#{deduccion.tipoDeduccion == 'V'}"
+										styleClass="#{deduccion.aplicaDescuentoPorValorBase?'':'tachado'}">
+										<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+									</h:outputText>
+									<h:outputText value="N/A"
+										rendered="#{deduccion.tipoDeduccion == 'I'}"
+										styleClass="#{deduccion.aplicaDescuentoPorValorBase?'':'tachado'}" />
+								</div>
+							</p:column>
+
+							<p:column headerText="Aplica si" style="width:20%;">
+								<h:outputText value="Valor OP &gt; #{deduccion.valorBase}"
+									styleClass="#{deduccion.aplicaDescuentoPorValorBase?'':'tachado'}" />
+							</p:column>
+
+							<p:column headerText="Valor base" style="width:15%;">
+								<div align="right">
+									<pe:inputNumber value="#{deduccion.valorBaseAplicada}"
+										rendered="#{deduccion.tipoDeduccion == 'P' and deduccion.aplicaDescuentoPorValorBase == true}"
+										styleClass="Wid20" style="text-align: right;" symbol=" $"
+										symbolPosition="p" decimalSeparator="," thousandSeparator="."
+										minValue="0" disabled="#{gluoCeReservaDeCajaView.deshabilitarCamposDeducciones}"
+										maxValue="#{gluoCeReservaDeCajaView.valorTotalOP}"
+										validatorMessage="Monto no válido" decimalPlaces="2">
+										<p:ajax event="blur"
+											update="@this,pnlVrDeduccion,:formDialog:pnlResumenOP"
+											listener="#{gluoCeReservaDeCajaView.action_actualizarValorDeduccion(deduccion.deduId, deduccion.valorBaseAplicada, null)}" />
+									</pe:inputNumber>
+									<h:outputText value="N/A"
+										rendered="#{deduccion.tipoDeduccion != 'P'}"
+										styleClass="#{deduccion.aplicaDescuentoPorValorBase?'':'tachado'}" />
+								</div>
+							</p:column>
+
+							<p:column headerText="Vr. Deducción" style="width:20%;">
+								<div align="right">
+								<p:panelGrid columns="1" id="pnlVrDeduccion">
+									<pe:inputNumber id="txtValorDeduccionAplicado"
+										value="#{deduccion.valorDeduccionAplicada}"
+										rendered="#{deduccion.tipoDeduccion == 'I' and deduccion.aplicaDescuentoPorValorBase == true}"
+										styleClass="Wid20" style="text-align: right;" symbol=" $"
+										symbolPosition="p" decimalSeparator="," thousandSeparator="."
+										minValue="0" maxValue="999999999999" disabled="#{gluoCeReservaDeCajaView.deshabilitarCamposDeducciones}"
+										validatorMessage="Monto no válido" decimalPlaces="2">
+										<p:ajax event="blur"
+											update="@this,pnlVrDeduccion,:formDialog:pnlResumenOP"
+											listener="#{gluoCeReservaDeCajaView.action_actualizarValorDeduccion(deduccion.deduId, null, deduccion.valorDeduccionAplicada)}" />
+									</pe:inputNumber>
+
+									<h:outputText id="lblValorDeduccionAplicadoPorcentaje"
+										value="#{deduccion.valorDeduccionAplicada}"
+										rendered="#{deduccion.tipoDeduccion == 'P' or deduccion.tipoDeduccion == 'V'}"
+										styleClass="#{deduccion.aplicaDescuentoPorValorBase?'':'tachado'}">
+										<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+									</h:outputText>
+								</p:panelGrid>
+								</div>
+							</p:column>
+						</p:dataTable>
+
+						<div class="EmptyBox20" />
+
+						<div align="right">
+							<h:panelGrid columns="2" id="pnlResumenOP" style="width: 40%;">
+								<h:outputText value="Valor Total OP: "
+									styleClass="FontBold Fs18 hardblue" />
+								<h:outputText value="#{gluoCeReservaDeCajaView.valorTotalOP}"
+									styleClass="FontBold Fs18 hardblue" style="float:right">
+									<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+								</h:outputText>
+
+								<h:outputText value="Valor total deducciones:"
+									styleClass="FontBold Fs18 orange" />
+								<h:outputText
+									value="#{gluoCeReservaDeCajaView.valorTotalDeducciones}"
+									styleClass="FontBold Fs18 orange" style="float:right">
+									<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+								</h:outputText>
+
+								<h:outputText value="Gran total"
+									styleClass="Animated05 FontBold Fs18 hardblue" />
+								<h:outputText
+									value="#{gluoCeReservaDeCajaView.valorDespuesDeDeducciones}"
+									styleClass="FontBold Fs18 hardblue" style="float:right">
+									<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+								</h:outputText>
+							</h:panelGrid>
+						</div>
+					</p:scrollPanel>
+
+					<br/>
+
+					<div align="center">
+						<h:panelGrid columns="2">
+							<p:commandButton id="btnAceptarDeducciones" value="Terminar" action="#{gluoCeReservaDeCajaView.action_asignarDeduccionesAOP()}" update=":formDialog:opData, menDeducciones"/>
+							<p:commandButton id="btnCerrar" value="Cancelar" onclick="PF('dlgDeducciones').hide();"/>
+						</h:panelGrid>
+					</div>
+				</div>
+			</p:dialog>
+			<!-- ************************* -->	
+			
+			
+			
+			<!-- ########################### Dialog Deducciones de comprobante de egreso ##########################-->	
+			<p:dialog modal="true" widgetVar="dlgDeduccionesComprobanteEgreso" header="Deducciones Comprobante de Egreso" draggable="false" closable="false" resizable="true" width="90%" height="500">
+				
+				<p:growl id="menDeduccionesCE" showDetail="false"/>
+				
+				<div align="center">
+				
+					<p:scrollPanel id="pnlDeduccionesCE" mode="native" style="width:100%; height:370px" rendered="true">
+
+						<br/>
+	
+						<p:panelGrid id="panelSeleccionConceptoPagoNuevoCE">
+							<h:outputText value="Concepto de Pago: " />
+							<p:panelGrid>
+								<p:selectOneMenu id="somConceptoPagoCE" binding="#{gluoCeReservaDeCajaView.somConceptosPagoCE}" filter="true">
+									<f:selectItem itemLabel="----- Seleccione ------" itemValue="-1"/>
+									<f:selectItems value="#{gluoCeReservaDeCajaView.conceptosDePagoCE}"/>
+									<p:ajax listener="#{gluoCeReservaDeCajaView.listener_conceptosPagoCE}" event="change" update="tblDeduccionesCE,  pnlResumenCE"/>
+								</p:selectOneMenu>
+							</p:panelGrid>
+						</p:panelGrid>
+
+						<br/>
+
+						<p:dataTable id="tblDeduccionesCE" var="deduccion" rows="200"
+							style="width: 100%;"
+							value="#{gluoCeReservaDeCajaView.deduccionesCE}"
+							emptyMessage="No hay deducciones asociadas al concepto de pago"
+							reflow="true" rowKey="#{deduccion.deduId}">
+
+							<f:facet name="header"> Deducciones </f:facet>
+
+							<p:column headerText="Deducción" style="width:30%;">
+								<h:outputText value="#{deduccion.concepto}"
+									styleClass="#{deduccion.aplicaDescuentoPorValorBase?'':'tachado'}" />
+							</p:column>
+
+							<p:column headerText="Tipo" style="width:10%;">
+								<h:outputText
+									value="#{(deduccion.tipoDeduccion == 'P'?'Porcentaje':(deduccion.tipoDeduccion == 'V'?'Valor Fijo':(deduccion.tipoDeduccion == 'I'?'Ingreso Valor':'?')))}"
+									styleClass="#{deduccion.aplicaDescuentoPorValorBase?'':'tachado'}" />
+							</p:column>
+
+							<p:column headerText="Valor" style="width:10%;">
+								<div align="right">
+									<h:outputText value="#{deduccion.porcentaje} %"
+										rendered="#{deduccion.tipoDeduccion == 'P'}"
+										styleClass="#{deduccion.aplicaDescuentoPorValorBase?'':'tachado'}" />
+									<h:outputText value="#{deduccion.tarifa}"
+										rendered="#{deduccion.tipoDeduccion == 'V'}"
+										styleClass="#{deduccion.aplicaDescuentoPorValorBase?'':'tachado'}">
+										<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+									</h:outputText>
+									<h:outputText value="N/A"
+										rendered="#{deduccion.tipoDeduccion == 'I'}"
+										styleClass="#{deduccion.aplicaDescuentoPorValorBase?'':'tachado'}" />
+								</div>
+							</p:column>
+
+							<p:column headerText="Aplica si" style="width:20%;">
+								<h:outputText value="Valor CE &gt; #{deduccion.valorBase}"
+									styleClass="#{deduccion.aplicaDescuentoPorValorBase?'':'tachado'}" />
+							</p:column>
+
+							<p:column headerText="Valor base" style="width:15%;">
+								<div align="right">
+									<pe:inputNumber value="#{deduccion.valorBaseAplicada}"
+										rendered="#{deduccion.tipoDeduccion == 'P' and deduccion.aplicaDescuentoPorValorBase == true}"
+										styleClass="Wid20" style="text-align: right;" symbol=" $"
+										symbolPosition="p" decimalSeparator="," thousandSeparator="."
+										minValue="0"
+										maxValue="#{gluoCeReservaDeCajaView.valorComprobanteEgreso}"
+										validatorMessage="Monto no válido" decimalPlaces="2">
+										<p:ajax event="blur"
+											update="@this,pnlVrDeduccionCE,:formDialog:pnlResumenCE"
+											listener="#{gluoCeReservaDeCajaView.action_actualizarValorDeduccionCE(deduccion.deduId, deduccion.valorBaseAplicada, null)}" />
+									</pe:inputNumber>
+									<h:outputText value="N/A"
+										rendered="#{deduccion.tipoDeduccion != 'P'}"
+										styleClass="#{deduccion.aplicaDescuentoPorValorBase?'':'tachado'}" />
+								</div>
+							</p:column>
+
+							<p:column headerText="Vr. Deducción" style="width:20%;">
+								<div align="right">
+								<p:panelGrid columns="2" id="pnlVrDeduccionCE">
+									<pe:inputNumber id="txtValorDeduccionAplicadoCE"
+										value="#{deduccion.valorDeduccionAplicada}"
+										rendered="#{deduccion.tipoDeduccion == 'I' and deduccion.aplicaDescuentoPorValorBase == true}"
+										styleClass="Wid20" style="text-align: right;" symbol=" $"
+										symbolPosition="p" decimalSeparator="," thousandSeparator="."
+										minValue="0" maxValue="999999999999"
+										validatorMessage="Monto no válido" decimalPlaces="2">
+										<p:ajax event="blur"
+											update="@this,pnlVrDeduccionCE,:formDialog:pnlResumenCE"
+											listener="#{gluoCeReservaDeCajaView.action_actualizarValorDeduccionCE(deduccion.deduId, null, deduccion.valorDeduccionAplicada)}" />
+									</pe:inputNumber>
+
+									<h:outputText id="lblValorDeduccionAplicadoPorcentajeCE"
+										value="#{deduccion.valorDeduccionAplicada}"
+										rendered="#{deduccion.tipoDeduccion == 'P' or deduccion.tipoDeduccion == 'V'}"
+										styleClass="#{deduccion.aplicaDescuentoPorValorBase?'':'tachado'}">
+										<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+									</h:outputText>
+								</p:panelGrid>
+								</div>
+							</p:column>
+						</p:dataTable>
+
+						<div class="EmptyBox20" />
+
+						<div align="right">
+							<h:panelGrid columns="2" id="pnlResumenCE" style="width: 40%;">
+								<h:outputText value="Valor Total CE: "
+									styleClass="FontBold Fs18 hardblue" />
+								<h:outputText value="#{gluoCeReservaDeCajaView.valorComprobanteEgreso}"
+									styleClass="FontBold Fs18 hardblue" style="float:right">
+									<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+								</h:outputText>
+
+								<h:outputText value="Valor total deducciones:"
+									styleClass="FontBold Fs18 orange" />
+								<h:outputText
+									value="#{gluoCeReservaDeCajaView.valorTotalDeduccionesCE}"
+									styleClass="FontBold Fs18 orange" style="float:right">
+									<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+								</h:outputText>
+
+								<h:outputText value="Gran total:"
+									styleClass="Animated05 FontBold Fs18 hardblue" />
+								<h:outputText
+									value="#{gluoCeReservaDeCajaView.valorDespuesDeDeduccionesCE}"
+									styleClass="FontBold Fs18 hardblue" style="float:right">
+									<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+								</h:outputText>
+							</h:panelGrid>
+						</div>
+					</p:scrollPanel>
+
+					<br/>
+
+					<div align="center">
+						<h:panelGrid columns="2">
+							<p:commandButton id="btnAceptarDeduccionesCE" value="Guardar Comprobante" action="#{gluoCeReservaDeCajaView.action_terminarWizardCE()}" 
+											 update=":formDialog:opData, menDeduccionesCE, :formDialog:panelComprobante"/>
+							<p:commandButton id="btnCerrarCE" value="Cancelar" onclick="PF('dlgDeduccionesComprobanteEgreso').hide();"/>
+						</h:panelGrid>
+					</div>
+				</div>
+			</p:dialog>
+			<!-- ************************* -->	
+			
+			
+			
+			<p:dialog modal="true" widgetVar="dlgGenerarReportes" header="Reporte Comprobante Egreso" draggable="false" closable="false" resizable="true" width="90%">
+					<div align="center">
+						<h:panelGrid columns="4">
+							<p:commandButton value="Generar Reporte en PDF" onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)" icon="ui-icon-arrowthichk-s">
+								<p:fileDownload value="#{gluoCeReservaDeCajaView.reporteCDPPdf}" />
+							</p:commandButton>
+							
+							<p:commandButton value="Generar Reporte en XLS" onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)" icon="ui-icon-arrowthichk-s">
+								<p:fileDownload value="#{gluoCeReservaDeCajaView.reporteCDPXls}" />
+							</p:commandButton>
+							
+							<p:commandButton value="Generar Reporte en XLSX" onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)" icon="ui-icon-arrowthichk-s">
+								<p:fileDownload value="#{gluoCeReservaDeCajaView.reporteCDPXlsx}" />
+							</p:commandButton>
+							
+							<p:commandButton value="He terminado! Cerrar" oncomplete="PF('dlgGenerarReportes').hide();" action="#{gluoCeReservaDeCajaView.action_limpiarEntidadReporte}"/>
+						</h:panelGrid>
+					</div>
+					<div class="EmptyBox20" />
+			</p:dialog>
+			
+			
+					
+		</h:form>
+	</ui:define>
+</ui:composition>

@@ -1,0 +1,120 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+
+<ui:define name="content">
+<f:view>
+
+	<p:ajaxStatus onstart="PF('statusDialog').show()"
+		onsuccess="PF('statusDialog').hide()" />
+	<p:dialog modal="true" widgetVar="statusDialog" header="Cargando"
+		draggable="false" closable="false">
+		<p:graphicImage
+			value="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/ajaxloadingbar.gif" />
+	</p:dialog>
+
+	<!-- Expired session -->
+<p:idleMonitor onactive="PF('sessionTimeOutDialog').show();"
+	timeout="#{session.maxInactiveInterval * 1000}" />
+<p:dialog modal="true" widgetVar="sessionTimeOutDialog"
+	header="Sesión terminada" draggable="false" closable="false">
+	<h:outputText value="La sesión ha finalizado" />
+	<input id="confirmBackToLogin" type="button" value="Iniciar sesión"
+		onclick="window.location='#{facesContext.externalContext.requestContextPath}/index.jsp';" />
+</p:dialog>
+
+<script type="text/javascript">
+function showStatus() {
+    statusDialog.show();
+}
+ 
+function hideStatus() {
+    statusDialog.hide();
+}
+</script>
+
+<style type="text/css">
+.ui-panel {
+	margin-top: 20px
+}
+
+.ui-tabs-top {
+	background-color: #FFFFFF;
+}
+
+.one {
+	width: 40%;
+}
+
+.two {
+	width: 60%;
+}
+
+.col50Left {
+	width: 10%;
+	text-align: left;
+}
+
+.col50Right {
+	width: 10%;
+	text-align: right;
+}
+
+.txt100 {
+	width: 100%;
+}
+</style>
+
+<div align="center">
+<h:form id="frmGestionarEmpresas" enctype="multipart/form-data" >
+
+	<p:growl id="men" autoUpdate="true" closable="true" />
+	<p:messages id="msg" autoUpdate="true" />
+	<p:panel id="pnlGestionarAnoFiscal" header="Gestionar Año Fiscal" style="width: 90%;">
+		<p:dataTable id="pnlListaGestionarAnoFiscalDataTable" value="#{cambiarVigenciaAnoFiscalView.listaAnosFiscalesDTO}"
+			var="anoFiscal" paginator="true" rows="10"
+			scrollable="true" scrollWidth="100%" 
+			filterDelay="1000">
+			
+			<p:column headerText="Año Fiscal"
+				filterBy="#{anoFiscal.descripcion}" >
+				<p:outputLabel value="#{anoFiscal.descripcion}" />									
+			</p:column>			
+
+			<p:column headerText="Fecha de Inicio del Año Fiscal"
+				filterBy="#{anoFiscal.fechaInicioAnoFiscalFormatoEspanol}" >
+				<p:outputLabel value="#{anoFiscal.fechaInicioAnoFiscalFormatoEspanol}" />									
+			</p:column>
+			
+			<p:column headerText="Estado"
+				filterBy="#{anoFiscal.descripcionEstado}" >
+				<p:outputLabel value="#{anoFiscal.descripcionEstado}" />									
+			</p:column>
+			
+			<p:column headerText="Acción">
+				<p:commandButton id="btnCambiarAnoFiscal" 
+				value="#{anoFiscal.cadenaBotonCambioAnoFiscal}" 
+				disabled="#{!anoFiscal.cambiarAEsteAnoFiscal}"
+				actionListener="#{cambiarVigenciaAnoFiscalView.action_cambiar_ano_fiscal}"
+				update="@([id$=men]), @([id$=msg]), 
+				@([id$=pnlGestionarAnoFiscal])">
+					<f:attribute name="anoFiscalNuevo" value="#{anoFiscal}" />
+				</p:commandButton>
+				
+			</p:column>
+			
+		</p:dataTable>
+		
+		
+	</p:panel>	
+	
+	
+</h:form>
+</div>
+
+</f:view>
+</ui:define>
+</ui:composition>

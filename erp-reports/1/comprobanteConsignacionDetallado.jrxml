@@ -1,0 +1,677 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.1.1.final using JasperReports Library version 6.1.1  -->
+<!-- 2017-03-17T13:48:04 -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="comprobanteConsignacion" language="groovy" pageWidth="792" pageHeight="612" orientation="Landscape" whenNoDataType="AllSectionsNoDetail" columnWidth="752" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" isIgnorePagination="true" uuid="d51a3a54-347d-428a-bc24-0327db9b4563">
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.unit." value="pixel"/>
+	<property name="net.sf.jasperreports.export.xls.detect.cell.type" value="true"/>
+	<property name="com.jaspersoft.studio.unit.pageHeight" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.topMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.bottomMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.leftMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.rightMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnSpacing" value="pixel"/>
+	<style name="Crosstab_CG" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Crosstab 1_CG" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Crosstab 1_CT" mode="Opaque" backcolor="#005FB3">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Crosstab 2_CH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Crosstab 2_CG" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Crosstab 2_CT" mode="Opaque" backcolor="#005FB3">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Crosstab 2_CD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<parameter name="P_SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<parameterDescription><![CDATA[]]></parameterDescription>
+		<defaultValueExpression><![CDATA["/Users/johan/Documents/JaspersoftWorkspace/erp-reports/1/"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="P_CABE_LINEA_1" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["REPÚBLICA DE COLOMBIA"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="P_CABE_LINEA_2" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["DEPARTAMENTO DEL CAUCA"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="P_CABE_LINEA_3" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["MUNICIPIO DE TOTORÓ"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="P_CABE_LINEA_4" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["ALCALDÍA MUNICIPAL"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="P_CABE_LINEA_5" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["NIT: 800031874 - 5"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="P_CABE_LINEA_6" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["EDIFICIO CAM CALLE PRINCIPAL. TEL: 827 5130. FAX: 827 5130"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="P_PIE_LINEA_1" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["HACIA LA CONSTRUCCIÓN DEL BUEN VIVIR EN UNIDAD Y DESARROLLO PARA TOTORÓ"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="P_PIE_LINEA_2" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["Generado por: Glu ERP."]]></defaultValueExpression>
+	</parameter>
+	<parameter name="P_PIE_LINEA_3" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["Desarrollado por: VortexBird (www.vortexbird.com)"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="P_CARGO_AUAD" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="P_FECHA_INICIAL" class="java.util.Date" isForPrompting="false">
+		<defaultValueExpression><![CDATA[new java.text.SimpleDateFormat("dd/MM/yyyy").parse("01/01/2016")]]></defaultValueExpression>
+	</parameter>
+	<parameter name="P_FECHA_FINAL" class="java.util.Date" isForPrompting="false">
+		<defaultValueExpression><![CDATA[new java.text.SimpleDateFormat("dd/MM/yyyy").parse("22/11/2016")]]></defaultValueExpression>
+	</parameter>
+	<parameter name="P_ANOF_ID" class="java.lang.Integer" isForPrompting="false">
+		<defaultValueExpression><![CDATA[1]]></defaultValueExpression>
+	</parameter>
+	<parameter name="P_NOMBRE_CARGO_AUAD" class="java.lang.String" isForPrompting="false"/>
+	<queryString>
+		<![CDATA[select	banc.banc_id bancId,
+		banc.nombre nombreBanco,
+		banc.numero_banco numeroBanco,
+	
+		cuba.cuba_id cubaId,
+		cuba.numero_cuenta numeroCuenta,
+		cuba.nombre nombreCuenta,
+		
+		dpto.dpto_id,
+		dpto.codigo_cuenta codigoCuentaPresupuestal,
+		
+		paco.paco_id,
+		paco.codigo_concepto conceptoRentaPropia,
+		
+		rcbo.consecutivo, 
+		
+		rfdp.numero_documento numeroDocumentoRfdp,
+		rfdp.cantidad cantidadFormaPago,
+		rfdp.valor_unitario valorUnitarioRfdp,
+		rfdp.valor_total valorTotalRfdp,
+		rfdp.valor_pago valorPagoRfdp,
+		
+		tfdp.tfdp_id,
+		tfdp.descripcion formaDePago
+		
+from		gluo_arqueo_caja arca
+inner	join gluo_arqueo_x_aforo araf on araf.arca_id = arca.arca_id
+inner	join gluo_arqueo_x_concepto_renta arcr on arcr.araf_id = araf.araf_id
+inner	join gluo_arqueo_x_forma_pago arfp on arfp.arcr_id = arcr.arcr_id
+inner	join gluo_recibo_forma_pago rfdp on rfdp.rfdp_id = arfp.rfdp_id
+inner	join gluo_parametrizacion_concepto paco on paco.paco_id = rfdp.paco_id
+inner	join gluo_detalle_presupuesto dpto on dpto.dpto_id = paco.dpto_id
+inner	join gluo_tipo_forma_pago tfdp on tfdp.tfdp_id = rfdp.tfdp_id
+inner	join gluo_recibo rcbo on rcbo.rcbo_id = rfdp.rcbo_id
+inner	join gluo_detalle_consignacion dcon on dcon.arfp_id = arfp.arfp_id
+inner	join gluo_consignacion cons on cons.cons_id = dcon.cons_id
+inner	join gluo_tipo_recibo trec on trec.trec_id = rcbo.trec_id
+inner	join gluo_cuenta_bancaria cuba on cuba.cuba_id = dcon.cuba_id
+inner	join gluo_banco banc on banc.banc_id = cuba.banc_id
+inner	join gluo_cuenta_contable ccon on ccon.ccon_id = cuba.ccon_id
+
+where	rcbo.trec_id = 2
+and		date_trunc('day', cons.fecha_consignacion) between  $P{P_FECHA_INICIAL} and   $P{P_FECHA_FINAL} 
+		
+
+UNION ALL
+
+
+
+SELECT 	banc.banc_id bancId,
+		banc.nombre nombreBanco,
+		banc.numero_banco numeroBanco,
+	
+		cuba.cuba_id cubaId,
+		cuba.numero_cuenta numeroCuenta,
+		cuba.nombre nombreCuenta,
+		
+		dpto.dpto_id,
+		dpto.codigo_cuenta codigoCuentaPresupuestal,
+		
+		paco.paco_id,
+		paco.codigo_concepto conceptoRentaPropia,
+		
+		rcbo.consecutivo, 
+		
+		rfdp.numero_documento numeroDocumentoRfdp,
+		rfdp.cantidad cantidadFormaPago,
+		rfdp.valor_unitario valorUnitarioRfdp,
+		rfdp.valor_total valorTotalRfdp,
+		rfdp.valor_pago valorPagoRfdp,
+		
+		tfdp.tfdp_id,
+		tfdp.descripcion formaDePago
+		
+	    FROM gluo_aplicacion_pago appa
+	         LEFT OUTER JOIN gluo_cartera cart ON cart.cart_id = appa.cart_id
+	         LEFT OUTER JOIN gluo_detalle_liquidacion_masiva_impuestos dlmi_cart
+	            ON dlmi_cart.dlmi_id = cart.dlmi_id
+	         LEFT OUTER JOIN gluo_concepto_impuesto coim_cart_dlmi
+	            ON coim_cart_dlmi.coim_id = dlmi_cart.coim_id
+	         LEFT OUTER JOIN gluo_liquidacion_otros_conceptos_impuesto loci_cart
+	            ON loci_cart.loci_id = cart.loci_id
+	         LEFT OUTER JOIN gluo_concepto_impuesto coim_cart_loci
+	            ON coim_cart_loci.coim_id = loci_cart.coim_id
+	         LEFT OUTER JOIN gluo_detalle_liquidacion_masiva_impuestos dlmi
+	            ON dlmi.dlmi_id = appa.dlmi_id
+	         LEFT OUTER JOIN gluo_concepto_impuesto coim_dlmi
+	            ON coim_dlmi.coim_id = dlmi.coim_id
+	         LEFT OUTER JOIN gluo_liquidacion_otros_conceptos_impuesto loci
+	            ON loci.loci_id = appa.loci_id
+	         LEFT OUTER JOIN gluo_concepto_impuesto coim_loci
+	            ON coim_loci.coim_id = loci.coim_id
+	         INNER JOIN gluo_recibo rcbo ON rcbo.rcbo_id = appa.rcbo_id
+			 INNER JOIN gluo_recibo_forma_pago rfdp on rfdp.appa_id = appa.appa_id
+			 INNER JOIN gluo_parametrizacion_concepto paco on paco.paco_id = coalesce(coim_dlmi.paco_id, coim_loci.paco_id, coim_cart_dlmi.paco_id, coim_cart_loci.paco_id)
+			 INNER JOIN gluo_detalle_presupuesto dpto on dpto.dpto_id = paco.dpto_id
+			 inner	join gluo_arqueo_x_forma_pago arfp on arfp.rfdp_id = rfdp.rfdp_id
+			 inner	join gluo_detalle_consignacion dcon on dcon.arfp_id = arfp.arfp_id
+			 inner	join gluo_consignacion cons on cons.cons_id = dcon.cons_id
+			 inner	join gluo_cuenta_bancaria cuba on cuba.cuba_id = dcon.cuba_id
+			 inner	join gluo_banco banc on banc.banc_id = cuba.banc_id
+			 inner	join gluo_cuenta_contable ccon on ccon.ccon_id = cuba.ccon_id
+			 inner	join gluo_tipo_forma_pago tfdp on tfdp.tfdp_id = rfdp.tfdp_id
+	   WHERE rcbo.trec_id = 1
+	   		AND date_trunc('day', cons.fecha_consignacion) between   $P{P_FECHA_INICIAL} and   $P{P_FECHA_FINAL} 
+
+
+order by 1, 7]]>
+	</queryString>
+	<field name="bancid" class="java.lang.Integer"/>
+	<field name="nombrebanco" class="java.lang.String"/>
+	<field name="numerobanco" class="java.lang.String"/>
+	<field name="cubaid" class="java.lang.Integer"/>
+	<field name="numerocuenta" class="java.lang.String"/>
+	<field name="nombrecuenta" class="java.lang.String"/>
+	<field name="codigocuentapresupuestal" class="java.lang.String"/>
+	<field name="paco_id" class="java.lang.Integer"/>
+	<field name="conceptorentapropia" class="java.lang.String"/>
+	<field name="consecutivo" class="java.lang.String"/>
+	<field name="numerodocumentorfdp" class="java.lang.String"/>
+	<field name="cantidadformapago" class="java.math.BigDecimal"/>
+	<field name="valorunitariorfdp" class="java.math.BigDecimal"/>
+	<field name="valortotalrfdp" class="java.math.BigDecimal"/>
+	<field name="valorpagorfdp" class="java.math.BigDecimal"/>
+	<field name="tfdp_id" class="java.lang.Integer"/>
+	<field name="formadepago" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="172" splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+			<textField>
+				<reportElement x="130" y="0" width="620" height="13" uuid="0dacb41a-24ff-416e-8f80-dccb72aa3466">
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+				</reportElement>
+				<textElement textAlignment="Center">
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{P_CABE_LINEA_1}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="130" y="28" width="620" height="15" uuid="ad414546-4257-40d2-90a6-4b2565639417">
+					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+				</reportElement>
+				<textElement textAlignment="Center">
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{P_CABE_LINEA_3}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="130" y="13" width="620" height="15" uuid="cb7f69a2-d228-452c-b59b-b18a3dbe9f23">
+					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+				</reportElement>
+				<textElement textAlignment="Center">
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{P_CABE_LINEA_2}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="130" y="43" width="620" height="15" uuid="f7299e3d-c43e-4e89-be39-322614cf48ea">
+					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+				</reportElement>
+				<textElement textAlignment="Center">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{P_CABE_LINEA_4}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="130" y="58" width="620" height="15" uuid="ba4005f7-b8be-4e11-80a8-572e7661262e">
+					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+				</reportElement>
+				<textElement textAlignment="Center">
+					<font size="10" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{P_CABE_LINEA_5}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="0" y="92" width="750" height="1" uuid="09b3b234-45f8-44a2-a9ee-d650877dc374"/>
+			</line>
+			<textField>
+				<reportElement x="130" y="73" width="620" height="15" uuid="23cceb7d-1235-4c6f-bfb4-fc877a5f730a"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[$P{P_CABE_LINEA_6}]]></textFieldExpression>
+			</textField>
+			<image>
+				<reportElement x="0" y="0" width="130" height="88" uuid="c5e418b6-3a83-42b9-b4cd-0035c82f7978">
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+				</reportElement>
+				<imageExpression><![CDATA[$P{P_SUBREPORT_DIR}+"logo-titulo-cdp.jpg"]]></imageExpression>
+			</image>
+			<textField>
+				<reportElement x="0" y="100" width="750" height="20" uuid="698dc36d-0916-46b7-86ba-101a21518403">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="16" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Informe Detallado de Recaudo"]]></textFieldExpression>
+			</textField>
+			<textField pattern="">
+				<reportElement x="130" y="130" width="180" height="15" uuid="e0177c16-7c32-48bc-b399-e656d31fc03e">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[new java.text.SimpleDateFormat("dd/MMM/yyyy").format($P{P_FECHA_INICIAL}) + " y " +
+new java.text.SimpleDateFormat("dd/MMM/yyyy").format($P{P_FECHA_FINAL})]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="130" width="130" height="15" uuid="90c2059f-b82d-4e21-a37a-3d29915f9a83"/>
+				<text><![CDATA[Consignaciones entre:]]></text>
+			</staticText>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+		</band>
+	</detail>
+	<columnFooter>
+		<band splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+		</band>
+	</columnFooter>
+	<pageFooter>
+		<band splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="268" splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+			<rectangle>
+				<reportElement positionType="Float" x="0" y="225" width="750" height="40" uuid="1265e108-b889-4e42-966c-b390be09a6e3">
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement positionType="Float" x="0" y="178" width="220" height="47" uuid="998d954e-3bf0-4970-9441-485cdbaaeae5">
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement positionType="Float" x="0" y="130" width="220" height="47" uuid="f047a297-33bd-441b-9483-c89dd8bb7f82">
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+				</reportElement>
+			</rectangle>
+			<textField evaluationTime="Report">
+				<reportElement positionType="Float" x="713" y="255" width="35" height="10" uuid="c94cc235-f6fd-4e4f-bc91-24900ffcbb01">
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement positionType="Float" x="652" y="255" width="34" height="10" uuid="52ea1c0e-b25e-4947-8df0-1b6f47c224b0">
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement positionType="Float" x="686" y="255" width="27" height="10" uuid="e5715837-a469-4898-a094-6ae9d0ef9fcb">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[de]]></text>
+			</staticText>
+			<staticText>
+				<reportElement positionType="Float" x="612" y="255" width="40" height="10" uuid="59567a74-a711-4d7e-8ec0-bee3550e9fee">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Página]]></text>
+			</staticText>
+			<textField>
+				<reportElement positionType="Float" x="1" y="195" width="218" height="14" uuid="9b5bd322-31fd-42df-af78-47e905ebc665"/>
+				<textElement textAlignment="Left">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{P_CARGO_AUAD}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement positionType="Float" x="1" y="245" width="218" height="10" uuid="0a9bdc6c-6b19-4b58-bb28-8a9979e4246d"/>
+				<textElement textAlignment="Left">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{P_PIE_LINEA_2}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement positionType="Float" x="1" y="255" width="218" height="10" uuid="7ddc108b-53a9-4b97-bb27-3d7d05b51a96"/>
+				<textElement textAlignment="Left">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{P_PIE_LINEA_3}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement positionType="Float" x="0" y="226" width="750" height="15" uuid="f432a142-a100-4745-8f66-21fd73023c02"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{P_PIE_LINEA_1}]]></textFieldExpression>
+			</textField>
+			<crosstab>
+				<reportElement x="0" y="0" width="750" height="120" uuid="2dd2e573-b497-42a4-ba6f-11f37300bb2b">
+					<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
+				</reportElement>
+				<crosstabHeaderCell>
+					<cellContents>
+						<textField>
+							<reportElement style="Crosstab 2_CH" x="0" y="0" width="130" height="20" uuid="9baa06ab-b6d1-49fa-9bae-9e303028b6e1"/>
+							<textElement textAlignment="Center" verticalAlignment="Middle">
+								<font isBold="true"/>
+							</textElement>
+							<textFieldExpression><![CDATA["Cuenta Bancaria"]]></textFieldExpression>
+						</textField>
+						<staticText>
+							<reportElement style="Crosstab 2_CH" x="130" y="0" width="90" height="20" uuid="ecfe3e07-d652-404b-886c-5796ab0e0866"/>
+							<textElement textAlignment="Center" verticalAlignment="Middle">
+								<font isBold="true"/>
+							</textElement>
+							<text><![CDATA[Rubro Ppto]]></text>
+						</staticText>
+						<textField>
+							<reportElement style="Crosstab 2_CH" x="220" y="0" width="90" height="20" uuid="eff148ff-a1c1-49d0-ad7d-92284ce1f484"/>
+							<textElement textAlignment="Center" verticalAlignment="Middle">
+								<font isBold="true"/>
+							</textElement>
+							<textFieldExpression><![CDATA["Concepto Renta"]]></textFieldExpression>
+						</textField>
+					</cellContents>
+				</crosstabHeaderCell>
+				<rowGroup name="nombrecuenta1" width="130" totalPosition="End">
+					<bucket class="java.lang.String">
+						<bucketExpression><![CDATA[$F{nombrecuenta}]]></bucketExpression>
+					</bucket>
+					<crosstabRowHeader>
+						<cellContents mode="Opaque" style="Crosstab 2_CH">
+							<textField isStretchWithOverflow="true">
+								<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="130" height="60" uuid="bc54c4fe-f869-4054-82e7-a14bef417d97"/>
+								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
+								<textFieldExpression><![CDATA[$V{nombrecuenta1}]]></textFieldExpression>
+							</textField>
+						</cellContents>
+					</crosstabRowHeader>
+					<crosstabTotalRowHeader>
+						<cellContents mode="Opaque" style="Crosstab 2_CT">
+							<staticText>
+								<reportElement x="0" y="0" width="310" height="20" forecolor="#FFFFFF" uuid="1f081a7c-a773-49d8-a109-2b9f9400b1dd"/>
+								<box leftPadding="2"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle"/>
+								<text><![CDATA[Gran Total]]></text>
+							</staticText>
+						</cellContents>
+					</crosstabTotalRowHeader>
+				</rowGroup>
+				<rowGroup name="codigocuentapresupuestal1" width="90" totalPosition="End">
+					<bucket class="java.lang.String">
+						<bucketExpression><![CDATA[$F{codigocuentapresupuestal}]]></bucketExpression>
+					</bucket>
+					<crosstabRowHeader>
+						<cellContents mode="Opaque" style="Crosstab 2_CH">
+							<textField isStretchWithOverflow="true">
+								<reportElement x="0" y="0" width="90" height="40" uuid="e9bf78b9-1e9b-4f31-9fc6-d8bb2c230cdd"/>
+								<textFieldExpression><![CDATA[$V{codigocuentapresupuestal1}]]></textFieldExpression>
+							</textField>
+						</cellContents>
+					</crosstabRowHeader>
+					<crosstabTotalRowHeader>
+						<cellContents mode="Opaque" style="Crosstab 2_CG">
+							<textField isStretchWithOverflow="true">
+								<reportElement x="0" y="0" width="180" height="20" uuid="c88ca265-f9cf-4b21-89af-04e326b645ad"/>
+								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
+								<textFieldExpression><![CDATA["Total " + $V{nombrecuenta1}]]></textFieldExpression>
+							</textField>
+						</cellContents>
+					</crosstabTotalRowHeader>
+				</rowGroup>
+				<rowGroup name="conceptorentapropia1" width="90" totalPosition="End">
+					<bucket class="java.lang.String">
+						<bucketExpression><![CDATA[$F{conceptorentapropia}]]></bucketExpression>
+					</bucket>
+					<crosstabRowHeader>
+						<cellContents mode="Opaque" style="Crosstab 2_CH">
+							<textField isStretchWithOverflow="true" pattern="#,##0.00#">
+								<reportElement x="0" y="0" width="90" height="20" uuid="a1924e30-69b8-44e6-9f97-ceed5bad7f3f"/>
+								<box topPadding="1" leftPadding="2" bottomPadding="1" rightPadding="2"/>
+								<textElement textAlignment="Justified" verticalAlignment="Middle">
+									<font size="8"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$V{conceptorentapropia1}]]></textFieldExpression>
+							</textField>
+						</cellContents>
+					</crosstabRowHeader>
+					<crosstabTotalRowHeader>
+						<cellContents mode="Opaque" style="Crosstab 2_CG">
+							<staticText>
+								<reportElement x="0" y="0" width="90" height="20" uuid="79d3fdd1-0010-4c37-9409-16cee89f7dee"/>
+								<box topPadding="2" leftPadding="1" bottomPadding="2" rightPadding="1"/>
+								<textElement textAlignment="Justified" verticalAlignment="Middle"/>
+								<text><![CDATA[Total Conceptos]]></text>
+							</staticText>
+						</cellContents>
+					</crosstabTotalRowHeader>
+				</rowGroup>
+				<columnGroup name="formadepago1" height="20" totalPosition="End">
+					<bucket class="java.lang.String">
+						<bucketExpression><![CDATA[$F{formadepago}]]></bucketExpression>
+					</bucket>
+					<crosstabColumnHeader>
+						<cellContents mode="Opaque" style="Crosstab 2_CH">
+							<textField>
+								<reportElement x="0" y="0" width="80" height="20" uuid="7f4ec208-7a73-41c2-8b61-a58fc02b5e50"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle"/>
+								<textFieldExpression><![CDATA[$V{formadepago1}]]></textFieldExpression>
+							</textField>
+						</cellContents>
+					</crosstabColumnHeader>
+					<crosstabTotalColumnHeader>
+						<cellContents mode="Opaque" style="Crosstab 2_CT">
+							<staticText>
+								<reportElement x="0" y="0" width="60" height="20" forecolor="#FFFFFF" uuid="5dbf5d00-91fe-4160-b552-88717bc82139"/>
+								<text><![CDATA[Total formadepago1]]></text>
+							</staticText>
+						</cellContents>
+					</crosstabTotalColumnHeader>
+				</columnGroup>
+				<measure name="valorpagorfdp_MEASURE1" class="java.math.BigDecimal" calculation="Sum">
+					<measureExpression><![CDATA[$F{valorpagorfdp}]]></measureExpression>
+				</measure>
+				<crosstabCell width="80" height="20">
+					<cellContents mode="Opaque" style="Crosstab 2_CD">
+						<textField pattern="#,##0.00#">
+							<reportElement x="0" y="0" width="80" height="20" uuid="136ac3fd-6d24-4618-b3a6-c3688448639e"/>
+							<box rightPadding="2"/>
+							<textElement textAlignment="Right" verticalAlignment="Middle">
+								<font size="8"/>
+							</textElement>
+							<textFieldExpression><![CDATA[$V{valorpagorfdp_MEASURE1}]]></textFieldExpression>
+						</textField>
+					</cellContents>
+				</crosstabCell>
+				<crosstabCell width="60" height="20" columnTotalGroup="formadepago1">
+					<cellContents mode="Opaque" style="Crosstab 2_CT">
+						<textField pattern="#,##0.00#">
+							<reportElement x="0" y="0" width="60" height="20" forecolor="#FFFFFF" uuid="aed9d58f-ab5a-48e6-8a43-41d7f9471290"/>
+							<box rightPadding="2"/>
+							<textElement textAlignment="Right" verticalAlignment="Middle">
+								<font size="8"/>
+							</textElement>
+							<textFieldExpression><![CDATA[$V{valorpagorfdp_MEASURE1}]]></textFieldExpression>
+						</textField>
+					</cellContents>
+				</crosstabCell>
+				<crosstabCell width="80" height="20" rowTotalGroup="nombrecuenta1">
+					<cellContents mode="Opaque" style="Crosstab 2_CT">
+						<textField pattern="#,##0.00#">
+							<reportElement x="0" y="0" width="80" height="20" forecolor="#FFFFFF" uuid="f86f7eaf-16f0-43e6-95c5-e2b0a1c4abbb"/>
+							<box rightPadding="2"/>
+							<textElement textAlignment="Right" verticalAlignment="Middle">
+								<font size="8"/>
+							</textElement>
+							<textFieldExpression><![CDATA[$V{valorpagorfdp_MEASURE1}]]></textFieldExpression>
+						</textField>
+					</cellContents>
+				</crosstabCell>
+				<crosstabCell width="60" height="20" rowTotalGroup="nombrecuenta1" columnTotalGroup="formadepago1">
+					<cellContents mode="Opaque" style="Crosstab 2_CT">
+						<textField pattern="#,##0.00#">
+							<reportElement x="0" y="0" width="60" height="20" forecolor="#FFFFFF" uuid="e7c586c4-cad4-4692-8c6d-1c1cbcd2b5ee"/>
+							<box rightPadding="2"/>
+							<textElement textAlignment="Right" verticalAlignment="Middle">
+								<font size="8"/>
+							</textElement>
+							<textFieldExpression><![CDATA[$V{valorpagorfdp_MEASURE1}]]></textFieldExpression>
+						</textField>
+					</cellContents>
+				</crosstabCell>
+				<crosstabCell width="80" height="20" rowTotalGroup="codigocuentapresupuestal1">
+					<cellContents mode="Opaque" style="Crosstab 2_CG">
+						<textField pattern="#,##0.00#">
+							<reportElement x="0" y="0" width="80" height="20" uuid="c07cde85-5459-4f7c-a012-80876e55ffb6"/>
+							<box rightPadding="2"/>
+							<textElement textAlignment="Right" verticalAlignment="Middle">
+								<font size="8"/>
+							</textElement>
+							<textFieldExpression><![CDATA[$V{valorpagorfdp_MEASURE1}]]></textFieldExpression>
+						</textField>
+					</cellContents>
+				</crosstabCell>
+				<crosstabCell width="60" height="20" rowTotalGroup="codigocuentapresupuestal1" columnTotalGroup="formadepago1">
+					<cellContents mode="Opaque" style="Crosstab 2_CT">
+						<textField pattern="#,##0.00#">
+							<reportElement x="0" y="0" width="60" height="20" forecolor="#FFFFFF" uuid="a9ff1a6a-2ad3-4c32-86ea-1c00e7a9c122"/>
+							<box rightPadding="2"/>
+							<textElement textAlignment="Right" verticalAlignment="Middle">
+								<font size="8"/>
+							</textElement>
+							<textFieldExpression><![CDATA[$V{valorpagorfdp_MEASURE1}]]></textFieldExpression>
+						</textField>
+					</cellContents>
+				</crosstabCell>
+				<crosstabCell width="80" height="20" rowTotalGroup="conceptorentapropia1">
+					<cellContents mode="Opaque" style="Crosstab 2_CG">
+						<textField pattern="#,##0.00#">
+							<reportElement x="0" y="0" width="80" height="20" uuid="b61f4262-9a23-424b-8c8e-685d9d036b8e"/>
+							<box rightPadding="2"/>
+							<textElement textAlignment="Right" verticalAlignment="Middle">
+								<font size="8"/>
+							</textElement>
+							<textFieldExpression><![CDATA[$V{valorpagorfdp_MEASURE1}]]></textFieldExpression>
+						</textField>
+					</cellContents>
+				</crosstabCell>
+				<crosstabCell width="60" height="20" rowTotalGroup="conceptorentapropia1" columnTotalGroup="formadepago1">
+					<cellContents mode="Opaque" style="Crosstab 2_CT">
+						<textField pattern="#,##0.00#">
+							<reportElement x="0" y="0" width="60" height="20" forecolor="#FFFFFF" uuid="d0203dd4-2401-4630-9a3e-9bd55724ed58"/>
+							<box rightPadding="2"/>
+							<textElement textAlignment="Right" verticalAlignment="Middle">
+								<font size="8"/>
+							</textElement>
+							<textFieldExpression><![CDATA[$V{valorpagorfdp_MEASURE1}]]></textFieldExpression>
+						</textField>
+					</cellContents>
+				</crosstabCell>
+			</crosstab>
+			<textField>
+				<reportElement positionType="Float" x="0" y="180" width="218" height="14" uuid="5ad8d3c2-f8a8-431e-86b0-6edb5743d8f5"/>
+				<textElement textAlignment="Left">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{P_NOMBRE_CARGO_AUAD}]]></textFieldExpression>
+			</textField>
+		</band>
+	</summary>
+</jasperReport>

@@ -1,0 +1,319 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+	<ui:define name="content">
+		<f:view>
+			<script type="text/javascript">
+				function justNumbers(e) {
+					var keynum = window.event ? window.event.keyCode : e.which;
+					if ((keynum == 8) || (keynum == 46) || (keynum == 44))
+						return true;
+
+					return /\d/.test(String.fromCharCode(keynum));
+				}
+				PrimeFaces.locales['es'] = {
+					closeText : 'Cerrar',
+					prevText : 'Anterior',
+					nextText : 'Siguiente',
+					monthNames : [ 'Enero', 'Febrero', 'Marzo', 'Abril',
+							'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre',
+							'Octubre', 'Noviembre', 'Diciembre' ],
+					monthNamesShort : [ 'Ene', 'Feb', 'Mar', 'Abr', 'May',
+							'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic' ],
+					dayNames : [ 'Domingo', 'Lunes', 'Martes', 'Miércoles',
+							'Jueves', 'Viernes', 'Sábado' ],
+					dayNamesShort : [ 'Dom', 'Lun', 'Mar', 'Mie', 'Jue', 'Vie',
+							'Sab' ],
+					dayNamesMin : [ 'D', 'L', 'M', 'M', 'J', 'V', 'S' ],
+					weekHeader : 'Semana',
+					firstDay : 1,
+					isRTL : false,
+					showMonthAfterYear : false,
+					yearSuffix : '',
+					timeOnlyTitle : 'Sólo hora',
+					timeText : 'Tiempo',
+					hourText : 'Hora',
+					minuteText : 'Minuto',
+					secondText : 'Segundo',
+					currentText : 'Fecha actual',
+					ampm : false,
+					month : 'Mes',
+					week : 'Semana',
+					day : 'Día',
+					allDayText : 'Todo el día'
+				};
+				function showStatus() {
+					statusDialog.show();
+				}
+
+				function hideStatus() {
+					statusDialog.hide();
+				}
+			</script>
+			<p:ajaxStatus onstart="PF('statusDialog').show()"
+				onsuccess="PF('statusDialog').hide()" />
+			<p:dialog modal="true" widgetVar="statusDialog" header="Cargando"
+				draggable="false" closable="false">
+				<p:graphicImage
+					value="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/ajaxloadingbar.gif" />
+			</p:dialog>
+
+			<!-- Expired session -->
+			<p:idleMonitor onactive="PF('sessionTimeOutDialog').show();"
+				timeout="#{session.maxInactiveInterval * 1000}" />
+			<p:dialog modal="true" widgetVar="sessionTimeOutDialog"
+				header="Sesión Finalizada" draggable="false" closable="false">
+				<h:outputText value="La sesión ha caducado." />
+				<input id="confirmBackToLogin" type="button" value="Iniciar Sesión"
+					onclick="window.location='#{facesContext.externalContext.requestContextPath}/index.jsp';" />
+			</p:dialog>
+
+			<h:form id="frm">
+
+				<p:panel id="pnlGluoCargoGrado" header="Gluo Cargo Grado">
+
+					<p:panel id="pnlCrearCargoGrado" header="Crear">
+						<div align="center">
+							<h:panelGrid columns="3">
+								<p:column>
+									<h:outputText value="Cargo: " />
+									<p:inputText id="txtCargo" readonly="true"
+										value="#{gluoCargoGradoView.txtCargo}" />
+									<p:commandButton id="btnCargo" icon="ui-icon-search"
+										action="#{gluoCargoGradoView.action_dlgCargoEmpleado}"
+										update="txtCargo" />
+								</p:column>
+								
+								<p:column>
+									<h:outputText value="Grado: " />
+									<p:inputText id="txtGrado" readonly="true"
+										value="#{gluoCargoGradoView.txtGrado}" />
+									<p:commandButton id="btnGrado" icon="ui-icon-search"
+										action="#{gluoCargoGradoView.action_dlgGradoEmpleado}"
+										update="txtGrado" />
+								</p:column>
+								
+								<p:column>
+									<h:outputText value="Salario: " />
+									<pe:inputNumber id="txtSalario" maxlength="16"
+										value="#{gluoCargoGradoView.salario}" />
+								</p:column>
+
+								<br />
+
+								<p:column>
+									<p:commandButton value="Guardar"
+										action="#{gluoCargoGradoView.action_guardar}"
+										update="dtListaCargoGrado, pnlCrearCargoGrado" />
+									<p:commandButton value="Limpiar"
+										action="#{gluoCargoGradoView.action_limpiar}"
+										update="pnlCrearCargoGrado" />
+
+								</p:column>
+							</h:panelGrid>
+						</div>
+					</p:panel>
+
+					<p:growl id="men" autoUpdate="true" showDetail="false" />
+					<p:dataTable id="dtListaCargoGrado"
+						value="#{gluoCargoGradoView.gluoCargoGradoDTOs}"
+						var="gluoCargoGrado" paginator="true" rows="8"
+						emptyMessage="No se han encontrado cargos grados registrados activos para su empresa"
+						filterDelay="1000">
+
+						<p:column filterBy="#{gluoCargoGrado.gluoCargoEmpleadoStr}"
+							sortBy="#{gluoCargoGrado.gluoCargoEmpleadoStr}">
+							<f:facet name="header">
+								<h:outputText value="Cargo" />
+							</f:facet>
+							<h:outputText value="#{gluoCargoGrado.gluoCargoEmpleadoStr}" />
+						</p:column>
+
+						<p:column filterBy="#{gluoCargoGrado.gluoGradoSalarialStr}"
+							sortBy="#{gluoCargoGrado.gluoGradoSalarialStr}">
+							<f:facet name="header">
+								<h:outputText value="Grado" />
+							</f:facet>
+							<h:outputText value="#{gluoCargoGrado.gluoGradoSalarialStr}" />
+						</p:column>
+
+						<p:column filterBy="#{gluoCargoGrado.salarioStr}"
+							sortBy="#{gluoCargoGrado.salarioStr}">
+							<f:facet name="header">
+								<h:outputText value="Salario" />
+							</f:facet>
+							<h:outputText value="#{gluoCargoGrado.salarioStr}" />
+						</p:column>
+
+						<p:column
+							filterBy="#{(gluoCargoGrado.activo.trim() eq 'A')?'Activo':'Inactivo'}"
+							sortBy="#{(gluoCargoGrado.activo.trim() eq 'A')?'Activo':'Inactivo'}">
+							<f:facet name="header">
+								<h:outputText value="Estado" />
+							</f:facet>
+							<h:outputText
+								value="#{(gluoCargoGrado.activo.trim() eq 'A')?'Activo':'Inactivo'}" />
+						</p:column>
+
+						<p:column headerText="Opciones">
+							<p:commandButton id="btnEdit" icon="ui-icon-pencil"
+								title="Editar" update=":frm:dlgGluoGrado"
+								action="#{gluoCargoGradoView.action_edit(gluoCargoGrado)}">
+							</p:commandButton>
+						</p:column>
+					</p:dataTable>
+				</p:panel>
+
+
+				<p:dialog id="dlgGluoGrado" widgetVar="dialogGluoCargoGrado"
+					draggable="false" closable="true"
+					resizable="false" modal="true" width="300" header="Modificar Gluo Cargo Grado">
+
+					<p:messages id="msg" />
+					<p:panel id="panelGluoCargoGrado">
+						<h:panelGrid columns="1" id="panelGrid">
+							<p:column>
+								<h:outputText value="Grado: " />
+								<p:inputText id="txtModGrado" readonly="true"
+									value="#{gluoCargoGradoView.txtModificarGrado}" />
+							</p:column>
+							<p:column>
+								<h:outputText value="Cargo: " />
+								<p:inputText id="txtModCargo" readonly="true"
+									value="#{gluoCargoGradoView.txtModificarCargo}" />
+							</p:column>
+							<p:column>
+								<h:outputText value="Salario: " />
+								<pe:inputNumber id="txtModSalario"
+									value="#{gluoCargoGradoView.modificarSalario}" />
+							</p:column>
+
+							<p:column>
+								<h:outputText id="msgActivo" value=" Estado: *" />
+								<p:selectOneRadio id="sorEstado"
+									binding="#{gluoCargoGradoView.sorEstado}">
+									<f:selectItem itemLabel="Activo" itemValue="A" />
+									<f:selectItem itemLabel="Inactivo" itemValue="I" />
+								</p:selectOneRadio>
+							</p:column>
+						</h:panelGrid>
+					</p:panel>
+					<p:panel id="panelBotones">
+						<div align="center">
+							<p:commandButton id="btnEdit" value="Modificar"
+								action="#{gluoCargoGradoView.action_modificar()}"
+								update="msg, dtListaCargoGrado, dlgGluoGrado" />
+							<p:commandButton id="btnClear" value="Limpiar"
+								action="#{gluoCargoGradoView.action_limpiarMod}"
+								update="panelGluoCargoGrado" />
+							<p:commandButton id="btnExit" value="Salir"
+								action="#{gluoCargoGradoView.action_close}" update="frm" />
+		
+						</div> 
+					</p:panel>
+				</p:dialog>
+
+				<p:dialog id="dlgCargo" widgetVar="dialogGluoCargoEmpleado"
+					draggable="false" closable="true"
+					resizable="false" modal="true" width="500">
+
+					<p:panel>
+
+							<p:dataTable value="#{gluoCargoGradoView.gluoCargoEmpleadoDTOs}"
+								var="gluoCargo" paginator="true" rows="8" selectionMode="single"
+								selection="#{gluoCargoGradoView.gluoCargoEmpleadoSelectionDTOs}"
+								rowKey="#{gluoCargo.careId}"
+								emptyMessage="No se han encontrado cargos registrados activos para su empresa"
+								filterDelay="1000">
+
+								<p:ajax event="rowSelect"
+									listener="#{gluoCargoGradoView.action_seleccionarCargo()}"
+									update=":frm:txtCargo" />
+
+								<p:column filterBy="#{gluoCargo.codigo}"
+									sortBy="#{gluoCargo.codigo}">
+									<f:facet name="header">
+										<h:outputText value="Código" />
+									</f:facet>
+									<h:outputText value="#{gluoCargo.codigo}" />
+								</p:column>
+
+								<p:column filterBy="#{gluoCargo.descripcion}"
+									sortBy="#{gluoCargo.descripcion}">
+									<f:facet name="header">
+										<h:outputText value="Descripcion" />
+									</f:facet>
+									<h:outputText value="#{gluoCargo.descripcion}" />
+								</p:column>
+
+								<p:column filterBy="#{gluoCargo.porcentajeRiesgo}"
+									sortBy="#{gluoCargo.porcentajeRiesgo}">
+									<f:facet name="header">
+										<h:outputText value="Porcentaje de Riesgo" />
+									</f:facet>
+									<h:outputText value="#{gluoCargo.porcentajeRiesgo} %" />
+								</p:column>
+
+							</p:dataTable>
+
+						<div align="center">
+							<p:commandButton value="Cerrar"
+								action="#{gluoCargoGradoView.action_closeDlgCargoEmpleado}"
+								update="frm" />
+						</div>
+					</p:panel>
+
+				</p:dialog>
+
+				<p:dialog id="dlgGrado" widgetVar="dialogGluoGradoEmpleado"
+					draggable="false" closable="true"
+					resizable="false" modal="true" width="500">
+
+					<p:panel>
+					
+							<p:dataTable id="dtListaGrado"
+								value="#{gluoCargoGradoView.gluoGradoSalarialDTOs}"
+								var="gluoGrado" paginator="true" rows="8" selectionMode="single"
+								selection="#{gluoCargoGradoView.gluoGradoSalarialSelectionDTOs}"
+								rowKey="#{gluoGrado.grsaId}"
+								emptyMessage="No se han encontrado grados registrados activos para su empresa"
+								filterDelay="1000">
+
+								<p:ajax event="rowSelect"
+									listener="#{gluoCargoGradoView.action_seleccionarGrado()}"
+									update=":frm:txtGrado" />
+
+								<p:column filterBy="#{gluoGrado.codigo}"
+									sortBy="#{gluoGrado.codigo}">
+									<f:facet name="header">
+										<h:outputText value="Código" />
+									</f:facet>
+									<h:outputText value="#{gluoGrado.codigo}" />
+								</p:column>
+
+								<p:column filterBy="#{gluoGrado.descripcion}"
+									sortBy="#{gluoGrado.descripcion}">
+									<f:facet name="header">
+										<h:outputText value="Descripcion" />
+									</f:facet>
+									<h:outputText value="#{gluoGrado.descripcion}" />
+								</p:column>
+
+							</p:dataTable>
+
+						<div align="center">
+							<p:commandButton value="Cerrar"
+								action="#{gluoCargoGradoView.action_closeDlgGradoEmpleado}"
+								update="frm" />
+						</div>
+					</p:panel>
+
+				</p:dialog>
+			</h:form>
+		</f:view>
+	</ui:define>
+</ui:composition>

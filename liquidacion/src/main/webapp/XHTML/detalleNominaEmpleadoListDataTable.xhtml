@@ -1,0 +1,208 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+
+	<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+	</h:head>
+
+	<h:body>
+		  <ui:composition template="/WEB-INF/facelets/template.xhtml">	
+		 
+		 	<ui:define name="body">	
+				<f:view>
+					<p:ajaxStatus onstart="PF('statusDialog').show()" onsuccess="PF('statusDialog').hide()"/>               
+					<p:dialog modal="true" widgetVar="statusDialog" header="Loading"  draggable="false" closable="false">  
+   						<p:graphicImage value="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/ajaxloadingbar.gif" />   
+					</p:dialog>
+					
+					<!-- Expired session -->
+					<p:idleMonitor onactive="PF('sessionTimeOutDialog').show();" timeout="#{session.maxInactiveInterval * 1000}" />
+					<p:dialog modal="true" widgetVar="sessionTimeOutDialog" header="Expired session"  draggable="false" closable="false">  
+	   					<h:outputText value="The session is finished" />
+	                 	<input id="confirmBackToLogin" 
+	                 		type="button" 
+	                 		value="Sign in"
+	                    	onclick="window.location='#{facesContext.externalContext.requestContextPath}/index.jsp';" />   
+					</p:dialog>
+					
+		  			<h:form id="frm">								  		
+						
+						<p:panel id="panelDataTableDetalleNominaEmpleado" header="DetalleNominaEmpleadoData">
+							<p:growl id="men"/>				
+							<p:dataTable value="#{detalleNominaEmpleadoView.data}" var="detalleNominaEmpleado"
+								paginator="true" rows="5">
+																										<p:column filterBy="#{detalleNominaEmpleado.dnoeId}" sortBy="#{detalleNominaEmpleado.dnoeId}" >
+										 <f:facet name="header">
+										<h:outputText value="dnoeId"/>
+										</f:facet>
+										 <h:outputText value="#{detalleNominaEmpleado.dnoeId}"/>
+										 </p:column>
+			                    																									
+										<p:column filterBy="#{detalleNominaEmpleado.auxilioAlimentacion}" sortBy="#{detalleNominaEmpleado.auxilioAlimentacion}" >
+										 <f:facet name="header">
+										<h:outputText value="AuxilioAlimentacion"/>
+										</f:facet>
+										 <h:outputText value="#{detalleNominaEmpleado.auxilioAlimentacion}"/>
+										</p:column>   
+			                    									
+										<p:column filterBy="#{detalleNominaEmpleado.auxilioTransporte}" sortBy="#{detalleNominaEmpleado.auxilioTransporte}" >
+										 <f:facet name="header">
+										<h:outputText value="AuxilioTransporte"/>
+										</f:facet>
+										 <h:outputText value="#{detalleNominaEmpleado.auxilioTransporte}"/>
+										</p:column>   
+			                    									
+										<p:column filterBy="#{detalleNominaEmpleado.estadoRegistro}" sortBy="#{detalleNominaEmpleado.estadoRegistro}" >
+										 <f:facet name="header">
+										<h:outputText value="EstadoRegistro"/>
+										</f:facet>
+										 <h:outputText value="#{detalleNominaEmpleado.estadoRegistro}"/>
+										</p:column>   
+			                    									
+										<p:column filterBy="#{detalleNominaEmpleado.fechaCreacion}" sortBy="#{detalleNominaEmpleado.fechaCreacion}" >
+										 <f:facet name="header">
+										<h:outputText value="FechaCreacion"/>
+										</f:facet>
+										 <h:outputText value="#{detalleNominaEmpleado.fechaCreacion}"/>
+										</p:column>   
+			                    									
+										<p:column filterBy="#{detalleNominaEmpleado.fechaModificacion}" sortBy="#{detalleNominaEmpleado.fechaModificacion}" >
+										 <f:facet name="header">
+										<h:outputText value="FechaModificacion"/>
+										</f:facet>
+										 <h:outputText value="#{detalleNominaEmpleado.fechaModificacion}"/>
+										</p:column>   
+			                    									
+										<p:column filterBy="#{detalleNominaEmpleado.pension}" sortBy="#{detalleNominaEmpleado.pension}" >
+										 <f:facet name="header">
+										<h:outputText value="Pension"/>
+										</f:facet>
+										 <h:outputText value="#{detalleNominaEmpleado.pension}"/>
+										</p:column>   
+			                    									
+										<p:column filterBy="#{detalleNominaEmpleado.salarioLiquidado}" sortBy="#{detalleNominaEmpleado.salarioLiquidado}" >
+										 <f:facet name="header">
+										<h:outputText value="SalarioLiquidado"/>
+										</f:facet>
+										 <h:outputText value="#{detalleNominaEmpleado.salarioLiquidado}"/>
+										</p:column>   
+			                    									
+										<p:column filterBy="#{detalleNominaEmpleado.salud}" sortBy="#{detalleNominaEmpleado.salud}" >
+										 <f:facet name="header">
+										<h:outputText value="Salud"/>
+										</f:facet>
+										 <h:outputText value="#{detalleNominaEmpleado.salud}"/>
+										</p:column>   
+			                    									
+										<p:column filterBy="#{detalleNominaEmpleado.usuCreador}" sortBy="#{detalleNominaEmpleado.usuCreador}" >
+										 <f:facet name="header">
+										<h:outputText value="UsuCreador"/>
+										</f:facet>
+										 <h:outputText value="#{detalleNominaEmpleado.usuCreador}"/>
+										</p:column>   
+			                    									
+										<p:column filterBy="#{detalleNominaEmpleado.usuModificador}" sortBy="#{detalleNominaEmpleado.usuModificador}" >
+										 <f:facet name="header">
+										<h:outputText value="UsuModificador"/>
+										</f:facet>
+										 <h:outputText value="#{detalleNominaEmpleado.usuModificador}"/>
+										</p:column>   
+			                    									
+										<p:column filterBy="#{detalleNominaEmpleado.valorHorasExtras}" sortBy="#{detalleNominaEmpleado.valorHorasExtras}" >
+										 <f:facet name="header">
+										<h:outputText value="ValorHorasExtras"/>
+										</f:facet>
+										 <h:outputText value="#{detalleNominaEmpleado.valorHorasExtras}"/>
+										</p:column>   
+			                    									
+										<p:column filterBy="#{detalleNominaEmpleado.noemId_NominaEmpleado}" sortBy="#{detalleNominaEmpleado.noemId_NominaEmpleado}" >
+										 <f:facet name="header">
+										<h:outputText value="NoemId_NominaEmpleado"/>
+										</f:facet>
+										 <h:outputText value="#{detalleNominaEmpleado.noemId_NominaEmpleado}"/>
+										</p:column>   
+			                    			                    
+								<p:column headerText="Options">
+									<p:commandButton id="btnEdit" icon="ui-icon-pencil"
+										update=":dialogDetalleNominaEmpleado"
+										actionListener="#{detalleNominaEmpleadoView.action_edit}">
+										<f:attribute name="selectedDetalleNominaEmpleado" value="#{detalleNominaEmpleado}" />
+									</p:commandButton>
+									<p:commandButton id="btnDelete"									
+										title="Delete" actionListener="#{detalleNominaEmpleadoView.action_delete_datatable}"
+										onclick="if(!confirm('Do you really want to delete this Entry?')){return false;}"
+										icon="ui-icon-trash" update="@form">
+										<f:attribute name="selectedDetalleNominaEmpleado" value="#{detalleNominaEmpleado}" />
+									</p:commandButton>
+								</p:column>									                    
+							</p:dataTable>	
+						</p:panel>
+						<p:panel id="panelBoton">
+							<div align="center">
+								<p:commandButton id="btnNew" value="New"
+									action="#{detalleNominaEmpleadoView.action_new()}" update=":dialogDetalleNominaEmpleado" />
+							</div>
+						</p:panel>						
+		   			</h:form>
+					<p:dialog id="dialogDetalleNominaEmpleado" appendTo="@(body)" draggable="true"
+						closable="false" visible="#{detalleNominaEmpleadoView.showDialog}" resizable="false"
+						modal="true" width="500">
+						<h:form id="formDialog">
+							<p:messages id="msg" />
+							<p:panel id="panelDetalleNominaEmpleado" header="DetalleNominaEmpleado">							
+							    <h:panelGrid columns="2" id="panelGrid" >
+																		 <h:outputText id="msgDnoeId" value="DnoeId"/>
+									 <p:inputText id="txtDnoeId" binding="#{detalleNominaEmpleadoView.txtDnoeId}">
+									 <p:ajax update=":dialogDetalleNominaEmpleado" listener="#{detalleNominaEmpleadoView.listener_txtId}"/>
+									 </p:inputText>	
+																											
+																		<h:outputText id="msgAuxilioAlimentacion" value=" AuxilioAlimentacion"/>
+									<p:inputText id="txtAuxilioAlimentacion" disabled="true" binding="#{detalleNominaEmpleadoView.txtAuxilioAlimentacion}"/>
+																		<h:outputText id="msgAuxilioTransporte" value=" AuxilioTransporte"/>
+									<p:inputText id="txtAuxilioTransporte" disabled="true" binding="#{detalleNominaEmpleadoView.txtAuxilioTransporte}"/>
+																		<h:outputText id="msgEstadoRegistro" value=" EstadoRegistro"/>
+									<p:inputText id="txtEstadoRegistro" disabled="true" binding="#{detalleNominaEmpleadoView.txtEstadoRegistro}"/>
+																		<h:outputText id="msgPension" value=" Pension"/>
+									<p:inputText id="txtPension" disabled="true" binding="#{detalleNominaEmpleadoView.txtPension}"/>
+																		<h:outputText id="msgSalarioLiquidado" value=" SalarioLiquidado"/>
+									<p:inputText id="txtSalarioLiquidado" disabled="true" binding="#{detalleNominaEmpleadoView.txtSalarioLiquidado}"/>
+																		<h:outputText id="msgSalud" value=" Salud"/>
+									<p:inputText id="txtSalud" disabled="true" binding="#{detalleNominaEmpleadoView.txtSalud}"/>
+																		<h:outputText id="msgUsuCreador" value=" UsuCreador"/>
+									<p:inputText id="txtUsuCreador" disabled="true" binding="#{detalleNominaEmpleadoView.txtUsuCreador}"/>
+																		<h:outputText id="msgUsuModificador" value=" UsuModificador"/>
+									<p:inputText id="txtUsuModificador" disabled="true" binding="#{detalleNominaEmpleadoView.txtUsuModificador}"/>
+																		<h:outputText id="msgValorHorasExtras" value=" ValorHorasExtras"/>
+									<p:inputText id="txtValorHorasExtras" disabled="true" binding="#{detalleNominaEmpleadoView.txtValorHorasExtras}"/>
+																		<h:outputText id="msgNoemId_NominaEmpleado" value=" NoemId_NominaEmpleado"/>
+									<p:inputText id="txtNoemId_NominaEmpleado" disabled="true" binding="#{detalleNominaEmpleadoView.txtNoemId_NominaEmpleado}"/>
+																		
+																													<h:outputText id="msgFechaCreacion" value=" FechaCreacion"/>
+																				<p:calendar showOn="button" navigator="true" locale="en" 
+										binding="#{detalleNominaEmpleadoView.txtFechaCreacion}" >
+										<p:ajax event="dateSelect" listener="#{detalleNominaEmpleadoView.listener_txtFechaCreacion}" />
+										</p:calendar>
+																				<h:outputText id="msgFechaModificacion" value=" FechaModificacion"/>
+																				<p:calendar showOn="button" navigator="true" locale="en" 
+										binding="#{detalleNominaEmpleadoView.txtFechaModificacion}" >
+										<p:ajax event="dateSelect" listener="#{detalleNominaEmpleadoView.listener_txtFechaModificacion}" />
+										</p:calendar>
+																										    </h:panelGrid>
+							</p:panel>						   
+							<p:panel id="panelBotones">
+								<div align="center">					
+									<p:commandButton id="btnSave" binding="#{detalleNominaEmpleadoView.btnSave}" value="Save" action="#{detalleNominaEmpleadoView.action_save()}" update=":dialogDetalleNominaEmpleado :frm:panelDataTableDetalleNominaEmpleado" />
+									<p:commandButton id="btnClear" value="Clear" action="#{detalleNominaEmpleadoView.action_clear()}" update=":dialogDetalleNominaEmpleado" />
+									<p:commandButton id="btnExit" value="Exit" action="#{detalleNominaEmpleadoView.action_closeDialog()}" update=":dialogDetalleNominaEmpleado" />
+								</div>
+							</p:panel>					
+						</h:form>
+					</p:dialog>
+				</f:view>
+			</ui:define>		
+		</ui:composition>	
+	</h:body>	
+</html>	

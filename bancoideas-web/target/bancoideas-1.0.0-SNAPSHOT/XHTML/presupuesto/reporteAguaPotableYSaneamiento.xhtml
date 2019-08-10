@@ -1,0 +1,177 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+	<ui:define name="content">
+	  <f:view>
+	  
+	  	<p:ajaxStatus onstart="PF('statusDialog').show()"
+				onsuccess="PF('statusDialog').hide()" />
+			<p:dialog modal="true" widgetVar="statusDialog" header="Cargando"
+				draggable="false" closable="false">
+				<p:graphicImage
+					value="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/ajaxloadingbar.gif" />
+			</p:dialog>
+
+			<!-- Expired session -->
+			<p:idleMonitor onactive="PF('sessionTimeOutDialog').show();"
+				timeout="#{session.maxInactiveInterval * 1000}" />
+			<p:dialog modal="true" widgetVar="sessionTimeOutDialog"
+				header="Sesión terminada" draggable="false" closable="false">
+				<h:outputText value="La sesión ha finalizado" />
+				<input id="confirmBackToLogin" type="button" value="Iniciar sesión"
+					onclick="window.location='#{facesContext.externalContext.requestContextPath}/index.jsp';" />
+			</p:dialog>
+
+			<script type="text/javascript">
+				function showStatus() {
+				    statusDialog.show();
+				}
+				 
+				function hideStatus() {
+				    statusDialog.hide();
+				}
+			</script>
+	  
+			<style type="text/css">
+				.ui-panel {
+					margin-top: 20px
+				}
+				
+				.ui-tabs-top {
+					background-color: #FFFFFF;
+				}
+				
+				.ui-autocomplete-input.ui-inputfield
+				{
+				   width : 270px !important;
+				}
+				
+				.ui-autocomplete-panel {
+				   width: 800px !important;
+				}
+			</style>
+
+		<h:form id="idForm">
+
+		<p:growl id="men" showDetail="false" />
+
+		  <p:panel id="pnlCentral" columns="1" style="border:none; width:100%;">
+			
+			<p:tabView id="presupuestosTabView">
+
+				<p:tab id="presupuestoRentasTab" title="Registros presupuestales Agua Potable y Saneamiento Basico" rendered="true" style="width: 100%;">
+					<h:panelGrid columns="1" id="pnlPresupuestoRentasData">
+						
+						<h:panelGrid id="idPanelFechas" columns="2">
+							<p:outputLabel value="Fecha Inicial" for="fechaInicial" />
+							<p:calendar id="fechaInicial" mode="popup" navigator="true" value="#{informeAguaPotableView.fechaInicial}" timeZone="GMT-5"/>
+							
+							<p:outputLabel value="Fecha Final" for="fechaFinal" />
+							<p:calendar id="fechaFinal" mode="popup" navigator="true" value="#{informeAguaPotableView.fechaFinal}" timeZone="GMT-5"/>
+						</h:panelGrid>
+						
+						<br/>
+						
+						<h:panelGrid id="idPanelBtnsConsulta" columns="2">
+							<p:commandButton id="btnConsultar" value="Consultar" action="#{informeAguaPotableView.action_generarInforme}" update=":idForm:men, panelGridDataTable"/>						
+							<p:commandButton id="btnLimpiar" value="Limpiar" action="#{informeAguaPotableView.action_limpiar}" update="panelGridDataTable, idPanelFechas"/>
+						</h:panelGrid>
+						
+						<br/>
+						
+						<div class="Container100 Responsive">
+							<h:panelGrid id="panelGridDataTable" columns="1" rendered="true" style="width: 100%;">
+							
+							  <p:scrollPanel id="scrollPanelTables" mode="native" style="width: 100%;">
+							
+									<p:dataTable id="presupuestoRentasData" var="aguaPotable"
+										value="#{informeAguaPotableView.cabeceraInforme.listInformeDTO}"
+										rows="20" paginator="true" style="width:100%;"
+										paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+										emptyMessage="No existen registros"
+										scrollable="true" scrollWidth="1260px;"
+										reflow="true">
+										
+										<p:ajax event="filter" delay="1000" />
+										
+										<f:facet name="header">
+		                                   Registros presupuestales Agua Potable y Saneamiento Basico
+		                                </f:facet>
+	
+										<p:column headerText="Número de CRP" filterBy="#{aguaPotable.consecutivoCrp}" width="200">
+											<p:outputLabel value="#{aguaPotable.consecutivoCrp}" />		
+										</p:column>
+										<p:column headerText="Fecha del Registro Presupuestal" filterBy="#{aguaPotable.fechaCrp}" width="200">
+											<p:outputLabel value="#{aguaPotable.fechaCrp}" >
+												<f:convertDateTime type="date" pattern="dd-MM-yyyy"/>
+											</p:outputLabel>									
+										</p:column>
+										<p:column headerText="Actividades" filterBy="#{aguaPotable.descripcionActividad}" width="300">
+											<p:outputLabel value="#{aguaPotable.descripcionActividad}" />					
+										</p:column>
+										<p:column headerText="Localización" filterBy="#{aguaPotable.descripcionLocalizacion}" width="300">
+											<p:outputLabel value="#{aguaPotable.descripcionLocalizacion}" />					
+										</p:column>
+										<p:column headerText="Número de contrato, orden o proceso" filterBy="#{aguaPotable.numeroContratoOrdenOServicio}" width="200">
+											<p:outputLabel value="#{aguaPotable.numeroContratoOrdenOServicio}" />					
+										</p:column>
+										<p:column headerText="Tipo de Contrato" filterBy="#{aguaPotable.tipoContrato}" width="300">
+											<p:outputLabel value="#{aguaPotable.tipoContrato}" />					
+										</p:column>
+										<p:column headerText="Modalidad de Contratación" filterBy="#{aguaPotable.modalidadContratacion}" width="300">
+											<p:outputLabel value="#{aguaPotable.modalidadContratacion}" />					
+										</p:column>
+										<p:column headerText="Objeto" filterBy="#{aguaPotable.objeto}" width="500">
+											<p:outputLabel value="#{aguaPotable.objeto}" />					
+										</p:column>
+										<p:column headerText="Valor Total del Contrato" width="200">
+											<p:outputLabel value="#{aguaPotable.valorAplicadoCrp}" >					
+												<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+											</p:outputLabel>
+										</p:column>
+										<p:column headerText="Fecha del Subscripción del contrato" filterBy="#{aguaPotable.fechaSuscripcionContrato}" width="200">
+											<p:outputLabel value="#{aguaPotable.fechaSuscripcionContrato}" >
+												<f:convertDateTime type="date" pattern="dd-MM-yyyy"/>
+											</p:outputLabel>									
+										</p:column>
+										<p:column headerText="Nombre del contratista" filterBy="#{aguaPotable.nombreContratista}" width="300">
+											<p:outputLabel value="#{aguaPotable.nombreContratista}" />	
+										</p:column>
+										<p:column headerText="Identificación del contratista" filterBy="#{aguaPotable.identificacionContratista}" width="200">
+											<p:outputLabel value="#{aguaPotable.identificacionContratista}" />	
+										</p:column>
+										<p:column headerText="Plazo" filterBy="#{aguaPotable.plazo}" width="100">
+											<p:outputLabel value="#{aguaPotable.plazo}" />	
+										</p:column>
+
+								        <f:facet name="footer">
+							        	  <h:outputText value="TOTAL:$ #{informeAguaPotableView.sumatoriaCrps}">
+							                    <f:convertNumber type="currency" currencySymbol="$" />
+							               </h:outputText>
+								        </f:facet>
+									</p:dataTable>
+	
+									<div class="EmptyBox20"></div>
+									
+									<div align="center">
+										<h:panelGrid id="panelgridGeneraReporte" columns="3"> 
+											<p:commandButton value="Generar Reporte en CSV" onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)" icon="ui-icon-arrowthichk-s">
+												<p:fileDownload value="#{informeAguaPotableView.fileReporteGenerado}" />
+											</p:commandButton>
+										</h:panelGrid>
+									</div>									
+									<div class="EmptyBox20"></div>
+								</p:scrollPanel>
+							</h:panelGrid>
+						</div>
+					</h:panelGrid>
+				</p:tab>
+			</p:tabView>
+		</p:panel>
+	   </h:form>
+	   </f:view>
+	</ui:define>
+</ui:composition>

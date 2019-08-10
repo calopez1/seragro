@@ -1,0 +1,325 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:pe="http://primefaces.org/ui/extensions" 
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+<ui:define name="content">
+	
+		<f:view>
+			<p:ajaxStatus onstart="PF('statusDialog').show()" onsuccess="PF('statusDialog').hide()"/>               
+			<p:dialog modal="true" widgetVar="statusDialog" header="Loading"  draggable="false" closable="false">  
+   				<p:graphicImage value="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/ajaxloadingbar.gif" />   
+			</p:dialog>
+			
+			<!-- Expired session -->
+					<p:idleMonitor onactive="PF('sessionTimeOutDialog').show();" timeout="#{session.maxInactiveInterval * 1000}" />
+					<p:dialog modal="true" widgetVar="sessionTimeOutDialog" header="Expired session"  draggable="false" closable="false">  
+	   					<h:outputText value="The session is finished" />
+	                 	<input id="confirmBackToLogin" 
+	                 		type="button" 
+	                 		value="Sign in"
+	                    	onclick="window.location='#{facesContext.externalContext.requestContextPath}/index.jsp';" />   
+					</p:dialog>
+			
+			
+			<h:form id="formDialog">
+				<p:messages id="msg" />
+				<p:growl id="men"/>
+				
+				<div align="center">
+					<p:panel id="panelUsuario" header="Gestión de usuario" style="width:90%">							
+						
+						<div align="left">
+						
+						
+						<h:panelGrid columns="2" id="panelGrid" >
+						
+						
+						
+						<p:wizard id="wiz" widgetVar="wiz" nextLabel="Siguiente" backLabel="Atrás" flowListener="#{usuarioView.onFlowProcess}" style="align: left" >
+					        
+					        <p:tab id="personal" title="Personal" >
+					            <p:panel header="Información Personal">
+					                <p:messages />
+					                <h:panelGrid columns="2" columnClasses="label, value">
+					                
+					                <h:outputText value="Identificación: *" />
+					                    <p:inputText value="#{usuarioView.identificacion}" style="width:95%" disabled="#{usuarioView.deshabilitarModificacion}" required="false" label="Identificacion" type="number" >
+					                    	<p:ajax update="panelUsuario" listener="#{usuarioView.listener_identificacion}"/>
+					                    </p:inputText>
+					                    
+					                	<h:outputText value="Tipo Identificación: *" />
+					                	<p:selectOneMenu value="#{usuarioView.tipoIdentificacionSeleccionado}"  disabled="#{usuarioView.deshabilitarModificacion}"
+								                         effect="fade" filter="true" filterMatchMode="contains" required="false">
+								 
+								           	 <f:selectItem itemLabel="Seleccionar" itemValue="-1" noSelectionOption="false"/>
+          									 <f:selectItems value="#{usuarioView.lstTipoIdentificacionSelectItem}"/>
+								        </p:selectOneMenu>
+					                
+					                  	
+							
+									
+					               		<h:outputText value="Primer nombre: *" />
+					                    <p:inputText value="#{usuarioView.primerNombre}" style="width:95%" disabled="#{usuarioView.deshabilitarModificacion}" required="false" label="primerNombre" />
+					 
+										<h:outputText value="Segundo nombre: " />
+					                    <p:inputText value="#{usuarioView.segundoNombre}" style="width:95%" disabled="#{usuarioView.deshabilitarModificacion}" label="segundoNombre" />
+					 
+										<h:outputText value="Primer apellido: *" />
+					                    <p:inputText value="#{usuarioView.primerApellido}" style="width:95%" disabled="#{usuarioView.deshabilitarModificacion}" required="false" label="primerApellido" />
+					 
+					 					<h:outputText value="Segundo apellido:" />
+					                    <p:inputText value="#{usuarioView.segundoApellido}" style="width:95%" disabled="#{usuarioView.deshabilitarModificacion}" label="segundoApellido" />
+					 
+					                    <h:outputText value="Saltar a usuario: " />
+					                    <h:selectBooleanCheckbox value="#{usuarioView.skip}" />
+					                    
+					                </h:panelGrid>
+					            </p:panel>
+					        </p:tab>
+					 
+					        <p:tab id="address" title="Usuario">
+					            <p:panel header="Información usuario">
+					                <p:messages />
+					                
+					                <h:panelGrid columns="2" columnClasses="label, value">
+					                
+					                	<h:outputText value="Usuario (Email): *" />
+					                    <p:inputText value="#{usuarioView.usuario}" required="false" label="Usuario" style="width:95%" disabled="#{usuarioView.deshabilitarModificacion}"/>
+					 
+					                <h:outputText value="Contraseña: *" />
+					                
+					              	  <p:password id="pass1" value="#{usuarioView.contrasena}" feedback="true"
+							                    promptLabel="Por favor ingrese una contraseña" weakLabel="débil" style="width:95%"
+							                    goodLabel="buena" strongLabel="segura" match="pass2"  required="false"/>
+					                
+					                	<h:outputText value="Confirmar contraseña: *" />
+					                
+					                   <p:password id="pass2" value="#{usuarioView.contrasena2}" label="Confirmar contraseña:" style="width:95%" required="false" />
+					                
+					                
+					                <h:outputText value="Rol: *" />
+					                	<p:selectOneMenu value="#{usuarioView.tipoUsuarioSeleccionado}" 
+								                         effect="fade" filter="true" filterMatchMode="contains" required="false">
+								 
+								           	 <f:selectItem itemLabel="Seleccionar" itemValue="-1" noSelectionOption="false"/>
+          									 <f:selectItems value="#{usuarioView.lstTipoUsuarioSelectItem}"/>
+								        </p:selectOneMenu>
+					                
+					                
+					                	<h:outputText value="Departamento: *" />
+					                	<p:selectOneMenu value="#{usuarioView.departamentoSeleccionado}"  
+								                         effect="fade" filter="true" filterMatchMode="contains" required="false">
+								 
+								           	 <f:selectItem itemLabel="Seleccionar" itemValue="-1" noSelectionOption="false"/>
+          									 <f:selectItems value="#{usuarioView.lstDepartamentoSelectItem}"/>
+								        </p:selectOneMenu>
+					                
+					                <h:outputText value="Estado:" />
+										<p:selectOneRadio id="city2" value="#{usuarioView.estadoRegistro}" layout="responsive" columns="5" style="width:100%">
+			          						 <f:selectItem itemLabel="Activo" itemValue="A" />
+			                       			 <f:selectItem itemLabel="Inactivo" itemValue="I" />            
+									    </p:selectOneRadio>	
+					                
+					                
+					                </h:panelGrid>
+					            </p:panel>
+					        </p:tab>
+					 
+					        <p:tab id="confirm" title="Confirmación">
+					            <p:panel header="Confirmar">
+					               
+					                <h:panelGrid id="confirmation" columns="3" columnClasses="grid,grid,grid">
+					                    <h:panelGrid columns="2" columnClasses="label, value">
+					                       
+					                    <h:outputText value="Tipo Identificación: *" />
+					                	<p:selectOneMenu value="#{usuarioView.tipoIdentificacionSeleccionado}"  styleClass="outputLabel"
+								                         effect="fade" filter="true" filterMatchMode="contains" required="true" disabled="true">
+								 
+								           	 <f:selectItem itemLabel="Seleccionar" itemValue="-1" noSelectionOption="true"/>
+          									 <f:selectItems value="#{usuarioView.lstTipoIdentificacionSelectItem}"/>
+								        </p:selectOneMenu>
+					                
+					                  	<h:outputText value="Identificación: *" />
+					                    <h:outputText value="#{usuarioView.identificacion}" styleClass="outputLabel" />
+					 
+					               		<h:outputText value="Primer nombre: *" />
+					                    <h:outputText value="#{usuarioView.primerNombre}" styleClass="outputLabel"/>
+					 
+										<h:outputText value="Segundo nombre: " />
+					                    <h:outputText value="#{usuarioView.segundoNombre}" styleClass="outputLabel"/>
+					 
+										<h:outputText value="Primer apellido: *" />
+					                    <h:outputText value="#{usuarioView.primerApellido}" styleClass="outputLabel" />
+					 
+					 					<h:outputText value="Segundo apellido:" />
+					                    <h:outputText value="#{usuarioView.segundoApellido}"  styleClass="outputLabel" />
+					 
+					                       
+					                    </h:panelGrid>
+					 
+					                    <h:panelGrid columns="2" columnClasses="label, value">
+							                   	<h:outputText value="Usuario: *" />
+							                    <h:outputText value="#{usuarioView.usuario}" styleClass="outputLabel"/>
+							 
+							               		<h:outputText value="Contraseña: *" />
+							                    <h:outputText value="************" styleClass="outputLabel" />
+							                
+							               		<h:outputText value="Rol: *" />
+							                	<p:selectOneMenu value="#{usuarioView.tipoUsuarioSeleccionado}"  disabled="true" styleClass="outputLabel"
+										                         effect="fade" filter="true" filterMatchMode="contains" required="true">
+										 
+										           	 <f:selectItem itemLabel="Seleccionar" itemValue="-1" noSelectionOption="true"/>
+		          									 <f:selectItems value="#{usuarioView.lstTipoUsuarioSelectItem}" />
+										        </p:selectOneMenu>
+							                
+							                
+							                	<h:outputText value="Departamento: *" />
+							                	<p:selectOneMenu value="#{usuarioView.departamentoSeleccionado}" disabled="true" styleClass="outputLabel"
+										                         effect="fade" filter="true" filterMatchMode="contains" required="true">
+										 
+										           	 <f:selectItem itemLabel="Seleccionar" itemValue="-1" noSelectionOption="true"/>
+		          									 <f:selectItems value="#{usuarioView.lstDepartamentoSelectItem}"/>
+										        </p:selectOneMenu>
+										        
+										        
+					                    </h:panelGrid>
+					 
+					 
+					 
+					                </h:panelGrid>
+					 
+					 <p:spacer height="10"></p:spacer>
+					 
+					 <p:separator></p:separator>
+					 
+					 		<div align="center">
+									<p:commandButton id="btnSave" binding="#{usuarioView.btnSave}" disabled="true" value="Guardar" action="#{usuarioView.action_save()}" update="formDialog" oncomplete="PF('tblUsuarios').filter(); PF('wiz').loadStep('personal',false)"/>
+									<p:commandButton id="btnClear" value="Limpiar" action="#{usuarioView.action_clear()}" update="formDialog" oncomplete="PF('wiz').loadStep('personal',false)" />
+							</div>
+							
+							 <p:spacer height="10"></p:spacer>
+							
+					            </p:panel>
+					        </p:tab>
+					    </p:wizard>
+						
+								
+						</h:panelGrid>
+												</div>
+						
+				</p:panel>
+				
+				
+				<p:spacer height="10"></p:spacer>
+				<p:panel id="panelDataTableUsuario" header="Consulta Usuarios" style="width:90%" >
+				
+							<p:dataTable id="tblUsuarios"  widgetVar="tblUsuarios"  selectionMode="single" selection="#{usuarioView.selectedUsuario}" rowKey="#{usuario.identificacionPersona}" value="#{usuarioView.data}" var="usuario" paginator="true" rows="10"
+							filterDelay="1000" paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}">
+										
+										<p:ajax event="rowSelect" listener="#{usuarioView.action_cargar_usuario}" update="formDialog" />		
+											
+										<f:facet name="{Exporters}">
+								            <div style="float:right;padding-top: 5px;">
+								                <h:commandLink>
+								                    <img src="../../images/excel.png"/>
+								                    <p:dataExporter type="xls" target="tblUsuarios" fileName="usuarios" />
+								                </h:commandLink>
+								 
+								                <h:commandLink>
+								              		<img src="../../images/pdf.png"/>
+								                    <p:dataExporter type="pdf" target="tblUsuarios" fileName="usuarios"/>
+								                </h:commandLink>
+								 
+								                <h:commandLink>
+								                	<img src="../../images/csv.png"/>
+								                    <p:dataExporter type="csv" target="tblUsuarios" fileName="usuarios" />
+								                </h:commandLink>
+								 
+								                <h:commandLink>
+								                	<img src="../../images/xml.png"/>
+								                    <p:dataExporter type="xml" target="tblUsuarios" fileName="usuarios" />
+								                </h:commandLink>
+								            </div>
+								        </f:facet>			
+								        
+										<p:column  filterBy="#{usuario.identificacionPersona}" sortBy="#{usuario.identificacionPersona}"  filterMatchMode="contains">
+											 <f:facet name="header">
+											<h:outputText value="Identificación"/>
+											</f:facet>
+											 <h:outputText value="#{usuario.identificacionPersona}"/>
+										</p:column>  	
+										
+										<p:column  filterBy="#{usuario.primerNombre}" sortBy="#{usuario.primerNombre}"  filterMatchMode="contains">
+											 <f:facet name="header">
+											<h:outputText value="Primer Nombre"/>
+											</f:facet>
+											 <h:outputText value="#{usuario.primerNombre}"/>
+										</p:column>  	
+										
+										<p:column  filterBy="#{usuario.segundoNombre}" sortBy="#{usuario.segundoNombre}"  filterMatchMode="contains">
+											 <f:facet name="header">
+											<h:outputText value="Segundo Nombre"/>
+											</f:facet>
+											 <h:outputText value="#{usuario.segundoNombre}"/>
+										</p:column>  	
+											
+										<p:column  filterBy="#{usuario.primerApellido}" sortBy="#{usuario.primerApellido}"  filterMatchMode="contains">
+											 <f:facet name="header">
+											<h:outputText value="Primer Apellido"/>
+											</f:facet>
+											 <h:outputText value="#{usuario.primerApellido}"/>
+										</p:column>  
+										
+										<p:column  filterBy="#{usuario.segundoApellido}" sortBy="#{usuario.segundoApellido}"  filterMatchMode="contains">
+											 <f:facet name="header">
+											<h:outputText value="Segundo Apellido"/>
+											</f:facet>
+											 <h:outputText value="#{usuario.segundoApellido}"/>
+										</p:column> 	
+										
+										<p:column  filterBy="#{usuario.usuario}" sortBy="#{usuario.usuario}"  filterMatchMode="contains">
+											 <f:facet name="header">
+											<h:outputText value="Usuario"/>
+											</f:facet>
+											 <h:outputText value="#{usuario.usuario}"/>
+										</p:column> 	
+										
+										<p:column  filterBy="#{usuario.nombreRol}" sortBy="#{usuario.nombreRol}"  filterMatchMode="contains">
+											 <f:facet name="header">
+											<h:outputText value="Rol"/>
+											</f:facet>
+											 <h:outputText value="#{usuario.nombreRol}"/>
+										</p:column> 	
+										
+										<p:column  filterBy="#{usuario.nombreDepartamento}" sortBy="#{usuario.nombreDepartamento}"  filterMatchMode="contains">
+											 <f:facet name="header">
+											<h:outputText value="Departamento"/>
+											</f:facet>
+											 <h:outputText value="#{usuario.nombreDepartamento}"/>
+										</p:column> 	
+															
+										<p:column filterBy="#{usuario.estadoRegistro}" sortBy="#{usuario.estadoRegistro}" >
+											<f:facet name="header">
+												<h:outputText value="Estado"/>
+											</f:facet>
+											<f:facet name="filter">
+								                <p:selectOneMenu onchange="PF('tblUsuarios').filter()" styleClass="custom-filter">
+								                    <f:selectItem itemLabel="Seleccionar" itemValue="#{null}" noSelectionOption="true" />
+								                    <f:selectItem itemLabel="ACTIVO" itemValue="A" noSelectionOption="false" />
+								                    <f:selectItem itemLabel="INACTIVO" itemValue="I" noSelectionOption="false" />
+								                  
+								                </p:selectOneMenu>
+								            </f:facet>
+											 <h:outputText value="#{(usuario.estadoRegistro == 'A') ? 'ACTIVO':'INACTIVO'}"/>
+										</p:column>       			                    
+												                    
+							</p:dataTable>	
+						</p:panel>
+						</div>		
+			</h:form>
+		</f:view>
+			</ui:define>		
+		</ui:composition>	

@@ -1,0 +1,1500 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+
+	<ui:define name="content">
+
+		<p:ajaxStatus onstart="PF('statusDialog').show()"
+			onsuccess="PF('statusDialog').hide()" />
+		<p:dialog modal="true" widgetVar="statusDialog" header="Cargando"
+			draggable="false" closable="false">
+			<p:graphicImage
+				value="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/ajaxloadingbar.gif" />
+		</p:dialog>
+
+		<!-- Expired session -->
+		<p:idleMonitor onactive="PF('sessionTimeOutDialog').show();"
+			timeout="#{session.maxInactiveInterval * 1000}" />
+		<p:dialog modal="true" widgetVar="sessionTimeOutDialog"
+			header="Sesión terminada" draggable="false" closable="false">
+			<h:outputText value="La sesión ha finalizado" />
+			<input id="confirmBackToLogin" type="button" value="Iniciar sesión"
+				onclick="window.location='#{facesContext.externalContext.requestContextPath}/index.jsp';" />
+		</p:dialog>
+
+		<style type="text/css">
+.ui-panel {
+	margin-top: 20px
+}
+
+.ui-tabs-top {
+	background-color: #FFFFFF;
+}
+
+.one {
+	width: 20%;
+}
+
+.two {
+	width: 70%;
+}
+
+.colAFiltro {
+	width: 10%;
+}
+
+.colBFiltro {
+	width: 50%;
+}
+
+.col30 {
+	width: 30%;
+}
+
+.col70 {
+	width: 70%;
+}
+</style>
+
+		<h:form id="frmRegistarCRP" enctype="multipart/form-data">
+
+			<div class="Container100">
+				<div>
+
+					<p:panel>
+						<h:outputText
+							value="Registre un CRP, a partir de los rubros presupuestales del un CDP previamente creado. #{registrarCrpView.dummy}"
+							styleClass="FontBold Fs18 hardblue" />
+					</p:panel>
+
+					<p:panel>
+						<!-- 						<p:messages showDetail="false" autoUpdate="true" closable="true" /> -->
+						<p:growl id="msgMain" autoUpdate="true" />
+
+						<div class="ContainerIndent">
+							<h:outputText value="Datos del CRP" />
+						</div>
+
+						<div>
+							<div>
+
+								<h:panelGrid id="pnlEncabezadoCRP" columns="2"
+									columnClasses="one, two" style="width: 100%;">
+
+									<h:outputText value="Consecutivo: "
+										rendered="#{registrarCrpView.modoConsulta == true}" />
+									<h:outputText value="#{registrarCrpView.gluoCrp.consecutivo}"
+										rendered="#{registrarCrpView.modoConsulta == true}" />
+
+									<h:outputText value="CDP:" />
+									<p:panelGrid>
+										<p:inputText styleClass="Wid50"
+											value="#{registrarCrpView.consecutivoCDPSeleccionado}"
+											id="txtCDP" onkeypress="return false;" />
+										<p:commandButton icon="ui-icon-search"
+											oncomplete="PF('dlgCdpsVigentes').show();" />
+									</p:panelGrid>
+
+									<h:outputText value="Tipo de Soporte: " />
+									<p:panelGrid>
+										<p:selectOneMenu id="sorTipoSoporte"
+											binding="#{registrarCrpView.sorTipoSoporte}" value="0"
+											styleClass="Wid50">
+											<f:selectItem itemLabel="Ninguno" itemValue="0" />
+											<f:selectItem itemLabel="Contrato" itemValue="1" />
+											<f:selectItem itemLabel="Acto administrativo" itemValue="2" />
+											<f:selectItem itemLabel="Decreto" itemValue="3" />
+											<p:ajax listener="#{registrarCrpView.listener_tipoSoporte}"
+												update="txtContrato, btnSearchContrato, actoAdministrativoSeleccionado, 
+														btnSearchActoAdm, txtDecreto" />
+										</p:selectOneMenu>
+									</p:panelGrid>
+
+									<h:outputText value="No. Contrato:" />
+									<p:panelGrid>
+										<p:inputText id="txtContrato" styleClass="Wid50"
+											readonly="true" value="#{registrarCrpView.txtContrato}">
+											<p:ajax update="@this" />
+										</p:inputText>
+										<p:commandButton id="btnSearchContrato" icon="ui-icon-search"
+											disabled="#{registrarCrpView.deshabilitarContrato}"
+											oncomplete="PF('dialogContratos').show();" />
+									</p:panelGrid>
+
+									<h:outputText value="Acto Administrativo: " />
+									<p:panelGrid>
+										<p:inputText id="actoAdministrativoSeleccionado"
+											styleClass="Wid50"
+											value="#{registrarCrpView.consecutivoActoAdministrativo}"
+											readonly="true">
+											<p:ajax update="@this" />
+										</p:inputText>
+										<p:commandButton id="btnSearchActoAdm" icon="ui-icon-search"
+											disabled="#{registrarCrpView.deshabilitarActoAdministrativo}"
+											action="#{registrarCrpView.action_new_acto_administrativo()}"
+											update="@([id$=panelGluoActoAdministrativo])" />
+									</p:panelGrid>
+									
+									<h:outputText value="Decreto: " />
+									
+									<p:inputText id="txtDecreto"
+											styleClass="Wid50"
+											value="#{registrarCrpView.decretoStr}" readonly="#{registrarCrpView.deshabilitarDecreto}" />
+									
+									<h:outputText value="Requiere Anticipo?" />
+
+									<h:panelGrid columns="2" style="width: 100%;">
+										<p:selectBooleanCheckbox value="#{registrarCrpView.anticipo}">
+											<p:ajax
+												update="txtPorcentjeAnticipo,:frmRegistarCRP:pnlEncabezadoCRP" />
+										</p:selectBooleanCheckbox>
+
+										<pe:inputNumber placeholder="Porcentaje anticipo"
+											id="txtPorcentjeAnticipo"
+											rendered="#{registrarCrpView.anticipo == true}"
+											value="#{registrarCrpView.porcentajeAnticipo}"
+											styleClass="Wid20" style="text-align: right;" symbol=" %"
+											symbolPosition="s" decimalSeparator="," thousandSeparator="."
+											minValue="0" maxValue="100"
+											validatorMessage="Valor no válido" decimalPlaces="2">
+											<p:ajax event="blur" update="@this" />
+										</pe:inputNumber>
+
+									</h:panelGrid>
+
+
+
+									<h:outputText value="Objeto:" />
+									<h:panelGrid columns="1" style="width: 100%;">
+										<p:inputTextarea styleClass="Wid50" counter="counterConcepto"
+											maxlength="2000" counterTemplate="{0} caracteres restantes."
+											disabled="false" autoResize="false"
+											value="#{registrarCrpView.concepto}" />
+										<p:outputLabel id="counterConcepto" />
+									</h:panelGrid>
+
+									<h:outputText value="Fecha Expedición:" />
+									<p:calendar value="#{registrarCrpView.fechaExpedicion}"
+										timeZone="GMT-5" />
+
+									<h:outputText value="Fecha Vencimiento:" />
+									<p:calendar value="#{registrarCrpView.fechaVencimiento}"
+										timeZone="GMT-5" />
+
+
+
+
+								</h:panelGrid>
+
+
+							</div>
+						</div>
+					</p:panel>
+
+					<p:panel id="pnlRubrosAdicionados">
+						<div>
+							<h:outputText
+								value="Los siguientes rubros, serán adicionados al CRP: " />
+						</div>
+
+						<p:dataTable id="rubrosCRP" var="rubro" rows="200"
+							value="#{registrarCrpView.detallesCDPSeleccionadosVariosRubros}"
+							paginator="false"
+							paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+							rowsPerPageTemplate="300,400,500"
+							emptyMessage="No hay rubros adicionados" reflow="true"
+							rowKey="#{rubro.dCdpId}" rowIndexVar="indice" filterDelay="1000">
+
+							<p:column headerText="Cuenta" sortBy="#{rubro.codigoCuenta}"
+								style="width: 10%" filterBy="#{rubro.codigoCuenta}"
+								filterMatchMode="startsWith">
+								<h:outputText value="#{rubro.codigoCuenta}" />
+							</p:column>
+
+							<p:column headerText="Descripción"
+								sortBy="#{rubro.descripcionCuenta}" style="width: 20%"
+								filterBy="#{rubro.descripcionCuenta}" filterMatchMode="contains">
+								<h:outputText value="#{rubro.descripcionCuenta}" />
+							</p:column>
+
+							<p:column headerText="Tercero"
+								sortBy="#{rubro.identificacionTerceroSeleccionado}"
+								style="width: 35%"
+								filterBy="#{rubro.identificacionTerceroSeleccionado}"
+								filterMatchMode="contains">
+
+								<p:panelGrid>
+									<p:autoComplete id="identificacionTerceroSeleccionado"
+										minQueryLength="2"
+										value="#{rubro.identificacionTerceroSeleccionado}"
+										completeMethod="#{registrarCrpView.action_autoCompleteTercero}"
+										effect="fade" forceSelection="true" styleClass="Wid60">
+										<p:ajax event="itemSelect"
+											listener="#{registrarCrpView.handleSelect}" update="@this"
+											oncomplete="#{registrarCrpView.onStartTercero(rubro.dCdpIdKeyUnico)}" />
+									</p:autoComplete>
+									<p:commandButton icon="ui-icon-search"
+										oncomplete="PF('dialogoTercero').show();">
+
+										<f:setPropertyActionListener value="#{rubro.dCdpIdKeyUnico}"
+											target="#{registrarCrpView.dCdpIdSeleccionado}" />
+
+									</p:commandButton>
+								</p:panelGrid>
+
+							</p:column>
+
+
+
+							<p:column headerText="Valor inicial en CDP" style="width: 10%">
+								<div align="right">
+									<h:outputText value="#{rubro.valorCertificado}">
+										<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+									</h:outputText>
+								</div>
+							</p:column>
+
+							<p:column headerText="Disponible para CRPs" style="width: 10%">
+								<div align="right">
+									<h:outputText value="#{rubro.valorDisponible}">
+										<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+									</h:outputText>
+								</div>
+							</p:column>
+
+							<p:column id="colAsignacionEnCRP" headerText="Asignación en CRP"
+								style="width: 15%">
+								<div align="right">
+
+									<pe:inputNumber value="#{rubro.valorAsignadoEnCrp}"
+										styleClass="Wid20" style="text-align: right;" symbol="$ "
+										symbolPosition="p" decimalSeparator="," thousandSeparator="."
+										minValue="0" maxValue="#{rubro.valorDisponible}"
+										validatorMessage="Valor no válido" decimalPlaces="2">
+										<p:ajax event="change" update="rubrosCRP"
+											listener="#{registrarCrpView.listener_recalcularSaldosRubro(rubro)}" />
+									</pe:inputNumber>
+
+								</div>
+							</p:column>
+
+							<p:column id="colSaldoFinal" headerText="Saldo final"
+								style="width: 10%">
+								<div align="right">
+									<h:outputText id="outSaldoFinal" value="#{(rubro.saldoFinal)}">
+										<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+									</h:outputText>
+								</div>
+							</p:column>
+
+
+						</p:dataTable>
+						<br />
+						<p:commandButton value="Seleccione los rubros del CDP..."
+							icon="ui-icon-plus" oncomplete="PF('dlgRubros').show();" />
+						<br />
+					</p:panel>
+
+					<div class="EmptyBox20" />
+
+					<p:commandButton value="Guardar C.R.P"
+						rendered="#{registrarCrpView.modoConsulta==false}"
+						action="#{registrarCrpView.action_guardarCRP}"
+						update=":frmRegistarCRP" />
+
+					<p:commandButton value="Guardar Cambios del C.R.P"
+						rendered="#{registrarCrpView.modoConsulta==true and registrarCrpView.puedeModifcar==true}"
+						actionListener="#{registrarCrpView.action_modificarCRP}"
+						update=":frmRegistarCRP" />
+
+				</div>
+			</div>
+
+			<!-- Rubros adicionados al CRP -->
+			<!-- ************************* -->
+			<p:dialog modal="true" widgetVar="dlgRubros"
+				header="Rubros presupuestales" draggable="false" closable="true"
+				resizable="true" width="90%">
+
+				<p:scrollPanel mode="native" style="width:100%; height:400px">
+					<div class="ContainerIndent">
+						<h:outputText
+							value="Los siguientes rubros, pertenecen al CDP seleccionado. Escoja los rubros que desea adicionar al CRP: " />
+					</div>
+
+					<p:dataTable id="rubrosEncontrados" var="rubro" rows="200"
+						style="width: 100%;" value="#{registrarCrpView.detallesCDP}"
+						paginator="true"
+						paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+						rowsPerPageTemplate="300,400,500"
+						emptyMessage="No hay rubros presupuestales" reflow="true"
+						rowKey="#{rubro.dCdpId}"
+						selection="#{registrarCrpView.detallesCDPSeleccionados}"
+						filterDelay="1000">
+
+						<p:column selectionMode="multiple"
+							style="width:5%; text-align:center" />
+
+						<p:column headerText="Cuenta" sortBy="#{rubro.codigoCuenta}"
+							style="width: 10%" filterBy="#{rubro.codigoCuenta}"
+							filterMatchMode="startsWith">
+							<h:outputText value="#{rubro.codigoCuenta}" />
+						</p:column>
+
+						<p:column headerText="Descripción"
+							sortBy="#{rubro.descripcionCuenta}" style="width: 35%"
+							filterBy="#{rubro.descripcionCuenta}" filterMatchMode="contains">
+							<h:outputText value="#{rubro.descripcionCuenta}" />
+						</p:column>
+
+						<p:column headerText="Valor inicial en CDP" style="width: 10%">
+							<div align="right">
+								<h:outputText value="#{rubro.valorCertificado}">
+									<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+								</h:outputText>
+							</div>
+						</p:column>
+
+						<p:column headerText="Disponible para CRPs" style="width: 10%">
+							<div align="right">
+								<h:outputText value="#{rubro.valorDisponible}">
+									<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+								</h:outputText>
+							</div>
+						</p:column>
+
+						<p:column headerText="Cant. Terceros" style="width: 10%">
+							<div align="right">
+								<pe:inputNumber value="#{rubro.numeroRubros}" decimalPlaces="0"
+									maxValue="100" />
+							</div>
+						</p:column>
+					</p:dataTable>
+
+					<br />
+
+					<p:commandButton value="Adicionar rubros seleccionados"
+						icon="ui-icon-plus"
+						action="#{registrarCrpView.action_seleccionarRubros}"
+						update=":frmRegistarCRP:pnlRubrosAdicionados, :frmRegistarCRP:msgMain" />
+					<br />
+				</p:scrollPanel>
+
+
+				<div class="EmptyBox20" />
+
+			</p:dialog>
+			<!-- Rubros adicionados al CRP -->
+			<!-- ************************* -->
+
+
+
+			<!-- CDPs del año fiscal vigente -->
+			<!-- *************************** -->
+			<p:dialog modal="true" widgetVar="dlgCdpsVigentes"
+				header="CDPs Vigentes" draggable="false" closable="true"
+				resizable="true" width="90%">
+
+				<p:scrollPanel mode="native" style="width:100%; height:400px">
+					<div class="ContainerIndent">
+						<h:outputText value="Seleccione un CDP del año fiscal vigente: " />
+					</div>
+
+					<p:dataTable id="cdpsVigentes" var="cdp" rows="200"
+						style="width: 100%;"
+						value="#{registrarCrpView.cdpsVigentesDelAno}" paginator="true"
+						paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+						rowsPerPageTemplate="300,400,500"
+						emptyMessage="No hay CDPs vigentes con saldo pendiente para CRPs"
+						reflow="true" rowKey="#{cdp.cdpId}"
+						selection="#{registrarCrpView.cdpSeleccionado}" filterDelay="1000">
+
+						<p:column headerText="Consecutivo" sortBy="#{cdp.consecutivo}"
+							style="width: 10%" filterBy="#{cdp.consecutivo}"
+							filterMatchMode="contains">
+							<h:outputText value="#{cdp.consecutivo}" />
+						</p:column>
+
+						<p:column headerText="Fecha Exp." sortBy="#{cdp.fechaExpedicion}"
+							style="width: 10%" filterBy="#{cdp.fechaExpedicion}"
+							filterMatchMode="startsWith">
+							<h:outputText value="#{cdp.fechaExpedicion}">
+								<f:convertDateTime pattern="dd/MMM/yyyy" />
+							</h:outputText>
+						</p:column>
+
+						<p:column headerText="Objeto" sortBy="#{cdp.objeto}"
+							style="width: 40%" filterBy="#{cdp.objeto}"
+							filterMatchMode="contains">
+							<h:outputText value="#{cdp.objeto}" />
+						</p:column>
+
+						<p:column headerText="Valor Total CDP" style="width: 10%">
+							<div align="right">
+								<h:outputText value="#{cdp.valorTotalCdp}">
+									<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+								</h:outputText>
+							</div>
+						</p:column>
+
+						<p:column headerText="Valor Disponible" style="width: 10%">
+							<div align="right">
+								<h:outputText value="#{cdp.valorTotalDisponible}">
+									<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+								</h:outputText>
+							</div>
+						</p:column>
+
+						<p:column headerText="Seleccionar" style="width: 5%">
+							<p:commandButton title="Seleccionar" icon="ui-icon-check"
+								oncomplete="PF('dlgCdpsVigentes').hide();"
+								update=":frmRegistarCRP"
+								action="#{registrarCrpView.action_seleccionarCDP(cdp)}">
+							</p:commandButton>
+						</p:column>
+
+
+
+					</p:dataTable>
+				</p:scrollPanel>
+
+
+				<div class="EmptyBox20" />
+
+			</p:dialog>
+			<!-- CDPs del año fiscal vigente -->
+			<!-- *************************** -->
+
+
+
+			<!--        Tercero            -->
+			<!-- ************************* -->
+			<p:dialog modal="true" widgetVar="dlgTercero" header="Tercero"
+				draggable="false" closable="true" resizable="true" width="90%">
+
+				<p:scrollPanel id="pnlTerceros" mode="native"
+					style="width:100%; height:400px">
+					<div class="ContainerIndent" />
+
+					<p:outputLabel value="Criterios de búsqueda para terceros:" />
+
+					<h:panelGrid columns="2" columnClasses="colAFiltro, colBFiltro"
+						style="width: 100%;">
+
+						<p:outputLabel value="Identificación: " />
+						<p:inputText styleClass="Wid50"
+							value="#{registrarCrpView.identificacionFiltro}" />
+
+						<p:outputLabel value="Nombre/Razón Social:" />
+						<p:inputText styleClass="Wid50"
+							value="#{registrarCrpView.nombreRazonSocialFiltro}" />
+
+					</h:panelGrid>
+
+					<p:commandButton value="Buscar Tercero"
+						actionListener="#{registrarCrpView.action_buscarTercero}"
+						update=":frmRegistarCRP:pnlTerceros" />
+
+					<br />
+
+					<p:dataTable id="tercerosEncontrados" var="tercero" rows="350"
+						style="width: 100%;" value="#{registrarCrpView.terceros}"
+						paginator="true"
+						paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+						rowsPerPageTemplate="300,400,500"
+						emptyMessage="No hay terceros encontrados" reflow="true"
+						filterDelay="1000">
+
+						<f:facet name="header">
+                             Terceros
+                         </f:facet>
+
+						<p:column headerText="Identificación"
+							sortBy="#{tercero.identificacion}" style="width: 10%"
+							filterBy="#{tercero.identificacion}" filterMatchMode="startsWith">
+							<h:outputText value="#{tercero.identificacion}" />
+						</p:column>
+
+						<p:column headerText="Primer Nombre"
+							sortBy="#{tercero.primerNombre}" style="width: 10%"
+							filterBy="#{tercero.primerNombre}" filterMatchMode="contains">
+							<h:outputText value="#{tercero.primerNombre}" />
+						</p:column>
+
+						<p:column headerText="Segundo Nombre"
+							sortBy="#{tercero.segundoNombre}" style="width: 10%"
+							filterBy="#{tercero.segundoNombre}" filterMatchMode="contains">
+							<h:outputText value="#{tercero.segundoNombre}" />
+						</p:column>
+
+						<p:column headerText="Primer Apellido"
+							sortBy="#{tercero.primerApellido}" style="width: 10%"
+							filterBy="#{tercero.primerApellido}" filterMatchMode="contains">
+							<h:outputText value="#{tercero.primerApellido}" />
+						</p:column>
+
+						<p:column headerText="Segundo Apellido"
+							sortBy="#{tercero.segundoApellido}" style="width: 10%"
+							filterBy="#{tercero.segundoApellido}" filterMatchMode="contains">
+							<h:outputText value="#{tercero.segundoApellido}" />
+						</p:column>
+
+						<p:column headerText="Seleccionar" style="width: 5%">
+							<p:commandButton title="Seleccionar" icon="ui-icon-check"
+								oncomplete="PF('dlgTercero').hide();" update=":frmRegistarCRP"
+								action="#{registrarCrpView.action_seleccionarTercero(tercero)}">
+							</p:commandButton>
+						</p:column>
+
+
+					</p:dataTable>
+
+				</p:scrollPanel>
+
+
+				<div class="EmptyBox20" />
+
+			</p:dialog>
+			<!--        Tercero            -->
+			<!-- ************************* -->
+
+
+
+			<!-- Descargar CRP Generado -->
+			<!-- ******************************************* -->
+			<p:dialog modal="true" widgetVar="dlgDescargarCRP"
+				header="Descargar archivo C.R.P" draggable="false" closable="true"
+				resizable="true" width="90%" height="200px;" position="center">
+
+				<p:outputLabel
+					value="Se ha generado un C.R.P.  Desea descargarlo ahora?" />
+
+				<br />
+				<br />
+
+				<h:panelGrid columns="4">
+					<p:commandButton value="Si, en Archivo PDF"
+						onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)"
+						icon="ui-icon-arrowthichk-s">
+
+						<p:fileDownload value="#{registrarCrpView.reporteCDPPdf}" />
+
+					</p:commandButton>
+
+					<p:commandButton value="Si, en Archivo XLS"
+						onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)"
+						icon="ui-icon-arrowthichk-s">
+
+						<p:fileDownload value="#{registrarCrpView.reporteCDPXls}" />
+
+					</p:commandButton>
+
+
+					<p:commandButton value="Si, en Archivo XLSX"
+						onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)"
+						icon="ui-icon-arrowthichk-s">
+
+						<p:fileDownload value="#{registrarCrpView.reporteCDPXlsx}" />
+
+					</p:commandButton>
+
+					<p:commandButton value="He terminado! Cerrar"
+						oncomplete="PF('dlgDescargarCRP').hide();" />
+
+				</h:panelGrid>
+
+				<div class="EmptyBox20" />
+
+			</p:dialog>
+			<!-- Descargar CDP Generado -->
+
+			<div class="EmptyBox20"></div>
+
+		</h:form>
+
+
+		<!-- Crear el tercero -->
+		<!-- **************************** -->
+		<p:dialog id="idDialogoTercero" widgetVar="dialogoTercero"
+			draggable="true" closable="true" modal="true" visible="false"
+			resizable="false" height="400" width="95%" position="center center"
+			header="Registrar Tercero">
+
+			<h:form id="frmTercero">
+
+				<p:messages id="msg" autoUpdate="true" showDetail="false"
+					closable="true" />
+
+				<p:tabView id="crearConsultarTercero">
+
+					<p:tab id="crearTerceroTab" title="Crear un tercero">
+
+						<div class="Container100">
+							<div class="ContainerIndent">
+
+								<h:panelGrid columns="5" columnClasses="one, two"
+									style="width: 100%;" id="pnlDatosTercero">
+
+									<p:outputLabel for="tipoTercero" value="Tipo Tercero: " />
+									<p:selectOneMenu id="tipoTercero"
+										value="#{registrarCrpView.tipoTercero}" style="width:400px">
+										<f:selectItem itemLabel="Seleccionar" itemValue="" />
+										<f:selectItems value="#{registrarCrpView.lstTipoTerceroItems}" />
+										<p:ajax listener="#{registrarCrpView.listener_tipoPersona}"
+											update="@([id$=tipoTercero]), txtPrimerNombre, txtSegundoNombre,
+							            txtPrimerApellido, txtSegundoApellido, txtRazonSocial"
+											process="@this" />
+									</p:selectOneMenu>
+
+									<p:spacer width="10"></p:spacer>
+
+									<p:outputLabel for="municipio" value="Municipio: " />
+									<p:selectOneMenu id="municipio"
+										value="#{registrarCrpView.municipio}" style="width:400px"
+										filter="true" filterMatchMode="contains">
+										<f:selectItem itemLabel="Seleccionar" itemValue="-1" />
+										<f:selectItems value="#{registrarCrpView.lstMunicipiosItems}" />
+									</p:selectOneMenu>
+
+									<h:outputText value="Identificación:" />
+									<p:inputText id="txtIdentificacion" disabled="false"
+										style="width: 400px;"
+										value="#{registrarCrpView.identificacion}" />
+
+									<p:spacer width="10"></p:spacer>
+
+									<p:outputLabel for="cmbTipoIdentificacion"
+										value="Tipo Identificación: " style="width: 400px;" />
+									<p:selectOneMenu id="cmbTipoIdentificacion"
+										value="#{registrarCrpView.tipoIdentificacionSeleccionada}"
+										style="width:400px">
+										<f:selectItem itemLabel="Seleccionar" itemValue="" />
+										<f:selectItems
+											value="#{registrarCrpView.lstTipoIdentificacionItems}" />
+									</p:selectOneMenu>
+
+
+									<h:outputText id="lblPrimerNombre" value="Primer Nombre:" />
+									<p:inputText id="txtPrimerNombre" style="width: 400px;"
+										value="#{registrarCrpView.primerNombre}"
+										disabled="#{registrarCrpView.showPersonaNatural}" />
+
+									<p:spacer width="10"></p:spacer>
+
+									<h:outputText id="lblSegundoNombre" value="Segundo Nombre:" />
+									<p:inputText id="txtSegundoNombre" style="width: 400px;"
+										value="#{registrarCrpView.segundoNombre}"
+										disabled="#{registrarCrpView.showPersonaNatural}" />
+
+									<h:outputText id="lblPrimerApellido" value="Primer Apellido:" />
+									<p:inputText id="txtPrimerApellido" style="width: 400px;"
+										value="#{registrarCrpView.primerApellido}"
+										disabled="#{registrarCrpView.showPersonaNatural}" />
+
+									<p:spacer width="10"></p:spacer>
+
+									<h:outputText id="lblSegundoApellido" value="Segundo Apellido:" />
+									<p:inputText id="txtSegundoApellido" style="width: 400px;"
+										value="#{registrarCrpView.segundoApellido}"
+										disabled="#{registrarCrpView.showPersonaNatural}" />
+
+									<h:outputText id="lblRazonSocial" value="Razón Social: " />
+									<p:inputText id="txtRazonSocial" style="width: 400px;"
+										value="#{registrarCrpView.razonSocial}"
+										disabled="#{!registrarCrpView.showPersonaNatural}" />
+
+								</h:panelGrid>
+
+								<div align="center">
+									<h:panelGrid columns="2" style="margin-bottom:10px"
+										cellpadding="5">
+										<p:outputLabel for="genero" value="Género: " />
+										<p:selectOneRadio id="genero"
+											value="#{registrarCrpView.genero}">
+											<f:selectItem itemLabel="Masculino"
+												itemValue="#{registrarCrpView.masculino}" />
+											<f:selectItem itemLabel="Femenino"
+												itemValue="#{registrarCrpView.femenino}" />
+										</p:selectOneRadio>
+									</h:panelGrid>
+
+									<h:panelGrid columns="4" style="margin-bottom:10px"
+										cellpadding="5">
+
+										<h:outputText id="lblTelefonoUno" value="Teléfono 1:" />
+										<p:inputText id="txtTelefonoUno" style="width: 95%;"
+											value="#{registrarCrpView.telefonoUno}" />
+
+										<h:outputText id="lblTelefonoDos" value="Teléfono 2:" />
+										<p:inputText id="txtTelefonoDos" style="width: 95%;"
+											value="#{registrarCrpView.telefonoDos}" />
+
+										<h:outputText id="lblTelefonoTres" value="Teléfono 3:" />
+										<p:inputText id="txtTelefonoTres" style="width: 95%;"
+											value="#{registrarCrpView.telefonoTres}" />
+
+										<h:outputText id="lblDireccion" value="Dirección:" />
+										<p:inputText id="txtDireccion" style="width: 95%;"
+											value="#{registrarCrpView.direccion}" />
+
+									</h:panelGrid>
+								</div>
+							</div>
+						</div>
+
+						<div align="center">
+							<p:commandButton id="btnSave" value="Guardar Tercero"
+								actionListener="#{registrarCrpView.guardarTercero}"
+								update="@([id$=identificacionTerceroSeleccionado])"
+								oncomplete="#{registrarCrpView.cleanDialogTercero()}" />
+
+						</div>
+					</p:tab>
+
+					<p:tab id="consultarTerceroTab" title="Consultar un tercero">
+						<p:scrollPanel mode="native" style="width:100%; height:400px">
+							<p:dataTable id="dataTableTercero"
+								value="#{registrarCrpView.lstTerceros}"
+								emptyMessage="No se han encontrado terceros registrados"
+								rows="5" var="tercero" paginator="true"
+								rowsPerPageTemplate="5,10,15" filterDelay="1000">
+
+								<p:column filterBy="#{tercero.identificacion}"
+									sortBy="#{tercero.identificacion}">
+									<f:facet name="header">
+										<h:outputText value="Identificación" />
+									</f:facet>
+									<h:outputText value="#{tercero.identificacion}" />
+								</p:column>
+
+								<p:column filterBy="#{tercero.primerNombre}"
+									sortBy="#{tercero.primerNombre}">
+									<f:facet name="header">
+										<h:outputText value="Primer Nombre" />
+									</f:facet>
+									<h:outputText value="#{tercero.primerNombre}" />
+								</p:column>
+
+								<p:column filterBy="#{tercero.segundoNombre}"
+									sortBy="#{tercero.segundoNombre}">
+									<f:facet name="header">
+										<h:outputText value="Segundo Nombre" />
+									</f:facet>
+									<h:outputText value="#{tercero.segundoNombre}" />
+								</p:column>
+
+								<p:column filterBy="#{tercero.primerApellido}"
+									sortBy="#{tercero.primerApellido}">
+									<f:facet name="header">
+										<h:outputText value="Primer Apellido" />
+									</f:facet>
+									<h:outputText value="#{tercero.primerApellido}" />
+								</p:column>
+
+								<p:column filterBy="#{tercero.segundoApellido}"
+									sortBy="#{tercero.segundoApellido}">
+									<f:facet name="header">
+										<h:outputText value="Segundo Apellido" />
+									</f:facet>
+									<h:outputText value="#{tercero.segundoApellido}" />
+								</p:column>
+
+								<p:column filterBy="#{tercero.razonSocial}"
+									sortBy="#{tercero.razonSocial}">
+									<f:facet name="header">
+										<h:outputText value="Razón Social" />
+									</f:facet>
+									<h:outputText value="#{tercero.razonSocial}" />
+								</p:column>
+
+								<p:column filterBy="#{tercero.gluoEmpresa.razonSocial}"
+									sortBy="#{tercero.gluoEmpresa.razonSocial}">
+									<f:facet name="header">
+										<h:outputText value="Empresa" />
+									</f:facet>
+									<h:outputText value="#{tercero.gluoEmpresa.razonSocial}" />
+								</p:column>
+
+								<p:column filterBy="#{tercero.gluoTipoTercero.nombre}"
+									sortBy="#{tercero.gluoTipoTercero.nombre}">
+									<f:facet name="header">
+										<h:outputText value="Tipo Tercero" />
+									</f:facet>
+									<h:outputText value="#{tercero.gluoTipoTercero.nombre}" />
+								</p:column>
+
+								<p:column headerText="Seleccionar" style="width: 5%">
+									<p:commandButton title="Seleccionar" icon="ui-icon-check"
+										oncomplete="PF('dialogoTercero').hide();"
+										update="@([id$=identificacionTerceroSeleccionado])"
+										action="#{registrarCrpView.action_seleccionarTercero(tercero)}">
+									</p:commandButton>
+								</p:column>
+							</p:dataTable>
+						</p:scrollPanel>
+					</p:tab>
+				</p:tabView>
+			</h:form>
+		</p:dialog>
+
+
+		<!-- ************************************************** -->
+		<!-- **				DIÁLOGO CONTRATOS			     ** -->
+		<!-- ************************************************** -->
+		<div align="center">
+			<h:form id="frmContratos">
+				<p:dialog id="dialogContratos" widgetVar="dialogContratos"
+					draggable="true" closable="true" modal="true" resizable="false"
+					width="90%" height="420px" header="Contratos">
+
+					<p:messages showDetail="false" autoUpdate="true" closable="true" />
+
+					<p:tabView id="contratosTabView">
+						<p:tab id="listarContratosTab"
+							title="Consultar un contrato existente">
+							<p:scrollPanel mode="native">
+								<p:dataTable id="listaContratosDataTable"
+									style="text-align: center;" scrollable="true" rows="5"
+									paginator="true" var="contrato"
+									value="#{registrarCrpView.listContratoCrpDTOs}"
+									selection="#{registrarCrpView.contratoCrpDTO}"
+									selectionMode="single" rowKey="#{contrato.cocrId}"
+									filterDelay="1000">
+
+									<p:ajax event="rowSelect"
+										listener="#{registrarCrpView.onRowSelectContrato}"
+										update=":frmRegistarCRP, :frmContratos:contratosTabView"
+										oncomplete="PF('dialogContratos').hide();" />
+
+									<p:column selectionMode="single" style="width: 6%;" />
+
+									<p:column headerText="No. contrato"
+										filterBy="#{contrato.numeroContrato}"
+										filterMatchMode="contains" style="width: 200px;">
+										<p:outputLabel value="#{contrato.numeroContrato}" />
+									</p:column>
+
+									<p:column headerText="No. póliza"
+										filterBy="#{contrato.numeroPoliza}" filterMatchMode="contains"
+										style="width: 200px;">
+										<p:outputLabel value="#{contrato.numeroPoliza}" />
+									</p:column>
+
+									<p:column headerText="Identificación tercero"
+										filterBy="#{contrato.identificacionTercero}"
+										filterMatchMode="contains" style="width: 200px;">
+										<p:outputLabel value="#{contrato.identificacionTercero}" />
+									</p:column>
+
+									<p:column headerText="Nombre tercero"
+										filterBy="#{contrato.nombreTercero}"
+										filterMatchMode="contains" style="width: 200px;">
+										<p:outputLabel value="#{contrato.nombreTercero}" />
+									</p:column>
+
+									<p:column headerText="Tipo recurso"
+										filterBy="#{contrato.nombreTipoRecurso}"
+										filterMatchMode="contains" style="width: 200px;">
+										<p:outputLabel value="#{contrato.nombreTipoRecurso}" />
+									</p:column>
+
+									<p:column headerText="Tipo contrato"
+										filterBy="#{contrato.nombreTipoContrato}"
+										filterMatchMode="contains" style="width: 200px;">
+										<p:outputLabel value="#{contrato.nombreTipoContrato}" />
+									</p:column>
+
+									<p:column headerText="Fecha firma contrato"
+										filterBy="#{contrato.fechaFirmaContrato}"
+										filterMatchMode="contains" style="width: 200px;">
+										<p:outputLabel value="#{contrato.fechaFirmaContrato}">
+											<f:convertDateTime pattern="dd-MM-yyyy" />
+										</p:outputLabel>
+									</p:column>
+
+									<p:column headerText="Fecha inicio ejecución"
+										filterBy="#{contrato.fechaInicioEjecucion}"
+										filterMatchMode="contains" style="width: 200px;">
+										<p:outputLabel value="#{contrato.fechaInicioEjecucion}">
+											<f:convertDateTime pattern="dd-MM-yyyy" />
+										</p:outputLabel>
+									</p:column>
+
+									<p:column headerText="Fecha fin ejecución"
+										filterBy="#{contrato.fechaFinEjecucion}"
+										filterMatchMode="contains" style="width: 200px;">
+										<p:outputLabel value="#{contrato.fechaFinEjecucion}">
+											<f:convertDateTime pattern="dd-MM-yyyy" />
+										</p:outputLabel>
+									</p:column>
+
+									<p:column headerText="Estado" filterBy="#{contrato.activo}"
+										filterMatchMode="contains" style="width: 200px;">
+										<p:outputLabel
+											value="#{(contrato.activo == 'A' ? 'Activo' : 'Inactivo')}" />
+									</p:column>
+
+								</p:dataTable>
+							</p:scrollPanel>
+						</p:tab>
+
+						<p:tab id="crearContratosTab" title="Gestionar contratos">
+							<p:scrollPanel mode="native">
+								<h:panelGrid columns="4">
+									<p:outputLabel value="Número contrato:" for="txtNumeroContrato" />
+									<p:inputText id="txtNumeroContrato"
+										value="#{registrarCrpView.txtNumeroContratoCRP}"
+										style="width: 200px;" />
+
+									<p:outputLabel value="Número poliza:" for="txtNumeroPoliza" />
+									<p:inputText id="txtNumeroPoliza"
+										value="#{registrarCrpView.txtNumeroPolizaContratoCRP}"
+										style="width: 200px;" />
+
+									<p:outputLabel value="Tercero:" for="txtTerceroContrato" />
+									<p:panelGrid>
+										<p:inputText id="txtTerceroContrato"
+											value="#{registrarCrpView.txtTerceroContratoCRP}"
+											style="width: 200px;" readonly="true" />
+										<p:commandButton icon="ui-icon-search"
+											oncomplete="PF('dialogTerceroContratoCRP').show();" />
+									</p:panelGrid>
+
+									<p:outputLabel value="Tipo recurso:" for="txtTipoRecurso" />
+									<p:panelGrid>
+										<p:inputText id="txtTipoRecurso"
+											value="#{registrarCrpView.txtTipoRecursoContratoCRP}"
+											style="width: 200px;" readonly="true" />
+										<p:commandButton icon="ui-icon-search"
+											oncomplete="PF('dialogTipoRecursoContrato').show();" />
+									</p:panelGrid>
+
+									<p:outputLabel value="Tipo Contrato " />
+									<p:selectOneMenu id="somTipoContrato"
+										value="#{registrarCrpView.selectTipoContratoCRP}"
+										style="width: 200px">
+										<f:selectItem itemValue="-1" itemLabel="-- SELECCIONE --" />
+										<f:selectItems
+											value="#{registrarCrpView.itemsTipoContratoCRP}" />
+									</p:selectOneMenu>
+
+									<p:outputLabel value="Fecha firma contrato:"
+										for="txtFechaFirmaContrato" />
+									<p:calendar id="txtFechaFirmaContrato"
+										value="#{registrarCrpView.txtFechaFirmaContratoCRP}"
+										navigator="true" />
+
+									<p:outputLabel value="Fecha inicio Ejecución:"
+										for="txtFechaInicioEjecucionContrato" />
+									<p:calendar id="txtFechaInicioEjecucionContrato"
+										value="#{registrarCrpView.txtFechaInicioEjecucionContratoCRP}"
+										navigator="true" />
+
+									<p:outputLabel value="Fecha fin ejecución"
+										for="txtFechaFinEjecucionContrato" />
+									<p:calendar id="txtFechaFinEjecucionContrato"
+										value="#{registrarCrpView.txtFechaFinEjecucionContratoCRP}"
+										navigator="true" />
+
+									<p:outputLabel value="Objeto" for="txtObjeto" />
+									<p:inputTextarea id="txtObjeto"
+										value="#{registrarCrpView.txtObjetoContratoCRP}" />
+
+									<p:outputLabel value="Estado" for="txtActivo" />
+									<p:selectOneRadio id="txtActivo"
+										value="#{registrarCrpView.txtActivoContratoCRP}">
+										<f:selectItem itemLabel="Activo" itemValue="A" />
+										<f:selectItem itemLabel="Inactivo" itemValue="I" />
+									</p:selectOneRadio>
+
+								</h:panelGrid>
+
+								<br />
+
+								<p:commandButton id="btnGuardarContrato" value="Guardar"
+									action="#{registrarCrpView.action_crearContratoCRP}"
+									update="listarContratosTab,crearContratosTab,:frmContratos,:frmRegistarCRP" />
+
+								<p:commandButton id="btnLimpiarContrato" value="Limpiar"
+									action="#{registrarCrpView.action_limpiarContratoCRP}"
+									update="listarContratosTab,crearContratosTab,:frmContratos,:frmRegistarCRP"
+									oncomplete="PF('dialogContratos').show();" />
+
+							</p:scrollPanel>
+						</p:tab>
+					</p:tabView>
+				</p:dialog>
+				<!-- FIN DIÁLOGO CONTRATOS -->
+
+				<!-- ************************************************** -->
+				<!-- **				DIÁLOGO TIPO RECURSO		     ** -->
+				<!-- ************************************************** -->
+				<p:dialog id="dialogTipoRecursoContrato"
+					widgetVar="dialogTipoRecursoContrato" draggable="true"
+					closable="true" modal="true" resizable="false" width="90%"
+					header="Tipo Recurso">
+
+					<div align="center">
+						<p:panel id="pnlTipoRecursoContrato"
+							header="Tipo Recurso Contrato" style="text-align: center;">
+							<p:dataTable id="tipoRecursoContratoDataTable" rows="10"
+								paginator="true" var="tipoRecursoContrato"
+								value="#{registrarCrpView.listTipoRecursoContratoCRPDTOs}"
+								selection="#{registrarCrpView.selectedTipoRecursoDTO}"
+								selectionMode="single" rowKey="#{tipoRecursoContrato.tireId}"
+								filterDelay="1000">
+
+								<p:ajax event="rowSelect"
+									listener="#{registrarCrpView.onRowSelectTipoRecursoContratoCRP}"
+									update=":frmContratos"
+									oncomplete="PF('dialogTipoRecursoContrato').hide(); PF('dialogContratos').show();" />
+
+								<p:column selectionMode="single" style="width: 6%;" />
+
+								<p:column headerText="Código"
+									filterBy="#{tipoRecursoContrato.descripcion}"
+									filterMatchMode="contains">
+									<p:outputLabel value="#{tipoRecursoContrato.descripcion}" />
+								</p:column>
+
+								<p:column headerText="Descripción"
+									filterBy="#{tipoRecursoContrato.codigo}"
+									filterMatchMode="contains">
+									<p:outputLabel value="#{tipoRecursoContrato.codigo}" />
+								</p:column>
+
+							</p:dataTable>
+						</p:panel>
+					</div>
+				</p:dialog>
+				<!-- FIN DIÁLOGO TIPO RECURSO -->
+
+				<!-- ************************************************** -->
+				<!-- **			DIÁLOGO TERCERO CONTRATO CRP     	 ** -->
+				<!-- ************************************************** -->
+				<p:dialog id="dialogTerceroContratoCRP"
+					widgetVar="dialogTerceroContratoCRP" draggable="true"
+					closable="true" modal="true" visible="false" resizable="false"
+					height="400" width="90%" position="center"
+					header="Registrar Tercero">
+
+					<p:messages id="terceroContratoCrp" showDetail="false"
+						autoUpdate="true" closable="true" />
+
+					<p:tabView id="TerceroContratoTabView">
+						<p:tab id="CrearTerceroContratoTab"
+							title="Crear Tercero Contrato CRP">
+							<p:scrollPanel mode="native">
+
+								<p:panel id="panelGluoTerceroContratoCRP" header="Tercero">
+									<h:panelGrid id="pnlDatosTerceroContratoCRP" columns="5"
+										style="width: 100%;">
+
+										<p:outputLabel for="tipoTerceroContratoCRP"
+											value="Tipo Tercero: " />
+										<p:selectOneMenu id="tipoTerceroContratoCRP"
+											value="#{registrarCrpView.tipoTercero}" style="width:80%">
+											<f:selectItem itemLabel="Seleccionar" itemValue="-1" />
+											<f:selectItems
+												value="#{registrarCrpView.lstTipoTerceroItems}" />
+											<p:ajax listener="#{registrarCrpView.listener_tipoPersona}"
+												update="panelGluoTerceroContratoCRP" process="@this" />
+										</p:selectOneMenu>
+
+										<p:outputLabel for="cmbTipoIdentificacionContratoCRP"
+											value="Tipo Identificación: " />
+										<p:selectOneMenu id="cmbTipoIdentificacionContratoCRP"
+											value="#{registrarCrpView.tipoIdentificacionSeleccionada}"
+											style="width:80%">
+											<f:selectItem itemLabel="Seleccionar" itemValue="-1" />
+											<f:selectItems
+												value="#{registrarCrpView.lstTipoIdentificacionItems}" />
+										</p:selectOneMenu>
+
+										<p:spacer width="10"></p:spacer>
+
+										<h:outputText value="Identificación*:" />
+										<p:inputText id="txtIdentificacionContratoCRP"
+											disabled="false" style="width: 80%;"
+											value="#{registrarCrpView.identificacion}" maxlength="20" />
+
+										<h:outputText value="Primer Nombre*:" />
+										<p:inputText id="txtPrimerNombreContratoCRP"
+											style="width: 80%;" value="#{registrarCrpView.primerNombre}"
+											maxlength="50"
+											disabled="#{registrarCrpView.showPersonaNatural}" />
+
+										<p:spacer width="10"></p:spacer>
+
+										<h:outputText value="Segundo Nombre:" />
+										<p:inputText id="txtSegundoNombreContratoCRP"
+											style="width: 80%;" value="#{registrarCrpView.segundoNombre}"
+											maxlength="50"
+											disabled="#{registrarCrpView.showPersonaNatural}" />
+
+										<h:outputText value="Primer Apellido*:" />
+										<p:inputText id="txtPrimerApellidoContratoCRP"
+											style="width: 80%;"
+											value="#{registrarCrpView.primerApellido}" maxlength="50"
+											disabled="#{registrarCrpView.showPersonaNatural}" />
+
+										<p:spacer width="10"></p:spacer>
+
+										<h:outputText value="Segundo Apellido:" />
+										<p:inputText id="txtSegundoApellidoContratoCRP"
+											style="width: 80%;"
+											value="#{registrarCrpView.segundoApellido}" maxlength="50"
+											disabled="#{registrarCrpView.showPersonaNatural}" />
+
+										<h:outputText value="Razon Social*:" />
+										<p:inputText id="txtRazonSOcialContratoCRP"
+											style="width: 80%;" value="#{registrarCrpView.razonSocial}"
+											maxlength="100"
+											disabled="#{!registrarCrpView.showPersonaNatural}" />
+
+										<p:spacer width="10"></p:spacer>
+
+										<h:outputText value="Teléfono 1:" />
+										<p:inputText id="txtTelefonoUnoContratoCRP"
+											style="width: 80%;" value="#{registrarCrpView.telefonoUno}" />
+
+										<h:outputText value="Dirección:" />
+										<p:inputText id="txtDireccionContratoCRP" style="width: 80%;"
+											value="#{registrarCrpView.direccion}" />
+
+										<p:spacer width="10"></p:spacer>
+
+										<p:outputLabel for="generoContratoCRP" value="Género*: " />
+										<p:selectOneRadio id="generoContratoCRP"
+											value="#{registrarCrpView.genero}">
+											<f:selectItem itemLabel="Masculino"
+												itemValue="#{registrarCrpView.masculino}" />
+											<f:selectItem itemLabel="Femenino"
+												itemValue="#{registrarCrpView.femenino}" />
+										</p:selectOneRadio>
+
+										<p:outputLabel for="municipioContratoCRP" value="Municipio*: " />
+										<p:selectOneMenu id="municipioContratoCRP"
+											value="#{registrarCrpView.municipio}" style="width:80%"
+											filter="true" filterMatchMode="contains">
+											<f:selectItem itemLabel="Seleccionar" itemValue="-1" />
+											<f:selectItems value="#{gluoTerceroView.lstMunicipiosItems}" />
+										</p:selectOneMenu>
+
+									</h:panelGrid>
+								</p:panel>
+
+								<br />
+
+								<div align="center">
+									<h:panelGrid id="panelBotones" columns="3">
+										<p:commandButton id="btnGuardarTerceroContratoCRP"
+											value="Guardar"
+											action="#{registrarCrpView.action_guardarTerceroContratoCRP}"
+											update=":frmContratos, @([id$=txtTerceroContratoCRP])"
+											oncomplete="PF('dialogTerceroContratoCRP').hide();
+											PF('dialogContratos').show()" />
+
+										<p:commandButton id="btnLimpiarTerceroContratoCRP"
+											value="Limpiar"
+											action="#{gluoTerceroView.action_limpiarDatosTercero()}"
+											update="panelGluoTerceroContratoCRP" />
+									</h:panelGrid>
+								</div>
+
+							</p:scrollPanel>
+						</p:tab>
+
+						<p:tab id="ListarTerceroContratoTab"
+							title="Listar Terceros Contrato CRP">
+							<p:panel id="pnlTerceroContratoCRP" header="Tercero Contrato"
+								style="text-align: center;">
+								<p:dataTable id="terceroContratoDataTable" rows="5"
+									paginator="true" var="terceroContrato"
+									value="#{registrarCrpView.listTerceroContratoCRPDTOs}"
+									selection="#{registrarCrpView.selectedTerceroContratoCRPDTO}"
+									selectionMode="single" rowKey="#{terceroContrato.tercId}"
+									filterDelay="1000">
+
+									<p:ajax event="rowSelect"
+										listener="#{registrarCrpView.onRowSelectTerceroContratoCRP}"
+										update="@([id$=txtTerceroContrato])"
+										oncomplete="PF('dialogTerceroContratoCRP').hide();" />
+
+									<p:column selectionMode="single" style="width: 6%;" />
+
+									<p:column headerText="Identificación"
+										filterBy="#{terceroContrato.identificacion}"
+										filterMatchMode="contains">
+										<p:outputLabel value="#{terceroContrato.identificacion}" />
+									</p:column>
+
+									<p:column headerText="Primer Nombre"
+										filterBy="#{terceroContrato.primerNombre}"
+										filterMatchMode="contains">
+										<p:outputLabel value="#{terceroContrato.primerNombre}" />
+									</p:column>
+
+									<p:column headerText="Segundo Nombre"
+										filterBy="#{terceroContrato.segundoNombre}"
+										filterMatchMode="contains">
+										<p:outputLabel value="#{terceroContrato.segundoNombre}" />
+									</p:column>
+
+									<p:column headerText="Primer Apellido"
+										filterBy="#{terceroContrato.primerApellido}"
+										filterMatchMode="contains">
+										<p:outputLabel value="#{terceroContrato.primerApellido}" />
+									</p:column>
+
+									<p:column headerText="Segundo Apellido"
+										filterBy="#{terceroContrato.segundoApellido}"
+										filterMatchMode="contains">
+										<p:outputLabel value="#{terceroContrato.segundoApellido}" />
+									</p:column>
+
+									<p:column headerText="Razón Social"
+										filterBy="#{terceroContrato.razonSocial}"
+										filterMatchMode="contains">
+										<p:outputLabel value="#{terceroContrato.razonSocial}" />
+									</p:column>
+
+									<p:column headerText="Empresa"
+										filterBy="#{terceroContrato.nombreEmpresa}"
+										filterMatchMode="contains">
+										<p:outputLabel value="#{terceroContrato.nombreEmpresa}" />
+									</p:column>
+
+								</p:dataTable>
+							</p:panel>
+						</p:tab>
+
+					</p:tabView>
+				</p:dialog>
+				<!-- FIN DIÁLOGO TERCERO CONTRATO CRP -->
+
+
+				<!-- DIALOG  acto Administrativo  -->
+				<!-- **************************** -->
+				<p:dialog id="dialogGluoActoAdministrativo"
+					widgetVar="dialogGluoActoAdministrativo" draggable="true"
+					closable="true" modal="true" resizable="false" height="400"
+					width="80%" position="center" header="Acto Administrativo">
+
+					<p:messages id="msgDialogActoAdmn" autoUpdate="true"
+						showDetail="false" closable="true" />
+
+					<p:tabView id="crearConsultarActoAdministrativoTab">
+
+						<p:tab id="crearActoAdministrativoTabTraslado"
+							title="Crear un acto administrativo">
+
+							<p:scrollPanel mode="native" style="width:850px;height:400px">
+								<p:panel id="panelGluoActoAdministrativo">
+									<h:panelGrid columns="2" id="panelGrid">
+
+										<h:outputText id="msgNombreOperacion"
+											value=" Nombre de la operacion" />
+										<p:inputText id="txtNombreOperacion" disabled="false"
+											style="width: 200px"
+											binding="#{registrarCrpView.txtNombreOperacion}" />
+
+										<h:outputText id="msgFundamentoLegal"
+											value=" Fundamento Legal" />
+										<h:panelGrid columns="1" id="panelGridFundamento">
+											<p:inputTextarea id="txtFundamentoLegal" rows="5" cols="50"
+												counter="displayFundamento" maxlength="2000"
+												counterTemplate="{0} caracteres restantes." disabled="false"
+												autoResize="false"
+												binding="#{registrarCrpView.txtFundamentoLegal}" />
+											<h:outputText id="displayFundamento" />
+										</h:panelGrid>
+
+										<h:outputText id="msgRazon" value=" Razon" />
+										<h:panelGrid columns="1" id="panelGridRazon">
+											<p:inputTextarea id="txtRazon" rows="5" cols="50"
+												counter="displayRazon" maxlength="2000"
+												counterTemplate="{0} caracteres restantes." disabled="false"
+												autoResize="false" binding="#{registrarCrpView.txtRazon}" />
+											<h:outputText id="displayRazon" />
+										</h:panelGrid>
+										<h:panelGrid columns="2" id="panelGridEmpresa">
+											<h:outputText id="msgEmpresa" value=" Empresa" />
+											<p:inputText id="txtEmpresa" disabled="true"
+												binding="#{registrarCrpView.txtEmprId_GluoEmpresa}" />
+										</h:panelGrid>
+										<h:panelGrid columns="2" id="panelGridAnoFiscal">
+											<h:outputText id="msgAnoFiscal" value=" Año Fiscal" />
+											<p:inputText id="txtAnoFiscal" disabled="true"
+												binding="#{registrarCrpView.txtAnoFiscal}" />
+										</h:panelGrid>
+										<h:outputText id="msgFechaActoAdministrativo"
+											value=" Fecha del Acto Administrativo" />
+										<p:calendar showOn="button" navigator="true" locale="en"
+											size="30"
+											binding="#{registrarCrpView.txtFechaActoAdministrativo}">
+											<p:ajax event="dateSelect"
+												listener="#{registrarCrpView.listener_txtFechaActoAdministrativo}" />
+										</p:calendar>
+
+										<h:outputText value="Archivos de soporte:" />
+										<p:fileUpload mode="advanced" auto="true"
+											dragDropSupport="true"
+											allowTypes="/(\.|\/)(gif|jpe?g|png|pdf|doc|docx|xls|xlsx)$/"
+											cancelLabel="Cancelar" fileLimit="1"
+											fileLimitMessage="Número máximo de archivos soportados: 1"
+											invalidFileMessage="Tipo de archivo no válido. Solo pdf, Doc(x), Xls(x), gif, jpg, png )"
+											invalidSizeMessage="Archivo demasiado grande. Tamaño máximo: 3MB"
+											label="Adicionar un nuevo archivo" sizeLimit="3145728"
+											uploadLabel="Cargar"
+											fileUploadListener="#{registrarCrpView.fileUploadListener}"
+											update="panelGluoActoAdministrativo"
+											process="panelGluoActoAdministrativo" />
+
+									</h:panelGrid>
+
+									<p:dataTable id="pnlTablaArchivosSoporte"
+										value="#{registrarCrpView.archivosDeSoporteDTO}" var="archivo"
+										rendered="#{registrarCrpView.cantidadArchivosSoporte > 0}"
+										style="width: 100%;">
+
+										<p:column headerText="Archivo" style="width: 80%">
+											<p:outputLabel value="#{archivo.descripcion}" />
+										</p:column>
+
+										<p:column headerText="Borrar" style="width: 15%">
+											<p:commandButton icon="ui-icon-close"
+												action="#{registrarCrpView.action_eliminarArchivoSoporte(archivo)}"
+												update="@([id$=panelGluoActoAdministrativo])" />
+										</p:column>
+
+										<p:column headerText="Descargar" style="width: 15%">
+											<p:commandButton ajax="false"
+												onclick="PrimeFaces.monitorDownload(start, stop);"
+												icon="ui-icon-arrowstop-1-s">
+												<p:fileDownload
+													value="#{registrarCrpView.getDocumentoAdjuntoSoportePresupuesto(archivo)}"
+													contentDisposition="attachment" />
+											</p:commandButton>
+
+										</p:column>
+
+									</p:dataTable>
+								</p:panel>
+							</p:scrollPanel>
+							<p:panel id="panelBotones">
+								<div align="center">
+									<p:commandButton id="btnSave"
+										binding="#{registrarCrpView.btnSaveActoAdministrativo}"
+										value="Guardar"
+										action="#{registrarCrpView.action_save_acto_administrativo()}"
+										update="panelGluoActoAdministrativo, @([id$=panelGluoActoAdministrativo]) " />
+									<p:commandButton id="btnClear" value="Limpiar"
+										action="#{registrarCrpView.action_clear_acto_administrativo()}"
+										update="@([id$=panelGluoActoAdministrativo])" />
+									<p:commandButton id="btnExit" value="Salir"
+										action="#{registrarCrpView.action_closeDialog_acto_administrativo()}"
+										update="panelGluoActoAdministrativo" />
+								</div>
+							</p:panel>
+
+						</p:tab>
+
+
+						<p:tab id="consultarActoAdministrativoTabTraslado"
+							title="Consultar un acto administrativo existente">
+							<p:scrollPanel mode="native" style="width:100%; height:400px">
+								<p:dataTable id="dataTableActoAdministrativoTraslado"
+									value="#{registrarCrpView.dataActoAdministrativo}"
+									emptyMessage="No se han encontrado actos administrativos registrados"
+									rows="5" var="gluoActoAdministrativo" paginator="true"
+									rowsPerPageTemplate="5,10,15" reflow="true"
+									rowKey="#{gluoActoAdministrativo.acadId}"
+									selection="#{registrarCrpView.actoAdministrativoSeleccionado}"
+									filterDelay="1000">
+
+									<p:column selectionMode="single"
+										style="width:5%; text-align:center" />
+
+									<p:column filterBy="#{gluoActoAdministrativo.nombreOperacion}"
+										sortBy="#{gluoActoAdministrativo.nombreOperacion}">
+										<f:facet name="header">
+											<h:outputText value="Nombre de la Operacion" />
+										</f:facet>
+										<h:outputText
+											value="#{gluoActoAdministrativo.nombreOperacion}" />
+									</p:column>
+
+									<p:column filterBy="#{gluoActoAdministrativo.consecutivo}"
+										sortBy="#{gluoActoAdministrativo.consecutivo}">
+										<f:facet name="header">
+											<h:outputText value="Consecutivo" />
+										</f:facet>
+										<h:outputText value="#{gluoActoAdministrativo.consecutivo}" />
+									</p:column>
+
+									<p:column
+										filterBy="#{gluoActoAdministrativo.fechaActoAdministrativo}"
+										sortBy="#{gluoActoAdministrativo.fechaActoAdministrativo}">
+										<f:facet name="header">
+											<h:outputText value="Fecha del Acto Administrativo" />
+										</f:facet>
+										<h:outputText
+											value="#{gluoActoAdministrativo.fechaActoAdministrativo}" />
+									</p:column>
+
+									<p:column filterBy="#{gluoActoAdministrativo.fundamentoLegal}"
+										sortBy="#{gluoActoAdministrativo.fundamentoLegal}">
+										<f:facet name="header">
+											<h:outputText value="Fundamento Legal" />
+										</f:facet>
+										<h:outputText
+											value="#{gluoActoAdministrativo.fundamentoLegal}" />
+									</p:column>
+
+									<p:column filterBy="#{gluoActoAdministrativo.razon}"
+										sortBy="#{gluoActoAdministrativo.razon}">
+										<f:facet name="header">
+											<h:outputText value="Razon" />
+										</f:facet>
+										<h:outputText value="#{gluoActoAdministrativo.razon}" />
+									</p:column>
+
+									<p:column filterBy="#{gluoActoAdministrativo.nombreEmpresa}"
+										sortBy="#{gluoActoAdministrativo.nombreEmpresa}">
+										<f:facet name="header">
+											<h:outputText value="Empresa" />
+										</f:facet>
+										<h:outputText value="#{gluoActoAdministrativo.nombreEmpresa}" />
+									</p:column>
+
+								</p:dataTable>
+
+								<br />
+
+								<p:panel id="panelBotonAA" style="border: none;">
+									<div align="center">
+										<p:commandButton value="Seleccionar" icon="ui-icon-plus"
+											oncomplete="PF('dialogGluoActoAdministrativo').hide();"
+											actionListener="#{registrarCrpView.action_seleccionar_acto_administrativo}"
+											update="@([id$=actoAdministrativoSeleccionado])" />
+									</div>
+								</p:panel>
+
+							</p:scrollPanel>
+
+						</p:tab>
+					</p:tabView>
+
+				</p:dialog>
+
+
+			</h:form>
+			<!-- FIN FORMULARIO CONTRATOS -->
+		</div>
+
+	</ui:define>
+</ui:composition>

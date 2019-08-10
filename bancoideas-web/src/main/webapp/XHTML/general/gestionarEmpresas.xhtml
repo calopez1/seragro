@@ -1,0 +1,267 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+
+<ui:define name="content">
+<f:view>
+
+	<p:ajaxStatus onstart="PF('statusDialog').show()"
+		onsuccess="PF('statusDialog').hide()" />
+	<p:dialog modal="true" widgetVar="statusDialog" header="Cargando"
+		draggable="false" closable="false">
+		<p:graphicImage
+			value="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/ajaxloadingbar.gif" />
+	</p:dialog>
+
+	<!-- Expired session -->
+<p:idleMonitor onactive="PF('sessionTimeOutDialog').show();"
+	timeout="#{session.maxInactiveInterval * 1000}" />
+<p:dialog modal="true" widgetVar="sessionTimeOutDialog"
+	header="Sesión terminada" draggable="false" closable="false">
+	<h:outputText value="La sesión ha finalizado" />
+	<input id="confirmBackToLogin" type="button" value="Iniciar sesión"
+		onclick="window.location='#{facesContext.externalContext.requestContextPath}/index.jsp';" />
+</p:dialog>
+
+<script type="text/javascript">
+function showStatus() {
+    statusDialog.show();
+}
+ 
+function hideStatus() {
+    statusDialog.hide();
+}
+</script>
+
+<style type="text/css">
+.ui-panel {
+	margin-top: 20px
+}
+
+.ui-tabs-top {
+	background-color: #FFFFFF;
+}
+
+.one {
+	width: 40%;
+}
+
+.two {
+	width: 60%;
+}
+
+.col50Left {
+	width: 10%;
+	text-align: left;
+}
+
+.col50Right {
+	width: 10%;
+	text-align: right;
+}
+
+.txt100 {
+	width: 100%;
+}
+</style>
+
+<div align="center">
+<h:form id="frmGestionarEmpresas" enctype="multipart/form-data" >
+
+	<p:growl id="messages" autoUpdate="true" closable="true" />
+	
+	<p:panel id="pnlGestionarEmpresas" header="Gestionar Empresas" style="width: 90%;">
+		<h:panelGrid columns="2">
+		
+			<p:outputLabel value="Tipo Empresa" for="somTipoEmpresa" />			
+			<p:selectOneMenu id="somTipoEmpresa"  style="width: 250px;"
+				value="#{gluoEmpresaView.selectTipoEmpresa}" >
+				<f:selectItem itemValue="-1"
+					itemLabel="-- SELECCIONE TIPO EMPRESA --" />
+				<f:selectItems
+					value="#{gluoEmpresaView.itemsTipoEmpresa}" />
+			</p:selectOneMenu>
+			
+			<p:outputLabel value="Tipo Identificación" for="somTipoIdentificacion" />			
+			<p:selectOneMenu id="somTipoIdentificacion" style="width: 250px;"
+				value="#{gluoEmpresaView.selectTipoIdentificacion}" >
+				<f:selectItem itemValue="-1"
+					itemLabel="-- SELECCIONE TIPO IDENTIFICACIÓN --" />
+				<f:selectItems
+					value="#{gluoEmpresaView.itemsTipoIdentificación}" />
+			</p:selectOneMenu>
+			
+			<p:outputLabel value="No. Identificación" for="txtNumeroIdentificacion" />
+			<p:inputText id="txtNumeroIdentificacion" value="#{gluoEmpresaView.txtIdentificacion}"  style="width: 250px;" />
+			
+			<p:outputLabel value="Razón Social" for="txtRazonSocial" />
+			<p:inputText id="txtRazonSocial" value="#{gluoEmpresaView.txtRazonSocial}" style="width: 250px;" />
+			
+			<p:outputLabel value="Código Entidad Territorial" for="txtCodigo" />
+			<p:inputText id="txtCodigo" value="#{gluoEmpresaView.txtCodigo}" style="width: 250px;" />	
+			
+			<p:outputLabel value="Seleccionar Municipio" for="txtMunicipio" />			        			        	
+			<h:panelGrid columns="2">					
+				<p:inputText id="txtMunicipio" value="#{gluoEmpresaView.txtMunicipio}" style="width: 250px;" />
+				<p:commandButton  icon="ui-icon-search" onclick="PF('dialogMunicipios').show();"  />
+			</h:panelGrid>
+			
+			<p:outputLabel value="Eslogan" for="txtEslogan" />
+			<p:inputTextarea id="txtEslogan" value="#{gluoEmpresaView.txtEslogan}" style="width: 250px;" />
+			
+			<p:outputLabel value="Fecha Inicio Eslogan" for="txtFechaInicioEslogan" />
+			<p:calendar id="txtFechaInicioEslogan" mode="popup" navigator="true" 
+						value="#{gluoEmpresaView.fechaInicioEslogan}" />			
+			
+			<p:outputLabel value="Fecha Final Eslogan" for="txtFechaFinalEslogan" />
+			<p:calendar id="txtFechaFinalEslogan" mode="popup" navigator="true" 
+						value="#{gluoEmpresaView.fechaFinEslogan}" />
+			
+			
+			<div style="text-align: center;">
+			<p:fileUpload id="cargarLogo"
+				fileUploadListener="#{gluoEmpresaView.upload}"
+				auto="true"
+				value="#{gluoEmpresaView.file}" 
+				mode="advanced"						   
+				sizeLimit="100000000" fileLimit="1"						
+				label="Seleccionar Logo"
+				uploadLabel="Validar Logo"
+				cancelLabel="Cancelar" 
+				update="cargarLogo"  						
+				invalidSizeMessage="Tamaño no válido"/>
+			</div>
+			
+			<h:panelGrid columns="2">
+				<p:commandButton id="btnGuardar" value="Guardar"
+							action="#{gluoEmpresaView.action_guardar}"							
+							update=":frmGestionarEmpresas" />
+							
+				<p:commandButton id="btnLimpiar" value="Limpiar"
+							action="#{gluoEmpresaView.action_limpiar}"							
+							update=":frmGestionarEmpresas" />
+			</h:panelGrid>			
+		
+		</h:panelGrid>
+	</p:panel>
+	
+	
+	<p:panel id="pnlListaGestionarEmpresas"
+		header="Listado Empresas" style="width: 90%; text-align: center;">		
+		<p:dataTable id="pnlListaGestionarEmpresasDataTable" value="#{gluoEmpresaView.listEmpresaDTOs}"
+			var="empresa" paginator="true" rows="10"
+			scrollable="true" scrollWidth="100%" scrollHeight="500"
+			selectionMode="single"
+			selection="#{gluoEmpresaView.selectedEmpresaDTO}"
+			rowKey="#{empresa.emprId}"
+			filterDelay="1000">
+			
+			<p:column headerText="Tipo Identificación"
+				filterBy="#{empresa.nombreTipoIdentificación}" >
+				<p:outputLabel value="#{empresa.nombreTipoIdentificación}" />									
+			</p:column>
+			
+			<p:column headerText="Identificación"
+				filterBy="#{empresa.identificacion}" >
+				<p:outputLabel value="#{empresa.identificacion}" />									
+			</p:column>
+			
+			<p:column headerText="Razón Social"
+				filterBy="#{empresa.razonSocial}" >
+				<p:outputLabel value="#{empresa.razonSocial}" />									
+			</p:column>
+			
+			<p:column headerText="Código"
+				filterBy="#{empresa.codigo}" >
+				<p:outputLabel value="#{empresa.codigo}" />									
+			</p:column>
+			
+			<p:column headerText="Tipo Empresa"
+				filterBy="#{empresa.nombreTipoEmpresa}" >
+				<p:outputLabel value="#{empresa.nombreTipoEmpresa}" />									
+			</p:column>
+			
+			<p:column headerText="Eslogan"
+				filterBy="#{empresa.eslogan}" >
+				<p:outputLabel value="#{empresa.eslogan}" />									
+			</p:column>
+			
+			<p:column headerText="Fecha Inicio Eslogan"
+				filterBy="#{empresa.fechaInicioEslogan}" >
+				<p:outputLabel value="#{empresa.fechaInicioEslogan}" >
+					<f:convertDateTime type="date" pattern="dd-MM-yyyy"/>
+				</p:outputLabel>									
+			</p:column>
+			
+			<p:column headerText="Fecha Fin Eslogan"
+				filterBy="#{empresa.fechaFinalEslogan}" >
+				<p:outputLabel value="#{empresa.fechaFinalEslogan}" >
+					<f:convertDateTime type="date" pattern="dd-MM-yyyy"/>
+				</p:outputLabel>									
+			</p:column>
+			
+			<p:column headerText="Logo" style="width: 10%">               	
+		   		<p:commandButton id="btnDownload" title="Descargar" ajax="false" 
+	                  onclick="PrimeFaces.monitorDownload(start, stop)" actionListener="#{gluoEmpresaView.download}"  
+	                       icon="ui-icon-arrowthickstop-1-s" disabled="#{empresa.logoId_GluoLogo == null}">  
+	                 <p:fileDownload value="#{gluoEmpresaView.fileDownload}" />
+	                 <f:attribute name="selectedEmpresaDTO"
+						value="#{empresa}" />
+	             </p:commandButton>		   		
+            </p:column>
+			
+		</p:dataTable>		
+	</p:panel>
+	
+	
+	<!-- ************************************************** -->
+	<!-- **			 	DIÁLOGO MUNICIPIO		    	 ** -->
+	<!-- ************************************************** -->
+
+	<p:dialog header="Municipios"
+		widgetVar="dialogMunicipios" modal="true" height="500" width="90%">
+
+		<div style="text-align: center;">
+
+			<p:scrollPanel mode="native" style="width: 100%; height: 460px;">
+
+				<p:dataTable var="municipio" paginator="true" rows="10"
+					value="#{gluoEmpresaView.listMunicipioDTOs}"
+					selection="#{gluoEmpresaView.selectedMunicipioDTO}"
+					selectionMode="single"							
+					rowKey="#{municipio.muniId}" 
+					filterDelay="1000">
+
+					<p:ajax event="rowSelect"
+						listener="#{gluoEmpresaView.onRowSelectMunicipio}"
+						update=":frmGestionarEmpresas"
+						oncomplete="PF('dialogMunicipios').hide();" />
+
+					<p:column headerText="Municipio" filterBy="#{municipio.nombre}"
+						filterMatchMode="contains">
+						<h:outputText value="#{municipio.nombre}" />
+					</p:column>
+					
+					<p:column headerText="Departamento" filterBy="#{municipio.nombreDepartamento}"
+						filterMatchMode="contains">
+						<h:outputText value="#{municipio.nombreDepartamento}" />
+					</p:column>
+
+				</p:dataTable>
+
+			</p:scrollPanel>
+
+		</div>
+
+	</p:dialog>
+	
+	
+</h:form>
+</div>
+
+</f:view>
+</ui:define>
+</ui:composition>

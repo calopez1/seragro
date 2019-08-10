@@ -1,0 +1,139 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+	<ui:define name="content">
+
+		<p:ajaxStatus onstart="PF('statusDialog').show()"
+			onsuccess="PF('statusDialog').hide()" />
+		<p:dialog modal="true" widgetVar="statusDialog" header="Cargando"
+			draggable="false" closable="false">
+			<p:graphicImage
+				value="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/ajaxloadingbar.gif" />
+		</p:dialog>
+
+		<!-- Expired session -->
+		<p:idleMonitor onactive="PF('sessionTimeOutDialog').show();"
+			timeout="#{session.maxInactiveInterval * 1000}" />
+		<p:dialog modal="true" widgetVar="sessionTimeOutDialog"
+			header="Sesión terminada" draggable="false" closable="false">
+			<h:outputText value="La sesión ha finalizado" />
+			<input id="confirmBackToLogin" type="button" value="Iniciar sesión"
+				onclick="window.location='#{facesContext.externalContext.requestContextPath}/index.jsp';" />
+		</p:dialog>
+		
+		<script type="text/javascript">
+			function showStatus() {
+			    statusDialog.show();
+			}
+			 
+			function hideStatus() {
+			    statusDialog.hide();
+			}
+		</script>
+
+		<style type="text/css">
+			.ui-panel {
+				margin-top: 20px
+			}
+			
+			.ui-tabs-top {
+				background-color: #FFFFFF;
+			}
+			
+			.one {
+				width: 10%;
+			}
+			
+			.two {
+				width: 90%;
+			}
+			
+			.col50Left{
+				width: 10%;
+				text-align: left;
+			}
+			
+			.col50Right{
+				width: 10%;
+				text-align: right;
+			}
+			
+			.txt100{
+				width: 100%;
+			}
+			
+		</style>
+
+		<h:form id="frmGenerarInformeCDPsConCRPs">
+
+			<div >
+				<div >
+
+					<p:panel>
+						<h:outputText
+							value="Generar reporte: Relación de OP's - CRPs - CDPs"
+							styleClass="FontBold Fs18 hardblue" />
+					</p:panel>
+
+					<p:panel id="pnlEncabezadoCDP">
+						<p:messages showDetail="false" autoUpdate="true" closable="true" />
+
+						<div>
+							<div>
+
+								<h:panelGrid columns="2" columnClasses="one, two"
+									style="width: 100%;">
+
+									<h:outputText value="Fecha Inicial:" />
+									<p:calendar value="#{generarReporteOPsConCRPsConCDPsView.fechaExpedicionDesde}"
+										navigator="true" timeZone="GMT-5" pattern="yyyy-MM-dd" />
+
+									<h:outputText value="Fecha Final:" />
+									<p:calendar value="#{generarReporteOPsConCRPsConCDPsView.fechaExpedicionHasta}"
+										navigator="true"  timeZone="GMT-5" pattern="yyyy-MM-dd" />
+
+								</h:panelGrid>
+
+
+							</div>
+						</div>
+					</p:panel>
+
+					<div class="EmptyBox20" />
+	
+					<p:commandButton value="Generar informe en archivo XLS"
+						onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)"
+						icon="ui-icon-arrowthichk-s">
+						
+						<p:fileDownload value="#{generarReporteOPsConCRPsConCDPsView.rporteXLS}" />
+							
+					</p:commandButton>
+					
+					<p:commandButton value="Generar informe en archivo XLSX"
+						onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)"
+						icon="ui-icon-arrowthichk-s">
+						
+						<p:fileDownload value="#{generarReporteOPsConCRPsConCDPsView.rporteXLSX}" />
+							
+					</p:commandButton>
+					
+					<p:commandButton value="Generar informe en archivo PDF"
+						onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)"
+						icon="ui-icon-arrowthichk-s">
+						
+						<p:fileDownload value="#{generarReporteOPsConCRPsConCDPsView.rportePDF}" />
+							
+					</p:commandButton>
+					
+					<div class="EmptyBox20" />
+	
+				</div>
+			</div>
+		</h:form>
+
+	</ui:define>
+
+</ui:composition>

@@ -1,0 +1,501 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+	<ui:define name="content">
+		<f:view>
+		<script type="text/javascript">
+			function justNumbers(e) {
+					var keynum = window.event ? window.event.keyCode : e.which;
+					if ((keynum == 8) || (keynum == 46) || (keynum == 44))
+					return true;
+					 
+					return /\d/.test(String.fromCharCode(keynum));
+			}
+			PrimeFaces.locales['es'] = {
+				    closeText: 'Cerrar',
+				    prevText: 'Anterior',
+				    nextText: 'Siguiente',
+				    monthNames: ['Enero','Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+				    monthNamesShort: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun','Jul','Ago','Sep','Oct','Nov','Dic'],
+				    dayNames: ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'],
+				    dayNamesShort: ['Dom','Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab'],
+				    dayNamesMin: ['D','L','M','M','J','V','S'],
+				    weekHeader: 'Semana',
+				    firstDay: 1,
+				    isRTL: false,
+				    showMonthAfterYear: false,
+				    yearSuffix: '',
+				    timeOnlyTitle: 'Sólo hora',
+				    timeText: 'Tiempo',
+				    hourText: 'Hora',
+				    minuteText: 'Minuto',
+				    secondText: 'Segundo',
+				    currentText: 'Fecha actual',
+				    ampm: false,
+				    month: 'Mes',
+				    week: 'Semana',
+				    day: 'Día',
+				    allDayText : 'Todo el día'
+				};
+			function showStatus() {
+			    statusDialog.show();
+			}
+			 
+			function hideStatus() {
+			    statusDialog.hide();
+			}
+		</script>
+			<p:ajaxStatus onstart="PF('statusDialog').show()"
+				onsuccess="PF('statusDialog').hide()" />
+			<p:dialog modal="true" widgetVar="statusDialog" header="Cargando"
+				draggable="false" closable="false">
+				<p:graphicImage
+					value="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/ajaxloadingbar.gif" />
+			</p:dialog>
+
+			<!-- Expired session -->
+			<p:idleMonitor onactive="PF('sessionTimeOutDialog').show();"
+				timeout="#{session.maxInactiveInterval * 1000}" />
+			<p:dialog modal="true" widgetVar="sessionTimeOutDialog"
+				header="Sesión Finalizada" draggable="false" closable="false">
+				<h:outputText value="La sesión ha caducado." />
+				<input id="confirmBackToLogin" type="button" value="Iniciar Sesión"
+					onclick="window.location='#{facesContext.externalContext.requestContextPath}/index.jsp';" />
+			</p:dialog>
+
+			<h:form id="frm">
+			
+			
+			<p:panel id="pnlFiltrosConsulta" header="Consulta situación administrativa">
+			
+				<h:panelGrid columns="4">
+					<p:outputLabel value="Fecha Inicial: "/>
+					<p:calendar id="calendarFechaInicioConsulta"
+										value="#{gluoSiadXEmplView.fechaInicio}"
+										placeholder="Fecha de Inicio " size="32" locale="es"
+										navigator="true" pattern="yyyy-MM-dd" mask="true"
+										converterMessage="Fecha incorrecta">
+										<f:converter converterId="timestampConverter" />
+					</p:calendar>
+					<p:outputLabel value="Fecha Final: "/>
+					<p:calendar id="calendarFechaFinConsulta"
+										value="#{gluoSiadXEmplView.fechaFinal}"
+										placeholder="Fecha de Inicio " size="32" locale="es"
+										navigator="true" pattern="yyyy-MM-dd" mask="true"
+										converterMessage="Fecha incorrecta">
+										<f:converter converterId="timestampConverter" />
+					</p:calendar>				
+				
+				</h:panelGrid>
+				
+				<p:spacer height="10"/>
+				
+				<p:commandButton value="Consultar" action="#{gluoSiadXEmplView.action_consultar()}" oncomplete="PF('tblSiad').filter()" update=":frm:panelDataTableGluoSiadXEmpl"/>
+				
+			</p:panel>
+
+				<p:panel id="panelDataTableGluoSiadXEmpl" header="Situación Administrativa por Empleado">
+					<p:growl id="men" autoUpdate="true" showDetail="false"/>
+					<p:dataTable widgetVar="tblSiad" value="#{gluoSiadXEmplView.data}" var="gluoSiadXEmpl"
+						paginator="true" rows="5"
+						emptyMessage="No se encontraron situaciones administrativas registradas actualmente para su empresa"
+						scrollable="true" scrollWidth="100%" scrollHeight="250" filterDelay="1000">
+						
+						
+				        
+				        <p:column style="text-align: center;" headerText="identificación" filterBy="#{gluoSiadXEmpl.numeroIdentificacion}" sortBy="#{gluoSiadXEmpl.numeroIdentificacion}" filterMatchMode="contains">
+							<h:outputText value="#{gluoSiadXEmpl.numeroIdentificacion}" />
+						</p:column>
+				        
+				        <p:column style="text-align: center;" headerText="Primer Nombre" filterBy="#{gluoSiadXEmpl.primerNombreEmpleado}" sortBy="#{gluoSiadXEmpl.primerNombreEmpleado}" filterMatchMode="contains"  width="150">
+							<h:outputText value="#{gluoSiadXEmpl.primerNombreEmpleado}" />
+						</p:column>
+						
+						<p:column style="text-align: center;" headerText="Segundo Nombre" filterBy="#{gluoSiadXEmpl.segundoNombreEmpleado}" sortBy="#{gluoSiadXEmpl.segundoNombreEmpleado}" filterMatchMode="contains">
+							<h:outputText value="#{gluoSiadXEmpl.segundoNombreEmpleado}" />
+						</p:column>
+						
+						<p:column style="text-align: center;" headerText="Primer Apellido" filterBy="#{gluoSiadXEmpl.primerApellidoEmpleado}" sortBy="#{gluoSiadXEmpl.primerApellidoEmpleado}" filterMatchMode="contains">
+							<h:outputText value="#{gluoSiadXEmpl.primerApellidoEmpleado}" />
+						</p:column>
+						
+						<p:column style="text-align: center;" headerText="Segundo Apellido" filterBy="#{gluoSiadXEmpl.segundoApellidoEmpleado}" sortBy="#{gluoSiadXEmpl.segundoApellidoEmpleado}" filterMatchMode="contains">
+							<h:outputText value="#{gluoSiadXEmpl.segundoApellidoEmpleado}" />
+						</p:column>
+				        
+				        <p:column style="text-align: center;" headerText="Tipo de Situación Administrativa" filterBy="#{gluoSiadXEmpl.descripcionSituacionAdministrativa}" sortBy="#{gluoSiadXEmpl.descripcionSituacionAdministrativa}" filterMatchMode="contains">
+							<h:outputText value="#{gluoSiadXEmpl.descripcionSituacionAdministrativa}" />
+						</p:column>
+						
+						<p:column style="text-align: center;" headerText="Fecha Inicial" filterBy="#{gluoSiadXEmpl.fechaInicio}" sortBy="#{gluoSiadXEmpl.fechaInicio}" filterMatchMode="startsWith">
+							<h:outputText value="#{gluoSiadXEmpl.fechaInicio}" >
+								<f:convertDateTime type="date" pattern="yyyy-MM-dd"/>
+							</h:outputText>
+						</p:column>
+						
+						<p:column style="text-align: center;" headerText="Fecha Final" filterBy="#{gluoSiadXEmpl.fechaFin}" sortBy="#{gluoSiadXEmpl.fechaFin}" filterMatchMode="startsWith">
+							<h:outputText value="#{gluoSiadXEmpl.fechaFin}">
+								<f:convertDateTime type="date" pattern="yyyy-MM-dd"/>
+							</h:outputText>		
+						</p:column>
+						
+						<p:column filterBy="#{gluoSiadXEmpl.activo}"  style="text-align: center;" headerText="Estado" filterMatchMode="exact">
+							<f:facet name="filter">
+				                <p:selectOneMenu onchange="PF('tblSiad').filter()" >
+				                    <f:selectItem itemLabel="Seleccionar" itemValue="#{null}" noSelectionOption="true" />
+				                    <f:selectItem itemLabel="Activo" itemValue="A" />
+				                    <f:selectItem itemLabel="Inactivo" itemValue="I" />
+				                </p:selectOneMenu>
+				            </f:facet>
+							<h:outputText value="#{(gluoSiadXEmpl.activo.trim() eq 'A')?'Activo':'Inactivo'}" />
+						</p:column>
+						
+						<p:column headerText="Opciones" style="text-align: center;">
+							<p:commandButton id="Editar" icon="ui-icon-pencil"
+								update=":dialogGluoSiadXEmpl" title="Editar"
+								actionListener="#{gluoSiadXEmplView.action_edit}">
+								<f:attribute name="selectedGluoSiadXEmpl"
+									value="#{gluoSiadXEmpl}" />
+							</p:commandButton>
+						</p:column>
+					</p:dataTable>
+				</p:panel>
+				<p:panel id="panelBoton">
+					<div align="center">
+						<p:commandButton id="btnNew" value="Registrar"
+							action="#{gluoSiadXEmplView.action_new()}"
+							update=":dialogGluoSiadXEmpl" />
+					</div>
+				</p:panel>
+				
+			<!-- Empleados -->
+			<!-- ******************************************* -->
+			<p:dialog modal="true" widgetVar="dlgEmpleados"
+				header="Empleados" draggable="false" closable="true"
+				resizable="true" width="90%" height="200px;" position="center">
+					
+					<p:scrollPanel mode="native" style="width:100%; height:400px">
+						<p:dataTable id="tblEmpleados" var="empleados"
+							value="#{gluoSiadXEmplView.empleados}"
+							rows="10" paginator="true"
+							paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+							rowsPerPageTemplate="10,15,20,30"
+							emptyMessage="No se encontraron empleados registrados para su empresa" reflow="true"
+							rowKey="#{empleados.emplId}"
+							selection="#{gluoSiadXEmplView.empleadoSeleccionadoTbl}"
+							filterDelay="1000">
+							
+	                        <p:column selectionMode="single"
+									style="width:5%; text-align:center" />
+									
+							<p:column headerText="Codigo Empleado" sortBy="#{empleados.codigo}"
+								 filterBy="#{empleados.codigo}"
+								filterMatchMode="contains">
+								<h:outputText value="#{empleados.codigo}" width="200px" />
+							</p:column>
+	
+							<p:column headerText="Primer Nombre" sortBy="#{empleados.gluoTercero.primerNombre}"
+								 filterBy="#{empleados.gluoTercero.primerNombre}"
+								filterMatchMode="contains">
+								<h:outputText value="#{empleados.gluoTercero.primerNombre}" width="200px" />
+							</p:column>
+							
+							<p:column headerText="Segundo Nombre" sortBy="#{empleados.gluoTercero.segundoNombre}"
+								 filterBy="#{empleados.gluoTercero.segundoNombre}"
+								filterMatchMode="contains">
+								<h:outputText value="#{empleados.gluoTercero.segundoNombre}" width="200px" />
+							</p:column>
+							
+							<p:column headerText="Primer Apellido" sortBy="#{empleados.gluoTercero.primerApellido}"
+								width="200px" filterBy="#{empleados.gluoTercero.primerApellido}"
+								filterMatchMode="contains">
+								<h:outputText value="#{empleados.gluoTercero.primerApellido}" />
+							</p:column>
+							
+							<p:column headerText="Segundo Apellido" sortBy="#{empleados.gluoTercero.segundoApellido}"
+								width="200px" filterBy="#{empleados.gluoTercero.segundoApellido}"
+								filterMatchMode="contains">
+								<h:outputText value="#{empleados.gluoTercero.segundoApellido}" />
+							</p:column>
+							
+						</p:dataTable>
+					</p:scrollPanel>
+
+					<br />
+					<p:panel id="panelBotonEmpleados" style="border: none;">
+					<div align="center">
+					<p:commandButton value="Seleccionar Empleado"
+						icon="ui-icon-plus" oncomplete="PF('dlgEmpleados').hide();" 
+						actionListener="#{gluoSiadXEmplView.action_seleccionarEmpleado}"
+						update="@([id$=empleadoSeleccionado])"/>
+					</div>
+					</p:panel>
+					<div class="EmptyBox20" />
+
+			</p:dialog>
+			<!-- Empleados -->
+			
+			<!-- Tipo de Situación Administrativa -->
+			<!-- ******************************************* -->
+			<p:dialog modal="true" widgetVar="dlgSituacionAdministrativa"
+				header="Tipos de Situaciones Administrativas" draggable="false" closable="true"
+				resizable="true" width="90%" height="200px;" position="center">
+					
+					<p:scrollPanel mode="native" style="width:100%; height:400px">
+						<p:dataTable id="tblTiposSituacionAdministrativa" var="siad"
+							value="#{gluoSiadXEmplView.tiposSituacionesAdministrativas}"
+							rows="10" paginator="true"
+							paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+							rowsPerPageTemplate="10,15,20,30"
+							emptyMessage="No se encontraron tipos de situaciones administrativas registradas para su empresa" reflow="true"
+							rowKey="#{siad.siadId}"
+							selection="#{gluoSiadXEmplView.situacionAdministrativaSeleccionada}"
+							filterDelay="1000">
+							
+	                        <p:column selectionMode="single"
+									style="width:5%; text-align:center" />
+	
+						<p:column filterBy="#{siad.descripcion}" width="200px"
+							sortBy="#{siad.descripcion}"
+							filterMatchMode="contains">
+							<f:facet name="header">
+								<h:outputText value="Descripción" />
+							</f:facet>
+							<h:outputText value="#{siad.descripcion}" />
+						</p:column>
+						
+						<p:column width="200px"
+							filterBy="#{siad.afectaLiquidacion}"
+							sortBy="#{siad.afectaLiquidacion}"
+							filterMatchMode="contains"
+							style="text-align: center;">
+							<f:facet name="header">
+								<h:outputText value="Afecta Liquidacion" />
+							</f:facet>
+							<h:outputText
+								value="#{(siad.afectaLiquidacion.trim() eq 'S')?'Si':'No'}" />
+						</p:column>
+
+
+						<p:column filterBy="#{siad.signo}" width="200px"
+							sortBy="#{siad.signo}"
+							filterMatchMode="contains"
+							style="text-align: center;">
+							<f:facet name="header">
+								<h:outputText value="Signo" />
+							</f:facet>
+							<h:outputText value="#{siad.signo}" />
+						</p:column>
+
+						<p:column width="200px"
+							filterBy="#{siad.requiereArchivoSoporte}"
+							sortBy="#{siad.requiereArchivoSoporte}"
+							filterMatchMode="contains"
+							style="text-align: center;">
+							<f:facet name="header">
+								<h:outputText value="Requiere Archivo Soporte" />
+							</f:facet>
+							<h:outputText
+								value="#{(siad.requiereArchivoSoporte.trim() eq 'S')?'Si':'No'}" />
+						</p:column>
+							
+						</p:dataTable>
+					</p:scrollPanel>
+
+					<br />
+					
+					<p:panel id="panelBotonTSA" style="border: none;">
+						<div align="center">
+							<p:commandButton value="Seleccionar"
+								icon="ui-icon-plus" oncomplete="PF('dlgSituacionAdministrativa').hide();" 
+								actionListener="#{gluoSiadXEmplView.action_seleccionarSitaucionAdministrativa}"
+								update="@([id$=tipoSituacionSeleccionada]), @([id$=panelGluoSiadXEmpl])"/>
+						</div>
+					</p:panel>
+					
+					
+
+					<div class="EmptyBox20" />
+
+			</p:dialog>
+			<!-- Tipo de Situación Administrativa -->
+				
+			</h:form>
+			<p:dialog id="dialogGluoSiadXEmpl" appendTo="@(body)" widgetVar="dialogGluoSiadXEmpl"
+				draggable="true" closable="false" position="center center"
+				visible="#{gluoSiadXEmplView.showDialog}" resizable="false"
+				modal="true" width="80%" height="450">
+				<h:form id="formDialog">
+					<p:messages id="msg" autoUpdate="true" showDetail="false" closable="true" />
+					<p:panel id="panelGluoSiadXEmpl" header="Situación Administrativa por Empleado">
+					<p:scrollPanel mode="native" style="width:70%';height:80%">
+						<h:panelGrid columns="2" id="panelGrid">
+							
+							<h:outputText value="Empleado:" />
+							<p:panelGrid>
+								<p:inputText styleClass="Wid50" id="empleadoSeleccionado" 
+									value="#{gluoSiadXEmplView.descripcionEmpleadoSeleccionado}" 
+									readonly="true" style="width:200px;">
+									<p:ajax />
+								</p:inputText>
+								<p:commandButton icon="ui-icon-search"
+									disabled="#{gluoSiadXEmplView.selectedGluoSiadXEmpl == null ? false : true}" 
+									oncomplete="PF('dlgEmpleados').show();"/>
+							</p:panelGrid>
+							
+							<h:outputText value="Tipo de Situación Administrativa" />
+							<p:panelGrid>
+								<p:inputText styleClass="Wid50" id="tipoSituacionSeleccionada" 
+									value="#{gluoSiadXEmplView.descripcionSituacionSeleccionada}" 
+									readonly="true" style="width:200px;">
+									<p:ajax />
+								</p:inputText>
+								<p:commandButton icon="ui-icon-search"
+									disabled="#{gluoSiadXEmplView.selectedGluoSiadXEmpl == null ? false : true}" 
+									oncomplete="PF('dlgSituacionAdministrativa').show();"/>
+							</p:panelGrid>
+							
+							<h:outputText id="msgNumeroDias" value=" Numero de Días" />
+							<p:inputText id="txtNumeroDias" 
+								onkeypress="return justNumbers(event);"
+								disabled="#{gluoSiadXEmplView.selectedGluoSiadXEmpl == null ? false : true}"
+								binding="#{gluoSiadXEmplView.txtNumeroDias}" style="width:200px;"/>
+								
+							<p:outputLabel value="Fecha de Inicio" for="calendarFechaInicio" />
+							<p:calendar id="calendarFechaInicio"
+								binding="#{gluoSiadXEmplView.txtFechaInicio}"
+								placeholder="Fecha de Inicio " size="32" locale="es"
+								navigator="true" pattern="yyyy-MM-dd" mask="true"
+								converterMessage="Fecha incorrecta"
+								disabled="#{gluoSiadXEmplView.selectedGluoSiadXEmpl == null ? false : true}">
+								<p:ajax event="dateSelect"
+										listener="#{gluoSiadXEmplView.fechaInicio}" />
+								<f:converter converterId="timestampConverter" />
+							</p:calendar>
+	
+							<p:outputLabel value="Fecha Fin" for="calendarFechaFin" />
+							<p:calendar id="calendarFechaFin"
+								binding="#{gluoSiadXEmplView.txtFechaFin}"
+								placeholder="Fecha Fin " size="32" locale="es"
+								navigator="true" pattern="yyyy-MM-dd" mask="true"
+								converterMessage="Fecha incorrecta"
+								disabled="#{gluoSiadXEmplView.selectedGluoSiadXEmpl == null ? false : true}">
+								<p:ajax event="dateSelect"
+										listener="#{gluoSiadXEmplView.fechaFin}" />
+								<f:converter converterId="timestampConverter" />
+							</p:calendar>
+							
+							<h:outputText id="msgEstadoLiquidacion" value=" Estado Liquidación" />
+							<h:outputText id="txtEstadoLiquidacion" 
+							value="#{(gluoSiadXEmplView.cantidadLiquidacionesAsociadas > 0)?'Liquidado':'No liquidado'}" />
+							
+							<p:panel style="border: none;" rendered="#{gluoSiadXEmplView.cantidadLiquidacionesAsociadas > 0}"/>	
+							<p:dataTable id="tblEstadoLiquidacion"
+	                          				value="#{gluoSiadXEmplView.liquidacionesAsociadas}"
+	                          				var="lino"
+	                          				rendered="#{gluoSiadXEmplView.cantidadLiquidacionesAsociadas > 0}"
+	                          				style="width: 100%;">
+	                          				
+	                          				<p:column headerText="Fecha Inicial" style="width: 100%; text-align: center;">
+	                          					<p:outputLabel value="#{lino.fechaInicio}">
+	                          						<f:convertDateTime type="date" pattern="dd-MM-yyyy"/>
+	                          					</p:outputLabel>
+	                          				</p:column>
+	                          				
+	                          				<p:column headerText="Fecha Final" style="width: 100%; text-align: center;">
+	                          					<p:outputLabel value="#{lino.fechaFin}">
+	                          						<f:convertDateTime type="date" pattern="dd-MM-yyyy"/>
+	                          					</p:outputLabel>
+	                          				</p:column>
+	                         </p:dataTable>
+							
+							<h:outputText id="msgActivo" value=" Estado" />
+							<p:selectOneRadio id="sorEstado"
+								binding="#{gluoSiadXEmplView.sorEstado}">
+								<f:selectItem itemLabel="Activo" itemValue="A" />
+								<f:selectItem itemLabel="Inactivo" itemValue="I" />
+							</p:selectOneRadio>
+							
+							<h:outputText value="Archivos de soporte:"
+							rendered="#{(gluoSiadXEmplView.situacionAdministrativaSeleccionada.requiereArchivoSoporte eq 'S')?true:false}" />
+									<p:fileUpload
+										rendered="#{(gluoSiadXEmplView.situacionAdministrativaSeleccionada.requiereArchivoSoporte eq 'S')?true:false}"  
+										mode="advanced"
+										auto="true" 
+										dragDropSupport="true"
+                          				allowTypes="/(\.|\/)(gif|jpe?g|png|pdf|doc|docx|xls|xlsx)$/" 
+                          				cancelLabel="Cancelar"
+                          				fileLimit="3"
+                          				fileLimitMessage="Número máximo de archivos soportados: 3"
+                          				invalidFileMessage="Tipo de archivo no válido. Solo pdf, Doc(x), Xls(x), gif, jpg, png )"
+                          				invalidSizeMessage="Archivo demasiado grande. Tamaño máximo: 3MB"
+                          				label="Adicionar un nuevo archivo"
+                          				sizeLimit="3145728"
+                          				uploadLabel="Cargar"
+                          				fileUploadListener="#{gluoSiadXEmplView.fileUploadListener}"
+                          				update="panelGluoSiadXEmpl"
+                          				process="panelGluoSiadXEmpl"
+                          				disabled="#{gluoSiadXEmplView.selectedGluoSiadXEmpl == null ? false : true}"
+                          				/>					
+						</h:panelGrid>
+						
+						<p:dataTable id="pnlTablaArchivosSoporte"
+	                          				value="#{gluoSiadXEmplView.archivosDeSoporteDTO}"
+	                          				var="archivo"
+	                          				rendered="#{gluoSiadXEmplView.cantidadArchivosSoporte > 0}"
+	                          				style="width: 100%;">
+	                          				
+	                          				<p:column headerText="Archivo" style="width: 80%">
+	                          					<p:outputLabel value="#{archivo.descripcion}" />
+	                          				</p:column>
+	                          				
+	                          				<p:column headerText="Borrar" style="width: 15%">
+	                          					<p:commandButton icon="ui-icon-close"  
+	                          						action="#{gluoSiadXEmplView.action_eliminarArchivoSoporte(archivo)}"
+	                          						disabled="#{gluoSiadXEmplView.selectedGluoSiadXEmpl == null ? false : true}"
+	                          						update="@([id$=panelGluoSiadXEmpl])"/>
+	                          				</p:column>
+	                          				
+	                          				<p:column headerText="Ver" style="width: 15%">
+	                          					<p:commandButton ajax="false" onclick="PrimeFaces.monitorDownload(start, stop);" icon="ui-icon-zoomin"
+	                          					disabled="#{gluoSiadXEmplView.selectedGluoSiadXEmpl == null ? false : true}">
+											        <p:fileDownload value="#{gluoSiadXEmplView.getDocumentoAdjuntoSoportePresupuesto(archivo)}" 
+											        	contentDisposition="inline" />
+											    </p:commandButton>
+											    
+	                          				</p:column>
+	                          				
+	                          				<p:column headerText="Descargar" style="width: 15%">
+	                          					<p:commandButton ajax="false" onclick="PrimeFaces.monitorDownload(start, stop);" icon="ui-icon-arrowstop-1-s">
+											        <p:fileDownload value="#{gluoSiadXEmplView.getDocumentoAdjuntoSoportePresupuesto(archivo)}" 
+											        	contentDisposition="attachment" />
+											    </p:commandButton>
+											    
+	                          				</p:column>
+	                          				
+	                          			</p:dataTable>
+						</p:scrollPanel>
+					</p:panel>
+					<p:panel id="panelBotones">
+						<div align="center">
+							<p:commandButton id="btnSave"
+								binding="#{gluoSiadXEmplView.btnSave}" value="Guardar"
+								action="#{gluoSiadXEmplView.action_save()}"
+								update=":dialogGluoSiadXEmpl :frm:panelDataTableGluoSiadXEmpl" />
+							<p:commandButton id="btnClear" value="Limpiar"
+								action="#{gluoSiadXEmplView.action_clear()}"
+								update=":dialogGluoSiadXEmpl" />
+							<p:commandButton id="btnExit" value="Salir"
+								action="#{gluoSiadXEmplView.action_closeDialog()}"
+								update=":dialogGluoSiadXEmpl" />
+						</div>
+					</p:panel>
+				</h:form>
+			</p:dialog>
+		</f:view>
+	</ui:define>
+
+</ui:composition>

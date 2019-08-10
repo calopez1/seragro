@@ -1,0 +1,724 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.3.1.final using JasperReports Library version 6.3.1  -->
+<!-- 2017-06-06T17:48:58 -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="exogena_1009" pageWidth="1400" pageHeight="612" orientation="Landscape" columnWidth="1360" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" isIgnorePagination="true" uuid="33e15949-049b-4fd7-94b2-d11105afc6cb">
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.unit." value="pixel"/>
+	<property name="net.sf.jasperreports.export.xls.detect.cell.type" value="true"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="JDBCDataAdapterGluon.xml"/>
+	<parameter name="P_SUBREPORT_DIR" class="java.lang.String">
+		<parameterDescription><![CDATA[]]></parameterDescription>
+		<defaultValueExpression><![CDATA["/Users/DPAREJA/Documents/WorkspaceGluErp/erp-reports/1"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="P_FECHA_INICIO_ANHO_FISCAL" class="java.util.Date">
+		<defaultValueExpression><![CDATA[new Date(2017,01,01)]]></defaultValueExpression>
+	</parameter>
+	<parameter name="P_FECHA_FIN_ANHO_FISCAL" class="java.util.Date">
+		<defaultValueExpression><![CDATA[new Date(2017,12,31)]]></defaultValueExpression>
+	</parameter>
+	<parameter name="P_FECHA_INICIO_ANHO_FISCAL_ANTERIOR" class="java.util.Date">
+		<parameterDescription><![CDATA[]]></parameterDescription>
+		<defaultValueExpression><![CDATA[new Date(2016,01,01)]]></defaultValueExpression>
+	</parameter>
+	<parameter name="P_FECHA_FIN_ANHO_FISCAL_ANTERIOR" class="java.util.Date">
+		<defaultValueExpression><![CDATA[new Date(2016,12,31)]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[--CxP
+--OPs de anos anteriores, sin pagos registrados ese mismo ano
+  SELECT 'CxP' tipo,
+  		 cdp.cdp_id                                        cdpId,
+         cdp.consecutivo                                   consecutivoCdp,
+         crp.gcrp_id,
+         crp.consecutivo                                   consecutivoCrp,
+		 crp.fecha_expedicion fechaExpedicionCrp,
+		 crp.valor_total valorTotalCrp,
+         tercero.terc_id,
+         tiid.nombre_corto                                 tipo_doc,
+            tercero.identificacion
+         || CASE WHEN tercero.dv IS NOT NULL THEN ' - ' || tercero.dv ELSE '' END
+            num_doc,
+         trim (
+               CASE
+                  WHEN tercero.primer_nombre IS NOT NULL
+                  THEN
+                     tercero.primer_nombre || ' '
+                  ELSE
+                     ''
+               END
+            || CASE
+                  WHEN tercero.segundo_nombre IS NOT NULL
+                  THEN
+                     tercero.segundo_nombre || ' '
+                  ELSE
+                     ''
+               END
+            || CASE
+                  WHEN tercero.primer_apellido IS NOT NULL
+                  THEN
+                     tercero.primer_apellido || ' '
+                  ELSE
+                     ''
+               END
+            || CASE
+                  WHEN tercero.segundo_apellido IS NOT NULL
+                  THEN
+                     tercero.segundo_apellido || ' '
+                  ELSE
+                     ''
+               END
+            || CASE
+                  WHEN tercero.razon_social IS NOT NULL
+                  THEN
+                     tercero.razon_social || ' '
+                  ELSE
+                     ''
+               END)
+            razon_social,
+         dept.codigo || muni.codigo                        codigo_municipio,
+            coalesce(tercero.direccion_principal,'?')
+         || ' - '
+         || muni.nombre
+         || '('
+         || dept.nombre
+         || ')'
+            nombre_municipio,
+         maop.maop_id,
+         maop.consecutivo                                  consecutivoMaop,
+		 maop.fecha_expedicion fechaExpedicionMaop,
+         maop.concepto concepto_op,
+         op.valor_total                                    valorOP,
+         ceap.ceap_id,
+         ceap.consecutivo                                  consecutivoCeap,
+         ceap.fecha_expedicion                             fecha_expedicion_ce,
+         cexop.valor_pagado                                valorPagadoCeXOp,
+         (op.valor_total - coalesce (cexop.valor_pagado, 0)) valorEnObligacion
+    FROM gluo_cdp cdp
+         INNER JOIN gluo_solicitud_cdp scdp ON scdp.scdp_id = cdp.scdp_id
+         INNER JOIN gluo_crp crp ON crp.cdp_id = cdp.cdp_id
+         INNER JOIN gluo_detalle_crp dcrp ON dcrp.gcrp_id = crp.gcrp_id
+         --INNER JOIN gluo_detalle_cdp dcdp ON dcdp.cdp_id = cdp.cdp_id
+         --INNER JOIN gluo_detalle_presupuesto dpto
+         --   ON dpto.dpto_id = dcdp.dpto_id
+         INNER JOIN gluo_tercero tercero ON tercero.terc_id = dcrp.terc_id
+		 INNER JOIN gluo_municipio muni ON muni.muni_id = tercero.muni_id
+       	 INNER JOIN gluo_departamento dept ON dept.dept_id = muni.dept_id
+         INNER JOIN gluo_tipo_identificacion tiid
+            ON tiid.tiid_id = tercero.tiid_id
+         INNER JOIN gluo_op op ON op.dcrp_id = dcrp.dcrp_id
+         INNER JOIN gluo_maestro_op maop ON maop.maop_id = op.maop_id
+         LEFT OUTER JOIN gluo_ce_x_op cexop ON cexop.maop_id = maop.maop_id
+         LEFT OUTER JOIN gluo_maestro_ce_afecta_ppto ceap
+            ON ceap.ceap_id = cexop.ceap_id
+   WHERE     maop.fecha_expedicion BETWEEN $P{P_FECHA_INICIO_ANHO_FISCAL_ANTERIOR} 
+                                       AND $P{P_FECHA_FIN_ANHO_FISCAL_ANTERIOR} 
+         AND cdp.activo = 'A'
+         AND crp.activo = 'A'
+         AND dcrp.activo = 'A'
+         --AND dcdp.activo = 'A'
+         --AND dpto.activo = 'A'
+         AND tercero.activo = 'A'
+         AND tiid.activo = 'A'
+         AND op.activo = 'A'
+         AND maop.activo = 'A'
+         AND (date_trunc (
+                 'day',
+                 coalesce (ceap.fecha_expedicion,
+                          $P{P_FECHA_INICIO_ANHO_FISCAL})) BETWEEN 
+                          					 $P{P_FECHA_INICIO_ANHO_FISCAL} 
+                                                                      AND 
+                                              $P{P_FECHA_FIN_ANHO_FISCAL})
+UNION
+
+--Reservas presupuestales
+--CRPs de anos anteriores, sin obligación en ese mismo anho
+  SELECT 'R' tipo,
+  	  	 cdp.cdp_id                                        cdpId,
+         cdp.consecutivo                                   consecutivoCdp,
+         crp.gcrp_id,
+         crp.consecutivo                                   consecutivoCrp,
+		 crp.fecha_expedicion fechaExpedicionCrp,
+		 crp.valor_total valorTotalCrp,
+         tercero.terc_id,
+         tiid.nombre_corto                                 tipo_doc,
+            tercero.identificacion
+         || CASE WHEN tercero.dv IS NOT NULL THEN ' - ' || tercero.dv ELSE '' END
+            num_doc,
+         trim (
+               CASE
+                  WHEN tercero.primer_nombre IS NOT NULL
+                  THEN
+                     tercero.primer_nombre || ' '
+                  ELSE
+                     ''
+               END
+            || CASE
+                  WHEN tercero.segundo_nombre IS NOT NULL
+                  THEN
+                     tercero.segundo_nombre || ' '
+                  ELSE
+                     ''
+               END
+            || CASE
+                  WHEN tercero.primer_apellido IS NOT NULL
+                  THEN
+                     tercero.primer_apellido || ' '
+                  ELSE
+                     ''
+               END
+            || CASE
+                  WHEN tercero.segundo_apellido IS NOT NULL
+                  THEN
+                     tercero.segundo_apellido || ' '
+                  ELSE
+                     ''
+               END
+            || CASE
+                  WHEN tercero.razon_social IS NOT NULL
+                  THEN
+                     tercero.razon_social || ' '
+                  ELSE
+                     ''
+               END)
+            razon_social,
+         dept.codigo || muni.codigo                        codigo_municipio,
+            coalesce(tercero.direccion_principal,'?')
+         || ' - '
+         || muni.nombre
+         || '('
+         || dept.nombre
+         || ')'
+            nombre_municipio,
+         maop.maop_id,
+         maop.consecutivo                                  consecutivoMaop,
+		 maop.fecha_expedicion fechaExpedicionMaop,
+         maop.concepto concepto_op,
+         op.valor_total                                    valorOP,
+         ceap.ceap_id,
+         ceap.consecutivo                                  consecutivoCeap,
+         ceap.fecha_expedicion                             fecha_expedicion_ce,
+         cexop.valor_pagado                                valorPagadoCeXOp,
+         (op.valor_total - coalesce (cexop.valor_pagado, 0)) valorEnObligacion
+    FROM gluo_cdp cdp
+         INNER JOIN gluo_solicitud_cdp scdp ON scdp.scdp_id = cdp.scdp_id
+         INNER JOIN gluo_crp crp ON crp.cdp_id = cdp.cdp_id
+         INNER JOIN gluo_detalle_crp dcrp ON dcrp.gcrp_id = crp.gcrp_id
+         --INNER JOIN gluo_detalle_cdp dcdp ON dcdp.cdp_id = cdp.cdp_id
+        -- INNER JOIN gluo_detalle_presupuesto dpto
+        --    ON dpto.dpto_id = dcdp.dpto_id
+         INNER JOIN gluo_tercero tercero ON tercero.terc_id = dcrp.terc_id
+		 INNER JOIN gluo_municipio muni ON muni.muni_id = tercero.muni_id
+       	 INNER JOIN gluo_departamento dept ON dept.dept_id = muni.dept_id
+         INNER JOIN gluo_tipo_identificacion tiid
+            ON tiid.tiid_id = tercero.tiid_id
+         INNER JOIN gluo_op op ON op.dcrp_id = dcrp.dcrp_id
+         INNER JOIN gluo_maestro_op maop ON maop.maop_id = op.maop_id
+         LEFT OUTER JOIN gluo_ce_x_op cexop ON cexop.maop_id = maop.maop_id
+         LEFT OUTER JOIN gluo_maestro_ce_afecta_ppto ceap
+            ON ceap.ceap_id = cexop.ceap_id
+   WHERE     crp.fecha_expedicion BETWEEN $P{P_FECHA_INICIO_ANHO_FISCAL_ANTERIOR} 
+                                       AND $P{P_FECHA_FIN_ANHO_FISCAL_ANTERIOR} 
+         AND cdp.activo = 'A'
+         AND crp.activo = 'A'
+         AND dcrp.activo = 'A'
+         --AND dcdp.activo = 'A'
+         --AND dpto.activo = 'A'
+         AND tercero.activo = 'A'
+         AND tiid.activo = 'A'
+         AND op.activo = 'A'
+         AND maop.activo = 'A'
+         AND (date_trunc (
+                 'day',
+                 coalesce (maop.fecha_expedicion,
+                           $P{P_FECHA_INICIO_ANHO_FISCAL}  )) BETWEEN 
+                           						 $P{P_FECHA_INICIO_ANHO_FISCAL} 
+                                                                      AND 
+                                                  $P{P_FECHA_FIN_ANHO_FISCAL})
+ORDER BY 8, 1]]>
+	</queryString>
+	<field name="tipo" class="java.lang.String"/>
+	<field name="cdpid" class="java.lang.Integer"/>
+	<field name="consecutivocdp" class="java.lang.String"/>
+	<field name="gcrp_id" class="java.lang.Integer"/>
+	<field name="consecutivocrp" class="java.lang.String"/>
+	<field name="fechaexpedicioncrp" class="java.sql.Timestamp"/>
+	<field name="valortotalcrp" class="java.math.BigDecimal"/>
+	<field name="terc_id" class="java.lang.Integer"/>
+	<field name="tipo_doc" class="java.lang.String"/>
+	<field name="num_doc" class="java.lang.String"/>
+	<field name="razon_social" class="java.lang.String"/>
+	<field name="codigo_municipio" class="java.lang.String"/>
+	<field name="nombre_municipio" class="java.lang.String"/>
+	<field name="maop_id" class="java.lang.Integer"/>
+	<field name="consecutivomaop" class="java.lang.String"/>
+	<field name="fechaexpedicionmaop" class="java.sql.Timestamp"/>
+	<field name="concepto_op" class="java.lang.String"/>
+	<field name="valorop" class="java.math.BigDecimal"/>
+	<field name="ceap_id" class="java.lang.Integer"/>
+	<field name="consecutivoceap" class="java.lang.String"/>
+	<field name="fecha_expedicion_ce" class="java.sql.Timestamp"/>
+	<field name="valorpagadocexop" class="java.math.BigDecimal"/>
+	<field name="valorenobligacion" class="java.math.BigDecimal"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="79" splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band height="35" splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="15" splitType="Stretch">
+			<staticText>
+				<reportElement x="35" y="0" width="35" height="15" uuid="222c204c-f4c6-4cff-8f0a-92039af03232">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[T.Doc.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="70" y="0" width="65" height="15" uuid="06b28faf-fa28-4a41-a9d6-b682b3a029d9"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Identificación]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="135" y="0" width="100" height="15" uuid="b2c9cbe4-369a-42c2-8eef-deb3749a05e4">
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Razón Social]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="235" y="0" width="50" height="15" uuid="25fb3478-05f1-4f0a-81dd-aee9f2ec6fc8"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[DANE]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="285" y="0" width="100" height="15" uuid="4a4eaf34-5276-47a3-91ed-f23a570991bb">
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Dirección]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="855" y="0" width="150" height="15" uuid="52d1d871-5742-43c5-84d1-4db11212e786">
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Concepto en la OP]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="1090" y="0" width="75" height="15" uuid="6ae8fdf1-17b6-4457-b087-6ad4f726e9d2"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Fecha CE]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="1005" y="0" width="85" height="15" uuid="05165e1c-aa14-44f2-a6fa-5d1bb2863401">
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Consecutivo CE]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="1165" y="0" width="75" height="15" uuid="b5a3eae7-b3f8-453e-8ff8-6f38cd92f417"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Vr. CE]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="0" width="35" height="15" uuid="00909bd7-3871-41f6-bfd2-b9f47cb9854b">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Tipo]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="620" y="0" width="85" height="15" uuid="5be7ff66-98ed-4052-b1f1-e9dbe5129368">
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Consecutivo OP]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="705" y="0" width="75" height="15" uuid="ae650e8f-8356-4aeb-8f3f-e4ff30edca00"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Fecha OP]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="780" y="0" width="75" height="15" uuid="b1a5e8a3-e0b5-4d88-9e46-bf3239ab455f"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Vr. OP]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="545" y="0" width="75" height="15" uuid="fe8552e9-c637-41ac-9d2c-cf8719081d2c"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Vr. CRP]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="470" y="0" width="75" height="15" uuid="93a62838-a7e8-4a3b-bb2e-67887437d1e9"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Fecha CRP]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="385" y="0" width="85" height="15" uuid="426dcfe1-1381-45c1-a5ec-bc9ed43256b5">
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Consecutivo CRP]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="15" splitType="Stretch">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="35" y="0" width="35" height="15" uuid="4fea20d9-44c0-4ad9-a535-b96ed88392bf">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				</reportElement>
+				<box padding="2" topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2">
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{tipo_doc}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="70" y="0" width="65" height="15" uuid="5b2f3ec2-5012-4a5d-a07f-5c76d7025788"/>
+				<box padding="2" topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2">
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Justified" verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{num_doc}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="135" y="0" width="100" height="15" uuid="dbf2265e-9010-4eea-ba6c-eacacf482ea7"/>
+				<box padding="2" topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2">
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Justified" verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{razon_social}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="235" y="0" width="50" height="15" uuid="773af769-fe45-4352-b550-9559e5e5f976"/>
+				<box padding="2" topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2">
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Justified" verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{codigo_municipio}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="285" y="0" width="100" height="15" uuid="ae8ee49f-9d8f-475c-99e2-41b31b8d98be"/>
+				<box padding="2" topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2">
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Justified" verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{nombre_municipio}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="855" y="0" width="150" height="15" uuid="764cc10c-39cf-46fd-84b7-dea7b4dc8348"/>
+				<box padding="2" topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2">
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Justified" verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{concepto_op}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="1005" y="0" width="85" height="15" uuid="1b49752f-8ea7-44d8-99b3-5ba776f836a2"/>
+				<box padding="2" topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2">
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Justified" verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{consecutivoceap}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="35" height="15" uuid="3c5e6a74-d06d-4a04-af0e-e480ec93699d"/>
+				<box padding="2" topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2">
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{tipo}.equals("R")?"Reserva":$F{tipo}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="620" y="0" width="85" height="15" uuid="2d17c80d-e653-48ae-8cfe-d763bd727957"/>
+				<box padding="2" topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2">
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Justified" verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{consecutivomaop}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="dd/MMM/yyyy" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="705" y="0" width="75" height="15" uuid="e7b41e58-e3c3-40df-9a0b-69a992b1974b"/>
+				<box padding="2" topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2">
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Justified" verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{fechaexpedicionmaop}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="dd/MMM/yyyy" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="1090" y="0" width="75" height="15" uuid="ae1ec98c-18b5-416c-82cf-7fc2a2158552"/>
+				<box padding="2" topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2">
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Justified" verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{fecha_expedicion_ce}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="$#,##0.##;$-#,##0.##" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="1165" y="0" width="75" height="15" uuid="e4ad6439-e63d-4d11-9304-63d1d028bb92"/>
+				<box padding="2" topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2">
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{valorpagadocexop}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="$#,##0.##;$-#,##0.##" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="780" y="0" width="75" height="15" uuid="632bc90c-69ff-44e1-9992-409acbfa7d6c"/>
+				<box padding="2" topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2">
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{valorop}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="385" y="0" width="85" height="15" uuid="5afe73a9-e477-470b-8321-aea56a0bfafe"/>
+				<box padding="2" topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2">
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Justified" verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{consecutivocrp}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="dd/MMM/yyyy" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="470" y="0" width="75" height="15" uuid="b15bea8e-12d9-4d2b-b2bd-8a1bed87add3"/>
+				<box padding="2" topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2">
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Justified" verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{fechaexpedicioncrp}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="$#,##0.##;$-#,##0.##" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="545" y="0" width="75" height="15" uuid="679cb553-6970-4942-931b-fa9799399e8b"/>
+				<box padding="2" topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2">
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{valortotalcrp}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="45" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="54" splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="42" splitType="Stretch"/>
+	</summary>
+</jasperReport>

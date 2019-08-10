@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.1.1.final using JasperReports Library version 6.1.1  -->
+<!-- 2017-10-02T16:29:46 -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="informeListadoDeSalud" pageWidth="792" pageHeight="612" orientation="Landscape" columnWidth="752" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="9d76bfcc-2f8d-438e-85ef-c9c02dfcaa74">
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="JDBCDataAdapterGluon.xml"/>
+	<property name="com.jaspersoft.studio.unit." value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageHeight" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.topMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.bottomMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.leftMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.rightMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnSpacing" value="pixel"/>
+	<parameter name="P_SUBREPORT_DIR" class="java.lang.String">
+		<parameterDescription><![CDATA[]]></parameterDescription>
+		<defaultValueExpression><![CDATA["/Users/DPAREJA/Documents/WorkspaceGluErp/erp-reports/1/"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="P_CABE_LINEA_1" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["REPÚBLICA DE COLOMBIA"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="P_CABE_LINEA_2" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["DEPARTAMENTO DEL CAUCA"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="P_CABE_LINEA_3" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["MUNICIPIO DE TOTORÓ"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="P_CABE_LINEA_4" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["ALCALDÍA MUNICIPAL"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="P_CABE_LINEA_5" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["NIT: 800031874 - 5"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="P_CABE_LINEA_6" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["EDIFICIO CAM CALLE PRINCIPAL. TEL: 827 5130. FAX: 827 5130"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="P_PIE_LINEA_1" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["HACIA LA CONSTRUCCIÓN DEL BUEN VIVIR EN UNIDAD Y DESARROLLO PARA TOTORÓ"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="P_PIE_LINEA_2" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["Generado por: Glu ERP."]]></defaultValueExpression>
+	</parameter>
+	<parameter name="P_PIE_LINEA_3" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["Desarrollado por: VortexBird (www.vortexbird.com)"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="P_PERIODO_LIQUIDACION" class="java.lang.String">
+		<defaultValueExpression><![CDATA["1 ENERO 2017 AL 31 ENERO 2017"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="P_LINO_ID" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[5]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[select 
+distinct(terc_empl.identificacion)
+, (terc_empl.primer_apellido
+||' '||terc_empl.segundo_apellido
+||' '||terc_empl.primer_nombre
+||' '||terc_empl.segundo_nombre) nombre_completo
+, line.dias_laborados
+, tino.tino_id
+, tino.descripcion tipo_nomina
+, enex.enex_id
+, terc_enex.razon_social entidad
+, cono.descripcion descripcion_salud
+, dlin.valor_calculado
+, dlin.valor_base ibc
+from gluo_empleado empl
+inner join gluo_tercero terc_empl on terc_empl.terc_id = empl.terc_id
+inner join gluo_tipo_nomina tino on tino.tino_id = empl.tino_id
+inner join gluo_liquidacion_nomina_empleado line on empl.empl_id = line.empl_id
+inner join gluo_liquidacion_nomina lino on line.lino_id = lino.lino_id
+inner join gluo_detalle_liquidacion_nomina dlin on dlin.line_id = line.line_id
+inner join gluo_afiliacion afil on afil.afil_id = dlin.afil_id
+inner join gluo_entidad_externa enex on afil.enex_id = enex.enex_id
+inner join gluo_tercero terc_enex on enex.terc_id = terc_enex.terc_id
+inner join gluo_tipo_entidad tien on tien.tien_id = enex.tien_id
+inner join gluo_concepto_nomina cono on dlin.cono_id = cono.cono_id
+where lino.lino_id = $P{P_LINO_ID} 
+and line.activo = 'A'
+and lino.activo = 'A'
+and dlin.activo = 'A'
+and tien.codigo_aporte in ('PE', 'FSP', 'PPPR', 'PPPU')
+order by tipo_nomina asc, entidad asc, nombre_completo asc, descripcion_salud asc]]>
+	</queryString>
+	<field name="identificacion" class="java.lang.String"/>
+	<field name="nombre_completo" class="java.lang.String"/>
+	<field name="dias_laborados" class="java.math.BigDecimal"/>
+	<field name="tino_id" class="java.lang.Integer"/>
+	<field name="tipo_nomina" class="java.lang.String"/>
+	<field name="enex_id" class="java.lang.Integer"/>
+	<field name="entidad" class="java.lang.String"/>
+	<field name="descripcion_salud" class="java.lang.String"/>
+	<field name="valor_calculado" class="java.math.BigDecimal"/>
+	<field name="ibc" class="java.math.BigDecimal"/>
+	<group name="GRP_TINO" isStartNewPage="true">
+		<groupExpression><![CDATA[$F{tino_id}]]></groupExpression>
+		<groupHeader>
+			<band height="15">
+				<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				<textField>
+					<reportElement x="0" y="0" width="290" height="15" uuid="feb49283-3542-4c97-9f34-c3479679da92">
+						<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					</reportElement>
+					<textElement>
+						<font isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{tipo_nomina}]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band>
+				<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+			</band>
+		</groupFooter>
+	</group>
+	<group name="GRP_ENEX" isReprintHeaderOnEachPage="true">
+		<groupExpression><![CDATA[$F{enex_id}]]></groupExpression>
+		<groupHeader>
+			<band height="49">
+				<textField>
+					<reportElement x="0" y="0" width="290" height="15" uuid="6ea757e7-0195-45ff-b0f0-1a0ef5b4b84d"/>
+					<textElement>
+						<font isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{entidad}]]></textFieldExpression>
+				</textField>
+				<subreport>
+					<reportElement stretchType="RelativeToTallestObject" x="1" y="15" width="749" height="25" uuid="675cad4b-2783-489d-873c-44df87ec2b19"/>
+					<subreportParameter name="P_LINO_ID">
+						<subreportParameterExpression><![CDATA[$P{P_LINO_ID}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="P_TINO_ID">
+						<subreportParameterExpression><![CDATA[$F{tino_id}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="P_ENEX_ID">
+						<subreportParameterExpression><![CDATA[$F{enex_id}]]></subreportParameterExpression>
+					</subreportParameter>
+					<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					<subreportExpression><![CDATA[$P{P_SUBREPORT_DIR}+"detalleInformeListadoDePension.jasper"]]></subreportExpression>
+				</subreport>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band>
+				<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+			</band>
+		</groupFooter>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="165" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="123" width="750" height="20" uuid="b1c47bba-c089-4269-8f80-3d0b28051851"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="14" isBold="true"/>
+				</textElement>
+				<text><![CDATA[LISTADO DE PENSIÓN]]></text>
+			</staticText>
+			<image>
+				<reportElement x="0" y="0" width="140" height="120" uuid="8a238d2c-31d1-4bdf-8f65-44d150b89ee5">
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				</reportElement>
+				<imageExpression><![CDATA[$P{P_SUBREPORT_DIR}+"logo-titulo-cdp.jpg"]]></imageExpression>
+			</image>
+			<textField>
+				<reportElement x="0" y="2" width="750" height="13" uuid="8ca17f17-eebd-4c73-a58d-7896e61c3b5a"/>
+				<textElement textAlignment="Center">
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{P_CABE_LINEA_1}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="15" width="750" height="15" uuid="47291991-9527-43b9-ae85-6d1ea5de1ce8"/>
+				<textElement textAlignment="Center">
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{P_CABE_LINEA_2}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="30" width="750" height="15" uuid="67c3ce8d-94de-4702-88cf-829377479ce2"/>
+				<textElement textAlignment="Center">
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{P_CABE_LINEA_3}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="45" width="750" height="15" uuid="b50f2f4f-a1e8-41e6-a585-8caaa25c0610">
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+				</reportElement>
+				<textElement textAlignment="Center">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{P_CABE_LINEA_4}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="60" width="750" height="15" uuid="c45b646b-2e41-4605-b9f1-b3c1f29249d5"/>
+				<textElement textAlignment="Center">
+					<font size="10" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{P_CABE_LINEA_5}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="75" width="750" height="15" uuid="b5d5eae3-8658-4573-917b-fda784a4b88a"/>
+				<textElement textAlignment="Center">
+					<font size="10" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{P_CABE_LINEA_6}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="0" y="120" width="750" height="3" uuid="0a7bd6f1-1dff-476c-977a-bb340fa1bf0c">
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+				</reportElement>
+			</line>
+			<textField>
+				<reportElement x="0" y="143" width="750" height="22" uuid="79b40494-ee31-4eb0-93ef-05a818c5553c"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["DE FECHA: "+$P{P_PERIODO_LIQUIDACION}]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<columnHeader>
+		<band splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+		</band>
+	</columnHeader>
+	<detail>
+		<band splitType="Stretch"/>
+	</detail>
+	<columnFooter>
+		<band splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+		</band>
+	</columnFooter>
+	<pageFooter>
+		<band height="35" splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+			<textField>
+				<reportElement x="0" y="0" width="750" height="15" uuid="2f9c2e21-be6f-42ae-a563-eccf8229372a"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{P_PIE_LINEA_1}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="1" y="15" width="160" height="10" uuid="4e3740dd-b122-4557-8666-3b3df206d06d"/>
+				<textElement textAlignment="Left">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{P_PIE_LINEA_2}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="25" width="160" height="10" uuid="c2f673a5-ddcb-43ad-8103-200eea5832c1"/>
+				<textElement>
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{P_PIE_LINEA_3}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+</jasperReport>

@@ -1,0 +1,160 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+
+<ui:define name="content">
+<f:view>
+
+	<p:ajaxStatus onstart="PF('statusDialog').show()"
+		onsuccess="PF('statusDialog').hide()" />
+	<p:dialog modal="true" widgetVar="statusDialog" header="Cargando"
+		draggable="false" closable="false">
+		<p:graphicImage
+			value="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/ajaxloadingbar.gif" />
+	</p:dialog>
+
+	<!-- Expired session -->
+<p:idleMonitor onactive="PF('sessionTimeOutDialog').show();"
+	timeout="#{session.maxInactiveInterval * 1000}" />
+<p:dialog modal="true" widgetVar="sessionTimeOutDialog"
+	header="Sesión terminada" draggable="false" closable="false">
+	<h:outputText value="La sesión ha finalizado" />
+	<input id="confirmBackToLogin" type="button" value="Iniciar sesión"
+		onclick="window.location='#{facesContext.externalContext.requestContextPath}/index.jsp';" />
+</p:dialog>
+
+<script type="text/javascript">
+function showStatus() {
+    statusDialog.show();
+}
+ 
+function hideStatus() {
+    statusDialog.hide();
+}
+</script>
+
+<style type="text/css">
+.ui-panel {
+	margin-top: 20px
+}
+
+.ui-tabs-top {
+	background-color: #FFFFFF;
+}
+
+.one {
+	width: 40%;
+}
+
+.two {
+	width: 60%;
+}
+
+.col50Left {
+	width: 10%;
+	text-align: left;
+}
+
+.col50Right {
+	width: 10%;
+	text-align: right;
+}
+
+.txt100 {
+	width: 100%;
+}
+</style>
+
+<div align="center">
+<h:form id="frmGestionarCuentasContablesXCentroCostos" >
+
+	<p:growl id="messages" autoUpdate="true" closable="true" />
+	
+	<p:panel id="pnlCuentasContablesXCentroCostos" header="Asociar Centros de Costos a Cuenta Contable" 
+			 style="width: 90%;" >
+			 
+			 <br/>
+			 
+			 <h:panelGrid columns="2">
+			 
+			 	<p:outputLabel value="Cuenta Contable" for="txtCuentaContable" />
+				<p:inputText id="txtCuentaContable" value="#{gluoCuentaContableCentroCostosView.txtCuentaContable}" >
+					<p:ajax listener="#{gluoCuentaContableCentroCostosView.listener_cuenta_contable}" 
+							update=":frmGestionarCuentasContablesXCentroCostos" />
+				</p:inputText>
+			 
+			 </h:panelGrid>
+			 
+			 <br/>
+			 
+			 <p:pickList id="picklist" rendered="#{gluoCuentaContableCentroCostosView.showCentroCostosPicklist}"
+	   			 value="#{gluoCuentaContableCentroCostosView.dualListCentroCostos}"
+	 			 var="centroCosto" itemLabel="#{centroCosto}" itemValue="#{centroCosto}" 
+	 			 showSourceControls="true" showTargetControls="true" showCheckbox="true" responsive="true"
+	 			 showSourceFilter="true" showTargetFilter="true" filterMatchMode="contains"
+	 			 style="text-align: left;">
+	 			 
+	 			 <f:facet name="sourceCaption">Centros Costos Inscritos</f:facet>
+      		     <f:facet name="targetCaption">Centros Costos Disponibles</f:facet>
+			 			 
+			 </p:pickList>
+			 
+			 <br/>
+			 
+			 <p:commandButton id="btnGuardar" value="Guardar" rendered="#{gluoCuentaContableCentroCostosView.showCentroCostosPicklist}"
+			 				  action="#{gluoCuentaContableCentroCostosView.action_guardar}" 
+			 				  update=":frmGestionarCuentasContablesXCentroCostos" />
+			 
+			 <p:commandButton id="btnLimpiar" value="Limpiar" rendered="#{gluoCuentaContableCentroCostosView.showCentroCostosPicklist}"
+			 				  action="#{gluoCuentaContableCentroCostosView.action_limpiar}" 
+			 				  update=":frmGestionarCuentasContablesXCentroCostos" />
+			 			 			  
+	</p:panel>
+	
+	
+	<p:panel id="pnlListaCuentasContablesXCentroCostos" header="Cuentas Contables por Centro de Costos" 
+			 style="width: 90%;" >
+	
+		<p:dataTable id="cuentasContablesXCentroCostosDataTable" var="contableCentroCostos" style="text-align: center;"
+			paginator="true" 
+			rows="12"
+			value="#{gluoCuentaContableCentroCostosView.listCuentaContableXCentroCostosDTOs}"										 					 
+			rowKey="#{contableCentroCostos.codigo}" 
+			filterDelay="1000">
+			
+			<p:column headerText="Código Cuenta Contable" filterBy="#{contableCentroCostos.codigoCuentaContable}" 
+				filterMatchMode="contains">
+				<h:outputText value="#{contableCentroCostos.codigoCuentaContable}" />
+			</p:column>
+			
+			<p:column headerText="Descripción Cuenta Contable" filterBy="#{contableCentroCostos.descripcionCuentaContable}" 
+				filterMatchMode="contains">
+				<h:outputText value="#{contableCentroCostos.descripcionCuentaContable}" />
+			</p:column>
+						
+			<p:column headerText="Código Centro Costos" filterBy="#{contableCentroCostos.codigoCentroCostos}" 
+				filterMatchMode="contains">
+				<h:outputText value="#{contableCentroCostos.codigoCentroCostos}" />
+			</p:column>
+			
+			<p:column headerText="Descripción Centro Costos" filterBy="#{contableCentroCostos.descripcionCentroCostos}" 
+				filterMatchMode="contains">
+				<h:outputText value="#{contableCentroCostos.descripcionCentroCostos}" />
+			</p:column>	
+			
+		
+		</p:dataTable>
+	
+	</p:panel>
+	
+	<br/><br/>
+	
+</h:form>
+</div>
+
+</f:view>
+</ui:define>
+</ui:composition>

@@ -1,0 +1,160 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" 
+	template="/WEB-INF/template.xhtml"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+
+	<ui:define name="content">
+
+		<p:ajaxStatus onstart="PF('statusDialog').show()"
+			onsuccess="PF('statusDialog').hide()" />
+		<p:dialog modal="true" widgetVar="statusDialog" header="Cargando"
+			draggable="false" closable="false">
+			<p:graphicImage
+				value="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/ajaxloadingbar.gif" />
+		</p:dialog>
+
+		<!-- Expired session -->
+		<p:idleMonitor onactive="PF('sessionTimeOutDialog').show();"
+			timeout="#{session.maxInactiveInterval * 1000}" />
+		<p:dialog modal="true" widgetVar="sessionTimeOutDialog"
+			header="Sesión terminada" draggable="false" closable="false">
+			<h:outputText value="La sesión ha finalizado" />
+			<input id="confirmBackToLogin" type="button" value="Iniciar sesión"
+				onclick="window.location='#{facesContext.externalContext.requestContextPath}/index.jsp';" />
+		</p:dialog>
+		
+		<script type="text/javascript">
+			function showStatus() {
+			    statusDialog.show();
+			}
+			 
+			function hideStatus() {
+			    statusDialog.hide();
+			}
+		</script>
+		
+
+		<style type="text/css">
+			.ui-panel {
+				margin-top: 20px
+			}
+			
+			.ui-tabs-top {
+				background-color: #FFFFFF;
+			}
+			
+			.one {
+				width: 10%;
+			}
+			
+			.two {
+				width: 90%;
+			}
+			
+        	.colAFiltro{width: 10%; }
+        	.colBFiltro{width: 50%; }
+			
+			.col50Left{
+				width: 10%;
+				text-align: left;
+			}
+			
+			.col50Right{
+				width: 10%;
+				text-align: right;
+			}
+			
+			.txt100{
+				width: 100%;
+			}
+			
+			.col30{width: 30%;}
+        	.col70{width: 70%;}
+        	
+        	.pe-inputNumber{
+        		font-size: 100%;
+        	}
+			
+		</style>
+			<h:form id="idForm">
+				
+				<p:growl id="men" showDetail="false"/>
+				
+					<p:panel id="panelCapturaPago" header="CAPTURA DE PAGOS">							
+						
+						<br/>
+						
+						<div align="center">	
+							
+							<h:panelGrid columns="2" id="panelGridCapturaPago">
+								
+								<h:outputText value =" Nro Recibo de Pago: "/>
+								<p:inputText id="txtNroReciboPago" style="font-size: 150%;" binding="#{gluoCapturaPagoView.txtNumeroReciboPago}" maxlength="50" 
+									onkeypress="if (event.keyCode == 13) { document.getElementById('idForm:txtFechaPago').focus(); return false; }"/>
+								
+								<h:outputText  value = " Fecha Pago: "/>
+								<p:inputMask id="txtFechaPago" style="font-size: 150%;" binding="#{gluoCapturaPagoView.txtFechaPago}" mask="99/99/9999" placeholder="dd/MM/yyyy" 
+									onkeypress="if (event.keyCode == 13) { document.getElementById('idForm:txtNumeroPredio').focus(); return false; }"/>
+								
+								<h:outputText value = " Número Predio: "/>
+								<p:inputText id="txtNumeroPredio" style="font-size: 150%;" binding="#{gluoCapturaPagoView.txtNumeroPredio}" maxlength="50" 
+									onkeypress="if (event.keyCode == 13) { document.getElementById('idForm:txtValorPredio_input').focus(); return false; }"/>
+								
+								<h:outputText value = "Valor Pago: "/>
+								<pe:inputNumber id ="txtValorPredio" style="font-size: 150%;" value="#{gluoCapturaPagoView.valorPago}" symbol="$" decimalPlaces="0"
+									onkeypress="if (event.keyCode==13){ document.getElementById('idForm:hpValor').value = this.value;}"/>
+							</h:panelGrid>
+							
+							<h:inputHidden id="hpValor" value="#{gluoCapturaPagoView.valorHidden}"/>
+						</div>
+					</p:panel>
+					
+					<p:panel id="panelBotones">
+						<div align="center">					
+							<p:commandButton id="btnSave" value="Guardar" icon="ui-icon-disk" action="#{gluoCapturaPagoView.action_mostrarDialogoConfirmacion()}" update=":idForm:panelConfirmacion, men"/>
+							<p:commandButton id="btnLimpiar" value="Limpiar" action="#{gluoCapturaPagoView.action_limpiar()}" update=":idForm:panelGridCapturaPago"/>
+						</div>
+					</p:panel>	
+					
+					
+				<!--  **************************************************************************** -->
+				<!--  **						DIÁLOGO - CONFIRMACION							** -->
+				<!--  **************************************************************************** -->
+				<p:dialog header="Confirmación de Captura de Pago" widgetVar="dialogConfirmacionCapturaPago" modal="true" height="300" width="25%">
+					
+					<p:growl id="menDialog" showDetail="false"/>
+					
+					<div align="center">
+						<h:panelGrid id="panelConfirmacion" columns="1">
+							<h:outputText value="Se va a registrar el pago con Recibo Número:" style="font-size: 150%;"/>
+							<h:outputText value="#{gluoCapturaPagoView.capturaPagoDTO.numeroRecibo}" style="font-size: 100%; color:blue; font-height:bold"/>
+							
+							<h:outputText value="Con fecha Pago:" style="font-size: 150%;"/>
+							<h:outputText value="#{gluoCapturaPagoView.capturaPagoDTO.fechaPagoString}" style="font-size: 100%; color:blue; font-height:bold"/>
+							
+							<h:outputText value="Para el predio Número:" style="font-size: 150%;"/>
+							<h:outputText value="#{gluoCapturaPagoView.capturaPagoDTO.numeroPredio}" style="font-size: 100%; color:blue; font-height:bold"/>
+							
+							<h:outputText value="Por valor de: " style="font-size: 150%;"/>
+							<h:outputText value="#{gluoCapturaPagoView.capturaPagoDTO.valorPago}" style="font-size: 100%; color:blue; font-height:bold">
+								<f:convertNumber currencySymbol="$" type="currency"/>
+							</h:outputText>
+						</h:panelGrid>
+					</div>
+					<br/>
+						
+					<div align="center">	
+						<h:panelGrid id="panelBotonesreemplazaArqueo" columns="2">
+							<p:commandButton id="btnGuardar" value="Guardar" icon="ui-icon-disk" action="#{gluoCapturaPagoView.action_guardarCapturaPago()}" update=":idForm:panelCapturaPago, menDialog"/>
+							<p:commandButton id="btnCancelar" value="Cancelar" icon="ui-icon-close" onclick="PF('dialogConfirmacionCapturaPago').hide();"/>
+						</h:panelGrid>
+					</div>
+					
+					<br/>
+				</p:dialog>
+			</h:form>
+	</ui:define>
+</ui:composition>

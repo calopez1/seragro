@@ -1,0 +1,71 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+	<ui:define name="content">
+		<style type="text/css">
+			.ui-panel {
+				margin-top: 20px
+			}
+			
+			.ui-tabs-top{
+				background-color: #FFFFFF;
+			}
+		</style>
+
+		<h:form id="formCuentasBancarias">
+			
+				<p:messages id="msg" />
+				<p:growl id="men"/>
+					<p:panel id="panelGluoDeduccion" header="GluoDeduccion">							
+						<h:panelGrid columns="2" id="panelGrid" >
+												 	<h:outputText id="msgDeduId" value="DeduId"/>
+						 	<p:inputText id="txtDeduId" binding="#{gluoDeduccionView.txtDeduId}">
+						 		<p:ajax update="panelGluoDeduccion,msg,panelBotones" listener="#{gluoDeduccionView.listener_txtId}"/>
+						 	</p:inputText>	
+																		
+													<h:outputText id="msgActivo" value=" Activo"/>
+							<p:inputText id="txtActivo" disabled="true" binding="#{gluoDeduccionView.txtActivo}"/>
+													<h:outputText id="msgCconId" value=" CconId"/>
+							<p:inputText id="txtCconId" disabled="true" binding="#{gluoDeduccionView.txtCconId}"/>
+													<h:outputText id="msgConcepto" value=" Concepto"/>
+							<p:inputText id="txtConcepto" disabled="true" binding="#{gluoDeduccionView.txtConcepto}"/>
+													<h:outputText id="msgDptoId" value=" DptoId"/>
+							<p:inputText id="txtDptoId" disabled="true" binding="#{gluoDeduccionView.txtDptoId}"/>
+													<h:outputText id="msgPorcentaje" value=" Porcentaje"/>
+							<p:inputText id="txtPorcentaje" disabled="true" binding="#{gluoDeduccionView.txtPorcentaje}"/>
+													<h:outputText id="msgTarifa" value=" Tarifa"/>
+							<p:inputText id="txtTarifa" disabled="true" binding="#{gluoDeduccionView.txtTarifa}"/>
+													<h:outputText id="msgUsuCreador" value=" UsuCreador"/>
+							<p:inputText id="txtUsuCreador" disabled="true" binding="#{gluoDeduccionView.txtUsuCreador}"/>
+													<h:outputText id="msgUsuModificador" value=" UsuModificador"/>
+							<p:inputText id="txtUsuModificador" disabled="true" binding="#{gluoDeduccionView.txtUsuModificador}"/>
+													<h:outputText id="msgValorBase" value=" ValorBase"/>
+							<p:inputText id="txtValorBase" disabled="true" binding="#{gluoDeduccionView.txtValorBase}"/>
+												
+																				<h:outputText id="msgFechaCreacion" value=" FechaCreacion"/>
+														<p:calendar showOn="button" navigator="true" locale="en" 
+							binding="#{gluoDeduccionView.txtFechaCreacion}" >
+								<p:ajax event="dateSelect" listener="#{gluoDeduccionView.listener_txtFechaCreacion}"  />
+							</p:calendar>
+														<h:outputText id="msgFechaModificacion" value=" FechaModificacion"/>
+														<p:calendar showOn="button" navigator="true" locale="en" 
+							binding="#{gluoDeduccionView.txtFechaModificacion}" >
+								<p:ajax event="dateSelect" listener="#{gluoDeduccionView.listener_txtFechaModificacion}"  />
+							</p:calendar>
+																	   </h:panelGrid>
+				</p:panel>
+	   			<p:panel id="panelBotones">
+					<div align="center">					
+						<p:commandButton id="btnSave" binding="#{gluoDeduccionView.btnSave}" disabled="true" value="Save" action="#{gluoDeduccionView.action_save()}" update="panelGluoDeduccion,msg,panelBotones" />
+						<p:commandButton id="btnDelete" binding="#{gluoDeduccionView.btnDelete}" disabled="true" value="Delete" action="#{gluoDeduccionView.action_delete_master()}" onclick="if(!confirm('Do you really want to delete this Entry?')){return false;}" update="panelGluoDeduccion,msg,panelBotones" />
+						<p:commandButton id="btnClear" value="Clear" action="#{gluoDeduccionView.action_clear()}" update="panelGluoDeduccion,msg,panelBotones" />
+					</div>
+				</p:panel>			
+			</h:form>
+
+	</ui:define>
+
+</ui:composition>

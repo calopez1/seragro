@@ -1,0 +1,68 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:pe="http://primefaces.org/ui/extensions" 
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+<ui:define name="content">
+
+	<p:ajaxStatus onstart="PF('statusDialog').show()"
+		onsuccess="PF('statusDialog').hide()" />
+	<p:dialog modal="true" widgetVar="statusDialog" header="Cargando"
+		draggable="false" closable="false">
+		<p:graphicImage
+			value="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/ajaxloadingbar.gif" />
+	</p:dialog>
+
+	<!-- Expired session -->
+<p:idleMonitor onactive="PF('sessionTimeOutDialog').show();"
+	timeout="#{session.maxInactiveInterval * 1000}" />
+<p:dialog modal="true" widgetVar="sessionTimeOutDialog"
+	header="Sesión terminada" draggable="false" closable="false">
+	<h:outputText value="La sesión ha finalizado" />
+	<input id="confirmBackToLogin" type="button" value="Iniciar sesión"
+		onclick="window.location='#{facesContext.externalContext.requestContextPath}/index.jsp';" />
+</p:dialog>
+
+<script type="text/javascript">
+	function showStatus() {
+	    statusDialog.show();
+	}
+	 
+	function hideStatus() {
+	    statusDialog.hide();
+	}
+</script>
+
+<div align="center">
+<h:form id="frmInformesContabilidad">
+
+	<p:growl id="growl" autoUpdate="true" life="3000" />
+	
+	<p:panel id="pnlInformesContabilidad" header="Informes Contabilidad" style="width: 90%;">
+		<h:panelGrid columns="2">
+		
+			<br/><br/>
+			<p:commandButton value="Informe Notas Contables"
+				action="informeNotasContables.xhtml" style="width: 500px;" />
+		
+			<br/><br/>
+			<p:commandButton value="Informe Estados Financieros"
+				action="generarInformesEstadosFinancieros.xhtml" style="width: 500px;" />
+		
+			<br/><br/>
+			<p:commandButton value="Deseo generar Exógena 1001"
+				action="informeExogena1001.xhtml" style="width: 500px;" />
+				
+			<br/><br/>
+			<p:commandButton value="Deseo generar Exógena 1009"
+				action="informeExogena1009.xhtml" style="width: 500px;" />
+		</h:panelGrid>				
+	</p:panel>
+
+		
+</h:form>
+</div>
+</ui:define>
+</ui:composition>

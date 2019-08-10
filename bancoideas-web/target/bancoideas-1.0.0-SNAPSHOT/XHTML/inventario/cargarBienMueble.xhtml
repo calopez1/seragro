@@ -1,0 +1,166 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+	<ui:define name="content">
+		<style type="text/css">
+			.ui-panel {
+				margin-top: 20px
+			}
+			
+			.ui-tabs-top{
+				background-color: #FFFFFF;
+			}
+			
+			.one {
+				width: 40%;
+			}
+			
+			.two {
+				width: 60%;
+			}
+		</style>
+
+		<h:form id="frmCargarCuentasPresupuesto">
+			<h:panelGrid columns="1" id="pnlCargarArchivoDev">
+				<h:panelGrid columns="1">
+					<div class="ContainerIndent">
+			
+						<p:panel>
+							
+							<p:messages id="msgDev" showDetail="false" autoUpdate="true" closable="true" />
+							
+							<div class="ContainerIndent">
+								<h:outputText value="Carga de Bienes Muebles - DEVOLUTIVO"
+									styleClass="FontBold Fs18 hardblue" />
+							</div>
+							
+							
+			
+							<div class="Container100">
+								<div class="ContainerIndent">
+								<p:spacer height="30" width="0"></p:spacer>
+									<p:outputLabel
+										value="Aún no existe bienes muebles cargados. Por favor realice los siguientes pasos:" />
+								</div>
+							</div>
+							
+							<div class="Container100">
+								<div class="ContainerIndent">
+									<p:outputLabel
+										value="1. Descargue la plantilla del cargue de bienes muebles (Archivo de Excel .XLS). AQUÍ!" />
+								</div>
+							</div>
+							
+							<div class="Container100">
+								<div class="ContainerIndent">
+									<p:outputLabel
+										value="2. Diligencie la plantilla en su computador." />
+								</div>
+							</div>
+							
+							<div class="Container100">
+								<div class="ContainerIndent">
+									<p:outputLabel
+										value="3. Realice el cargue de bienes muebles, haciendo uso del botón 'Escoger archivo de mi computador'" />
+								</div>
+							</div>
+							
+							<div class="Container100">
+							<p:spacer height="10" width="0"></p:spacer>
+								<div class="ContainerIndent">
+									<p:fileUpload
+										fileUploadListener="#{cargarBienMuebleView.upload}"
+										auto="true"
+										value="#{argarBienMuebleView.file}" 
+										mode="advanced"
+										sizeLimit="10485760" fileLimit="1"
+										allowTypes="/(\.|\/)(xls|xlsx)$/"
+										label="Escoger archivo de mi computador"
+										uploadLabel="Validar Archivo de presupuesto"
+										cancelLabel="Cancelar" 
+										update=":frmCargarCuentasPresupuesto"  
+										invalidFileMessage="Archivo no válido"
+										invalidSizeMessage="Tamaño no válido"/>
+								</div>
+							</div>
+						</p:panel>
+					</div>
+				</h:panelGrid>
+			</h:panelGrid>
+			
+			
+			<h:panelGrid columns="1" id="pnlCargarArchivoConsumo">
+				<h:panelGrid columns="1">
+					<div class="ContainerIndent">
+			
+						<p:panel>
+							
+							<p:messages id="msgCon" showDetail="false" autoUpdate="true" closable="true" />
+							
+							<div class="ContainerIndent">
+								<h:outputText value="Carga de Bienes Muebles - CONSUMO"
+									styleClass="FontBold Fs18 hardblue" />
+							</div>
+							
+							
+			
+							<div class="Container100">
+								<div class="ContainerIndent">
+								<p:spacer height="30" width="0"></p:spacer>
+									<p:outputLabel
+										value="Aún no existe bienes muebles cargados. Por favor realice los siguientes pasos:" />
+								</div>
+							</div>
+							
+							<div class="Container100">
+								<div class="ContainerIndent">
+									<p:outputLabel
+										value="1. Descargue la plantilla del cargue de bienes muebles (Archivo de Excel .XLS). AQUÍ!" />
+								</div>
+							</div>
+							
+							<div class="Container100">
+								<div class="ContainerIndent">
+									<p:outputLabel
+										value="2. Diligencie la plantilla en su computador." />
+								</div>
+							</div>
+							
+							<div class="Container100">
+								<div class="ContainerIndent">
+									<p:outputLabel
+										value="3. Realice el cargue de bienes muebles, haciendo uso del botón 'Escoger archivo de mi computador'" />
+								</div>
+							</div>
+							
+							<div class="Container100">
+							<p:spacer height="10" width="0"></p:spacer>
+								<div class="ContainerIndent">
+									<p:fileUpload
+										fileUploadListener="#{cargarBienMuebleView.uploadConsumo}"
+										auto="true"
+										value="#{argarBienMuebleView.file}" 
+										mode="advanced"
+										sizeLimit="10485760" fileLimit="1"
+										allowTypes="/(\.|\/)(xls|xlsx)$/"
+										label="Escoger archivo de mi computador"
+										uploadLabel="Validar Archivo de presupuesto"
+										cancelLabel="Cancelar" 
+										update=":frmCargarCuentasPresupuesto"  
+										invalidFileMessage="Archivo no válido"
+										invalidSizeMessage="Tamaño no válido"/>
+								</div>
+							</div>
+						</p:panel>
+					</div>
+				</h:panelGrid>
+			</h:panelGrid>
+		
+		</h:form>
+
+	</ui:define>
+
+</ui:composition>

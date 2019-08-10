@@ -1,0 +1,463 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+
+	<ui:define name="content">
+
+		<p:ajaxStatus onstart="PF('statusDialog').show()"
+			onsuccess="PF('statusDialog').hide()" />
+		<p:dialog modal="true" widgetVar="statusDialog" header="Cargando"
+			draggable="false" closable="false">
+			<p:graphicImage
+				value="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/ajaxloadingbar.gif" />
+		</p:dialog>
+
+		<!-- Expired session -->
+		<p:idleMonitor onactive="PF('sessionTimeOutDialog').show();"
+			timeout="#{session.maxInactiveInterval * 1000}" />
+		<p:dialog modal="true" widgetVar="sessionTimeOutDialog"
+			header="Sesión terminada" draggable="false" closable="false">
+			<h:outputText value="La sesión ha finalizado" />
+			<input id="confirmBackToLogin" type="button" value="Iniciar sesión"
+				onclick="window.location='#{facesContext.externalContext.requestContextPath}/index.jsp';" />
+		</p:dialog>
+
+		<script type="text/javascript">
+			function showStatus() {
+				statusDialog.show();
+			}
+
+			function hideStatus() {
+				statusDialog.hide();
+			}
+		</script>
+
+		<style type="text/css">
+.ui-panel {
+	margin-top: 20px
+}
+
+.ui-tabs-top {
+	background-color: #FFFFFF;
+}
+
+.one {
+	width: 15%;
+}
+
+.two {
+	width: 85%;
+}
+
+.col50Left {
+	width: 10%;
+	text-align: left;
+}
+
+.col50Right {
+	width: 10%;
+	text-align: right;
+}
+
+.txt100 {
+	width: 100%;
+}
+</style>
+
+		<h:form id="frmCargarCuentasPresupuesto" enctype="multipart/form-data">
+
+			<div>
+				<div>
+
+					<p:panel>
+						<h:outputText
+							value="Registre un CDP, a partir de los rubros presupuestales #{registrarObjetoCdpView.dummy}"
+							styleClass="FontBold Fs18 hardblue" />
+					</p:panel>
+
+					<p:panel id="pnlEncabezadoCDP">
+						<p:messages showDetail="false" autoUpdate="true" closable="true" />
+						<p:growl autoUpdate="true" />
+
+						<div>
+							<div>
+
+								<h:panelGrid columns="2" columnClasses="one, two"
+									style="width: 100%;">
+
+									<h:outputText value="Consecutivo: "
+										rendered="#{registrarObjetoCdpView.modoConsulta == true}" />
+									<h:outputText
+										value="#{registrarObjetoCdpView.gluoCdp.consecutivo}"
+										rendered="#{registrarObjetoCdpView.modoConsulta == true}" />
+
+									<h:outputText value="Solicitud de CDP:" />
+									<p:panelGrid>
+										<p:inputText styleClass="Wid50" id="scdpSeleccionado" 
+											value="#{registrarObjetoCdpView.consecutivoSolicitudSeleccionada}"
+											readonly="true">
+											<p:ajax />
+										</p:inputText>
+										<p:commandButton icon="ui-icon-search" disabled="true"
+											oncomplete="PF('dlgSolicitudCDP').show();" />
+									</p:panelGrid>
+
+									<h:outputText value="Objeto:" />
+									<h:panelGrid columns="1" style="width: 100%;">
+										<p:inputTextarea styleClass="Wid50" counter="counterObjeto"
+											maxlength="2000" counterTemplate="{0} caracteres restantes."
+											disabled="#{registrarObjetoCdpView.objetoEstaInactivo}" autoResize="false"
+											value="#{registrarObjetoCdpView.objeto}"/>
+										<p:outputLabel id="counterObjeto" />
+									</h:panelGrid>
+
+									<h:outputText value="Fecha Expedición:" />
+									<p:inputText value="#{registrarObjetoCdpView.fechaExpedicion}"
+										disabled="true" />
+
+									<h:outputText value="Fecha Vencimiento:" />
+									<p:inputText value="#{registrarObjetoCdpView.fechaVencimiento}"
+										disabled="true" />
+
+									<h:outputText value="Archivos de soporte:" />
+									<p:fileUpload mode="advanced" auto="true" disabled="true"
+										dragDropSupport="true"
+										allowTypes="/(\.|\/)(gif|jpe?g|png|pdf|doc|docx|xls|xlsx)$/"
+										cancelLabel="Cancelar" fileLimit="3"
+										fileLimitMessage="Número máximo de archivos soportados: 3"
+										invalidFileMessage="Tipo de archivo no válido. Solo pdf, Doc(x), Xls(x), gif, jpg, png )"
+										invalidSizeMessage="Archivo demasiado grande. Tamaño máximo: 3MB"
+										label="Adicionar un nuevo archivo" sizeLimit="3145728"
+										uploadLabel="Cargar"
+										fileUploadListener="#{registrarObjetoCdpView.fileUploadListener}"
+										update="pnlEncabezadoCDP" process="pnlEncabezadoCDP" />
+
+									<div />
+
+									<p:dataTable id="pnlTablaArchivosSoporte"
+										value="#{registrarObjetoCdpView.archivosDeSoporteDTO}"
+										var="archivo"
+										rendered="#{registrarObjetoCdpView.cantidadArchivosSoporte > 0}"
+										style="width: 50%;">
+
+										<p:column headerText="Archivo" style="width: 80%">
+											<p:outputLabel value="#{archivo.descripcion}" />
+										</p:column>
+
+										<p:column headerText="Borrar" style="width: 10%">
+											<p:commandButton icon="ui-icon-close" disabled="true"
+												action="#{registrarObjetoCdpView.action_eliminarArchivoSoporte(archivo)}"
+												update=":frmCargarCuentasPresupuesto:pnlEncabezadoCDP" />
+										</p:column>
+
+										<p:column headerText="Ver" style="width: 10%">
+											<p:commandButton ajax="false"
+												onclick="PrimeFaces.monitorDownload(start, stop);"
+												icon="ui-icon-search" disabled="true">
+												<p:fileDownload
+													value="#{registrarObjetoCdpView.getDocumentoAdjuntoSoportePresupuesto(archivo)}"
+													contentDisposition="inline" />
+											</p:commandButton>
+
+										</p:column>
+
+									</p:dataTable>
+
+
+								</h:panelGrid>
+
+
+
+							</div>
+						</div>
+					</p:panel>
+
+
+
+					<p:panel id="pnlDetallesCDP">
+						<div class="ContainerIndent">
+							<h:panelGrid columns="2" columnClasses="col50Left, col50Right"
+								style="width: 100%;">
+								<h:outputText value="Rubros a adicionar al CDP" />
+								<p:commandButton id="btnColapsar"
+									icon=" ui-icon-folder-collapsed" value="Ocultar detalles"
+									rendered="#{registrarObjetoCdpView.rubrosColapsados==false}"
+									update="pnlDetallesCDP"
+									actionListener="#{registrarObjetoCdpView.action_colapsarExpandir}" />
+								<p:commandButton id="btnExpandir" icon=" ui-icon-folder-open"
+									value="Mostrar detalles"
+									rendered="#{registrarObjetoCdpView.rubrosColapsados==true}"
+									update="pnlDetallesCDP"
+									actionListener="#{registrarObjetoCdpView.action_colapsarExpandir}" />
+							</h:panelGrid>
+						</div>
+
+						<p:dataTable id="rubrosCDP" var="rubro" rows="200"
+							value="#{registrarObjetoCdpView.detallesCdp}" paginator="false"
+							paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+							rowsPerPageTemplate="300,400,500"
+							emptyMessage="No hay rubros presupuestales adicionados"
+							reflow="true" rowKey="#{rubro.dptoId}"
+							selection="#{registrarObjetoCdpView.detallesCdpSeleccionados}"
+							rendered="#{registrarObjetoCdpView.rubrosColapsados==false}"
+							filterDelay="1000">
+
+							<f:facet name="header">
+                            	Rubros de presupuesto adicionados al CDP
+                       		</f:facet>
+
+							<p:column selectionMode="multiple"
+								style="width:10%; text-align:center" />
+
+							<p:column headerText="Rubro" sortBy="#{rubro.codigoCuenta}"
+								style="width: 10%" filterBy="#{rubro.codigoCuenta}"
+								filterMatchMode="startsWith">
+								<h:outputText value="#{rubro.codigoCuenta}" />
+							</p:column>
+
+							<p:column headerText="Descripción"
+								sortBy="#{rubro.descripcionCuenta}" style="width: 40%"
+								filterBy="#{rubro.descripcionCuenta}"
+								filterMatchMode="startsWith">
+								<h:outputText value="#{rubro.descripcionCuenta}" />
+							</p:column>
+
+							<p:column headerText="Valor Disp." style="width: 10%">
+								<div align="right">
+									<h:outputText id="outTxtSaldo"
+										value="#{(registrarObjetoCdpView.modoConsulta==true)?(rubro.saldoEnCdps + rubro.valorCertificado):(rubro.saldoEnCdps)}">
+										<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+									</h:outputText>
+									<p:tooltip id="toolTipTrack" for="outTxtSaldo"
+										value="#{rubro.saldoEnCdps} + #{rubro.valorCertificado}"
+										trackMouse="true" />
+
+								</div>
+							</p:column>
+
+							<p:column headerText="Valor CDP" style="width: 15%">
+
+								<div align="right">
+
+									<pe:inputNumber value="#{rubro.valorCertificado}" disabled="true"
+										styleClass="Wid20" style="text-align: right;" symbol="$ "
+										symbolPosition="p" decimalSeparator="," thousandSeparator="."
+										minValue="0"
+										maxValue="#{(registrarObjetoCdpView.modoConsulta==true)?(rubro.saldoEnCdps + rubro.valorCertificado):(rubro.saldoEnCdps)}"
+										validatorMessage="Valor no válido" decimalPlaces="2">
+										<p:ajax event="blur" update="@this" />
+									</pe:inputNumber>
+
+								</div>
+
+							</p:column>
+
+							<p:column headerText="Eliminar" style="width: 5%">
+								<p:commandButton icon="ui-icon-close"
+									update=":frmCargarCuentasPresupuesto:pnlDetallesCDP"
+									disabled="true">
+									<f:setPropertyActionListener value="#{rubro}"
+										target="#{registrarObjetoCdpView.rubroSeleccionadoParaEliminar}" />
+								</p:commandButton>
+							</p:column>
+
+						</p:dataTable>
+						<br />
+						<p:commandButton value="Adicionar rubros" icon="ui-icon-plus"
+							oncomplete="PF('dlgRubros').show();"
+							process=":frmCargarCuentasPresupuesto:pnlDetallesCDP"
+							disabled="true" />
+						<br />
+					</p:panel>
+
+
+					<div class="EmptyBox20" />
+
+					<p:commandButton
+						actionListener="#{registrarObjetoCdpView.action_guardarCDP}"
+						update=":frmCargarCuentasPresupuesto" value="Guardar C.D.P"
+						rendered="#{registrarObjetoCdpView.modoConsulta == false}" />
+
+
+					<p:commandButton
+						actionListener="#{registrarObjetoCdpView.action_modificarCDP}"
+						update=":frmCargarCuentasPresupuesto"
+						value="Guardar cambios del C.D.P"
+						rendered="#{registrarObjetoCdpView.modoConsulta == true and registrarObjetoCdpView.puedeModifcar}" />
+
+				</div>
+			</div>
+
+
+			<!-- Solicitud de CDP -->
+			<!-- ******************************************* -->
+			<p:dialog modal="true" widgetVar="dlgSolicitudCDP"
+				header="Solicitudes de CDP" draggable="false" closable="true"
+				resizable="true" width="90%" height="200px;" position="center">
+
+				<p:scrollPanel mode="native" style="width:100%; height:400px">
+					<p:dataTable id="tblSolicitudesCDP" var="scdp"
+						value="#{registrarObjetoCdpView.solicitudesCDP}" rows="10"
+						paginator="true"
+						paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+						rowsPerPageTemplate="10,15,20,30"
+						emptyMessage="No existen solicitudes de CDP disponibles"
+						reflow="true" rowKey="#{scdp.scdpId}"
+						selection="#{registrarObjetoCdpView.solicitudCDPSeleccionada}"
+						filterDelay="1000">
+
+						<p:column selectionMode="single"
+							style="width:5%; text-align:center" />
+
+						<p:column headerText="Descripción" sortBy="#{scdp.descripcion}"
+							style="width: 15%" filterBy="#{scdp.descripcion}"
+							filterMatchMode="contains">
+							<h:outputText value="#{scdp.descripcion}" />
+						</p:column>
+
+					</p:dataTable>
+				</p:scrollPanel>
+
+				<br />
+				<p:commandButton value="Seleccionar Solicitud CDP"
+					icon="ui-icon-plus" oncomplete="PF('dlgSolicitudCDP').hide();"
+					actionListener="#{registrarObjetoCdpView.action_seleccionarSolicitudCDP}"
+					update=":frmCargarCuentasPresupuesto:pnlEncabezadoCDP" />
+
+				<div class="EmptyBox20" />
+
+			</p:dialog>
+			<!-- Solicitud de CDP -->
+
+			<!-- Rubros presupuestales a adicionar en el CDP -->
+			<!-- ******************************************* -->
+			<p:dialog modal="true" widgetVar="dlgRubros"
+				header="Rubros presupuestales a adicionar al CDP" draggable="false"
+				closable="true" resizable="true" width="90%" height="200px;"
+				position="center">
+
+				<p:scrollPanel mode="native" style="width:100%; height:400px">
+					<p:dataTable id="presupuestoGastosData" var="cuenta"
+						value="#{registrarObjetoCdpView.presupuestoGastosDTO.detallesPresupuesto}"
+						rows="10" paginator="true"
+						paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+						rowsPerPageTemplate="10,15,20,30"
+						emptyMessage="No existen cuentas del presupuesto" reflow="true"
+						rowKey="#{cuenta.dptoId}"
+						selection="#{registrarObjetoCdpView.rubrosSeleccionados}"
+						filterDelay="1000">
+
+						<p:column selectionMode="multiple"
+							style="width:5%; text-align:center" />
+
+						<p:column headerText="Cuenta" sortBy="#{cuenta.codigoCuenta}"
+							style="width: 15%" filterBy="#{cuenta.codigoCuenta}"
+							filterMatchMode="startsWith">
+							<h:outputText value="#{cuenta.codigoCuenta}" />
+						</p:column>
+
+						<p:column headerText="Descripción"
+							sortBy="#{cuenta.descripcionCuenta}" style="width: 50%"
+							filterBy="#{cuenta.descripcionCuenta}" filterMatchMode="contains">
+							<h:outputText value="#{cuenta.descripcionCuenta}" />
+						</p:column>
+
+						<p:column headerText="Valor Inicial" style="width: 10%">
+							<div align="right">
+								<h:outputText value="#{cuenta.valorInicial}">
+									<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+								</h:outputText>
+							</div>
+						</p:column>
+
+						<p:column headerText="Saldo para CDPs" style="width: 10%">
+							<div align="right">
+								<h:outputText value="#{cuenta.saldoEnCdps}">
+									<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+								</h:outputText>
+							</div>
+						</p:column>
+
+						<p:column headerText="% Disponible" style="width: 10%">
+							<div align="right">
+								<h:outputText value="#{cuenta.saldoEnCdps/cuenta.valorInicial}">
+									<f:convertNumber type="percent" maxFractionDigits="1" />
+								</h:outputText>
+							</div>
+						</p:column>
+
+					</p:dataTable>
+				</p:scrollPanel>
+
+				<br />
+				<p:commandButton value="Adicionar rubros seleccionados"
+					icon="ui-icon-plus" oncomplete="PF('dlgRubros').hide();"
+					actionListener="#{registrarObjetoCdpView.action_adicionarRubrosACDP}"
+					update=":frmCargarCuentasPresupuesto:pnlDetallesCDP" />
+
+				<div class="EmptyBox20" />
+
+			</p:dialog>
+			<!-- Rubros presupuestales a adicionar en el CDP -->
+
+
+
+			<!-- Descargar CDP Generado -->
+			<!-- ******************************************* -->
+			<p:dialog modal="true" widgetVar="dlgDescargarCDP"
+				header="Descargar archivo C.D.P" draggable="false" closable="true"
+				resizable="true" width="90%" height="200px;" position="center">
+
+				<p:outputLabel
+					value="Se ha generado un C.D.P.  Desea descargarlo ahora?" />
+
+				<br />
+				<br />
+
+				<h:panelGrid columns="4">
+					<p:commandButton value="Si, en Archivo PDF"
+						onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)"
+						icon="ui-icon-arrowthichk-s">
+
+						<p:fileDownload value="#{registrarObjetoCdpView.reporteCDPPdf}" />
+
+					</p:commandButton>
+
+					<p:commandButton value="Si, en Archivo XLS"
+						onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)"
+						icon="ui-icon-arrowthichk-s">
+
+						<p:fileDownload value="#{registrarObjetoCdpView.reporteCDPXls}" />
+
+					</p:commandButton>
+
+
+					<p:commandButton value="Si, en Archivo XLSX"
+						onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)"
+						icon="ui-icon-arrowthichk-s">
+
+						<p:fileDownload value="#{registrarObjetoCdpView.reporteCDPXlsx}" />
+
+					</p:commandButton>
+
+					<p:commandButton value="He terminado! Cerrar"
+						oncomplete="PF('dlgDescargarCDP').hide();" />
+
+				</h:panelGrid>
+
+				<div class="EmptyBox20" />
+
+			</p:dialog>
+			<!-- Descargar CDP Generado -->
+
+
+			<div class="EmptyBox20"></div>
+
+		</h:form>
+
+	</ui:define>
+
+</ui:composition>

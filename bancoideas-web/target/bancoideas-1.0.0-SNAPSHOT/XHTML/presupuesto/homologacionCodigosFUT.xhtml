@@ -1,0 +1,243 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+	<ui:define name="content">
+		<f:view>
+			<p:ajaxStatus onstart="PF('statusDialog').show()"
+				onsuccess="PF('statusDialog').hide()" />
+			<p:dialog modal="true" widgetVar="statusDialog" header="Cargando"
+				draggable="false" closable="false">
+				<p:graphicImage
+					value="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/ajaxloadingbar.gif" />
+			</p:dialog>
+
+			<!-- Expired session -->
+			<p:idleMonitor onactive="PF('sessionTimeOutDialog').show();"
+				timeout="#{session.maxInactiveInterval * 1000}" />
+			<p:dialog modal="true" widgetVar="sessionTimeOutDialog"
+				header="Sesión terminada" draggable="false" closable="false">
+				<h:outputText value="La sesión ha finalizado" />
+				<input id="confirmBackToLogin" type="button" value="Iniciar sesión"
+					onclick="window.location='#{facesContext.externalContext.requestContextPath}/index.jsp';" />
+			</p:dialog>
+			
+			<style type="text/css">
+				
+	        	.colA{width: 5%; }
+	        	.colB{width: 30%; }
+	        	
+			</style>
+
+			<h:form id="frm" enctype="multipart/form-data">
+
+				<p:panel id="panelEjecucionPresupuestalGasto">
+					<p:growl id="growlEPG" autoUpdate="true" showDetail="false" />
+					
+					<h:panelGrid columns="1" id="pnlCargarArchivo" style="width: 100%;">
+					
+						<h:panelGrid columns="1" style="width: 100%;">
+							<div class="ContainerIndent" align="center">
+
+								<p:panel id="panelContenedor" rendered="true">
+
+									<div class="ContainerIndent">
+										<h:outputText value="Homologación de codigos FUT" styleClass="FontBold Fs18 hardblue" />
+									</div>
+
+									<br/>
+
+									<div class="Container100">
+										<div class="ContainerIndent">
+										<h:panelGrid columns="1" cellpadding="10" style="width: 90%;">
+											
+											<h:panelGrid columns="2" 
+												columnClasses="colA,colB"
+												style="width: 100%;">
+												
+												<div/>
+												<p:commandButton 
+													value="Ingresos"
+													update="@([id$=panelContenedor])" style="width: 500px"
+													action="homologacionCodigosFUTIngresos.xhtml"/>
+											</h:panelGrid>
+											
+											<h:panelGrid columns="2" 
+												columnClasses="colA,colB"
+												style="width: 100%;">
+												
+												<div/>
+												<p:commandButton 
+													value="Gastos de Funcionamiento"
+													update="@([id$=panelContenedor])" style="width: 500px"
+													action="homologacionCodigosFUTGastos.xhtml"/>
+											</h:panelGrid>
+											
+											<h:panelGrid columns="2" 
+												columnClasses="colA,colB"
+												style="width: 100%;">
+												
+												<div/>
+												<p:commandButton 
+													value="Gastos de Inversión"
+													update="@([id$=panelContenedor])" style="width: 500px"
+													action="homologacionCodigosFUTInversion.xhtml"/>
+											</h:panelGrid>
+
+											<h:panelGrid columns="2" 
+												columnClasses="colA,colB"
+												style="width: 100%;">
+												
+												<div/>
+												<p:commandButton 
+													value="Servicio de la Deuda"
+													update="@([id$=panelContenedor])" style="width: 500px"
+													action="homologacionCodigosFUTServicioDeuda.xhtml"/>
+											</h:panelGrid>
+											
+											<h:panelGrid columns="2" 
+												columnClasses="colA,colB"
+												style="width: 100%;">
+												
+												<div/>
+												<p:commandButton 
+													value="Reservas Presupuestales"
+													update="@([id$=panelContenedor])" style="width: 500px"
+													action="homologacionCodigosFUTReservas.xhtml"/>
+											</h:panelGrid>
+											
+											
+											<h:panelGrid columns="2" 
+												columnClasses="colA,colB"
+												style="width: 100%;">
+												
+												<div/>
+												<p:commandButton 
+													value="Ingresos que amparan reservas" rendered="false"
+													update="@([id$=panelContenedor])" style="width: 500px"
+													action="homologacionCodigosFUTIngresosQueAmparanReservas.xhtml"/>
+											</h:panelGrid>
+											
+											
+											<h:panelGrid columns="2" 
+												columnClasses="colA,colB"
+												style="width: 100%;">
+												
+												<div/>
+												<p:commandButton 
+													value="Cuentas Por Pagar"
+													update="@([id$=panelContenedor])" style="width: 500px"
+													action="homologacionCodigosFUTCuentasXPagar.xhtml"/>
+											</h:panelGrid>
+											
+											
+											<h:panelGrid columns="2" 
+												columnClasses="colA,colB"
+												style="width: 100%;">
+												
+												<div/>
+												<p:commandButton 
+													value="Presupuesto SGR Bienio - Ingresos"
+													update="@([id$=panelContenedor])" style="width: 500px"
+													action="homologacionCodigosFUTIngresosRegalias.xhtml"/>
+											</h:panelGrid>
+											
+											<h:panelGrid columns="2" 
+												columnClasses="colA,colB"
+												style="width: 100%;">
+												
+												<div/>
+												<p:commandButton 
+													value="Presupuesto SGR Bienio - Gastos" rendered="false"
+													update="@([id$=panelContenedor])" style="width: 500px"
+													action="homologacionCodigosFUTGastosRegalias.xhtml"/>
+											</h:panelGrid>
+											
+											<h:panelGrid columns="2" 
+												columnClasses="colA,colB"
+												style="width: 100%;">
+												
+												<div/>
+												<p:commandButton 
+													value="Fondos de Salud - Ejecución Presupuestal"
+													update="@([id$=panelContenedor])" style="width: 500px"
+													action="homologacionCodigosFUTFondoSaludEjecPptal.xhtml"/>
+											</h:panelGrid>
+											
+											
+											<h:panelGrid columns="2" 
+												columnClasses="colA,colB"
+												style="width: 100%;">
+												
+												<div/>
+												<p:commandButton 
+													value="Fondos de Salud - Movimientos de Tesoreria"
+													update="@([id$=panelContenedor])" style="width: 500px"
+													action="homologacionCodigosFUTFondoSaludTesoreria.xhtml"/>
+											</h:panelGrid>
+											
+											
+											<h:panelGrid columns="2" 
+												columnClasses="colA,colB"
+												style="width: 100%;">
+												
+												<div/>
+												<p:commandButton 
+													value="Homologación de codigos Presupuesto - Actividades"
+													update="@([id$=panelContenedor])" style="width: 500px"
+													action="homologacionDptoXActividadAgua.xhtml"/>
+											</h:panelGrid>
+											
+											
+											<h:panelGrid columns="2" 
+												columnClasses="colA,colB"
+												style="width: 100%;">
+												
+												<div/>
+												<p:commandButton 
+													value="Victimas"
+													update="@([id$=panelContenedor])" style="width: 500px"
+													action="homologacionCodigosFUTVictimas.xhtml"/>
+											</h:panelGrid>
+											
+											
+											<h:panelGrid columns="2" 
+												columnClasses="colA,colB"
+												style="width: 100%;">
+												
+												<div/>
+												<p:commandButton 
+													value="Gastos de Inversión AE SGP resguardos"
+													update="@([id$=panelContenedor])" style="width: 500px"
+													action="homologacionCodigosFUTGastosResguardosIndigenas.xhtml"/>
+											</h:panelGrid>
+											
+											
+											<h:panelGrid columns="2" 
+												columnClasses="colA,colB"
+												style="width: 100%;">
+												
+												<div/>
+												<p:commandButton 
+													value="Gastos de Inversión Otras Fuentes"
+													update="@([id$=panelContenedor])" style="width: 500px"
+													action="homologacionCodigosFUTGastosResguardosIndigenas3.xhtml"/>
+											</h:panelGrid>
+								
+										</h:panelGrid>		
+										</div>
+									</div>
+								</p:panel>
+							</div>
+						</h:panelGrid>
+					</h:panelGrid>
+				</p:panel>
+
+			</h:form>
+
+		</f:view>
+	</ui:define>
+
+</ui:composition>

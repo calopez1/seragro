@@ -1,0 +1,141 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+<ui:define name="content">
+
+	<p:ajaxStatus onstart="PF('statusDialog').show()"
+		onsuccess="PF('statusDialog').hide()" />
+	<p:dialog modal="true" widgetVar="statusDialog" header="Cargando"
+		draggable="false" closable="false">
+		<p:graphicImage
+			value="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/ajaxloadingbar.gif" />
+	</p:dialog>
+
+	<!-- Expired session -->
+<p:idleMonitor onactive="PF('sessionTimeOutDialog').show();"
+	timeout="#{session.maxInactiveInterval * 1000}" />
+<p:dialog modal="true" widgetVar="sessionTimeOutDialog"
+	header="Sesión terminada" draggable="false" closable="false">
+	<h:outputText value="La sesión ha finalizado" />
+	<input id="confirmBackToLogin" type="button" value="Iniciar sesión"
+		onclick="window.location='#{facesContext.externalContext.requestContextPath}/index.jsp';" />
+</p:dialog>
+
+<script type="text/javascript">
+	function showStatus() {
+	    statusDialog.show();
+	}
+	 
+	function hideStatus() {
+	    statusDialog.hide();
+	}
+</script>
+
+<style type="text/css">
+	.one {
+		width: 20%;
+	}
+	
+	.two {
+		width: 80%;
+	}
+	
+</style>
+
+<div align="center">
+<h:form id="frmTipoConceptoNomina">
+
+	<p:growl id="growl" autoUpdate="true" />
+
+	<p:panel id="pnlTipoConceptoNomina" header="Gestionar Tipo Concepto Nómina" style="width: 90%;">
+		<h:panelGrid columns="2">
+			<p:outputLabel value="Descripción:" for="txtDescripcion" />
+			<p:inputText id="txtDescripcion" binding="#{gluoTipoConceptoNominaView.txtDescripcion}"
+				style="width: 200px;" />								
+		</h:panelGrid>			
+		
+		<br/>
+		<p:outputLabel value="Asociada a:" />
+		
+		<h:panelGrid columns="2">
+			<p:selectOneRadio id="sorPresupuestoCuentaAmbas" binding="#{gluoTipoConceptoNominaView.selectPresupuestoCuentaAmbas}">
+				<f:selectItem itemLabel="Presupuesto" itemValue="P" />
+				<f:selectItem itemLabel="Cta. Contable" itemValue="C" />
+				<f:selectItem itemLabel="Ambas" itemValue="A" />
+			</p:selectOneRadio>
+		
+			<br/>	
+			<p:selectOneRadio id="sorSumaRestaNoAfecta" binding="#{gluoTipoConceptoNominaView.sumaRestaNoAfecta}">
+				<f:selectItem itemLabel="Suma" itemValue="S" />
+				<f:selectItem itemLabel="Resta" itemValue="R" />
+				<f:selectItem itemLabel="No Afecta" itemValue="N" />
+			</p:selectOneRadio>
+			
+			<br/>
+			<p:selectOneRadio id="sorEstado" binding="#{gluoTipoConceptoNominaView.estado}">
+				<f:selectItem itemLabel="Activo" itemValue="A" />
+				<f:selectItem itemLabel="Inactivo" itemValue="I" />					
+			</p:selectOneRadio>
+		</h:panelGrid>
+		
+		<br/>
+		<p:commandButton id="btnGuardar" value="Guardar"
+			action="#{gluoTipoConceptoNominaView.action_guardar}" update=":frmTipoConceptoNomina" />
+			
+		<p:commandButton id="btnLimpiar" value="Limpiar"
+			action="#{gluoTipoConceptoNominaView.action_limpiar}" update=":frmTipoConceptoNomina" />
+			
+	</p:panel>
+	
+	<p:panel id="pnlListaTipoConceptoNomina" header="Listado Concepto de Nómina" style="width: 90%;">
+		<p:dataTable id="listaTipoConceptoNominaDataTable" style="text-align: center;"
+			var="tipoDeduccion"
+			value="#{gluoTipoConceptoNominaView.listTipoConceptoNominaDTOs}"
+			selection="#{gluoTipoConceptoNominaView.tipoConceptoNominaDTO}"
+			selectionMode="single"
+			paginator="true"
+			rows="10"
+			rowKey="#{tipoDeduccion.tconId}"
+			filterDelay="1000">
+		
+			<p:column selectionMode="single" style="width: 28px;"/>
+			
+			<p:ajax event="rowSelect"
+				listener="#{gluoTipoConceptoNominaView.listener_seleccionar_tipo_concepto_nomina}"
+				update=":frmTipoConceptoNomina" />		
+			
+			<p:column headerText="Descripción" filterBy="#{tipoDeduccion.descripcion}"
+				filterMatchMode="contains">
+				<p:outputLabel value="#{tipoDeduccion.descripcion}" />
+			</p:column>	
+			
+			<p:column headerText="Presupuesto" filterBy="#{tipoDeduccion.asociadoPresupuesto}"
+				filterMatchMode="startsWith">
+				<p:outputLabel value="#{(tipoDeduccion.asociadoPresupuesto == 'S' ? 'Si' : 'No')}" />
+			</p:column>
+			
+			<p:column headerText="Cta. Contable" filterBy="#{tipoDeduccion.asociadoCuentaContable}"
+				filterMatchMode="startsWith">
+				<p:outputLabel value="#{(tipoDeduccion.asociadoCuentaContable == 'S' ? 'Si' : 'No')}" />
+			</p:column>
+			
+			<p:column headerText="Operación" filterBy="#{tipoDeduccion.signo}"
+				filterMatchMode="startsWith">
+				<p:outputLabel value="#{(tipoDeduccion.signo == '+' ? 'Suma' : tipoDeduccion.signo == '-' ? 'Resta' : 'N/A')}" />
+			</p:column>	
+			
+			<p:column headerText="Estado" filterBy="#{tipoDeduccion.activo}"
+				filterMatchMode="startsWith">
+				<p:outputLabel value="#{(tipoDeduccion.activo == 'A' ? 'Activo' : 'Si')}" />
+			</p:column>
+		
+		</p:dataTable>
+	</p:panel>
+						
+</h:form>
+</div>
+</ui:define>
+</ui:composition>

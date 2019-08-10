@@ -1,0 +1,179 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+	<ui:define name="content">
+
+		<p:ajaxStatus onstart="PF('statusDialog').show()"
+			onsuccess="PF('statusDialog').hide()" />
+		<p:dialog modal="true" widgetVar="statusDialog" header="Cargando"
+			draggable="false" closable="false">
+			<p:graphicImage
+				value="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/ajaxloadingbar.gif" />
+		</p:dialog>
+
+		<!-- Expired session -->
+		<p:idleMonitor onactive="PF('sessionTimeOutDialog').show();"
+			timeout="#{session.maxInactiveInterval * 1000}" />
+		<p:dialog modal="true" widgetVar="sessionTimeOutDialog"
+			header="Sesión terminada" draggable="false" closable="false">
+			<h:outputText value="La sesión ha finalizado" />
+			<input id="confirmBackToLogin" type="button" value="Iniciar sesión"
+				onclick="window.location='#{facesContext.externalContext.requestContextPath}/index.jsp';" />
+		</p:dialog>
+		
+		<script type="text/javascript">
+			function showStatus() {
+			    statusDialog.show();
+			}
+			 
+			function hideStatus() {
+			    statusDialog.hide();
+			}
+		</script>
+
+		<style type="text/css">
+			.one {
+				width: 20%;
+			}
+			
+			.two {
+				width: 80%;
+			}
+			
+		</style>
+
+		<h:form id="frmLibroAuxiliar">
+
+			<p:growl id="men" showDetail="false" autoUpdate="true"/>
+
+					<p:panel>
+						<h:outputText value="CGN Saldos Y Movimientos" styleClass="FontBold Fs18 hardblue" />
+					</p:panel>
+					
+					<p:panel id="pnlDatos">
+						
+						<br/>
+					
+						<div align="center">
+								<h:panelGrid id="panelFechas" columns="4">
+									<h:outputText value="Fecha Inicial: "/>
+									<p:calendar id="fechaInicial" locale="es" showButtonPanel="true"  
+												value="#{reporteCGNSaldosYMovimientosView.fechaInicial}" readonlyInput="true" 
+												timeZone="GMT-5" style="width: 100%;" disabled="false" navigator="true"/>
+												
+									<h:outputText value="Fecha Final: "/>
+									<p:calendar id="fechaFinal" locale="es" showButtonPanel="true"  
+												value="#{reporteCGNSaldosYMovimientosView.fechaFinal}" readonlyInput="true" 
+												timeZone="GMT-5" style="width: 100%;" disabled="false" navigator="true"/>
+								</h:panelGrid>
+							</div>
+								
+							<br/>
+							
+							<div align="center">	
+								<h:panelGrid id="panelOtrosDatos" columns="6">
+									<h:outputText value="Cuenta Contable Inicial: "/>
+									<p:inputText id="txtCuentaContableInicial" value="#{reporteCGNSaldosYMovimientosView.descripcionCuentaContableInicial}" readonly="true"/>
+									<p:commandButton id="btnBuscarCucoInicial" icon="ui-icon-search" onclick="PF('dlgCuentaContableInicial').show();"/>
+									
+									<h:outputText value="Cuenta Contable Final: "/>
+									<p:inputText id="txtCuentaContableFinal" value="#{reporteCGNSaldosYMovimientosView.descripcionCuentaContableFinal}" readonly="true"/>
+									<p:commandButton id="btnBuscarCucoFinal" icon="ui-icon-search" onclick="PF('dlgCuentaContableFinal').show();"/>
+								</h:panelGrid>
+							</div>
+							
+							<br/>
+							
+							<div align="center">
+								<h:panelGrid id="pnlGenerarInforme" columns="3">
+									<p:commandButton value="Generar Reporte en CSV" onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)" icon="ui-icon-arrowthichk-s">
+										<p:fileDownload value="#{reporteCGNSaldosYMovimientosView.reporteSaldosYMovimientosCSV}" />
+									</p:commandButton>
+									
+									<p:commandButton value="Generar Reporte en XLS" onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)" icon="ui-icon-arrowthichk-s">
+										<p:fileDownload value="#{reporteCGNSaldosYMovimientosView.reporteSaldosYMovimientosXLS}" />
+									</p:commandButton>
+									
+									<p:commandButton value="Generar Reporte en XLXS" onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)" icon="ui-icon-arrowthichk-s">
+										<p:fileDownload value="#{reporteCGNSaldosYMovimientosView.reporteSaldosYMovimientosXLSX}" />
+									</p:commandButton>
+								</h:panelGrid>
+							</div>
+					</p:panel>
+					
+					<div class="EmptyBox20" />
+					
+			<!-- ************************************************** -->
+			<!-- **		DIÁLOGO CUENTA CONTABLE INICIAL		 ** -->
+			<!-- ************************************************** -->
+			<p:dialog header="Cuentas Contables"
+				widgetVar="dlgCuentaContableInicial" modal="true" height="400" width="90%">
+
+				<div style="text-align: center;">
+
+					<p:scrollPanel mode="native" style="width:100%; height:400px;">
+						<p:dataTable var="cuentaContableDebito" paginator="true" rows="10"
+							value="#{reporteCGNSaldosYMovimientosView.listCuentasContablesInicial}"
+							selection="#{reporteCGNSaldosYMovimientosView.cuentaContableInicial}"
+							selectionMode="single"
+							rowKey="#{cuentaContableDebito.cconId}" 
+							filterDelay="1000">
+
+							<p:ajax event="rowSelect"
+								listener="#{reporteCGNSaldosYMovimientosView.onRowSelectCuentaContableInicial}"
+								update=":frmLibroAuxiliar"
+								oncomplete="PF('dlgCuentaContableInicial').hide();" />
+
+							<p:column headerText="Código" filterBy="#{cuentaContableDebito.codigo}">
+								<h:outputText value="#{cuentaContableDebito.codigo}" />
+							</p:column>
+
+							<p:column headerText="Descripción" filterBy="#{cuentaContableDebito.descripcion}"
+								filterMatchMode="contains">
+								<h:outputText value="#{cuentaContableDebito.descripcion}" />
+							</p:column>
+						</p:dataTable>
+					</p:scrollPanel>
+				</div>
+			</p:dialog>
+
+
+			<!-- ************************************************** -->
+			<!-- **		DIÁLOGO CUENTA CONTABLE FINAL		 ** -->
+			<!-- ************************************************** -->
+			<p:dialog header="Cuentas Contables"
+				widgetVar="dlgCuentaContableFinal" modal="true" height="400" width="90%">
+
+				<div style="text-align: center;">
+
+					<p:scrollPanel mode="native" style="width:100%; height:400px;">
+						<p:dataTable var="cuentaContableCredito" paginator="true" rows="10"
+							value="#{reporteCGNSaldosYMovimientosView.listCuentasContableFinal}"
+							selection="#{reporteCGNSaldosYMovimientosView.cuentaContableFinal}"
+							selectionMode="single"
+							rowKey="#{cuentaContableCredito.cconId}" 
+							filterDelay="1000">
+
+							<p:ajax event="rowSelect"
+								listener="#{reporteCGNSaldosYMovimientosView.onRowSelectCuentaContableFinal}"
+								update=":frmLibroAuxiliar"
+								oncomplete="PF('dlgCuentaContableFinal').hide();" />
+
+							<p:column headerText="Código" filterBy="#{cuentaContableCredito.codigo}">
+								<h:outputText value="#{cuentaContableCredito.codigo}" />
+							</p:column>
+
+							<p:column headerText="Descripción" filterBy="#{cuentaContableCredito.descripcion}"
+								filterMatchMode="contains">
+								<h:outputText value="#{cuentaContableCredito.descripcion}" />
+							</p:column>
+						</p:dataTable>
+					</p:scrollPanel>
+				</div>
+			</p:dialog>
+		</h:form>
+	</ui:define>
+</ui:composition>

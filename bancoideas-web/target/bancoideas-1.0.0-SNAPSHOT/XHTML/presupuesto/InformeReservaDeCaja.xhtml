@@ -1,0 +1,234 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+<ui:define name="content">
+
+<p:ajaxStatus onstart="PF('statusDialog').show()"
+	onsuccess="PF('statusDialog').hide()" />
+<p:dialog modal="true" widgetVar="statusDialog" header="Cargando"
+	draggable="false" closable="false">
+	<p:graphicImage
+		value="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/ajaxloadingbar.gif" />
+</p:dialog>
+
+<!-- Expired session -->
+<p:idleMonitor onactive="PF('sessionTimeOutDialog').show();"
+	timeout="#{session.maxInactiveInterval * 1000}" />
+<p:dialog modal="true" widgetVar="sessionTimeOutDialog"
+	header="Sesión terminada" draggable="false" closable="false">
+	<h:outputText value="La sesión ha finalizado" />
+	<input id="confirmBackToLogin" type="button" value="Iniciar sesión"
+		onclick="window.location='#{facesContext.externalContext.requestContextPath}/index.jsp';" />
+</p:dialog>
+
+<script type="text/javascript">
+	function showStatus() {
+	    statusDialog.show();
+	}
+	 
+	function hideStatus() {
+	    statusDialog.hide();
+	}
+</script>
+
+
+<style type="text/css">
+	.ui-panel {
+		margin-top: 20px
+	}
+	
+	.ui-tabs-top {
+		background-color: #FFFFFF;
+	}
+	
+	.one {
+		width: 10%;
+	}
+	
+	.two {
+		width: 90%;
+	}
+	
+	.col50Left{
+		width: 10%;
+		text-align: left;
+	}
+	
+	.col50Right{
+		width: 10%;
+		text-align: right;
+	}
+	
+	.txt100{
+		width: 100%;
+	}
+	
+</style>
+
+<div align="center">
+
+<h:form id="frmReservaDeCaja">
+
+	<p:growl id="men" showDetail="false" autoUpdate="true" closable="true" />
+		
+	<p:panel id="pnlInformeReservaDeCaja" header="Informe de Reservas de Caja" style="width: 90%;" >
+	
+		<h:panelGrid columns="2">
+		
+			<p:outputLabel value="Año Fiscal" for="anioFiscal" />			
+			<p:inputText id="anioFiscal" value="#{informeReservaDeCajaView.txtAnioFiscal}" />  
+            
+            <p:outputLabel value="Fecha de Inicio" for="fechaInicio" />
+			<p:calendar id="fechaInicio" mode="popup" navigator="true" value="#{informeReservaDeCajaView.txtFechaInicio}"  />
+            
+			<p:outputLabel value="Fecha de Corte" for="fechaCorte" />
+			<p:calendar id="fechaCorte" mode="popup" navigator="true" value="#{informeReservaDeCajaView.txtFechaCorte}"  />
+		
+		</h:panelGrid>
+		
+		<br/>
+		
+		<p:commandButton id="btnGenerarInformeReservaDeCaja" value="Generar Informe Reserva de Caja"
+						 action="#{informeReservaDeCajaView.action_generar_informe_reserva_caja}"
+						 update=":frmReservaDeCaja" />
+		
+		<p:commandButton id="btnLimpiar" value="Limpiar" 
+						 action="#{informeReservaDeCajaView.action_limpiar}"
+						 update=":frmReservaDeCaja" />
+	
+	</p:panel>
+	
+	
+	<p:panel id="pnlListaInformeReservaDeCaja" header="Informe de Reservas de Caja" style="width: 90%;" >
+	
+		<p:dataTable id="pnlListaInformeReservaDeCajaDataTable" var="reservaCaja" rows="50" scrollable="true" scrollWidth="990px"
+		 	value="#{informeReservaDeCajaView.listReservaDeCajaDTO}"
+		 	paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+		 	paginator="true"
+		 	emptyMessage="No hay registros encontrados"			  
+			reflow="true"
+			rowKey="#{reservaCaja.gluoOp.glopId}" 
+			filterDelay="1000">
+			
+			<p:column headerText="Código"
+				filterBy="#{reservaCaja.gluoOp.glopId}">
+				<div align="left">				
+					<p:outputLabel value="#{reservaCaja.gluoOp.glopId}" />
+				</div>												
+			</p:column>
+			
+			<p:column headerText="Vigencia"
+				filterBy="#{reservaCaja.vigencia}">
+				<div align="left">				
+					<p:outputLabel value="#{reservaCaja.vigencia}" />
+				</div>												
+			</p:column>		
+			
+			<p:column headerText="No. CDP"
+				filterBy="#{reservaCaja.numeroCDP}">
+				<div align="left">				
+					<p:outputLabel value="#{reservaCaja.numeroCDP}" />
+				</div>												
+			</p:column>		
+			
+			<p:column headerText="No. CRP"
+				filterBy="#{reservaCaja.numeroCRP}">
+				<div align="left">				
+					<p:outputLabel value="#{reservaCaja.numeroCRP}" />
+				</div>												
+			</p:column>
+			
+			<p:column headerText="No. Compromiso"
+				filterBy="#{reservaCaja.numeroCompromiso}">
+				<div align="left">				
+					<p:outputLabel value="#{reservaCaja.numeroCompromiso}" />
+				</div>												
+			</p:column>	
+			
+			<p:column headerText="Fecha Compromiso"
+				filterBy="#{reservaCaja.fechaCompromiso}">
+				<div align="left">				
+					<p:outputLabel value="#{reservaCaja.fechaCompromiso}" />
+				</div>												
+			</p:column>
+			
+			<p:column headerText="Rubro"
+				filterBy="#{reservaCaja.rubro}">
+				<div align="left">				
+					<p:outputLabel value="#{reservaCaja.rubro}" />
+				</div>												
+			</p:column>
+			
+			<p:column headerText="Valor OP"
+				filterBy="#{reservaCaja.valorOP}">
+				<div align="left">				
+					<p:outputLabel value="#{reservaCaja.valorOP}" />
+				</div>												
+			</p:column>
+			
+			<p:column headerText="Código Tercero"
+				filterBy="#{reservaCaja.codigoTercero}">
+				<div align="left">				
+					<p:outputLabel value="#{reservaCaja.codigoTercero}" />
+				</div>												
+			</p:column>
+			
+			<p:column headerText="Razón Social"
+				filterBy="#{reservaCaja.razonSocial}">
+				<div align="left">				
+					<p:outputLabel value="#{reservaCaja.razonSocial}" />
+				</div>												
+			</p:column>
+			
+			<p:column headerText="Apellidos"
+				filterBy="#{reservaCaja.apellidos}">
+				<div align="left">				
+					<p:outputLabel value="#{reservaCaja.apellidos}" />
+				</div>												
+			</p:column>
+			
+			<p:column headerText="Nombre"
+				filterBy="#{reservaCaja.nombre}">
+				<div align="left">				
+					<p:outputLabel value="#{reservaCaja.nombre}" />
+				</div>												
+			</p:column>
+			
+			<p:column headerText="Detalle"
+				filterBy="#{reservaCaja.detalle}">
+				<div align="left">				
+					<p:outputLabel value="#{reservaCaja.detalle}" />
+				</div>												
+			</p:column>					
+			
+		</p:dataTable>
+		
+	</p:panel>
+	
+	
+	<h3>Exportar el Informe de Reserva de Caja</h3>
+    <h:panelGrid id="panelgridGeneraReporte" columns="3"> 
+			<p:commandButton value="Generar Reporte en PDF" onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)" icon="ui-icon-arrowthichk-s">
+				<p:fileDownload value="#{informeReservaDeCajaView.reporteIRCPdf}" />
+			</p:commandButton>
+			
+			<p:commandButton value="Generar Reporte en XLS" onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)" icon="ui-icon-arrowthichk-s">
+				<p:fileDownload value="#{informeReservaDeCajaView.reporteIRCXls}" />
+			</p:commandButton>
+			
+			<p:commandButton value="Generar Reporte en XLSX" onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)" icon="ui-icon-arrowthichk-s">
+				<p:fileDownload value="#{informeReservaDeCajaView.reporteIRCXlsx}" />
+			</p:commandButton>
+	</h:panelGrid>
+    
+    <br/><br/>
+	
+		
+			
+</h:form>
+</div>
+</ui:define>
+</ui:composition>

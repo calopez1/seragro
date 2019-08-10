@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<jdbcDataAdapter class="net.sf.jasperreports.data.jdbc.JdbcDataAdapterImpl"><name>JDBCDataAdapterGluon</name><driver>org.postgresql.Driver</driver><username>postgres</username><password>adminadmin</password><savePassword>true</savePassword><url>jdbc:postgresql://localhost:5432/gluon</url><database></database><serverAddress></serverAddress></jdbcDataAdapter>

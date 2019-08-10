@@ -1,0 +1,65 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+<ui:define name="content">
+	<style type="text/css">
+.ui-panel {
+	margin-top: 20px
+}
+
+.ui-tabs-top {
+	background-color: #FFFFFF;
+}
+
+.ui-autocomplete-input.ui-inputfield
+{
+   width : 90px !important;
+}
+</style>
+
+<div align="center">
+<h:form id="frmAsignarFuentes">
+
+	<p:growl id="growl" life="4000" />
+
+	<p:panel id="pnlAsignarFuentes" header="Asignar Fuentes" style="width: 90%;" >	
+		<p:dataTable id="asignarFuentesDataTable" var="cuentaGastos"
+			value="#{gluoAsignarFuentesView.presupuestoGastosDTO.detallePresupuestoDTOs}"
+			rows="20" paginator="true"									
+			emptyMessage="No existen cuentas del presupuesto"
+			reflow="true">
+			
+			<p:ajax event="filter" delay="1000" />
+					
+			<p:column headerText="Cuenta" filterBy="#{cuentaGastos.codigoCuenta}"
+				filterMatchMode="startsWith">
+				<h:outputText value="#{cuentaGastos.codigoCuenta}" />
+			</p:column>
+			<p:column headerText="Descripción" filterBy="#{cuentaGastos.descripcionCuenta}"
+				filterMatchMode="contains">
+				<h:outputText value="#{cuentaGastos.descripcionCuenta}" />
+			</p:column>
+			<p:column headerText="Tipo de Recurso">
+				<div align="center">
+					<p:selectOneMenu value="#{cuentaGastos.tireId}" rendered="#{cuentaGastos.hoja}"
+						filter="true" style="width: 80%;">
+						<f:selectItem itemLabel="- Seleccionar Tipo Recurso -" itemValue="-1" />
+						<f:selectItems value="#{gluoAsignarFuentesView.itemsTipoRecurso}" />
+						<p:ajax update="@this" />
+					</p:selectOneMenu>					
+				</div>				
+			</p:column>	
+		</p:dataTable>
+		
+		<br/>
+		<p:commandButton id="btnGuardar" value="Guardar"
+			action="#{gluoAsignarFuentesView.action_create}" update=":frmAsignarFuentes" />	
+						
+	</p:panel>		
+</h:form>
+</div>
+</ui:define>
+</ui:composition>

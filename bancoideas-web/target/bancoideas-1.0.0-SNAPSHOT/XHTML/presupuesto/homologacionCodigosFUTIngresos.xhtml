@@ -1,0 +1,106 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+	<ui:define name="content">
+		<style type="text/css">
+			.ui-panel {
+				margin-top: 20px
+			}
+			
+			.ui-tabs-top {
+				background-color: #FFFFFF;
+			}
+			
+			.ui-autocomplete-input.ui-inputfield
+			{
+			   width : 270px !important;
+			}
+			
+			.ui-autocomplete-panel {
+			   width: 800px !important;
+			}
+		</style>
+
+		<h:form id="frmParametrizarCodigosPresupuesto">
+
+		<p:growl id="men" showDetail="false" />
+
+		  <p:panel id="pnlCentral" columns="1" style="border:none;">
+			
+			<p:tabView id="presupuestosTabView">
+
+				<p:tab id="presupuestoRentasTab" title="Presupuesto de Ingresos" rendered="true">
+					<h:panelGrid columns="1" id="pnlPresupuestoRentasData">
+						<h:panelGrid columns="1"
+							rendered="#{homologacionCodigosFutIngresosView.presupuestoRentasDTO != null}">
+							<div class="Container100">
+								<div class="ContainerIndent">
+
+									<div class="Container100">
+										<div class="ContainerIndent">
+
+											<p:dataTable id="presupuestoRentasData" var="cuentaRentas"
+												value="#{homologacionCodigosFutIngresosView.presupuestoRentasDTO.detallePresupuestoDTOs}"
+												rows="20" paginator="true"
+												paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+												emptyMessage="No existen cuentas del presupuesto"
+												reflow="true">
+												
+												<p:ajax event="filter" delay="1000" />
+												
+												<f:facet name="header">
+				                                    Homologación de codigos FUT de Ingresos
+				                                </f:facet>
+
+												<p:columnGroup type="header">
+													<p:row>
+														<p:column headerText="Cuenta" filterBy="#{cuentaRentas.codigoCuenta}" filterMatchMode="contains" sortBy="#{cuentaRentas.codigoCuenta}"/>
+														<p:column headerText="Descripción" filterBy="#{cuentaRentas.descripcionCuenta}" filterMatchMode="contains" sortBy="#{cuentaRentas.descripcionCuenta}"/>
+														<p:column headerText="Código FUT"/>
+													</p:row>
+												</p:columnGroup>
+
+												<p:column headerText="Cuenta" style="width: 20%">
+													<h:outputText value="#{cuentaRentas.codigoCuenta}" />
+												</p:column>
+												<p:column headerText="Descripción" style="width: 50%">
+													<h:outputText value="#{cuentaRentas.descripcionCuenta}" />
+												</p:column>
+												<p:column headerText="Código FUT">
+													<p:autoComplete id="txtCodigosFutInversionIngresos" minQueryLength="1" value="#{cuentaRentas.codigoFut}"
+																	completeMethod="#{homologacionCodigosFutIngresosView.action_autoCompleteCodigosFUT}" 
+																	update=":frmParametrizarCodigosPresupuesto:men" effect="fade" style="width: 400px;"
+																	forceSelection="true" rendered="#{cuentaRentas.hoja}">
+																	
+														<p:ajax event="itemSelect" listener="#{homologacionCodigosFutIngresosView.handleSelect}" update="@this, :frmParametrizarCodigosPresupuesto:men" />
+													</p:autoComplete>
+													
+												</p:column>
+											</p:dataTable>
+
+											<div class="EmptyBox20"></div>
+
+										</div>
+									</div>
+
+									<h:panelGrid columns="3">
+										<p:commandButton id="btnActualizarCodigosRentas" value="Homologar Rubros" action="#{homologacionCodigosFutIngresosView.action_actualizarCodigosRenta}" update=":frmParametrizarCodigosPresupuesto:men"/>
+										<p:commandButton id="btnClearRentas" value="Limpiar" action="#{homologacionCodigosFutIngresosView.action_clearRentas()}" update="presupuestoRentasData"/>
+									</h:panelGrid>
+									
+									<div class="EmptyBox20"></div>
+
+								</div>
+							</div>
+						</h:panelGrid>
+					</h:panelGrid>
+				</p:tab>
+
+			</p:tabView>
+		</p:panel>
+	   </h:form>
+	</ui:define>
+</ui:composition>

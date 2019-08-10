@@ -1,0 +1,122 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+	<ui:define name="content">
+		<style type="text/css">
+			.ui-panel {
+				margin-top: 20px
+			}
+			
+			.ui-tabs-top{
+				background-color: #FFFFFF;
+			}
+		</style>
+
+
+		<div align="center">
+		<h:form id="formCuentaContable">
+			
+			<p:growl id="messages" />
+
+			<p:panel id="pnlCuentaContable" header="Gestionar Cuenta Contable" style="width: 90%;">
+			<div align="center">
+				<h:panelGrid columns="2" >
+
+					<p:outputLabel value="Código: " />
+					<p:inputText id="txtCuentaContable" style="width: 200px"
+						binding="#{gluoCuentaContableView.txtCodigo}" maxlength="50" >
+						<p:ajax listener="#{gluoCuentaContableView.txtCodigoListener}"
+							update=":formCuentaContable" />
+					</p:inputText>
+					
+					<p:outputLabel value="Descripción: " />
+					<p:inputText id="txtDescripcion" binding="#{gluoCuentaContableView.txtDescripcion}" maxlength="100" style="width: 200px" />
+					
+					<p:outputLabel value="Cuenta Corriente" for="radCuentaCorriente" />
+					<p:selectOneRadio id="radCuentaCorriente" value="#{gluoCuentaContableView.txtCuentaContableCorriente}">
+						<f:selectItem itemLabel="Si" itemValue="S" />
+						<f:selectItem itemLabel="No" itemValue="N" />
+					</p:selectOneRadio>
+					
+					<p:outputLabel value="Naturaleza" for="radNaturaleza" />
+					<p:selectOneRadio id="radNaturaleza" value="#{gluoCuentaContableView.txtNaturaleza}">
+						<f:selectItem itemLabel="Débito" itemValue="D" />
+						<f:selectItem itemLabel="Crédito" itemValue="C" />
+					</p:selectOneRadio>
+															
+        			<p:outputLabel value="Activo: " />        			
+        			<p:selectOneRadio id="selectActivar" value="#{gluoCuentaContableView.txtActivo}">
+			            <f:selectItem itemLabel="Activo" itemValue="A" />
+			            <f:selectItem itemLabel="Inactivo" itemValue="I" />			            
+			        </p:selectOneRadio>
+					
+				</h:panelGrid>
+			</div>
+				<!-- Botones -->
+					<br/>
+
+					<p:commandButton id="btnSave" value="Guardar"
+						action="#{gluoCuentaContableView.action_save}"
+						binding="#{gluoCuentaContableView.btnSave}" disabled="true"
+						update=":formCuentaContable" />
+		
+					<p:commandButton id="btnClear" value="Limpiar"
+						action="#{gluoCuentaContableView.action_clear}"
+						binding="#{gluoCuentaContableView.btnClear}" disabled="false"
+						update=":formCuentaContable" />
+				
+					<!-- Botones -->
+
+
+			</p:panel>
+			
+			<!-- DataTable -->
+			<p:panel id="pnlListaCuentaContable" header="Listado Cuentas Contables"  style="width: 90%;">
+
+				<p:dataTable value="#{gluoCuentaContableView.data}" var="cuentasContables"
+					paginator="true" rows="10" scrollable="true" scrollWidth="100%"
+					scrollHeight="500" selectionMode="single"
+					selection="#{gluoCuentaContableView.selectedGluoCuentaContable}"
+					rowKey="#{cuentasContables.cconId}"
+					filterDelay="1000">					
+					
+					<p:column headerText="Código" filterBy="#{cuentasContables.codigo}"  class="text-center" style="text-align:center"> 
+						<p:outputLabel value="#{cuentasContables.codigo}"  />
+					</p:column>
+										
+					<p:column headerText="Descripción" filterBy="#{cuentasContables.descripcion}" style="text-align:center"> 
+						<p:outputLabel value="#{cuentasContables.descripcion}" />
+					</p:column>
+					
+					<p:column headerText="Nivel" filterBy="#{cuentasContables.nivel}" style="text-align:center"> 
+						<p:outputLabel value="#{cuentasContables.nivel}" />
+					</p:column>
+										
+					<p:column headerText="Cta. Contable Padre" filterBy="#{cuentasContables.cconCodigo_GluoCuentaContable}" style="text-align:center"> 
+						<p:outputLabel value="#{cuentasContables.cconCodigo_GluoCuentaContable}" />
+					</p:column>
+					
+					<p:column headerText="Cuenta Corriente" filterBy="#{cuentasContables.corriente}" style="text-align:center"> 
+						<p:outputLabel value="#{(cuentasContables.corriente == 'S' ? 'Si' : 'No')}" />
+					</p:column>
+					
+					<p:column headerText="Activo" filterBy="#{cuentasContables.activoNombre}" style="text-align:center"> 
+						<p:outputLabel value="#{cuentasContables.activoNombre}" />
+					</p:column>
+
+					
+				</p:dataTable>
+			</p:panel>
+
+			<!-- DataTable -->
+
+
+		</h:form>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

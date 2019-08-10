@@ -1,0 +1,181 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	template="/WEB-INF/template.xhtml">
+
+	<ui:define name="content">
+		<script type="text/javascript">
+			function justNumbers(e) {
+					var keynum = window.event ? window.event.keyCode : e.which;
+					if ((keynum == 8) || (keynum == 46) || (keynum == 44))
+					return true;
+					 
+					return /\d/.test(String.fromCharCode(keynum));
+			}
+			PrimeFaces.locales['es'] = {
+				    closeText: 'Cerrar',
+				    prevText: 'Anterior',
+				    nextText: 'Siguiente',
+				    monthNames: ['Enero','Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+				    monthNamesShort: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun','Jul','Ago','Sep','Oct','Nov','Dic'],
+				    dayNames: ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'],
+				    dayNamesShort: ['Dom','Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab'],
+				    dayNamesMin: ['D','L','M','M','J','V','S'],
+				    weekHeader: 'Semana',
+				    firstDay: 1,
+				    isRTL: false,
+				    showMonthAfterYear: false,
+				    yearSuffix: '',
+				    timeOnlyTitle: 'Sólo hora',
+				    timeText: 'Tiempo',
+				    hourText: 'Hora',
+				    minuteText: 'Minuto',
+				    secondText: 'Segundo',
+				    currentText: 'Fecha actual',
+				    ampm: false,
+				    month: 'Mes',
+				    week: 'Semana',
+				    day: 'Día',
+				    allDayText : 'Todo el día'
+				};
+			
+		</script>
+		<style type="text/css">
+			.inputOnDataTable input {
+				width: 200px !important;
+			}
+		</style>
+		<f:view>
+			<p:ajaxStatus onstart="PF('statusDialog').show()"
+				onsuccess="PF('statusDialog').hide()" />
+			<p:dialog modal="true" widgetVar="statusDialog"
+				header="Cargando Información" draggable="false" closable="false">
+				<p:graphicImage
+					value="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/ajaxloadingbar.gif" />
+			</p:dialog>
+
+			<!-- Expired session -->
+			<p:idleMonitor onactive="PF('sessionTimeOutDialog').show();"
+				timeout="#{session.maxInactiveInterval * 1000}" />
+			<p:dialog modal="true" widgetVar="sessionTimeOutDialog"
+				header="Sesión Caducada" draggable="false" closable="false">
+				<h:outputText value="La sesión ha finalizado" />
+				<input id="confirmBackToLogin" type="button" value="Iniciar Sesión"
+					onclick="window.location='#{facesContext.externalContext.requestContextPath}/index.jsp';" />
+			</p:dialog>
+
+			<h:form id="frm">
+			
+				<p:growl id="msgPora" autoUpdate="true" showDetail="false"/>
+				
+				<p:panel id="pnlPorcentajesRangoAvaluo" header="Gestión de Rangos de Avalúo para Conceptos De Impuesto" style="width: 99%;">
+					<div align="center">
+					<h:panelGrid id="panelDatosCentrales" columns="2" columnClasses="label,value" cellpadding="2">
+					
+						<p:outputLabel value="Año Fiscal" for="txtAnoFiscal" />
+						<p:inputText id="txtAnoFiscal" readonly="true" binding="#{gluoRangoAvaluoConceptoImpuestoView.txtAnoFiscal}" style="width: 200px;"/>
+
+						<p:outputLabel value="Tipo de Predio" for="somTipoPredios" />
+						<p:selectOneMenu id="somTipoPredios" binding="#{gluoRangoAvaluoConceptoImpuestoView.somTipoPredios}" filter="true" style="min-width:200px; width:200px;">
+							<f:selectItem itemLabel="[-- Tipos de Predios --]" itemValue="-1" />
+							<f:selectItems value="#{gluoRangoAvaluoConceptoImpuestoView.losTipoPredios}" />
+							<p:ajax event="change" update="@([id$=pnlPorcentajesRangoAvaluo])" listener="#{gluoRangoAvaluoConceptoImpuestoView.listenerSomTipoPredio()}" />
+						</p:selectOneMenu>
+
+						<p:outputLabel value="Rango de Avalúo Inicial" for="txtRangoInicial" />
+						<pe:inputNumber widgetVar="txtRangoInicial" 
+							id="txtRangoInicial" minValue="0.00" decimalPlaces="2" readonly="true"
+							decimalSeparator="." thousandSeparator=","
+							value="#{gluoRangoAvaluoConceptoImpuestoView.txtRangoInicial}"
+							symbol="$ " emptyValue="empty"
+							onkeypress="return justNumbers(event);" styleClass="inputOnDataTable">
+							<f:passThroughAttribute name="placeholder" value="Rango de Avalúo Inicial"/>	
+						</pe:inputNumber>
+						
+						<p:outputLabel value="Rango de Avalúo Final" for="txtRangoFinal" />
+						<pe:inputNumber widgetVar="txtRangoFinal" 
+							id="txtRangoFinal" minValue="0.00" decimalPlaces="2" 
+							decimalSeparator="." thousandSeparator=","
+							value="#{gluoRangoAvaluoConceptoImpuestoView.txtRangoFinal}"
+							symbol="$ " emptyValue="empty"
+							onkeypress="return justNumbers(event);" styleClass="inputOnDataTable">
+							<f:passThroughAttribute name="placeholder" value="Rango de Avalúo Final"/>	
+						</pe:inputNumber>
+						
+						<p:outputLabel value="Porcenetaje del SMMLV" for="txtPorcentajeSMMLV" />
+						<pe:inputNumber widgetVar="txtPorcentajeSMMLV" 
+							id="txtPorcentajeSMMLV" minValue="0.00" decimalPlaces="5" 
+							decimalSeparator="." thousandSeparator=","
+							value="#{gluoRangoAvaluoConceptoImpuestoView.txtPorcentajeSMMLV}"
+							symbol="%" symbolPosition="s" emptyValue="empty"
+							onkeypress="return justNumbers(event);" styleClass="inputOnDataTable">
+							<f:passThroughAttribute name="placeholder" value="Porcenetaje del SMMLV"/>	
+						</pe:inputNumber> 
+
+						<p:outputLabel value="Estado" for="sorEstado" />
+						<p:selectOneRadio id="sorEstado" binding="#{gluoRangoAvaluoConceptoImpuestoView.sorEstado}">
+							<f:selectItem itemLabel="Activo" itemValue="A" />
+							<f:selectItem itemLabel="Inactivo" itemValue="I" />
+						</p:selectOneRadio>
+					</h:panelGrid>
+					
+					<br/>
+					
+					<div align="center">
+						<p:commandButton id="btnGuardar" value="Guardar" action="#{gluoRangoAvaluoConceptoImpuestoView.guardar}" update="panelDatosCentrales, dataTablePorcentajesRangoAvaluo, msgPora" />
+						<p:commandButton id="btnLimpiar" value="Limpiar" action="#{gluoRangoAvaluoConceptoImpuestoView.limpiar}" update="panelDatosCentrales" />
+					</div>	
+					</div>
+				</p:panel>
+
+				<br/>
+				
+				<p:panel id="panelDataTableGluoPorcentajeRangoAvaluo" header="Gestión de Rangos de Avalúo para Conceptos De Impuesto">
+					<p:growl id="men" autoUpdate="true" showDetail="false"/>
+					<p:dataTable id="dataTablePorcentajesRangoAvaluo" value="#{gluoRangoAvaluoConceptoImpuestoView.data}" paginator="true"
+   						paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}" 
+   						rows="6" var="gluoPorcentajeRangoAvaluo"
+   						emptyMessage="No se han encontrado registrados activos."
+   						filterDelay="1000">
+
+						<p:column headerText="Rango Inicial" filterBy="#{gluoPorcentajeRangoAvaluo.rangoInicial}" sortBy="#{gluoPorcentajeRangoAvaluo.rangoInicial}" filterMatchMode="contains">
+							<h:outputText value="#{gluoPorcentajeRangoAvaluo.rangoInicial}">
+								<f:convertNumber type="currency" currencySymbol="$" locale="es_CO"/>
+							</h:outputText>
+						</p:column>
+
+						<p:column headerText="Rango Final" filterBy="#{gluoPorcentajeRangoAvaluo.rangoFinal}" sortBy="#{gluoPorcentajeRangoAvaluo.rangoFinal}" filterMatchMode="contains">
+							<h:outputText value="#{gluoPorcentajeRangoAvaluo.rangoFinal}">
+								<f:convertNumber type="currency" currencySymbol="$" locale="es_CO"/>
+							</h:outputText>
+						</p:column>
+
+						<p:column headerText="Porcentaje SMMLV" filterBy="#{gluoPorcentajeRangoAvaluo.porcentajeSmmlv}" sortBy="#{gluoPorcentajeRangoAvaluo.porcentajeSmmlv}" filterMatchMode="contains">
+							<h:outputText value="#{gluoPorcentajeRangoAvaluo.porcentajeSmmlv}%" >
+								<f:convertNumber pattern="#0.00000" />
+							</h:outputText>
+						</p:column>
+
+						<p:column headerText="Tipo de Predio" filterBy="#{gluoPorcentajeRangoAvaluo.descripcionTipoPredio}"	sortBy="#{gluoPorcentajeRangoAvaluo.descripcionTipoPredio}"	filterMatchMode="contains">
+							<h:outputText value="#{gluoPorcentajeRangoAvaluo.descripcionTipoPredio}" />
+						</p:column>
+						
+						<p:column headerText="Activo" filterBy="#{gluoPorcentajeRangoAvaluo.activo}" sortBy="#{gluoPorcentajeRangoAvaluo.activo}" filterMatchMode="contains">
+							<h:outputText value="#{(gluoPorcentajeRangoAvaluo.activo.trim() eq 'A')?('Activo'):('Inactivo')}" />
+						</p:column>
+
+						<p:column headerText="Opciones">
+							<p:commandButton id="btnEdit" icon="ui-icon-pencil" update="@([id$=pnlPorcentajesRangoAvaluo])" title="Editar" actionListener="#{gluoRangoAvaluoConceptoImpuestoView.editar}">
+								<f:attribute name="selectedGluoPorcentajeRangoAvaluo" value="#{gluoPorcentajeRangoAvaluo}" />
+							</p:commandButton>
+						</p:column>
+					</p:dataTable>
+				</p:panel>
+			</h:form>
+		</f:view>
+	</ui:define>
+
+</ui:composition>

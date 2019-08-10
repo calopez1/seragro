@@ -1,0 +1,97 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+	<ui:define name="content">
+		<style type="text/css">
+			.ui-panel {
+				margin-top: 20px
+			}
+			
+			.ui-tabs-top{
+				background-color: #FFFFFF;
+			}
+		</style>
+
+		<h:form id="formTipoRecurso" style="text-align: center;">
+			
+			<p:growl id="messages" />
+
+		  <div align="center">
+			<p:panel id="pnlTipoRecurso" header="Gestionar Tipo de Recurso" style="width: 90%;">
+				<h:panelGrid columns="2">
+
+					<p:outputLabel value="Código: " />
+					<p:inputText id="txtCodigo" style="width: 200px"
+						binding="#{gluoTipoRecursoView.txtCodigo}" maxlength="100">
+						<p:ajax listener="#{gluoTipoRecursoView.codigoListener}"
+							update=":formTipoRecurso" />
+					</p:inputText>
+					
+					<p:outputLabel value="Descripción: " />
+					<p:inputText id="txtDescripcion" binding="#{gluoTipoRecursoView.txtDescripcion}" maxlength="100" style="width: 200px" />
+															
+        			<p:outputLabel value="Activo: " />        			
+        			<p:selectOneRadio id="selectActivar" value="#{gluoTipoRecursoView.activo}">
+			            <f:selectItem itemLabel="Activo" itemValue="A" />
+			            <f:selectItem itemLabel="Inactivo" itemValue="I" />			            
+			        </p:selectOneRadio>
+					
+				</h:panelGrid>
+				
+				<!-- Botones -->
+					<br/>
+
+					<p:commandButton id="btnSave" value="Guardar"
+							action="#{gluoTipoRecursoView.action_save}"
+							binding="#{gluoTipoRecursoView.btnSave}" disabled="false"
+							update="messages,pnlTipoRecurso,pnlListaTipoRecurso,formTipoRecurso" />
+		
+					<p:commandButton id="btnClear" value="Limpiar"
+						action="#{gluoTipoRecursoView.action_clear}"
+						binding="#{gluoTipoRecursoView.btnClear}" disabled="false"
+						update="messages,pnlTipoRecurso,pnlListaTipoRecurso,formTipoRecurso" />
+				
+					<!-- Botones -->
+
+
+			</p:panel>
+			
+			<!-- DataTable -->
+			<p:panel id="pnlListaTipoRecurso" header="Listado Tipos de Recurso" style="width: 90%;">
+
+				<p:dataTable value="#{gluoTipoRecursoView.data}" var="tipoRecurso"
+					paginator="true" rows="10" scrollable="true" scrollWidth="100%"
+					scrollHeight="500" selectionMode="single"
+					selection="#{gluoTipoRecursoView.selectedGluoTipoRecurso}"
+					rowKey="#{tipoRecurso.tireId}" filterDelay="1000">
+					
+					
+					
+					<p:column headerText="Código" filterBy="#{tipoRecurso.codigo}"  class="text-center" style="text-align:center"> 
+						<p:outputLabel value="#{tipoRecurso.codigo}"  />
+					</p:column>
+					
+					
+					<p:column headerText="Descripción" filterBy="#{tipoRecurso.descripcion}" style="text-align:center"> 
+						<p:outputLabel value="#{tipoRecurso.descripcion}" />
+					</p:column>
+										
+					
+					<p:column headerText="Activo" filterBy="#{tipoRecurso.activoNombre}" style="text-align:center"> 
+						<p:outputLabel value="#{tipoRecurso.activoNombre}" />
+					</p:column>
+
+					
+				</p:dataTable>
+			</p:panel>
+
+		  </div>
+
+		</h:form>
+
+	</ui:define>
+
+</ui:composition>

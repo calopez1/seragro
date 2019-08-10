@@ -1,0 +1,237 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+<ui:define name="content">
+<f:view>
+<script type="text/javascript">
+function start() {
+    PF('statusDialog').show();
+}
+
+function stop() {
+    PF('statusDialog').hide();
+}
+</script>
+<p:ajaxStatus onstart="PF('statusDialog').show()"
+	onsuccess="PF('statusDialog').hide()" />
+<p:dialog modal="true" widgetVar="statusDialog" header="Cargando"
+	draggable="false" closable="false">
+	<p:graphicImage
+		value="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/ajaxloadingbar.gif" />
+</p:dialog>
+
+<!-- Expired session -->
+<p:idleMonitor onactive="PF('sessionTimeOutDialog').show();"
+	timeout="#{session.maxInactiveInterval * 1000}" />
+<p:dialog modal="true" widgetVar="sessionTimeOutDialog"
+header="Sesión terminada" draggable="false" closable="false">
+<h:outputText value="La sesión ha finalizado" />
+<input id="confirmBackToLogin" type="button" value="Iniciar sesión"
+	onclick="window.location='#{facesContext.externalContext.requestContextPath}/index.jsp';" />
+</p:dialog>
+
+<div align="center">
+<h:form id="frmInformeProgramacionGastoCgr">
+
+	<p:growl id="growl" autoUpdate="true" />
+
+	<p:panel id="pnlInformeProgramacionGastoCgr" header="Informe Programación de Gastos CGR" style="width: 90%;">		
+		<h:panelGrid columns="2">
+			<p:outputLabel value="Año Fiscal:" for="txtAnioFiscal" />
+			<p:inputText id="txtAnioFiscal" binding="#{gluoInformeProgramacionGastosCgrView.txtAnioFiscal}" />
+			
+			<p:outputLabel value="Fecha Inicio:" for="fechaInicio" />
+			<p:calendar id="fechaInicio" binding="#{gluoInformeProgramacionGastosCgrView.calFechaInicio}"
+				pattern="yyyy-MM-dd" navigator="true" />
+				
+			<p:outputLabel value="Fecha Fin:" for="fechaFin" />
+			<p:calendar id="fechaFin" binding="#{gluoInformeProgramacionGastosCgrView.calFechaFin}"
+				pattern="yyyy-MM-dd" navigator="true" />
+				
+		</h:panelGrid>
+		
+		<br/>
+		<p:commandButton id="btnGenerarInforme" value="Generar Informe"
+			action="#{gluoInformeProgramacionGastosCgrView.action_informe_programacion_gastos}"
+			update=":frmInformeProgramacionGastoCgr" />
+			
+		<p:commandButton id="btnLimpiarInforme" value="Limpiar"
+			action="#{gluoInformeProgramacionGastosCgrView.action_clear}"
+			update=":frmInformeProgramacionGastoCgr" />
+		
+	</p:panel>
+
+	<p:panel id="pnlInformeGenerado" header="Informe Programación de Gastos CGR" style="width: 90%;">
+		<p:scrollPanel mode="native">
+		<p:dataTable id="informeDataTable" style="text-align: center;" scrollable="true" scrollWidth="100%"
+			var="gastos"
+			value="#{gluoInformeProgramacionGastosCgrView.gluoInformeProgramacionGastosDTOs}"
+			selection="#{gluoInformeProgramacionGastosCgrView.selectedInformeProgramacionGatosDTO}"
+			selectionMode="single"
+			filterDelay="2000"
+			paginator="true"
+			rows="20"
+			rowKey="#{gastos.gcgrId}">
+			
+			<p:column headerText="Código Vigencia" filterBy="#{gastos.codigoVigencia}"
+				filterMatchMode="startsWith" style="width: 200px;">
+				<p:outputLabel value="#{gastos.codigoVigencia}" />
+			</p:column>
+			
+			<p:column headerText="Nombre Vigencia" filterBy="#{gastos.nombreVigencia}"
+				filterMatchMode="contains" style="width: 200px;">
+				<p:outputLabel value="#{gastos.nombreVigencia}" />
+			</p:column>
+			
+			<p:column headerText="Código Cgr" filterBy="#{gastos.codigoCgr}"
+				filterMatchMode="startsWith" style="width: 200px;">
+				<p:outputLabel value="#{gastos.codigoCgr}" />
+			</p:column>
+			
+			<p:column headerText="Nombre Cgr" filterBy="#{gastos.nombreCgr}"
+				filterMatchMode="contains" style="width: 200px;">
+				<p:outputLabel value="#{gastos.nombreCgr}" />
+			</p:column>
+			
+			<p:column headerText="Código Recursos" filterBy="#{gastos.codigoRecursos}"
+				filterMatchMode="startsWith" style="width: 200px;">
+				<p:outputLabel value="#{gastos.codigoRecursos}" />
+			</p:column>
+			
+			<p:column headerText="Nombre Recursos" filterBy="#{gastos.nombreRecursos}"
+				filterMatchMode="contains" style="width: 200px;">
+				<p:outputLabel value="#{gastos.nombreRecursos}" />
+			</p:column>
+			
+			<p:column headerText="Código Origen Específico Ingresos" filterBy="#{gastos.codigoOrigenEspecificoIngresos}"
+				filterMatchMode="startsWith" style="width: 200px;">
+				<p:outputLabel value="#{gastos.codigoOrigenEspecificoIngresos}" />
+			</p:column>
+			
+			<p:column headerText="Nombre Origen Específico Ingresos" filterBy="#{gastos.nombreOrigenEspecificoIngresos}"
+				filterMatchMode="contains" style="width: 200px;">
+				<p:outputLabel value="#{gastos.nombreOrigenEspecificoIngresos}" />
+			</p:column>
+			
+			<p:column headerText="Código Destinación Recursos" filterBy="#{gastos.codigoDestinacionRecursos}"
+				filterMatchMode="startsWith" style="width: 200px;">
+				<p:outputLabel value="#{gastos.codigoDestinacionRecursos}" />
+			</p:column>
+			
+			<p:column headerText="Nombre Destinación Recursos" filterBy="#{gastos.nombreDestinacionRecursos}"
+				filterMatchMode="contains" style="width: 200px;">
+				<p:outputLabel value="#{gastos.nombreDestinacionRecursos}" />
+			</p:column>
+			
+			<p:column headerText="Código Finalidad del Gasto" filterBy="#{gastos.codigoFinalidadDelGasto}"
+				filterMatchMode="startsWith" style="width: 200px;">
+				<p:outputLabel value="#{gastos.codigoFinalidadDelGasto}" />
+			</p:column>
+			
+			<p:column headerText="Nombre Finalidad del Gasto" filterBy="#{gastos.nombreFinalidadDelGasto}"
+				filterMatchMode="contains" style="width: 200px;">
+				<p:outputLabel value="#{gastos.nombreFinalidadDelGasto}" />
+			</p:column>
+			
+			<p:column headerText="Aprobación Inicial" filterBy="#{gastos.aprobacionInicial}"
+				filterMatchMode="startsWith" style="width: 200px;">
+				<p:outputLabel value="#{gastos.aprobacionInicial}" >
+					<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+				</p:outputLabel>
+			</p:column>
+			
+			<p:column headerText="Adiciones" filterBy="#{gastos.adiciones}"
+				filterMatchMode="startsWith" style="width: 200px;">
+				<p:outputLabel value="#{gastos.adiciones}" >
+					<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+				</p:outputLabel>
+			</p:column>
+			
+			<p:column headerText="Reducciones" filterBy="#{gastos.reducciones}"
+				filterMatchMode="startsWith" style="width: 200px;">
+				<p:outputLabel value="#{gastos.reducciones}" >
+					<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+				</p:outputLabel>
+			</p:column>
+			
+			<p:column headerText="Cancelaciones" filterBy="#{gastos.cancelaciones}"
+				filterMatchMode="startsWith" style="width: 200px;">
+				<p:outputLabel value="#{gastos.cancelaciones}" >
+					<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+				</p:outputLabel>
+			</p:column>
+			
+			<p:column headerText="Créditos" filterBy="#{gastos.creditos}"
+				filterMatchMode="startsWith" style="width: 200px;">
+				<p:outputLabel value="#{gastos.creditos}" >
+					<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+				</p:outputLabel>
+			</p:column>
+			
+			<p:column headerText="Contracréditos" filterBy="#{gastos.contracreditos}"
+				filterMatchMode="startsWith" style="width: 200px;">
+				<p:outputLabel value="#{gastos.contracreditos}" >
+					<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+				</p:outputLabel>
+			</p:column>
+			
+			<p:column headerText="Aplazamiento" filterBy="#{gastos.aplazamiento}"
+				filterMatchMode="startsWith" style="width: 200px;">
+				<p:outputLabel value="#{gastos.aplazamiento}" >
+					<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+				</p:outputLabel>
+			</p:column>
+			
+			<p:column headerText="Desaplazamiento" filterBy="#{gastos.desAplazamiento}"
+				filterMatchMode="startsWith" style="width: 200px;">
+				<p:outputLabel value="#{gastos.desAplazamiento}" >
+					<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+				</p:outputLabel>
+			</p:column>
+			
+			<p:column headerText="Apropiación Definitiva" filterBy="#{gastos.apropiacionDefinitiva}"
+				filterMatchMode="startsWith" style="width: 200px;">
+				<p:outputLabel value="#{gastos.apropiacionDefinitiva}" >
+					<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+				</p:outputLabel>
+			</p:column>
+			
+			<p:column headerText="Valor CDP" filterBy="#{gastos.valorCdp}"
+				filterMatchMode="startsWith" style="width: 200px;">
+				<p:outputLabel value="#{gastos.valorCdp}" >
+					<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+				</p:outputLabel>
+			</p:column>
+			
+			<p:column headerText="Valor Reversión CDP" filterBy="#{gastos.valorReversionCdp}"
+				filterMatchMode="startsWith" style="width: 200px;">
+				<p:outputLabel value="#{gastos.valorReversionCdp}" >
+					<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+				</p:outputLabel>
+			</p:column>
+			
+		</p:dataTable>
+		</p:scrollPanel>
+		
+		<br/>
+		<h:panelGrid id="panelgridGeneraReporte" columns="2"> 
+			<p:commandButton value="Generar Reporte en CSV" onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)" icon="ui-icon-arrowthichk-s">
+				<p:fileDownload value="#{gluoInformeProgramacionGastosCgrView.reporteCsv}" />
+			</p:commandButton>
+
+			<p:commandButton value="Generar Reporte en XLS" onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)" icon="ui-icon-arrowthichk-s">
+				<p:fileDownload value="#{gluoInformeProgramacionGastosCgrView.reporteXls}" />
+			</p:commandButton>
+		</h:panelGrid>
+		
+	</p:panel>
+	
+</h:form>
+</div>
+
+</f:view>
+</ui:define>
+</ui:composition>

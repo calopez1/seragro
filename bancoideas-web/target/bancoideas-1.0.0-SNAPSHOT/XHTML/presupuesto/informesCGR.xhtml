@@ -1,0 +1,64 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+<ui:define name="content">
+<f:view>
+<script type="text/javascript">
+function start() {
+    PF('statusDialog').show();
+}
+
+function stop() {
+    PF('statusDialog').hide();
+}
+</script>
+<p:ajaxStatus onstart="PF('statusDialog').show()"
+	onsuccess="PF('statusDialog').hide()" />
+<p:dialog modal="true" widgetVar="statusDialog" header="Cargando"
+	draggable="false" closable="false">
+	<p:graphicImage
+		value="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/ajaxloadingbar.gif" />
+</p:dialog>
+
+<!-- Expired session -->
+<p:idleMonitor onactive="PF('sessionTimeOutDialog').show();"
+	timeout="#{session.maxInactiveInterval * 1000}" />
+<p:dialog modal="true" widgetVar="sessionTimeOutDialog"
+header="Sesión terminada" draggable="false" closable="false">
+<h:outputText value="La sesión ha finalizado" />
+<input id="confirmBackToLogin" type="button" value="Iniciar sesión"
+	onclick="window.location='#{facesContext.externalContext.requestContextPath}/index.jsp';" />
+</p:dialog>
+
+<div align="center">
+<h:form id="frmInformesContraloriaGeneralRepublica">
+	<p:panel id="pnlInformesContraloriaGeneralRepublica" header="Informes Contraloría General de la República" style="width: 90%;">
+	
+		<br/>
+		<p:commandButton value="Informe Programación de Ingresos "
+			action="informeProgramacionDeIngresos.xhtml" style="width: 500px;" />
+		
+		<br/><br/>
+		<p:commandButton value="Informe Ejecución de ingresos  "
+			action="informeEjecucionDeIngresosCGR.xhtml" style="width: 500px;" />
+			
+		<br/><br/>
+		<p:commandButton value="Informe Programación del gasto "
+			action="informeProgramacionDelgasto.xhtml" style="width: 500px;" />
+			
+		<br/><br/>
+		<p:commandButton value="Informe Ejecución del gasto "
+			action="InformeEjecucionGastosCGR.xhtml" style="width: 500px;" />
+			
+		<br/><br/>
+		
+	</p:panel>
+</h:form>
+</div>
+
+</f:view>
+</ui:define>
+</ui:composition>

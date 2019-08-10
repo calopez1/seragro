@@ -1,0 +1,411 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+
+	<ui:define name="content">
+		<f:view>
+
+			<p:ajaxStatus onstart="PF('statusDialog').show()"
+				onsuccess="PF('statusDialog').hide()" />
+			<p:dialog modal="true" widgetVar="statusDialog" header="Cargando"
+				draggable="false" closable="false">
+				<p:graphicImage
+					value="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/ajaxloadingbar.gif" />
+			</p:dialog>
+
+			<!-- Expired session -->
+			<p:idleMonitor onactive="PF('sessionTimeOutDialog').show();"
+				timeout="#{session.maxInactiveInterval * 1000}" />
+			<p:dialog modal="true" widgetVar="sessionTimeOutDialog"
+				header="Sesión terminada" draggable="false" closable="false">
+				<h:outputText value="La sesión ha finalizado" />
+				<input id="confirmBackToLogin" type="button" value="Iniciar sesión"
+					onclick="window.location='#{facesContext.externalContext.requestContextPath}/index.jsp';" />
+			</p:dialog>
+
+			<script type="text/javascript">
+				function showStatus() {
+					statusDialog.show();
+				}
+
+				function hideStatus() {
+					statusDialog.hide();
+				}
+			</script>
+
+			<style type="text/css">
+.ui-panel {
+	margin-top: 20px
+}
+
+.ui-tabs-top {
+	background-color: #FFFFFF;
+}
+
+.one {
+	width: 40%;
+}
+
+.two {
+	width: 60%;
+}
+
+.col50Left {
+	width: 10%;
+	text-align: left;
+}
+
+.col50Right {
+	width: 10%;
+	text-align: right;
+}
+
+.txt100 {
+	width: 100%;
+}
+</style>
+
+			<h:form id="idForm">
+
+				<p:panel>
+					<h:outputText value="Gestione conceptos de deducciones"
+						styleClass="FontBold Fs18 hardblue" />
+				</p:panel>
+
+				<p:panel id="panelDataTableGluoDeduccion"
+					header="Listado de Deducciones">
+
+					<p:growl id="men" showDetail="false" autoUpdate="true" />
+
+					<p:dataTable id="tableDeducciones"
+						value="#{gluoDeduccionView.data}" var="gluoDeduccion"
+						paginator="true" rows="10" reflow="true"
+						emptyMessage="Sin registros" filterDelay="2000"
+						rowKey="#{gluoDeduccion.deduId}" rendered="true" scrollable="true"
+						scrollWidth="100%">
+
+						<p:column headerText="Concepto"
+							filterBy="#{gluoDeduccion.concepto}"
+							sortBy="#{gluoDeduccion.concepto}">
+							<h:outputText value="#{gluoDeduccion.concepto}" />
+						</p:column>
+
+						<p:column headerText="Cuenta Contable"
+							filterBy="#{gluoDeduccion.descripcionCuentaContable}"
+							sortBy="#{gluoDeduccion.descripcionCuentaContable}">
+							<h:outputText value="#{gluoDeduccion.descripcionCuentaContable}" />
+						</p:column>
+
+						<p:column headerText="Tipo" style="width:10%;">
+							<h:outputText
+								value="#{(gluoDeduccion.tipoDeduccion == 'P'?'Porcentaje':(gluoDeduccion.tipoDeduccion == 'V'?'Valor Fijo':(gluoDeduccion.tipoDeduccion == 'I'?'Ingreso Valor':'?')))}" />
+						</p:column>
+
+						<p:column headerText="Valor Base"
+							filterBy="#{gluoDeduccion.valorBase}"
+							sortBy="#{gluoDeduccion.valorBase}">
+							<h:outputText value="#{gluoDeduccion.valorBase}">
+								<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+							</h:outputText>
+						</p:column>
+
+						<p:column headerText="Porcentaje"
+							filterBy="#{gluoDeduccion.porcentaje}"
+							sortBy="#{gluoDeduccion.porcentaje}">
+							<h:outputText value="#{gluoDeduccion.porcentaje}%" />
+						</p:column>
+
+						<p:column headerText="Tarifa" filterBy="#{gluoDeduccion.tarifa}"
+							sortBy="#{gluoDeduccion.tarifa}">
+							<h:outputText value="#{gluoDeduccion.tarifa}">
+								<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+							</h:outputText>
+						</p:column>
+
+						<p:column headerText="Rubro"
+							filterBy="#{gluoDeduccion.descripcionRubroPresupuesto}"
+							sortBy="#{gluoDeduccion.descripcionRubroPresupuesto}">
+							<h:outputText
+								value="#{gluoDeduccion.descripcionRubroPresupuesto}" />
+						</p:column>
+
+						<p:column headerText="Renteción Fuente"
+							filterBy="#{gluoDeduccion.retencionFuente}"
+							sortBy="#{gluoDeduccion.retencionFuente}">
+							<h:outputText
+								value="#{(gluoDeduccion.retencionFuente == 'S' ? 'Si' : 'No')}" />
+						</p:column>
+
+						<p:column headerText="Año Fiscal"
+							filterBy="#{gluoDeduccion.anioFiscal}"
+							sortBy="#{gluoDeduccion.anioFiscal}">
+							<h:outputText value="#{gluoDeduccion.anioFiscal}" />
+						</p:column>
+
+						<p:column headerText="Estado Registro"
+							filterBy="#{gluoDeduccion.estadoRegistro}"
+							sortBy="#{gluoDeduccion.estadoRegistro}">
+							<h:outputText value="#{gluoDeduccion.estadoRegistro}" />
+						</p:column>
+
+						<p:column headerText="Opciones">
+							<p:commandButton id="btnEdit" icon="ui-icon-pencil"
+								title="Editar" update=":idForm:dialogGluoDeduccion"
+								oncomplete="PF('dialogDeduccion').show();"
+								actionListener="#{gluoDeduccionView.action_edit}">
+								<f:attribute name="selectedGluoDeduccion"
+									value="#{gluoDeduccion}" />
+							</p:commandButton>
+							<p:commandButton id="btnDelete" title="Inactivar"
+								actionListener="#{gluoDeduccionView.action_delete_datatable}"
+								onclick="if(!confirm('Realmente desea inactivar este registro?')){return false;}"
+								icon="ui-icon-trash" update="@form">
+								<f:attribute name="selectedGluoDeduccion"
+									value="#{gluoDeduccion}" />
+							</p:commandButton>
+						</p:column>
+					</p:dataTable>
+
+					<br />
+
+					<div align="center">
+						<h:panelGrid id="panelGridNew" columns="2">
+							<p:commandButton id="btnNew" value="Crear Nuevo"
+								action="#{gluoDeduccionView.action_new()}"
+								oncomplete="PF('dialogDeduccion').show();"
+								update=":idForm:dialogGluoDeduccion" />
+
+							<h:commandLink value="Exportar Excel">
+
+								<p:dataExporter type="xls" target="tableDeducciones" fileName="Deducciones"
+									pageOnly="false" />
+							</h:commandLink>
+
+						</h:panelGrid>
+					</div>
+				</p:panel>
+
+				<p:dialog id="dialogGluoDeduccion" widgetVar="dialogDeduccion"
+					draggable="true" closable="false" resizable="false" modal="true"
+					width="50%" height="500" position="center center">
+
+					<p:growl id="msgDialog" showDetail="false" />
+
+					<p:panel id="panelGluoDeduccion" header="Deducción">
+						<h:panelGrid columns="2" id="panelGrid" columnClasses="one,two">
+
+							<h:outputText value=" Concepto" />
+							<p:inputText id="txtConcepto"
+								binding="#{gluoDeduccionView.txtConcepto}" maxlength="50" />
+
+							<h:outputText value=" Cuenta Contable" />
+							<p:panelGrid>
+								<p:inputText id="txtCconId"
+									binding="#{gluoDeduccionView.txtCconId}" readonly="true" />
+								<p:commandButton id="btnBuscarCucoDeb" icon="ui-icon-search"
+									oncomplete="PF('dlgCuentasContablesDebito').show();" />
+							</p:panelGrid>
+
+							<h:outputText value=" Valor Base" />
+							<pe:inputNumber id="txtValorBase"
+								value="#{gluoDeduccionView.txtValorBase}"
+								style="text-align: right;" symbol=" $" symbolPosition="p"
+								decimalSeparator="," thousandSeparator="." minValue="0"
+								validatorMessage="Valor no válido" decimalPlaces="2" />
+
+							<h:outputText value=" Tipo de Deduccion" />
+							<p:selectOneMenu id="somTipoDeduccion"
+								binding="#{gluoDeduccionView.somTipoDeduccion}">
+								<f:selectItem itemLabel="-- Seleccione --" itemValue="-1" />
+								<f:selectItem itemLabel="Porcentaje" itemValue="P" />
+								<f:selectItem itemLabel="Valor Fijo" itemValue="V" />
+								<f:selectItem itemLabel="Ingresar Valor" itemValue="I" />
+								<p:ajax listener="#{gluoDeduccionView.listenerTipoDeduccion}"
+									update="txtPorcentaje,txtTarifa, msgDialog" />
+							</p:selectOneMenu>
+
+							<h:outputText value=" Porcentaje" />
+							<pe:inputNumber id="txtPorcentaje"
+								disabled="#{gluoDeduccionView.deshabilitarPorcentaje}"
+								value="#{gluoDeduccionView.txtPorcentaje}"
+								style="text-align: right;" symbol=" %" symbolPosition="s"
+								decimalSeparator="," thousandSeparator="." minValue="0"
+								validatorMessage="Valor no válido" decimalPlaces="2">
+								<p:ajax event="blur" update="@this" />
+							</pe:inputNumber>
+
+							<h:outputText value=" Valor Fijo" />
+							<pe:inputNumber id="txtTarifa"
+								disabled="#{gluoDeduccionView.deshabilitarValorFijo}"
+								value="#{gluoDeduccionView.txtTarifa}"
+								style="text-align: right;" symbol=" $" symbolPosition="p"
+								decimalSeparator="," thousandSeparator="." minValue="0"
+								validatorMessage="Valor no válido" decimalPlaces="2">
+								<p:ajax event="blur" update="@this" />
+							</pe:inputNumber>
+
+							<h:outputText value=" Rubro presupuestal (Opcional) " />
+							<p:panelGrid>
+								<p:inputText id="txtDptoId"
+									binding="#{gluoDeduccionView.txtDptoId}" readonly="true" />
+								<p:commandButton icon="ui-icon-search"
+									oncomplete="PF('dlgCodigosPresupuestales').show();" />
+							</p:panelGrid>
+
+							<h:outputLabel value="Retención Fuente" for="sorRetencionFuente" />
+							<p:selectBooleanCheckbox id="sorRetencionFuente"
+								value="#{gluoDeduccionView.sorRetencionFuente}" />
+
+
+							<h:outputText value=" Estado Registro" />
+							<p:selectOneRadio id="sorActivo"
+								binding="#{gluoDeduccionView.sorActivo}">
+								<f:selectItem itemLabel="Activo" itemValue="A" />
+								<f:selectItem itemLabel="Inactivo" itemValue="I" />
+							</p:selectOneRadio>
+
+							<p:inputText id="txtIdPk"
+								binding="#{gluoDeduccionView.txtDeduId}" type="hidden" />
+						</h:panelGrid>
+					</p:panel>
+
+					<br />
+
+					<div align="center">
+						<h:panelGrid id="panelBotones" columns="3">
+							<p:commandButton id="btnSave" value="Guardar"
+								action="#{gluoDeduccionView.action_guardar()}"
+								update="panelGluoDeduccion, :idForm:panelDataTableGluoDeduccion, msgDialog" />
+							<p:commandButton id="btnClear" value="Limpiar"
+								action="#{gluoDeduccionView.action_limpiar()}"
+								update="panelGluoDeduccion" />
+							<p:commandButton id="btnExit" value="Salir"
+								oncomplete="PF('dialogDeduccion').hide();" />
+						</h:panelGrid>
+					</div>
+				</p:dialog>
+
+				<!--        Codigos Presupuestales Ingresos        -->
+				<!-- ************************* -->
+				<p:dialog modal="true" widgetVar="dlgCodigosPresupuestales"
+					header="Codigos Presupuestales" draggable="false" closable="true"
+					resizable="true" width="90%" height="200px;" position="center">
+
+					<p:growl id="menRubros" showDetail="false" />
+
+					<p:scrollPanel mode="native" style="width:100%; height:400px">
+						<p:dataTable id="presupuestoGastosData" var="cuenta"
+							value="#{gluoDeduccionView.detallePresupuesto}" rows="10"
+							paginator="true"
+							paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+							rowsPerPageTemplate="10,15,20,30"
+							emptyMessage="No existen cuentas del presupuesto" reflow="true"
+							rowKey="#{cuenta.dptoId}"
+							selection="#{gluoDeduccionView.rubroSeleccionado}">
+
+							<p:column selectionMode="single"
+								style="width:5%; text-align:center" />
+
+							<p:column headerText="Cuenta" sortBy="#{cuenta.codigoCuenta}"
+								style="width: 15%" filterBy="#{cuenta.codigoCuenta}"
+								filterMatchMode="startsWith">
+								<h:outputText value="#{cuenta.codigoCuenta}" />
+							</p:column>
+
+							<p:column headerText="Descripción"
+								sortBy="#{cuenta.descripcionCuenta}" style="width: 50%"
+								filterBy="#{cuenta.descripcionCuenta}"
+								filterMatchMode="contains">
+								<h:outputText value="#{cuenta.descripcionCuenta}" />
+							</p:column>
+
+							<p:column headerText="Valor Inicial" style="width: 10%">
+								<div align="right">
+									<h:outputText value="#{cuenta.valorInicial}">
+										<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+									</h:outputText>
+								</div>
+							</p:column>
+						</p:dataTable>
+					</p:scrollPanel>
+
+					<div align="center">
+						<h:panelGrid id="btnSelecciona" columns="2">
+							<p:commandButton id="btnSeleccionar" value="Seleccionar"
+								action="#{gluoDeduccionView.action_validarRubroSeleccionado}"
+								update="menRubros, idForm:txtDptoId" />
+						</h:panelGrid>
+					</div>
+
+					<div class="EmptyBox20" />
+				</p:dialog>
+				<!-- ************************* -->
+
+				<!--        Cuenta Contable            -->
+				<!-- ************************* -->
+				<p:dialog modal="true" widgetVar="dlgCuentasContablesDebito"
+					header="Cuentas Contables" draggable="false" closable="true"
+					resizable="true" width="90%" height="500">
+
+					<p:growl id="menCuentaContableDebito" showDetail="false" />
+
+					<p:scrollPanel id="pnlCuentasDebito" mode="native"
+						style="width:100%; height:400px">
+						<div class="ContainerIndent" />
+
+						<br />
+
+						<p:dataTable id="cuentasEncontradas" var="cucoDeb" rows="350"
+							style="width: 100%;"
+							value="#{gluoDeduccionView.listaCuentasContables}"
+							paginator="true"
+							paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+							rowsPerPageTemplate="300,400,500"
+							emptyMessage="No hay cuentas contables encontradas" reflow="true"
+							rowKey="#{cucoDeb.cconId}"
+							selection="#{gluoDeduccionView.cuentaContableSeleccionada}">
+
+							<p:ajax event="filter" delay="1000" />
+
+							<f:facet name="header">
+                             Cuentas Contables
+                         </f:facet>
+
+							<p:column selectionMode="single"
+								style="width:5%; text-align:center" />
+
+							<p:column headerText="Codigo" sortBy="#{cucoDeb.codigo}"
+								style="width: 10%" filterBy="#{cucoDeb.codigo}"
+								filterMatchMode="startsWith">
+								<h:outputText value="#{cucoDeb.codigo}" />
+							</p:column>
+
+							<p:column headerText="Descripcion"
+								sortBy="#{cucoDeb.descripcion}" style="width: 50%"
+								filterBy="#{cucoDeb.descripcion}" filterMatchMode="contains">
+								<h:outputText value="#{cucoDeb.descripcion}" />
+							</p:column>
+						</p:dataTable>
+					</p:scrollPanel>
+
+					<div align="center">
+						<h:panelGrid id="btnSeleccionaCucoDeb" columns="2">
+							<p:commandButton id="btnSeleccionarCucoDeb" value="Seleccionar"
+								action="#{gluoDeduccionView.action_seleccionarCuentaDebito}"
+								update="menCuentaContableDebito, idForm:txtCconId" />
+						</h:panelGrid>
+					</div>
+
+					<div class="EmptyBox20" />
+				</p:dialog>
+				<!--        Cuenta Contable Debito           -->
+				<!-- ************************* -->
+
+
+			</h:form>
+		</f:view>
+	</ui:define>
+</ui:composition>

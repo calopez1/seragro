@@ -1,0 +1,408 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+	<ui:define name="content">
+	  <f:view>
+	  
+	  	<p:ajaxStatus onstart="PF('statusDialog').show()" onsuccess="PF('statusDialog').hide()" />
+			<p:dialog modal="true" widgetVar="statusDialog" header="Cargando Información" draggable="false" closable="false">
+				<p:graphicImage value="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/ajaxloadingbar.gif" />
+			</p:dialog>
+
+			<!-- Expired session -->
+			<p:idleMonitor onactive="PF('sessionTimeOutDialog').show();" timeout="#{session.maxInactiveInterval * 1000}" />
+			<p:dialog modal="true" widgetVar="sessionTimeOutDialog" header="Sesión terminada" draggable="false" closable="false">
+				<h:outputText value="La sesión ha finalizado" />
+				<input id="confirmBackToLogin" type="button" value="Iniciar sesión" onclick="window.location='#{facesContext.externalContext.requestContextPath}/index.jsp';" />
+			</p:dialog>
+
+			<script type="text/javascript">
+				function showStatus() {
+				    statusDialog.show();
+				}
+				 
+				function hideStatus() {
+				    statusDialog.hide();
+				}
+			</script>
+	  
+			<style type="text/css">
+				.ui-panel {
+					margin-top: 20px
+				}
+				
+				.ui-tabs-top {
+					background-color: #FFFFFF;
+				}
+				
+				.ui-autocomplete-input.ui-inputfield
+				{
+				   width : 270px !important;
+				}
+				
+				.ui-autocomplete-panel {
+				   width: 800px !important;
+				}
+			</style>
+
+		<h:form id="idForm">
+
+		<p:growl id="men" showDetail="false" />
+
+		  <p:panel id="pnlCentral" columns="1" style="border:none; width:100%;">
+			
+			<p:tabView id="presupuestosTabView">
+
+				<p:tab id="presupuestoRentasTab" title="Reporte de Reservas Presupuestales" rendered="true" style="width: 100%;">
+					<h:panelGrid columns="1" id="pnlPresupuestoRentasData">
+						
+						<h:panelGrid id="idPanelFechas" columns="2">
+							<p:outputLabel value="Fecha Inicial" for="fechaInicial" />
+							<p:calendar id="fechaInicial" mode="popup" navigator="true" value="#{reservasPresupuestalesFUTView.fechaInicial}" timeZone="GMT-5"/>
+							
+							<p:outputLabel value="Fecha Final" for="fechaFinal" />
+							<p:calendar id="fechaFinal" mode="popup" navigator="true" value="#{reservasPresupuestalesFUTView.fechaFinal}" timeZone="GMT-5"/>
+						</h:panelGrid>
+						
+						<br/>
+						
+						<h:panelGrid id="idPanelBtnsConsulta" columns="2">
+							<p:commandButton id="btnConsultar" value="Consultar" action="#{reservasPresupuestalesFUTView.action_generarInformeReservas}" update=":idForm:men, panelGridDataTable"/>						
+							<p:commandButton id="btnLimpiar" value="Limpiar" action="#{reservasPresupuestalesFUTView.action_limpiar}" update="panelGridDataTable, idPanelFechas"/>
+						</h:panelGrid>
+						
+						<br/>
+						
+						<div class="Container100 Responsive">
+							<h:panelGrid id="panelGridDataTable" columns="1" rendered="true" style="width: 100%;">
+							
+							  <p:scrollPanel id="scrollPanelTables" mode="native" style="width: 100%;">
+							
+									<p:dataTable id="presupuestoRentasData" var="reserva"
+										value="#{reservasPresupuestalesFUTView.cabeceraInformeReservas.listInformeDTO}"
+										rows="20" paginator="true" style="width:100%;"
+										paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+										emptyMessage="No existen registros"
+										scrollable="true" scrollWidth="1260px;"
+										reflow="true">
+										
+										<p:ajax event="filter" delay="1000" />
+										
+										<f:facet name="header">
+		                                    Reporte de Reservas Presupuestales
+		                                </f:facet>
+	
+										<p:column headerText="Código" width="150">
+											<p:outputLabel value="#{reserva.codigoFut}" />										
+										</p:column>
+										<p:column headerText="Concepto" width="400">
+											<p:outputLabel value="#{reserva.nombreFut}" />		
+										</p:column>
+										<p:column headerText="Descripción" width="600">
+											<p:outputLabel value="#{reserva.descripcionFut}" />		
+										</p:column>
+										<p:column headerText="Detalle" width="50">
+								            <p:rowToggler rendered="#{reserva.esFutHoja}"/>
+								        </p:column>
+										<p:column width="400">
+											<p:outputLabel value="" />		
+										</p:column>
+										<p:column width="200">
+											<p:outputLabel value="" />					
+										</p:column>
+										<p:column width="200">
+											<p:outputLabel value="" />					
+										</p:column>
+										<p:column width="200">
+											<p:outputLabel value="" />					
+										</p:column>
+										<p:column headerText="Σ Reservas Constituidas" width="200">
+											<p:outputLabel value="#{reserva.sumatoriaReservasConstituidas}" >					
+												<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+											</p:outputLabel>
+										</p:column>
+										<p:column headerText="Σ Obligaciones por reservas presupuestales" width="200">
+											<p:outputLabel value="#{reserva.sumatoriaObligacionesReservasPresupuestales}" >					
+												<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+											</p:outputLabel>
+										</p:column>
+										<p:column headerText="Σ Pagos por reservas presupuestales" width="200">
+											<p:outputLabel value="#{reserva.sumatoriaPagosReservasPresupuestales}" >					
+												<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+											</p:outputLabel>
+										</p:column>
+										
+										<p:rowExpansion>
+											<p:dataTable id="tablaHija" var="detalle" value="#{reserva.detalleInformesFUT}" style="width:100%;" 
+														 emptyMessage="No existen homologaciones">
+												
+												<p:column width = "1155"/>
+												
+												<p:column headerText="Ver: "  width="50">
+													<p:outputLabel value="#{detalle.iteracion}" style="text-align: right"/>					
+												</p:column>
+												<p:column width="400" headerText="Fuente Financiacion">
+													<p:outputLabel value="#{detalle.fuenteFinanciacion}" />		
+												</p:column>
+												<p:column width="200" headerText="Tipo de Acto Administrativo">
+													<p:selectOneMenu value="#{detalle.codTipoActoAdministrativo}" filter="true" filterMatchMode="contains" style="width: 80%;">
+														<f:selectItems value="#{reservasPresupuestalesFUTView.losTipoActoAdministrativo}"/>
+													</p:selectOneMenu>				
+												</p:column>
+												<p:column width="200" headerText="# Acto Administrativo">
+													<p:inputText value="#{detalle.numeroActoAdministrativo}" style="width: 70%;" readonly="true"/>
+													<p:commandButton icon="ui-icon-search" action="#{reservasPresupuestalesFUTView.action_completarRegistroActo(detalle)}" style="width: 20%;" onclick="PF('dialogGluoActoAdministrativo').show();"/>
+												</p:column>
+												<p:column width="200" headerText="Fecha del Acto Administrativo">
+													<p:outputLabel value="#{detalle.fechaActoAdministrativoString}"/>					
+												</p:column>
+												<p:column width="200" headerText="Valor de reservas constituidas">
+													<p:outputLabel value="#{detalle.valorReservaConstituida}" >					
+														<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+													</p:outputLabel>
+												</p:column>
+												<p:column width="200" headerText="Obligaciones por reservas presupuestales">
+													<p:outputLabel value="#{detalle.obligacionesReservasPresupuestales}" >					
+														<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+													</p:outputLabel>
+												</p:column>
+												<p:column width="200" headerText="Pagos por reservas presupuestales">
+													<p:outputLabel value="#{detalle.pagosReservasPresupuestales}" >					
+														<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+													</p:outputLabel>
+												</p:column>
+											</p:dataTable>
+								        </p:rowExpansion>
+									</p:dataTable>
+	
+									<div class="EmptyBox20"></div>
+	
+									<div align="center">
+										<h:panelGrid id="panelgridGeneraReporte" columns="3"> 
+											<p:commandButton value="Generar Reporte en CSV" onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)" icon="ui-icon-arrowthichk-s">
+												<p:fileDownload value="#{reservasPresupuestalesFUTView.reporteFutCsv}" />
+											</p:commandButton>
+										</h:panelGrid>
+									</div>
+									<div class="EmptyBox20"></div>
+								</p:scrollPanel>
+							</h:panelGrid>
+						</div>
+					</h:panelGrid>
+				</p:tab>
+			</p:tabView>
+		</p:panel>
+		
+				
+		<!-- DIALOG  acto Administrativo  -->
+		<!-- **************************** -->
+		<p:dialog id="dialogGluoActoAdministrativo" widgetVar="dialogGluoActoAdministrativo"
+			draggable="true" closable="true" modal="true" resizable="false"
+			height="400" width="80%" position="center" header="Acto Administrativo">
+			
+				<p:messages id="msgDialogActoAdmn" autoUpdate="true" showDetail="false" closable="true" />
+				
+				<p:tabView id="crearConsultarActoAdministrativoTab">
+			
+					<p:tab id="crearActoAdministrativoTabTraslado" title="Crear un acto administrativo">
+						
+					<p:scrollPanel mode="native" style="width:850px;height:400px">
+					<p:panel id="panelGluoActoAdministrativo">
+						<h:panelGrid columns="2" id="panelGrid">
+						
+							<h:outputText id="msgNombreOperacion" value=" Nombre de la operacion" />
+							<p:inputText id="txtNombreOperacion" disabled="false" style="width: 200px"
+								binding="#{reservasPresupuestalesFUTView.txtNombreOperacion}" />
+								
+							<h:outputText id="msgFundamentoLegal" value=" Fundamento Legal" />
+							<h:panelGrid columns="1" id="panelGridFundamento">
+								<p:inputTextarea id="txtFundamentoLegal" rows="5" cols="50"
+									counter="displayFundamento" maxlength="2000"
+									counterTemplate="{0} caracteres restantes." disabled="false"
+									autoResize="false"
+									binding="#{reservasPresupuestalesFUTView.txtFundamentoLegal}" />
+								<h:outputText id="displayFundamento" />
+							</h:panelGrid>
+
+							<h:outputText id="msgRazon" value=" Razon" />
+							<h:panelGrid columns="1" id="panelGridRazon">
+								<p:inputTextarea id="txtRazon" rows="5" cols="50"
+									counter="displayRazon" maxlength="2000"
+									counterTemplate="{0} caracteres restantes." disabled="false"
+									autoResize="false"
+									binding="#{reservasPresupuestalesFUTView.txtRazon}" />
+								<h:outputText id="displayRazon" />
+							</h:panelGrid>	
+							<h:panelGrid columns="2" id="panelGridEmpresa">		
+							<h:outputText id="msgEmpresa"
+								value=" Empresa" />
+							<p:inputText id="txtEmpresa" disabled="true"
+								binding="#{reservasPresupuestalesFUTView.txtEmprId_GluoEmpresa}" />
+							</h:panelGrid>
+							<h:panelGrid columns="2" id="panelGridAnoFiscal">	
+							<h:outputText id="msgAnoFiscal"
+								value=" Año Fiscal" />
+							<p:inputText id="txtAnoFiscal" disabled="true"
+								binding="#{reservasPresupuestalesFUTView.txtAnoFiscal}" />	
+							</h:panelGrid>	
+							<h:outputText id="msgFechaActoAdministrativo"
+								value=" Fecha del Acto Administrativo" />
+							<p:calendar showOn="button" navigator="true" locale="en" size="30"
+								binding="#{reservasPresupuestalesFUTView.txtFechaActoAdministrativo}">
+								<p:ajax event="dateSelect"
+									listener="#{reservasPresupuestalesFUTView.listener_txtFechaActoAdministrativo}" />		
+							</p:calendar>
+							
+							<h:outputText value="Archivos de soporte:"/>
+							<p:fileUpload 
+								mode="advanced"
+								auto="true" 
+								dragDropSupport="true"
+                        		allowTypes="/(\.|\/)(gif|jpe?g|png|pdf|doc|docx|xls|xlsx)$/" 
+                        		cancelLabel="Cancelar"
+                        		fileLimit="1"
+                        		fileLimitMessage="Número máximo de archivos soportados: 1"
+                        		invalidFileMessage="Tipo de archivo no válido. Solo pdf, Doc(x), Xls(x), gif, jpg, png )"
+                        		invalidSizeMessage="Archivo demasiado grande. Tamaño máximo: 3MB"
+                        		label="Adicionar un nuevo archivo"
+                        		sizeLimit="3145728"
+                        		uploadLabel="Cargar"
+                        		fileUploadListener="#{reservasPresupuestalesFUTView.fileUploadListener}"
+                        		update="panelGluoActoAdministrativo"
+                        		process="panelGluoActoAdministrativo"/>
+											
+						</h:panelGrid>
+						
+						<p:dataTable id="pnlTablaArchivosSoporte"
+	                          				value="#{reservasPresupuestalesFUTView.archivosDeSoporteDTO}"
+	                          				var="archivo"
+	                          				rendered="#{reservasPresupuestalesFUTView.cantidadArchivosSoporte > 0}"
+	                          				style="width: 100%;">
+	                          				
+	                          				<p:column headerText="Archivo" style="width: 80%">
+	                          					<p:outputLabel value="#{archivo.descripcion}" />
+	                          				</p:column>
+	                          				
+	                          				<p:column headerText="Borrar" style="width: 15%">
+	                          					<p:commandButton icon="ui-icon-close"  
+	                          						action="#{reservasPresupuestalesFUTView.action_eliminarArchivoSoporte(archivo)}"
+	                          						update="@([id$=panelGluoActoAdministrativo])"/>
+	                          				</p:column>
+	                          				
+	                          				<p:column headerText="Descargar" style="width: 15%">
+	                          					<p:commandButton ajax="false" onclick="PrimeFaces.monitorDownload(start, stop);" icon="ui-icon-arrowstop-1-s">
+											        <p:fileDownload value="#{reservasPresupuestalesFUTView.getDocumentoAdjuntoSoportePresupuesto(archivo)}" 
+											        	contentDisposition="attachment" />
+											    </p:commandButton>
+											    
+	                          				</p:column>
+	                          				
+	                      </p:dataTable>
+					</p:panel>
+					</p:scrollPanel>
+					<p:panel id="panelBotones">
+						<div align="center">
+							<p:commandButton id="btnSave"
+								binding="#{reservasPresupuestalesFUTView.btnSaveActoAdministrativo}" value="Guardar"
+								action="#{reservasPresupuestalesFUTView.action_save_acto_administrativo()}"
+								update="panelGluoActoAdministrativo, @([id$=panelGluoActoAdministrativo]), @([id$=tablaHija])" />
+							<p:commandButton id="btnClear" value="Limpiar"
+								action="#{reservasPresupuestalesFUTView.action_clear_acto_administrativo()}"
+								update="@([id$=panelGluoActoAdministrativo])" />
+							<p:commandButton id="btnExit" value="Salir"
+								action="#{reservasPresupuestalesFUTView.action_closeDialog_acto_administrativo()}"
+								update="panelGluoActoAdministrativo" />
+						</div>
+					</p:panel>
+						
+					</p:tab>
+					
+					
+					<p:tab id="consultarActoAdministrativoTabTraslado" title="Consultar un acto administrativo existente">
+						<p:scrollPanel mode="native" style="width:100%; height:400px">		
+								<p:dataTable id="dataTableActoAdministrativoTraslado" value="#{reservasPresupuestalesFUTView.dataActoAdministrativo}" 
+									emptyMessage="No se han encontrado actos administrativos registrados"
+									rows="5" var="gluoActoAdministrativo" paginator="true" rowsPerPageTemplate="5,10,15"
+									reflow="true" rowKey="#{gluoActoAdministrativo.acadId}" selection="#{reservasPresupuestalesFUTView.actoAdministrativoSeleccionado}"
+									filterDelay="1000">
+							
+	                       			 <p:column selectionMode="single" style="width:5%; text-align:center" />
+									
+									<p:column filterBy="#{gluoActoAdministrativo.nombreOperacion}"
+										sortBy="#{gluoActoAdministrativo.nombreOperacion}">
+										<f:facet name="header">
+											<h:outputText value="Nombre de la Operacion" />
+										</f:facet>
+										<h:outputText value="#{gluoActoAdministrativo.nombreOperacion}" />
+									</p:column>
+									
+									<p:column filterBy="#{gluoActoAdministrativo.consecutivo}"
+										sortBy="#{gluoActoAdministrativo.consecutivo}">
+										<f:facet name="header">
+											<h:outputText value="Consecutivo" />
+										</f:facet>
+										<h:outputText value="#{gluoActoAdministrativo.consecutivo}" />
+									</p:column>
+			
+									<p:column
+										filterBy="#{gluoActoAdministrativo.fechaActoAdministrativo}"
+										sortBy="#{gluoActoAdministrativo.fechaActoAdministrativo}">
+										<f:facet name="header">
+											<h:outputText value="Fecha del Acto Administrativo" />
+										</f:facet>
+										<h:outputText
+											value="#{gluoActoAdministrativo.fechaActoAdministrativo}" />
+									</p:column>
+			
+									<p:column filterBy="#{gluoActoAdministrativo.fundamentoLegal}"
+										sortBy="#{gluoActoAdministrativo.fundamentoLegal}">
+										<f:facet name="header">
+											<h:outputText value="Fundamento Legal" />
+										</f:facet>
+										<h:outputText value="#{gluoActoAdministrativo.fundamentoLegal}" />
+									</p:column>
+			
+									<p:column filterBy="#{gluoActoAdministrativo.razon}"
+										sortBy="#{gluoActoAdministrativo.razon}">
+										<f:facet name="header">
+											<h:outputText value="Razon" />
+										</f:facet>
+										<h:outputText value="#{gluoActoAdministrativo.razon}" />
+									</p:column>
+			
+									<p:column filterBy="#{gluoActoAdministrativo.nombreEmpresa}"
+										sortBy="#{gluoActoAdministrativo.nombreEmpresa}">
+										<f:facet name="header">
+											<h:outputText value="Empresa" />
+										</f:facet>
+										<h:outputText
+											value="#{gluoActoAdministrativo.nombreEmpresa}" />
+									</p:column>
+				
+								</p:dataTable>
+								
+								<br />
+					
+							<p:panel id="panelBotonAA" style="border: none;">
+								<div align="center">
+									<p:commandButton value="Seleccionar"
+										icon="ui-icon-plus" oncomplete="PF('dialogGluoActoAdministrativo').hide();" 
+										actionListener="#{reservasPresupuestalesFUTView.action_seleccionar_acto_administrativo}"
+										update="@([id$=tablaHija])"/>
+								</div>
+							</p:panel>
+								
+							</p:scrollPanel>
+							
+					</p:tab>
+				</p:tabView>
+				
+		</p:dialog>
+
+	   </h:form>
+	   </f:view>
+	</ui:define>
+</ui:composition>

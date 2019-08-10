@@ -1,0 +1,657 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.1.1.final using JasperReports Library version 6.1.1  -->
+<!-- 2016-10-19T15:02:40 -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="libroAuxiliarPorCuentaYTercero" pageWidth="842" pageHeight="595" orientation="Landscape" whenNoDataType="AllSectionsNoDetail" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" isIgnorePagination="true" uuid="59ec8a5b-9273-492d-9122-e1ceb75480b7">
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
+	<parameter name="P_FECHA_INICIAL" class="java.util.Date"/>
+	<parameter name="P_FECHA_FINAL" class="java.util.Date"/>
+	<parameter name="P_ANO_FISCAL_DESCRIPCION" class="java.lang.Integer"/>
+	<parameter name="P_SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["/Users/frank/JaspersoftWorkspace/erp-reports/1/"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="P_CABE_LINEA_1" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["REPÚBLICA DE COLOMBIA"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="P_CABE_LINEA_2" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["DEPARTAMENTO DEL CAUCA"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="P_CABE_LINEA_3" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["MUNICIPIO DE TOTORÓ"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="P_CABE_LINEA_4" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["ALCALDÍA MUNICIPAL"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="P_CABE_LINEA_5" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["NIT: 800031874 - 5"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="P_CABE_LINEA_6" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["EDIFICIO CAM CALLE PRINCIPAL. TEL: 827 5130. FAX: 827 5130"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="P_CONN" class="java.sql.Connection" isForPrompting="false"/>
+	<queryString language="SQL">
+		<![CDATA[]]>
+	</queryString>
+	<field name="concepto" class="java.lang.String">
+		<fieldDescription><![CDATA[concepto]]></fieldDescription>
+	</field>
+	<field name="idTipoDocumentoContable" class="java.lang.Integer">
+		<fieldDescription><![CDATA[idTipoDocumentoContable]]></fieldDescription>
+	</field>
+	<field name="nitTercero" class="java.lang.String">
+		<fieldDescription><![CDATA[nitTercero]]></fieldDescription>
+	</field>
+	<field name="numeroDocumento" class="java.lang.String">
+		<fieldDescription><![CDATA[numeroDocumento]]></fieldDescription>
+	</field>
+	<field name="numeroCheque" class="java.lang.String">
+		<fieldDescription><![CDATA[numeroCheque]]></fieldDescription>
+	</field>
+	<field name="valorMovidoEnCredito" class="java.lang.Double">
+		<fieldDescription><![CDATA[valorMovidoEnCredito]]></fieldDescription>
+	</field>
+	<field name="nombreCompletoTercero" class="java.lang.String">
+		<fieldDescription><![CDATA[nombreCompletoTercero]]></fieldDescription>
+	</field>
+	<field name="valorMovidoEnDebito" class="java.lang.Double">
+		<fieldDescription><![CDATA[valorMovidoEnDebito]]></fieldDescription>
+	</field>
+	<field name="tipoDocumento" class="java.lang.String">
+		<fieldDescription><![CDATA[tipoDocumento]]></fieldDescription>
+	</field>
+	<field name="fechaMovimiento" class="java.util.Date">
+		<fieldDescription><![CDATA[fechaMovimiento]]></fieldDescription>
+	</field>
+	<field name="idTercero" class="java.lang.Integer">
+		<fieldDescription><![CDATA[idTercero]]></fieldDescription>
+	</field>
+	<field name="idCuentaContable" class="java.lang.Integer">
+		<fieldDescription><![CDATA[idCuentaContable]]></fieldDescription>
+	</field>
+	<field name="descripcionCuentaContable" class="java.lang.String">
+		<fieldDescription><![CDATA[descripcionCuentaContable]]></fieldDescription>
+	</field>
+	<field name="codigoCuentaContable" class="java.lang.String">
+		<fieldDescription><![CDATA[codigoCuentaContable]]></fieldDescription>
+	</field>
+	<field name="idMovimientoContable" class="java.lang.Integer">
+		<fieldDescription><![CDATA[idMovimientoContable]]></fieldDescription>
+	</field>
+	<field name="tipoMovimientoContable" class="java.lang.String"/>
+	<variable name="valorMovidoEnCredito1" class="java.lang.Double" resetType="Group" resetGroup="GrupoTercId" calculation="Sum">
+		<variableExpression><![CDATA[$F{valorMovidoEnCredito}]]></variableExpression>
+	</variable>
+	<variable name="valorMovidoEnDebito1" class="java.lang.Double" resetType="Group" resetGroup="GrupoTercId" calculation="Sum">
+		<variableExpression><![CDATA[$F{valorMovidoEnDebito}]]></variableExpression>
+	</variable>
+	<group name="GrupoCucoId">
+		<groupExpression><![CDATA[$F{idCuentaContable}]]></groupExpression>
+		<groupHeader>
+			<band height="15">
+				<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				<staticText>
+					<reportElement stretchType="RelativeToTallestObject" mode="Opaque" x="0" y="0" width="68" height="15" backcolor="#D4CDCD" uuid="3b7ed00c-83c5-4fad-aac9-3a3be8065377">
+						<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					</reportElement>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Cuenta:]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement stretchType="RelativeToTallestObject" mode="Opaque" x="68" y="0" width="312" height="15" backcolor="#D4CDCD" uuid="c3735c03-0394-4018-abaa-35d28e938209">
+						<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+					</reportElement>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{codigoCuentaContable} + ". " + $F{descripcionCuentaContable}]]></textFieldExpression>
+				</textField>
+				<subreport>
+					<reportElement stretchType="RelativeToTallestObject" x="380" y="0" width="240" height="15" uuid="d57bc6ea-23e2-4126-8f25-d9d792ee3f91">
+						<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+					</reportElement>
+					<subreportParameter name="P_CCON_ID">
+						<subreportParameterExpression><![CDATA[$F{idCuentaContable}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="P_FECHA">
+						<subreportParameterExpression><![CDATA[$P{P_FECHA_INICIAL}]]></subreportParameterExpression>
+					</subreportParameter>
+					<connectionExpression><![CDATA[$P{P_CONN}]]></connectionExpression>
+					<subreportExpression><![CDATA[$P{P_SUBREPORT_DIR}+"detalleLibroAuxiliar_saldo_cuenta.jasper"]]></subreportExpression>
+				</subreport>
+				<subreport>
+					<reportElement stretchType="RelativeToTallestObject" x="620" y="0" width="182" height="15" uuid="72840356-6d4b-4362-b1e8-1cca13391dd7">
+						<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					</reportElement>
+					<subreportParameter name="P_CCON_ID">
+						<subreportParameterExpression><![CDATA[$F{idCuentaContable}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="P_FECHA">
+						<subreportParameterExpression><![CDATA[$P{P_FECHA_FINAL}]]></subreportParameterExpression>
+					</subreportParameter>
+					<connectionExpression><![CDATA[$P{P_CONN}]]></connectionExpression>
+					<subreportExpression><![CDATA[$P{P_SUBREPORT_DIR}+"saldoFinalCuenta.jasper"]]></subreportExpression>
+				</subreport>
+			</band>
+		</groupHeader>
+	</group>
+	<group name="GrupoTercId">
+		<groupExpression><![CDATA[$F{idTercero}]]></groupExpression>
+		<groupHeader>
+			<band height="30">
+				<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				<staticText>
+					<reportElement mode="Opaque" x="0" y="0" width="68" height="15" backcolor="#D4CDCD" uuid="7fde3115-99eb-4796-9082-96bc349fdbff">
+						<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+					</reportElement>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Tercero:]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement stretchType="RelativeToTallestObject" mode="Opaque" x="68" y="0" width="312" height="15" backcolor="#D4CDCD" uuid="2720c655-63e4-462d-a5bd-ff2af789d7fb">
+						<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					</reportElement>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{idTercero} != null ? $F{nitTercero} + " - " + $F{nombreCompletoTercero} : "-Sin Tercero-")]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement mode="Opaque" x="0" y="15" width="50" height="15" backcolor="#FFFFFF" uuid="7bc16e17-95d8-49d0-ba73-9e855f81be90">
+						<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+					</reportElement>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Fecha]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="50" y="15" width="120" height="15" backcolor="#FFFFFF" uuid="5591dff5-4876-4bf7-aa2d-3655c77ccdf3">
+						<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					</reportElement>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[T. Doc.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="170" y="15" width="69" height="15" backcolor="#FFFFFF" uuid="7bde04d3-2eb6-4b6c-83ca-8e609a3b77dd">
+						<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					</reportElement>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[# Documento]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="239" y="15" width="61" height="15" backcolor="#FFFFFF" uuid="2380b6e6-fcf0-49b6-acb3-14426e26bdbe">
+						<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					</reportElement>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[# Cheque]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="300" y="15" width="70" height="15" backcolor="#FFFFFF" uuid="ce6d78b2-14e7-4184-bc6f-350bd74ac844">
+						<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					</reportElement>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Crédito]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="370" y="15" width="70" height="15" backcolor="#FFFFFF" uuid="60af6420-a013-43cf-88f2-e5086c75c8a7"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Débito]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="440" y="15" width="100" height="15" backcolor="#FFFFFF" uuid="c80619a6-e57a-4711-8fd9-107b7e43c86e"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Concepto]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="540" y="15" width="69" height="15" backcolor="#FFFFFF" uuid="68da7fb8-07db-44fc-bb0b-f40aa2a5ec40">
+						<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					</reportElement>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Nit Tercero]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="609" y="15" width="100" height="15" backcolor="#FFFFFF" uuid="7b2cb672-7f84-4bd3-8740-48cabb290e76"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Razón Social]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="709" y="15" width="93" height="15" backcolor="#FFFFFF" uuid="16f170dc-471b-4220-86c0-c8283f3d2ec9">
+						<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					</reportElement>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Saldo]]></text>
+				</staticText>
+				<subreport>
+					<reportElement stretchType="RelativeToTallestObject" x="380" y="0" width="253" height="15" uuid="7c6438cb-c6ba-4aa8-b564-3320db9340e7">
+						<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+					</reportElement>
+					<subreportParameter name="P_CCON_ID">
+						<subreportParameterExpression><![CDATA[$F{idCuentaContable}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="P_TERC_ID">
+						<subreportParameterExpression><![CDATA[$F{idTercero}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="P_FECHA">
+						<subreportParameterExpression><![CDATA[$P{P_FECHA_INICIAL}]]></subreportParameterExpression>
+					</subreportParameter>
+					<connectionExpression><![CDATA[$P{P_CONN}]]></connectionExpression>
+					<subreportExpression><![CDATA[$P{P_SUBREPORT_DIR}+"detalleLibroAuxiliar_saldo_cuenta_tercero.jasper"]]></subreportExpression>
+				</subreport>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band height="17">
+				<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				<staticText>
+					<reportElement mode="Opaque" x="140" y="0" width="160" height="15" backcolor="#D4CDCD" uuid="60f1b5fe-6484-4bac-93fe-94bd2eb763c8">
+						<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					</reportElement>
+					<box>
+						<topPen lineWidth="0.2"/>
+						<leftPen lineWidth="0.2"/>
+						<bottomPen lineWidth="0.2"/>
+						<rightPen lineWidth="0.2"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Totales]]></text>
+				</staticText>
+				<textField pattern="$#,##0.##;$-#,##0.##" isBlankWhenNull="true">
+					<reportElement mode="Opaque" x="300" y="0" width="70" height="15" backcolor="#D4CDCD" uuid="2f6f53ac-53f1-4ec3-9c4d-0dc8eab9cec8"/>
+					<box rightPadding="2">
+						<topPen lineWidth="0.2"/>
+						<leftPen lineWidth="0.2"/>
+						<bottomPen lineWidth="0.2"/>
+						<rightPen lineWidth="0.2"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="7"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{valorMovidoEnCredito1}]]></textFieldExpression>
+				</textField>
+				<textField pattern="$#,##0.##;$-#,##0.##" isBlankWhenNull="true">
+					<reportElement mode="Opaque" x="370" y="0" width="70" height="15" backcolor="#D4CDCD" uuid="3f34234d-6b7a-4c63-8600-cd46f1630b7e"/>
+					<box rightPadding="2">
+						<topPen lineWidth="0.2"/>
+						<leftPen lineWidth="0.2"/>
+						<bottomPen lineWidth="0.2"/>
+						<rightPen lineWidth="0.2"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="7"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{valorMovidoEnDebito1}]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupFooter>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="152" splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+			<image>
+				<reportElement x="0" y="0" width="80" height="49" uuid="c1ce6c04-98e3-4721-9cfa-af4e3771144f"/>
+				<imageExpression><![CDATA[$P{P_SUBREPORT_DIR}+"logo-titulo-cdp.jpg"]]></imageExpression>
+			</image>
+			<staticText>
+				<reportElement x="1" y="80" width="800" height="20" uuid="20d5ead2-cc8d-44b2-bf59-1178783cd517"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[LIBRO AUXILIAR POR CUENTA Y TERCERO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Transparent" x="240" y="104" width="130" height="15" backcolor="#BAB6B6" uuid="71bb0905-213a-49c2-a62c-0102a9f69e6d">
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				</reportElement>
+				<box leftPadding="3">
+					<topPen lineWidth="0.2" lineStyle="Dashed"/>
+					<leftPen lineWidth="0.2" lineStyle="Dashed"/>
+					<bottomPen lineWidth="0.2" lineStyle="Dashed"/>
+					<rightPen lineWidth="0.2" lineStyle="Dashed"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Vigencia Fiscal]]></text>
+			</staticText>
+			<textField>
+				<reportElement mode="Opaque" x="240" y="119" width="130" height="15" uuid="3ee6baa5-c088-4440-a95b-4c21f0bac208">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				</reportElement>
+				<box leftPadding="3">
+					<topPen lineWidth="0.2"/>
+					<leftPen lineWidth="0.2"/>
+					<bottomPen lineWidth="0.2"/>
+					<rightPen lineWidth="0.2"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{P_ANO_FISCAL_DESCRIPCION}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement mode="Transparent" x="370" y="104" width="90" height="15" backcolor="#BAB6B6" uuid="a4f7cb48-81cf-4993-bfa2-381ca1ebbea1">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				</reportElement>
+				<box leftPadding="3">
+					<topPen lineWidth="0.2" lineStyle="Dashed"/>
+					<leftPen lineWidth="0.2" lineStyle="Dashed"/>
+					<bottomPen lineWidth="0.2" lineStyle="Dashed"/>
+					<rightPen lineWidth="0.2" lineStyle="Dashed"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Desde]]></text>
+			</staticText>
+			<textField pattern="MM/dd/yyyy">
+				<reportElement mode="Opaque" x="370" y="119" width="90" height="15" uuid="1babf218-64ef-4fa1-bd18-93e737239bc5">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				</reportElement>
+				<box leftPadding="3">
+					<topPen lineWidth="0.2"/>
+					<leftPen lineWidth="0.2"/>
+					<bottomPen lineWidth="0.2"/>
+					<rightPen lineWidth="0.2"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{P_FECHA_INICIAL}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement mode="Transparent" x="460" y="104" width="90" height="15" backcolor="#BAB6B6" uuid="e444fb2b-ee95-4bda-b604-0a0fba3e6870"/>
+				<box leftPadding="3">
+					<topPen lineWidth="0.2" lineStyle="Dashed"/>
+					<leftPen lineWidth="0.2" lineStyle="Dashed"/>
+					<bottomPen lineWidth="0.2" lineStyle="Dashed"/>
+					<rightPen lineWidth="0.2" lineStyle="Dashed"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Hasta]]></text>
+			</staticText>
+			<textField pattern="MM/dd/yyyy">
+				<reportElement mode="Opaque" x="460" y="119" width="90" height="15" uuid="3bbd2c9a-3f43-4522-930e-231952f45bf1"/>
+				<box leftPadding="3">
+					<topPen lineWidth="0.2"/>
+					<leftPen lineWidth="0.2"/>
+					<bottomPen lineWidth="0.2"/>
+					<rightPen lineWidth="0.2"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{P_FECHA_FINAL}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="0" width="801" height="8" uuid="0649fea6-34bb-43b5-b37d-5e960f04a197"/>
+				<textElement textAlignment="Center">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{P_CABE_LINEA_1}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="9" width="801" height="8" uuid="2fa7b2b2-f5cf-4b90-85bc-90538b07d4e8"/>
+				<textElement textAlignment="Center">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{P_CABE_LINEA_2}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="17" width="801" height="8" uuid="6d37035a-f4e2-43b4-b68c-9d5a5ea38d34"/>
+				<textElement textAlignment="Center">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{P_CABE_LINEA_3}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="25" width="801" height="8" uuid="791177bb-b48d-4b6b-9a17-84ae08008154"/>
+				<textElement textAlignment="Center">
+					<font size="6" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{P_CABE_LINEA_4}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="33" width="801" height="8" uuid="753d1c29-0fa1-4925-82a3-6378b83867fa"/>
+				<textElement textAlignment="Center">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{P_CABE_LINEA_5}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="41" width="801" height="8" uuid="e008b2d0-00c1-4f50-8ab8-db083dd50c29"/>
+				<textElement textAlignment="Center">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{P_CABE_LINEA_6}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="0" y="51" width="801" height="2" uuid="43a0543e-b888-448f-9627-f04f6ec770f1"/>
+			</line>
+		</band>
+	</title>
+	<pageHeader>
+		<band splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="15" splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+			<textField isStretchWithOverflow="true" pattern="¤#,##0.##;¤-#,##0.##" isBlankWhenNull="true">
+				<reportElement x="300" y="0" width="70" height="15" uuid="82c5695e-1e0e-413f-a550-e6c3079a19c4">
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				</reportElement>
+				<box rightPadding="2">
+					<topPen lineWidth="0.2"/>
+					<leftPen lineWidth="0.2"/>
+					<bottomPen lineWidth="0.2"/>
+					<rightPen lineWidth="0.2"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{valorMovidoEnCredito}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="MM/dd/yyyy" isBlankWhenNull="true">
+				<reportElement x="0" y="0" width="50" height="15" uuid="5f63f924-0a8b-4eb7-9a53-f0d6c7183895"/>
+				<box>
+					<topPen lineWidth="0.2"/>
+					<leftPen lineWidth="0.2"/>
+					<bottomPen lineWidth="0.2"/>
+					<rightPen lineWidth="0.2"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{fechaMovimiento}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="50" y="0" width="120" height="15" uuid="42b47262-144e-4042-8330-2b63982a892e">
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.2"/>
+					<leftPen lineWidth="0.2"/>
+					<bottomPen lineWidth="0.2"/>
+					<rightPen lineWidth="0.2"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{tipoDocumento}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="170" y="0" width="69" height="15" uuid="991ee92e-ad31-4262-9063-3f4e9f204ee6">
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.2"/>
+					<leftPen lineWidth="0.2"/>
+					<bottomPen lineWidth="0.2"/>
+					<rightPen lineWidth="0.2"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{numeroDocumento}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="239" y="0" width="61" height="15" uuid="342e09ce-2af1-46cf-9532-680cd1075054">
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.2"/>
+					<leftPen lineWidth="0.2"/>
+					<bottomPen lineWidth="0.2"/>
+					<rightPen lineWidth="0.2"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{numeroCheque}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="¤#,##0.##;¤-#,##0.##" isBlankWhenNull="true">
+				<reportElement x="370" y="0" width="70" height="15" uuid="8d4a869e-c2b3-4b15-ab6c-32501adf8b71"/>
+				<box rightPadding="2">
+					<topPen lineWidth="0.2"/>
+					<leftPen lineWidth="0.2"/>
+					<bottomPen lineWidth="0.2"/>
+					<rightPen lineWidth="0.2"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{valorMovidoEnDebito}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="440" y="0" width="100" height="15" uuid="b22b5713-d486-4c43-8137-d87b8f861d05"/>
+				<box>
+					<topPen lineWidth="0.2"/>
+					<leftPen lineWidth="0.2"/>
+					<bottomPen lineWidth="0.2"/>
+					<rightPen lineWidth="0.2"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[(($F{tipoMovimientoContable} != null) ? $F{tipoMovimientoContable} + " - " : "") + $F{concepto}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="540" y="0" width="69" height="15" uuid="f2b662ba-4357-4cc9-91a6-a4d1a8787cb4">
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.2"/>
+					<leftPen lineWidth="0.2"/>
+					<bottomPen lineWidth="0.2"/>
+					<rightPen lineWidth="0.2"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{nitTercero}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="609" y="0" width="100" height="15" uuid="44895bb2-b7ef-454f-8cc6-170604571a8d"/>
+				<box>
+					<topPen lineWidth="0.2"/>
+					<leftPen lineWidth="0.2"/>
+					<bottomPen lineWidth="0.2"/>
+					<rightPen lineWidth="0.2"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{nombreCompletoTercero}]]></textFieldExpression>
+			</textField>
+			<subreport>
+				<reportElement stretchType="RelativeToTallestObject" x="709" y="0" width="93" height="15" uuid="b1a758ef-4b02-4825-9de2-ae2bbec52bec">
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+					<printWhenExpression><![CDATA[$F{idTercero} != null]]></printWhenExpression>
+				</reportElement>
+				<subreportParameter name="P_MOCO_ID">
+					<subreportParameterExpression><![CDATA[$F{idMovimientoContable}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="P_TERC_ID">
+					<subreportParameterExpression><![CDATA[$F{idTercero}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{P_CONN}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{P_SUBREPORT_DIR}+"saldoMovimientoConTercero.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement x="709" y="0" width="93" height="15" uuid="50ad5b24-b461-44af-a387-fb0077396e14">
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+					<printWhenExpression><![CDATA[$F{idTercero} == null]]></printWhenExpression>
+				</reportElement>
+				<subreportParameter name="P_MOCO_ID">
+					<subreportParameterExpression><![CDATA[$F{idMovimientoContable}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{P_CONN}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{P_SUBREPORT_DIR}+"saldoMovimientoSinTercero.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</detail>
+	<columnFooter>
+		<band splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+		</band>
+	</columnFooter>
+	<pageFooter>
+		<band splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+		</band>
+	</pageFooter>
+	<summary>
+		<band splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+		</band>
+	</summary>
+</jasperReport>

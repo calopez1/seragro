@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated 8/03/2019 12:07:25 PM by Hibernate Tools 5.1.0.Final -->
+<hibernate-mapping>
+    <class name="com.unilever.bancoideas.modelo.TipoIdentificacion" table="tipo_identificacion" schema="public" optimistic-lock="version">
+        <id name="tiidId" type="java.lang.Integer">
+            <column name="tiid_id" />
+            <generator class="identity" />
+        </id>
+        <property name="codigo" type="java.lang.String">
+            <column name="codigo" not-null="true" />
+        </property>
+        <property name="nombre" type="java.lang.String">
+            <column name="nombre" not-null="true" />
+        </property>
+        <property name="usuCreador" type="java.lang.String">
+            <column name="usu_creador" not-null="true" />
+        </property>
+        <property name="usuModificador" type="java.lang.String">
+            <column name="usu_modificador" />
+        </property>
+        <property name="fechaCreacion" type="java.util.Date">
+            <column name="fecha_creacion" length="13" not-null="true" />
+        </property>
+        <property name="fechaModificacion" type="java.util.Date">
+            <column name="fecha_modificacion" length="13" />
+        </property>
+        <property name="estadoRegistro" type="java.lang.String">
+            <column name="estado_registro" length="1" not-null="true" />
+        </property>
+        <set name="personas" table="persona" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="tiid_id" not-null="true" />
+            </key>
+            <one-to-many class="com.unilever.bancoideas.modelo.Persona" />
+        </set>
+    </class>
+</hibernate-mapping>

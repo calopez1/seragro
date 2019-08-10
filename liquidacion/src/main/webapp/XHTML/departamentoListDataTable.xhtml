@@ -1,0 +1,172 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+
+	<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+	</h:head>
+
+	<h:body>
+		  <ui:composition template="/WEB-INF/facelets/template.xhtml">	
+		 
+		 	<ui:define name="body">	
+				<f:view>
+					<p:ajaxStatus onstart="PF('statusDialog').show()" onsuccess="PF('statusDialog').hide()"/>               
+					<p:dialog modal="true" widgetVar="statusDialog" header="Loading"  draggable="false" closable="false">  
+   						<p:graphicImage value="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/ajaxloadingbar.gif" />   
+					</p:dialog>
+					
+					<!-- Expired session -->
+					<p:idleMonitor onactive="PF('sessionTimeOutDialog').show();" timeout="#{session.maxInactiveInterval * 1000}" />
+					<p:dialog modal="true" widgetVar="sessionTimeOutDialog" header="Expired session"  draggable="false" closable="false">  
+	   					<h:outputText value="The session is finished" />
+	                 	<input id="confirmBackToLogin" 
+	                 		type="button" 
+	                 		value="Sign in"
+	                    	onclick="window.location='#{facesContext.externalContext.requestContextPath}/index.jsp';" />   
+					</p:dialog>
+					
+		  			<h:form id="frm">								  		
+						
+						<p:panel id="panelDataTableDepartamento" header="DepartamentoData">
+							<p:growl id="men"/>				
+							<p:dataTable value="#{departamentoView.data}" var="departamento"
+								paginator="true" rows="5">
+																										<p:column filterBy="#{departamento.depaId}" sortBy="#{departamento.depaId}" >
+										 <f:facet name="header">
+										<h:outputText value="depaId"/>
+										</f:facet>
+										 <h:outputText value="#{departamento.depaId}"/>
+										 </p:column>
+			                    																									
+										<p:column filterBy="#{departamento.codigo}" sortBy="#{departamento.codigo}" >
+										 <f:facet name="header">
+										<h:outputText value="Codigo"/>
+										</f:facet>
+										 <h:outputText value="#{departamento.codigo}"/>
+										</p:column>   
+			                    									
+										<p:column filterBy="#{departamento.descripcion}" sortBy="#{departamento.descripcion}" >
+										 <f:facet name="header">
+										<h:outputText value="Descripcion"/>
+										</f:facet>
+										 <h:outputText value="#{departamento.descripcion}"/>
+										</p:column>   
+			                    									
+										<p:column filterBy="#{departamento.estadoRegistro}" sortBy="#{departamento.estadoRegistro}" >
+										 <f:facet name="header">
+										<h:outputText value="EstadoRegistro"/>
+										</f:facet>
+										 <h:outputText value="#{departamento.estadoRegistro}"/>
+										</p:column>   
+			                    									
+										<p:column filterBy="#{departamento.fechaCreacion}" sortBy="#{departamento.fechaCreacion}" >
+										 <f:facet name="header">
+										<h:outputText value="FechaCreacion"/>
+										</f:facet>
+										 <h:outputText value="#{departamento.fechaCreacion}"/>
+										</p:column>   
+			                    									
+										<p:column filterBy="#{departamento.fechaModificacion}" sortBy="#{departamento.fechaModificacion}" >
+										 <f:facet name="header">
+										<h:outputText value="FechaModificacion"/>
+										</f:facet>
+										 <h:outputText value="#{departamento.fechaModificacion}"/>
+										</p:column>   
+			                    									
+										<p:column filterBy="#{departamento.nombre}" sortBy="#{departamento.nombre}" >
+										 <f:facet name="header">
+										<h:outputText value="Nombre"/>
+										</f:facet>
+										 <h:outputText value="#{departamento.nombre}"/>
+										</p:column>   
+			                    									
+										<p:column filterBy="#{departamento.usuCreador}" sortBy="#{departamento.usuCreador}" >
+										 <f:facet name="header">
+										<h:outputText value="UsuCreador"/>
+										</f:facet>
+										 <h:outputText value="#{departamento.usuCreador}"/>
+										</p:column>   
+			                    									
+										<p:column filterBy="#{departamento.usuModificador}" sortBy="#{departamento.usuModificador}" >
+										 <f:facet name="header">
+										<h:outputText value="UsuModificador"/>
+										</f:facet>
+										 <h:outputText value="#{departamento.usuModificador}"/>
+										</p:column>   
+			                    			                    
+								<p:column headerText="Options">
+									<p:commandButton id="btnEdit" icon="ui-icon-pencil"
+										update=":dialogDepartamento"
+										actionListener="#{departamentoView.action_edit}">
+										<f:attribute name="selectedDepartamento" value="#{departamento}" />
+									</p:commandButton>
+									<p:commandButton id="btnDelete"									
+										title="Delete" actionListener="#{departamentoView.action_delete_datatable}"
+										onclick="if(!confirm('Do you really want to delete this Entry?')){return false;}"
+										icon="ui-icon-trash" update="@form">
+										<f:attribute name="selectedDepartamento" value="#{departamento}" />
+									</p:commandButton>
+								</p:column>									                    
+							</p:dataTable>	
+						</p:panel>
+						<p:panel id="panelBoton">
+							<div align="center">
+								<p:commandButton id="btnNew" value="New"
+									action="#{departamentoView.action_new()}" update=":dialogDepartamento" />
+							</div>
+						</p:panel>						
+		   			</h:form>
+					<p:dialog id="dialogDepartamento" appendTo="@(body)" draggable="true"
+						closable="false" visible="#{departamentoView.showDialog}" resizable="false"
+						modal="true" width="500">
+						<h:form id="formDialog">
+							<p:messages id="msg" />
+							<p:panel id="panelDepartamento" header="Departamento">							
+							    <h:panelGrid columns="2" id="panelGrid" >
+																		 <h:outputText id="msgDepaId" value="DepaId"/>
+									 <p:inputText id="txtDepaId" binding="#{departamentoView.txtDepaId}">
+									 <p:ajax update=":dialogDepartamento" listener="#{departamentoView.listener_txtId}"/>
+									 </p:inputText>	
+																											
+																		<h:outputText id="msgCodigo" value=" Codigo"/>
+									<p:inputText id="txtCodigo" disabled="true" binding="#{departamentoView.txtCodigo}"/>
+																		<h:outputText id="msgDescripcion" value=" Descripcion"/>
+									<p:inputText id="txtDescripcion" disabled="true" binding="#{departamentoView.txtDescripcion}"/>
+																		<h:outputText id="msgEstadoRegistro" value=" EstadoRegistro"/>
+									<p:inputText id="txtEstadoRegistro" disabled="true" binding="#{departamentoView.txtEstadoRegistro}"/>
+																		<h:outputText id="msgNombre" value=" Nombre"/>
+									<p:inputText id="txtNombre" disabled="true" binding="#{departamentoView.txtNombre}"/>
+																		<h:outputText id="msgUsuCreador" value=" UsuCreador"/>
+									<p:inputText id="txtUsuCreador" disabled="true" binding="#{departamentoView.txtUsuCreador}"/>
+																		<h:outputText id="msgUsuModificador" value=" UsuModificador"/>
+									<p:inputText id="txtUsuModificador" disabled="true" binding="#{departamentoView.txtUsuModificador}"/>
+																		
+																													<h:outputText id="msgFechaCreacion" value=" FechaCreacion"/>
+																				<p:calendar showOn="button" navigator="true" locale="en" 
+										binding="#{departamentoView.txtFechaCreacion}" >
+										<p:ajax event="dateSelect" listener="#{departamentoView.listener_txtFechaCreacion}" />
+										</p:calendar>
+																				<h:outputText id="msgFechaModificacion" value=" FechaModificacion"/>
+																				<p:calendar showOn="button" navigator="true" locale="en" 
+										binding="#{departamentoView.txtFechaModificacion}" >
+										<p:ajax event="dateSelect" listener="#{departamentoView.listener_txtFechaModificacion}" />
+										</p:calendar>
+																										    </h:panelGrid>
+							</p:panel>						   
+							<p:panel id="panelBotones">
+								<div align="center">					
+									<p:commandButton id="btnSave" binding="#{departamentoView.btnSave}" value="Save" action="#{departamentoView.action_save()}" update=":dialogDepartamento :frm:panelDataTableDepartamento" />
+									<p:commandButton id="btnClear" value="Clear" action="#{departamentoView.action_clear()}" update=":dialogDepartamento" />
+									<p:commandButton id="btnExit" value="Exit" action="#{departamentoView.action_closeDialog()}" update=":dialogDepartamento" />
+								</div>
+							</p:panel>					
+						</h:form>
+					</p:dialog>
+				</f:view>
+			</ui:define>		
+		</ui:composition>	
+	</h:body>	
+</html>	

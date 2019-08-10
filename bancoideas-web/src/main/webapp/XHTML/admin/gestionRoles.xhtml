@@ -1,0 +1,149 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:pe="http://primefaces.org/ui/extensions" 
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+<ui:define name="content">
+		<f:view>
+			<p:ajaxStatus onstart="PF('statusDialog').show()" onsuccess="PF('statusDialog').hide()"/>               
+			<p:dialog modal="true" widgetVar="statusDialog" header="Loading"  draggable="false" closable="false">  
+   				<p:graphicImage value="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/ajaxloadingbar.gif" />   
+			</p:dialog>
+			
+			<!-- Expired session -->
+					<p:idleMonitor onactive="PF('sessionTimeOutDialog').show();" timeout="#{session.maxInactiveInterval * 1000}" />
+					<p:dialog modal="true" widgetVar="sessionTimeOutDialog" header="Expired session"  draggable="false" closable="false">  
+	   					<h:outputText value="The session is finished" />
+	                 	<input id="confirmBackToLogin" 
+	                 		type="button" 
+	                 		value="Sign in"
+	                    	onclick="window.location='#{facesContext.externalContext.requestContextPath}/index.jsp';" />   
+					</p:dialog>
+			
+			
+			<h:form id="formDialog">
+				<p:messages id="msg" />
+				<p:growl id="men"/>
+				<div align="center">
+					<p:panel id="panelRol" header="Gestión de roles" style="width:90%">							
+						
+						<div align="left">
+						
+						<h:panelGrid columns="2" id="panelGrid" >
+						
+							<h:outputText id="msgCodigo" value="Código:" style="width:100%"/>
+							<p:inputText id="txtCodigo" disabled="#{tipoUsuarioView.deshabilitadoModificacion}" value="#{tipoUsuarioView.codigo}" style="width:100%">
+								<p:ajax update="panelRol,msg,panelBotones" listener="#{tipoUsuarioView.listener_codigo}"/>
+							</p:inputText>
+							
+							<h:outputText id="msgNombre" value="Nombre:" style="width:100%"/>
+							<p:inputText id="txtNombre" disabled="#{tipoUsuarioView.deshabilitadoModificacion}" value="#{tipoUsuarioView.nombre}" style="width:100%"/>
+									
+							<h:outputText id="msgDescripcion" value="Descripción:" style="width:100%"/>
+							<p:inputTextarea  rows="5" cols="30" counter="display" maxlength="255" style="width:100%" counterTemplate="{0} caracteres restantes." autoResize="true" id="txtDescripcion" disabled="false" value="#{tipoUsuarioView.descripcion}"/>
+							
+							<p:spacer width="10"></p:spacer>
+							<h:outputText id="display" />
+									
+							<h:outputText value="Estado:" style="width:100%"/>
+							<p:selectOneRadio id="city2" value="#{tipoUsuarioView.estadoRegistro}" layout="responsive" columns="5" style="width:100%">
+          						 <f:selectItem itemLabel="Activo" itemValue="A" />
+                       			 <f:selectItem itemLabel="Inactivo" itemValue="I" />            
+						    </p:selectOneRadio>				
+										
+						</h:panelGrid>	
+						
+						
+						
+						<h:panelGrid columns="1" >
+							
+						</h:panelGrid>
+						</div>
+						
+											
+					</p:panel>
+					
+		   			<p:panel id="panelBotones" style="width:90%">
+							<p:commandButton id="btnSave" binding="#{tipoUsuarioView.btnSave}" disabled="true" value="Guardar" action="#{tipoUsuarioView.action_save()}" update="panelRol,panelDataTableRol,msg,panelBotones" oncomplete="PF('tblRol').filter()"/>
+							<p:commandButton id="btnClear" value="Limpiar" action="#{tipoUsuarioView.action_clear()}" update="panelRol,msg,panelBotones" />
+					</p:panel>		
+				
+			
+				
+				<p:panel id="panelDataTableRol" header="Consulta Roles" style="width:90%" >
+				
+							<p:dataTable id="tblRol"  widgetVar="tblRol"  selectionMode="single" selection="#{tipoUsuarioView.selectedTipoUsuario}" rowKey="#{rol.codigo}" value="#{tipoUsuarioView.data}" var="rol" paginator="true" rows="10"
+							filterDelay="1000" paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}">
+										
+										<p:ajax event="rowSelect" listener="#{tipoUsuarioView.action_cargar_tipo_usuario}" update="formDialog" />		
+												
+											<f:facet name="{Exporters}">
+								            <div style="float:right;padding-top: 5px;">
+								                <h:commandLink>
+								                    <img src="../../images/excel.png"/>
+								                    <p:dataExporter type="xls" target="tblRol" fileName="roles" />
+								                </h:commandLink>
+								 
+								                <h:commandLink>
+								              		<img src="../../images/pdf.png"/>
+								                    <p:dataExporter type="pdf" target="tblRol" fileName="roles"/>
+								                </h:commandLink>
+								 
+								                <h:commandLink>
+								                	<img src="../../images/csv.png"/>
+								                    <p:dataExporter type="csv" target="tblRol" fileName="roles" />
+								                </h:commandLink>
+								 
+								                <h:commandLink>
+								                	<img src="../../images/xml.png"/>
+								                    <p:dataExporter type="xml" target="tblRol" fileName="roles" />
+								                </h:commandLink>
+								            </div>
+								        </f:facet>																					
+										<p:column  filterBy="#{rol.codigo}" sortBy="#{rol.codigo}"  filterMatchMode="contains">
+											 <f:facet name="header">
+											<h:outputText value="Código"/>
+											</f:facet>
+											 <h:outputText value="#{rol.codigo}"/>
+										</p:column>   
+						 						
+			                    		<p:column filterBy="#{rol.nombre}" sortBy="#{rol.nombre}" filterMatchMode="contains">
+											 <f:facet name="header">
+												<h:outputText value="Nombre"/>
+												</f:facet>
+											 <h:outputText value="#{rol.nombre}"/>
+										</p:column>   
+													
+										<p:column filterBy="#{rol.descripcion}" sortBy="#{rol.descripcion}" filterMatchMode="contains">
+											<f:facet name="header">
+												<h:outputText value="Descripción"/>
+										    </f:facet>
+											<h:outputText value="#{rol.descripcion}"/>
+										</p:column>   
+			                    									
+										<p:column filterBy="#{rol.estadoRegistro}" sortBy="#{rol.estadoRegistro}" >
+											<f:facet name="header">
+												<h:outputText value="Estado"/>
+											</f:facet>
+											<f:facet name="filter">
+								                <p:selectOneMenu onchange="PF('tblRol').filter()" styleClass="custom-filter">
+								                    <f:selectItem itemLabel="Seleccionar" itemValue="#{null}" noSelectionOption="true" />
+								                    <f:selectItem itemLabel="ACTIVO" itemValue="A" noSelectionOption="false" />
+								                    <f:selectItem itemLabel="INACTIVO" itemValue="I" noSelectionOption="false" />
+								                  
+								                </p:selectOneMenu>
+								            </f:facet>
+											 <h:outputText value="#{(rol.estadoRegistro == 'A') ? 'ACTIVO':'INACTIVO'}"/>
+										</p:column>       			                    
+												                    
+							</p:dataTable>	
+						</p:panel>
+					</div>	
+				
+				
+				
+			</h:form>
+		</f:view>
+	</ui:define>		
+</ui:composition>	

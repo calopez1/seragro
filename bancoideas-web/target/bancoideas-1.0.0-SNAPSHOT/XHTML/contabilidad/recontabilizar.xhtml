@@ -1,0 +1,98 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:pe="http://primefaces.org/ui/extensions" 
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+<ui:define name="content">
+
+	<p:ajaxStatus onstart="PF('statusDialog').show()"
+		onsuccess="PF('statusDialog').hide()" />
+	<p:dialog modal="true" widgetVar="statusDialog" header="Cargando"
+		draggable="false" closable="false">
+		<p:graphicImage
+			value="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/ajaxloadingbar.gif" />
+	</p:dialog>
+
+	<!-- Expired session -->
+<p:idleMonitor onactive="PF('sessionTimeOutDialog').show();"
+	timeout="#{session.maxInactiveInterval * 1000}" />
+<p:dialog modal="true" widgetVar="sessionTimeOutDialog"
+	header="Sesión terminada" draggable="false" closable="false">
+	<h:outputText value="La sesión ha finalizado" />
+	<input id="confirmBackToLogin" type="button" value="Iniciar sesión"
+		onclick="window.location='#{facesContext.externalContext.requestContextPath}/index.jsp';" />
+</p:dialog>
+
+<script type="text/javascript">
+	function showStatus() {
+	    statusDialog.show();
+	}
+	 
+	function hideStatus() {
+	    statusDialog.hide();
+	}
+</script>
+
+<style type="text/css">
+	.one {
+		width: 20%;
+	}
+	
+	.two {
+		width: 80%;
+	}
+	
+</style>
+
+<div align="center">
+<h:form id="frmRecontabilizar">
+
+	<p:growl id="growl" autoUpdate="true" life="3000" />
+	
+	<h:panelGrid columns="2">
+	
+		<p:outputLabel value="Fecha Inicial"/>
+		<p:calendar locale="es" showButtonPanel="true"  
+			value="#{gluoRecontabilizarView.fechaInicial}"  
+			timeZone="GMT-5" style="width: 100%;" disabled="false"
+			navigator="true" pattern="yyyy-MM-dd" />
+			
+		<p:outputLabel value="Fecha Final"/>
+		<p:calendar locale="es" showButtonPanel="true"  
+			value="#{gluoRecontabilizarView.fechaFinal}"  
+			timeZone="GMT-5" style="width: 100%;" disabled="false"
+			navigator="true" pattern="yyyy-MM-dd" />
+		
+		<p:outputLabel value="Contabilizar"/>
+		<p:selectOneMenu value="#{gluoRecontabilizarView.tipoContabilizacion}">
+		
+			<f:selectItem itemLabel="Consignaciones" itemValue="1"/>
+			<f:selectItem itemLabel="Presupuestos" itemValue="2"/>
+			<f:selectItem itemLabel="OPs" itemValue="3"/>
+			<f:selectItem itemLabel="CE NO Afecta Presupuesto" itemValue="4"/>
+			<f:selectItem itemLabel="Traslados Bancarios" itemValue="5"/>
+			<f:selectItem itemLabel="Ingresos No Propios" itemValue="6"/>
+			<f:selectItem itemLabel="CE Afecta Presupuesto" itemValue="7"/>
+			<f:selectItem itemLabel="Recibos de  Caja" itemValue="8"/>
+			<f:selectItem itemLabel="Recibos Prediales" itemValue="9"/>
+			<f:selectItem itemLabel="Notas Contables" itemValue="10"/>
+			<f:selectItem itemLabel="Todo" itemValue="999"/>
+		
+		</p:selectOneMenu>
+		
+	</h:panelGrid>
+
+	<p:panel id="pnlRecontabilizar" header="Recontabilizar" style="width: 90%;">
+		<p:commandButton id="btnRecontabilizar" value="Recontabilizar" 
+			action="#{gluoRecontabilizarView.action_recontabilizar}" update=":frmRecontabilizar" />
+			
+		<p:commandButton value="Anular Documentos Nómina" 
+			actionListener="#{gluoRecontabilizarView.action_anularDocumentosNomina}" update=":frmRecontabilizar" />
+	</p:panel>
+				
+</h:form>
+</div>
+</ui:define>
+</ui:composition>

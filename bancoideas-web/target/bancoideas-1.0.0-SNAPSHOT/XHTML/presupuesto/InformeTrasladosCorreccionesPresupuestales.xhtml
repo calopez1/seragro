@@ -1,0 +1,196 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+<ui:define name="content">
+
+	<p:ajaxStatus onstart="PF('statusDialog').show()"
+		onsuccess="PF('statusDialog').hide()" />
+	<p:dialog modal="true" widgetVar="statusDialog" header="Cargando"
+		draggable="false" closable="false">
+		<p:graphicImage
+			value="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/ajaxloadingbar.gif" />
+	</p:dialog>
+
+	<!-- Expired session -->
+<p:idleMonitor onactive="PF('sessionTimeOutDialog').show();"
+	timeout="#{session.maxInactiveInterval * 1000}" />
+<p:dialog modal="true" widgetVar="sessionTimeOutDialog"
+	header="Sesión terminada" draggable="false" closable="false">
+	<h:outputText value="La sesión ha finalizado" />
+	<input id="confirmBackToLogin" type="button" value="Iniciar sesión"
+		onclick="window.location='#{facesContext.externalContext.requestContextPath}/index.jsp';" />
+</p:dialog>
+
+<script type="text/javascript">
+	function showStatus() {
+	    statusDialog.show();
+	}
+	 
+	function hideStatus() {
+	    statusDialog.hide();
+	}
+</script>
+
+
+<style type="text/css">
+	.ui-panel {
+		margin-top: 20px
+	}
+	
+	.ui-tabs-top {
+		background-color: #FFFFFF;
+	}
+	
+	.one {
+		width: 10%;
+	}
+	
+	.two {
+		width: 90%;
+	}
+	
+	.col50Left{
+		width: 10%;
+		text-align: left;
+	}
+	
+	.col50Right{
+		width: 10%;
+		text-align: right;
+	}
+	
+	.txt100{
+		width: 100%;
+	}
+	
+</style>
+
+<div align="center">
+<h:form id="frmInformeTrasladosCorreccionesPresupuestales">
+
+	<p:growl id="men" showDetail="false" autoUpdate="true" closable="true" />
+	
+	<p:panel id="pnlInformeTrasladosCorreccionesPresupuestales" header="Generar Informe Traslados/Correcciones Presupuestales"
+		style="width: 90%;" >		
+		<h:panelGrid columns="2">		
+			<p:outputLabel value="Fecha Inicial" for="txtFechaInicio" />
+			<p:calendar id="txtFechaInicio" 
+				value="#{informeTrasladosCorreccionesView.txtFechaInicio}"
+				navigator="true" pattern="yyyy-MM-dd" />
+				
+			<p:outputLabel value="Fecha Final" for="txtFechaFinal" />
+			<p:calendar id="txtFechaFinal" 
+				value="#{informeTrasladosCorreccionesView.txtFechaFinal}"
+				navigator="true" pattern="yyyy-MM-dd" />
+				
+			<p:outputLabel value="Tipo Transacción" for="selectTipoTransaccion" />
+			<p:selectOneMenu id="selectTipoTransaccion" value="#{informeTrasladosCorreccionesView.selectTipoTransaccion}" >
+				<f:selectItem itemLabel="Traslado" itemValue="T"  />				
+				<f:selectItem itemLabel="Corrección" itemValue="C"  />
+			</p:selectOneMenu>
+			
+		</h:panelGrid>			
+		
+		<p:commandButton id="btnGenerarInforme" value="Generar Informe"
+			action="#{informeTrasladosCorreccionesView.action_generar_informe_ingreso_no_propio}"
+			update=":frmInformeTrasladosCorreccionesPresupuestales" />
+			
+		<p:commandButton id="btnLimpiar" value="Limpiar"
+			action="#{informeTrasladosCorreccionesView.action_limpiar}"
+			update=":frmInformeTrasladosCorreccionesPresupuestales" />
+		
+	</p:panel>	
+	
+	<p:panel id="pnlListarInformeTrasladosCorreccionesPresupuestales" header="Listar Informe Traslados/Correcciones Presupuestales"
+		style="width: 90%;" >
+				
+		<p:dataTable id="listarInformeTrasladosCorreccionesPresupuestalesDataTable"
+			var="trasladosCorrecciones"
+			value="#{informeTrasladosCorreccionesView.listDetalleTrasladoDTOs}"
+			rows="10"
+			paginator="true" filterDelay="1000">			
+			
+			<p:column headerText="Fecha Expedición" filterBy="#{trasladosCorrecciones.fechaExpedicionModificacion}"
+				filterMatchMode="contains">
+				<h:outputLabel value="#{trasladosCorrecciones.fechaExpedicionModificacion}" />
+			</p:column>
+			
+			<p:column headerText="Consecutivo Acto Administrativo" filterBy="#{trasladosCorrecciones.consecutivoActoAdministrativo}"
+				filterMatchMode="startsWith">
+				<h:outputLabel value="#{trasladosCorrecciones.consecutivoActoAdministrativo}" />
+			</p:column>
+			
+			<p:column headerText="Razón Acto Administrativo" filterBy="#{trasladosCorrecciones.razonActoAdministrativo}"
+				filterMatchMode="startsWith">
+				<h:outputLabel value="#{trasladosCorrecciones.razonActoAdministrativo}" />
+			</p:column>
+			
+			<p:column headerText="Tipo Transacción" filterBy="#{trasladosCorrecciones.tipoTransaccion}"
+				filterMatchMode="startsWith">
+				<h:outputLabel value="#{(trasladosCorrecciones.tipoTransaccion == 'T' ? 'Traslado' : 'Corrección')}" />
+			</p:column>
+			
+			<p:column headerText="Código Rubro" filterBy="#{trasladosCorrecciones.codigoRubro}"
+				filterMatchMode="startsWith">
+				<h:outputLabel value="#{trasladosCorrecciones.codigoRubro}" />
+			</p:column>
+						
+			<p:column headerText="Descripción Rubro" filterBy="#{trasladosCorrecciones.descripcionRubro}"
+				filterMatchMode="startsWith">
+				<h:outputLabel value="#{trasladosCorrecciones.descripcionRubro}" />
+			</p:column>
+			
+			<p:column headerText="Saldo Anterior" filterBy="#{trasladosCorrecciones.saldoAnterior}"
+				filterMatchMode="startsWith">
+				<h:outputLabel value="#{trasladosCorrecciones.saldoAnterior}" >
+					<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+				</h:outputLabel>
+			</p:column>
+			
+			<p:column headerText="Nuevo Saldo" filterBy="#{trasladosCorrecciones.nuevoSaldo}"
+				filterMatchMode="startsWith">
+				<h:outputLabel value="#{trasladosCorrecciones.nuevoSaldo}" >
+					<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+				</h:outputLabel>
+			</p:column>	
+			
+			<p:column headerText="Valor Traslado" filterBy="#{trasladosCorrecciones.valorTraslado}"
+				filterMatchMode="startsWith">
+				<h:outputLabel value="#{trasladosCorrecciones.valorTraslado}" >
+					<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+				</h:outputLabel>
+			</p:column>			
+			
+		</p:dataTable>		
+		
+		<br/><br/>
+		
+		<h:panelGrid columns="3">
+		
+			<p:commandButton id="btnPDF" value="Descarga Reporte PDF"				
+				onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)" ajax="false" >
+				<p:fileDownload value="#{informeTrasladosCorreccionesView.reportePDF}" />				
+			</p:commandButton>
+		
+			<p:commandButton id="btnXLS" value="Descarga Reporte XLS"				
+				onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)" ajax="false" >
+				<p:fileDownload value="#{informeTrasladosCorreccionesView.reporteXlS}" />				
+			</p:commandButton>
+		
+			<p:commandButton id="btnXLSX" value="Descarga Reporte XLSX"				
+				onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)" ajax="false" >
+				<p:fileDownload value="#{informeTrasladosCorreccionesView.reporteXlSX}" />				
+			</p:commandButton>
+						
+		</h:panelGrid>
+		<br/>
+		
+	</p:panel>		
+	
+</h:form>
+</div>
+</ui:define>
+</ui:composition>

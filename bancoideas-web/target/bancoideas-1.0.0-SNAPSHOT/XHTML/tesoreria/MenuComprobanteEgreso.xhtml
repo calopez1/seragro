@@ -1,0 +1,76 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+	<ui:define name="content">
+		<f:view>
+			<p:ajaxStatus onstart="PF('statusDialog').show()"
+				onsuccess="PF('statusDialog').hide()" />
+			<p:dialog modal="true" widgetVar="statusDialog" header="Cargando"
+				draggable="false" closable="false">
+				<p:graphicImage
+					value="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/ajaxloadingbar.gif" />
+			</p:dialog>
+
+			<!-- Expired session -->
+			<p:idleMonitor onactive="PF('sessionTimeOutDialog').show();"
+				timeout="#{session.maxInactiveInterval * 1000}" />
+			<p:dialog modal="true" widgetVar="sessionTimeOutDialog"
+				header="Sesión terminada" draggable="false" closable="false">
+				<h:outputText value="La sesión ha finalizado" />
+				<input id="confirmBackToLogin" type="button" value="Iniciar sesión"
+					onclick="window.location='#{facesContext.externalContext.requestContextPath}/index.jsp';" />
+			</p:dialog>
+			
+
+			<h:form id="frm" enctype="multipart/form-data">
+
+				<p:panel id="panelMenuComprobanteEgreso"
+					header="Comprobantes de Egreso">
+					
+					<p:growl id="growlEPG" autoUpdate="true" showDetail="false" />
+					<h:panelGrid columns="1" id="pnlCargarArchivo">
+						<h:panelGrid columns="1">
+							<div class="ContainerIndent">
+
+								<div class="Container100">
+									<div class="ContainerIndent">
+									<h:panelGrid columns="1" cellpadding="10" >
+										<p:commandButton id="btnCDP"
+											value="Expedir un Comprobante de Egreso con Presupuesto"
+											update="@([id$=panelContenedor])" style="width: 500px"
+											action="generarComprobanteEgresoAfectaPpto.xhtml"/>
+											
+										<p:commandButton id="btnCRP"
+											value="Expedir un Comprobante de Egreso Sin Presupuesto"
+											update="@([id$=panelContenedor])" style="width: 500px" 
+											action="generarComprobanteEgresoNoAfectaPpto.xhtml"/>
+										
+										<p:commandButton 
+											value="Expedir un Comprobante de Egreso de Reserva Presupuestal"
+											update="@([id$=panelContenedor])" style="width: 500px"
+											action="/XHTML/presupuesto/registrarOP.xhtml">
+											<f:param name="esDeReservaPresuestal" value="true" />
+										</p:commandButton>
+										
+										<p:commandButton 
+											value="Expedir un Comprobante de Egreso de Reserva de Caja"
+											update="@([id$=panelContenedor])" style="width: 500px"
+											action="generarComprobanteEgresoReservaDeCaja.xhtml"/>
+											
+									</h:panelGrid>		
+									</div>
+								</div>
+							</div>
+						</h:panelGrid>
+					</h:panelGrid>
+				</p:panel>
+
+			</h:form>
+
+		</f:view>
+	</ui:define>
+
+</ui:composition>

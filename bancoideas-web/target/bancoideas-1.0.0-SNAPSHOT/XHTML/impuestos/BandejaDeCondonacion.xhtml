@@ -1,0 +1,315 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	template="/WEB-INF/template.xhtml">
+
+	<ui:define name="content">
+		<script type="text/javascript">
+			function justNumbers(e) {
+				var keynum = window.event ? window.event.keyCode : e.which;
+				if ((keynum == 8) || (keynum == 46) || (keynum == 44))
+					return true;
+
+				return /\d/.test(String.fromCharCode(keynum));
+			}
+			PrimeFaces.locales['es'] = {
+				closeText : 'Cerrar',
+				prevText : 'Anterior',
+				nextText : 'Siguiente',
+				monthNames : [ 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo',
+						'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre',
+						'Noviembre', 'Diciembre' ],
+				monthNamesShort : [ 'Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun',
+						'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic' ],
+				dayNames : [ 'Domingo', 'Lunes', 'Martes', 'Miércoles',
+						'Jueves', 'Viernes', 'Sábado' ],
+				dayNamesShort : [ 'Dom', 'Lun', 'Mar', 'Mie', 'Jue', 'Vie',
+						'Sab' ],
+				dayNamesMin : [ 'D', 'L', 'M', 'M', 'J', 'V', 'S' ],
+				weekHeader : 'Semana',
+				firstDay : 1,
+				isRTL : false,
+				showMonthAfterYear : false,
+				yearSuffix : '',
+				timeOnlyTitle : 'Sólo hora',
+				timeText : 'Tiempo',
+				hourText : 'Hora',
+				minuteText : 'Minuto',
+				secondText : 'Segundo',
+				currentText : 'Fecha actual',
+				ampm : false,
+				month : 'Mes',
+				week : 'Semana',
+				day : 'Día',
+				allDayText : 'Todo el día'
+			};
+		</script>
+		<style type="text/css">
+.inputOnDataTable input {
+	width: 200px !important;
+}
+</style>
+		<f:view>
+			<p:ajaxStatus onstart="PF('statusDialog').show()"
+				onsuccess="PF('statusDialog').hide()" />
+			<p:dialog modal="true" widgetVar="statusDialog"
+				header="Cargando Información" draggable="false" closable="false">
+				<p:graphicImage
+					value="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/ajaxloadingbar.gif" />
+			</p:dialog>
+
+			<!-- Expired session -->
+			<p:idleMonitor onactive="PF('sessionTimeOutDialog').show();"
+				timeout="#{session.maxInactiveInterval * 1000}" />
+			<p:dialog modal="true" widgetVar="sessionTimeOutDialog"
+				header="Sesión Caducada" draggable="false" closable="false">
+				<h:outputText value="La sesión ha finalizado" />
+				<input id="confirmBackToLogin" type="button" value="Iniciar Sesión"
+					onclick="window.location='#{facesContext.externalContext.requestContextPath}/index.jsp';" />
+			</p:dialog>
+
+
+			<h:form id="frm" style="text-align: center;">
+
+				<p:panel id="pnlCondonacion" header="Ajuste al Sistema Anterior">
+
+					<p:panelGrid id="pnlgDatosBusqueda" header="Datos de busqueda"
+						columns="4" style="width:100%;">
+						<p:column>
+							<h:outputText value="Número predial corto: " />
+							<p:inputText id="txtNumeroPredialCorto" value="#{gluoCondonacionDeudaView.predialCorto}" />
+						</p:column>
+						<p:column>
+							<h:outputText value="Número predial largo: " />
+							<p:inputText id="txtNumeroPredialLargo" value="#{gluoCondonacionDeudaView.predialLargo}" />
+						</p:column>
+						<p:column>
+							<p:selectOneMenu id="somEstadoPredial" filter="true" value="#{gluoCondonacionDeudaView.estado}">
+								<f:selectItem itemLabel="-Estados-" itemValue="-1" />
+								<f:selectItem itemValue="S" itemLabel="APROBADO" />
+								<f:selectItem itemValue="N" itemLabel="NO APROBADO" />
+								<f:selectItem itemValue="P" itemLabel="PENDIENTE" />
+							</p:selectOneMenu>
+						</p:column>
+						<p:column >
+							<p:commandButton icon="ui-icon-search" value="Buscar"
+							 action="#{gluoCondonacionDeudaView.action_consultar}" update="pnlListaCondonacion" />
+							<p:commandButton value="Limpiar"
+							 action="#{gluoCondonacionDeudaView.action_limpiar}" update="pnlgDatosBusqueda, pnlListaCondonacion" />
+						
+						</p:column>
+					</p:panelGrid>
+
+					<div align="center">
+						<h:panelGrid id="pnlListaCondonacion" columns="1">
+							<p:dataTable id="dtCondonacion" var="condonado"
+								value="#{gluoCondonacionDeudaView.gluoCondonacionDataModel}"
+								rows="20"
+								emptyMessage="No se han encontrado pedidos de condonación"
+								paginator="true" reflow="true" lazy="true"
+								paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}">
+
+								<p:column
+									headerText="Número Predio Corto">
+									<h:outputText value="#{condonado.numeroPredioCorto}" />
+								</p:column>
+
+								<p:column
+									headerText="Número Predio Largo">
+									<h:outputText value="#{condonado.numeroPredioLargo}" />
+								</p:column>
+
+								<p:column
+									headerText="Nombre Predio">
+									<h:outputText value="#{condonado.direccion}" />
+								</p:column>
+
+								<p:column
+									headerText="Valor Ajuste">
+									<h:outputText value="#{condonado.valorCondonadoStr}" />
+								</p:column>
+
+								<p:column
+									headerText="Estado">
+									<h:outputText value="#{condonado.estadoStr}" />
+								</p:column>
+								
+								<p:column
+									headerText="Detalle">
+									<p:commandButton value="Ver"
+										update=":frmDetalleAplicacionPago"
+										action="#{gluoCondonacionDeudaView.action_seleccionar_predio(condonado.idPredio, condonado.idCode, condonado.autorizado)}"
+										oncomplete="PF('detalleAplicacionPagoDialog').show()" />	
+								</p:column>
+								
+
+							</p:dataTable>
+							
+							
+						</h:panelGrid>
+					</div>
+
+
+
+
+				</p:panel>
+			</h:form>
+			
+			
+			<p:dialog header="Detalle Pago" style="align-text: center"
+				widgetVar="detalleAplicacionPagoDialog" modal="true" height="500"
+				width="80%">
+
+				<h:form id="frmDetalleAplicacionPago">
+
+
+					<p:dataTable var="item"
+						value="#{gluoCondonacionDeudaView.lstAplicacionPagoAnoFiscal}">
+
+						<f:facet name="header">
+				            Aplicación Pago
+				        </f:facet>
+
+						<p:column style="width:16px">
+							<p:rowToggler />
+						</p:column>
+
+						<p:column headerText="Año" style="text-align: center; width: 30%">
+							<h:outputText value="#{item.anoFiscal}" />
+						</p:column>
+
+						<p:column headerText="Valor Total" style="text-align: center; width: 30%">
+							<h:outputText value="#{item.valorTotal}">
+
+								<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+
+							</h:outputText>
+							<h:outputText rendered="#{item.esAnoVigente == true}"
+								value="#{item.valorTotal / 12}">
+
+								<f:convertNumber pattern=" ---> (¤#,##0.00 Por mes)"
+									currencySymbol="$" />
+
+							</h:outputText>
+						</p:column>
+
+						<p:column headerText="Abonado a este recibo"
+							style="text-align: center; width: 30%">
+							<h:outputText value="#{item.saldoPago}">
+
+								<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+
+							</h:outputText>
+						</p:column>
+
+						<p:rowExpansion>
+
+							<p:dataTable var="aplicacion" value="#{item.lstAplicacionPago}">
+
+								<p:column headerText="Concepto"
+									style="text-align: center; width: 30%">
+									<div align="left">
+										<h:outputText value="#{aplicacion.descripcionConcepto}"
+											style="text-align: left;" />
+									</div>
+								</p:column>
+
+								<p:column headerText="Saldo Concepto"
+									style="text-align: center; width: 10%">
+									<div align="right">
+										<h:outputText value="#{aplicacion.saldoConcepto}"
+											style="text-align: right;">
+											<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+										</h:outputText>
+									</div>
+								</p:column>
+
+								<p:column headerText="Valor a Pagar"
+									style="text-align: center; width: 10%">
+									<div align="right">
+										<h:outputText value="#{aplicacion.valorPago}"
+											style="text-align: right;">
+											<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+										</h:outputText>
+									</div>
+								</p:column>
+
+								<p:column headerText="Descuento"
+									style="text-align: center; width: 10%">
+									<div align="right">
+										<h:outputText
+											value="(-#{aplicacion.descuentoAplicado != null ? aplicacion.descuentoAplicado.porcentaje : 0}% = "
+											style="text-align: right;" />
+
+										<h:outputText value="#{aplicacion.valorDescuento}"
+											style="text-align: right;">
+											<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+										</h:outputText>
+
+										<h:outputText value=")" />
+
+									</div>
+								</p:column>
+
+								<p:column headerText="Vr. Neto Pagar"
+									style="text-align: center; width: 10%">
+									<div align="right">
+										<h:outputText value="#{aplicacion.valorDespuesDeDescuento}"
+											style="text-align: right;">
+											<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+										</h:outputText>
+									</div>
+								</p:column>
+
+								<p:column headerText="Meses a pagar"
+									style="text-align: center; width: 10%"
+									rendered="#{item.esAnoVigente == true}">
+									<div align="right">
+										<h:outputText
+											value="#{aplicacion.cantidadDeMesesQuePagaEsteConceptoParaVigenciaActual}"
+											style="text-align: right;" />
+									</div>
+								</p:column>
+
+								<p:column headerText="Nuevo Saldo"
+									style="text-align: center; width: 10%">
+									<div align="right">
+										<h:outputText value="#{aplicacion.saldoPago}"
+											style="text-align: right;">
+											<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+										</h:outputText>
+									</div>
+								</p:column>
+
+							</p:dataTable>
+
+
+						</p:rowExpansion>
+					</p:dataTable>
+					
+					
+					<p:panel id="pnlCondonarDeuda">
+							
+						<p:commandButton value="Aprobar" disabled="#{gluoCondonacionDeudaView.flagAprobar}"
+							action="#{gluoCondonacionDeudaView.action_aprobar(true)}"
+							oncomplete="PF('detalleAplicacionPagoDialog').hide();"
+							update=":frm:pnlListaCondonacion"/>
+							
+						<p:commandButton value="Rechazar" disabled="#{gluoCondonacionDeudaView.flagAprobar}"
+							action="#{gluoCondonacionDeudaView.action_aprobar(false)}"
+							oncomplete="PF('detalleAplicacionPagoDialog').hide();"
+							update=":frm:pnlListaCondonacion"/>
+					
+					</p:panel>
+
+				</h:form>
+
+			</p:dialog>
+
+		</f:view>
+	</ui:define>
+
+</ui:composition>

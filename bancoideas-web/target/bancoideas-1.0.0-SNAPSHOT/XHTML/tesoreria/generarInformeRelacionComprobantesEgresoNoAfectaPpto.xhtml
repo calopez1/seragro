@@ -1,0 +1,277 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+	<ui:define name="content">
+
+		<p:ajaxStatus onstart="PF('statusDialog').show()"
+			onsuccess="PF('statusDialog').hide()" />
+		<p:dialog modal="true" widgetVar="statusDialog" header="Cargando"
+			draggable="false" closable="false">
+			<p:graphicImage
+				value="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/ajaxloadingbar.gif" />
+		</p:dialog>
+
+		<!-- Expired session -->
+		<p:idleMonitor onactive="PF('sessionTimeOutDialog').show();"
+			timeout="#{session.maxInactiveInterval * 1000}" />
+		<p:dialog modal="true" widgetVar="sessionTimeOutDialog"
+			header="Sesión terminada" draggable="false" closable="false">
+			<h:outputText value="La sesión ha finalizado" />
+			<input id="confirmBackToLogin" type="button" value="Iniciar sesión"
+				onclick="window.location='#{facesContext.externalContext.requestContextPath}/index.jsp';" />
+		</p:dialog>
+		
+		<script type="text/javascript">
+			function showStatus() {
+			    statusDialog.show();
+			}
+			 
+			function hideStatus() {
+			    statusDialog.hide();
+			}
+		</script>
+
+		<style type="text/css">
+			.one {
+				width: 20%;
+			}
+			
+			.two {
+				width: 80%;
+			}
+			
+		</style>
+
+		<h:form id="frmInformeCE">
+
+			<p:growl id="men" showDetail="false" autoUpdate="true"/>
+
+					<p:panel>
+						<h:outputText
+							value="Informe de Relación de Comprobantes de Egreso que No afectan el presupuesto" styleClass="FontBold Fs18 hardblue" />
+					</p:panel>
+					
+					<p:panel id="pnlDatos">
+						<div align="center">
+							<h:panelGrid id="pnlSeleccionFechas" columns="2">
+								
+								<h:outputText value="Consecutivo de documento:" />
+								<p:inputText id="txtConseDocumento" value="#{generarInformeRelacionComprobantesEgresoNoAfectaPptoView.consecutivoDocumento}"/>
+								
+								<h:outputText value="Fecha de Desde: " style="width: 100%;"/>
+								<p:calendar id="fechaDesde"  
+											value="#{generarInformeRelacionComprobantesEgresoNoAfectaPptoView.fechaDesde}" readonlyInput="true" 
+											disabled="false" navigator="true"/>
+											
+								<h:outputText value="Fecha de Hasta: " style="width: 100%;"/>
+								<p:calendar id="fechaHasta"  
+											value="#{generarInformeRelacionComprobantesEgresoNoAfectaPptoView.fechaHasta}" readonlyInput="true" 
+											style="width: 100%;" disabled="false" navigator="true"/>
+											
+								<h:outputText value="Tercero"/>
+								<p:panelGrid>
+									<p:inputText id="txtIdentTercero" value="#{generarInformeRelacionComprobantesEgresoNoAfectaPptoView.identificacionTercero}" readonly="true"/>
+									<p:commandButton icon="ui-icon-search" onclick="PF('dlgTercero').show();"/>
+								</p:panelGrid>				
+														
+							</h:panelGrid>
+						</div>
+						<br/>
+						<div align="center">
+							<h:panelGrid id="pnlGenerarInformeComprobanteEgreso" columns="2">
+								<p:commandButton id="btnGenerarInforme" value="Generar Informe" 
+									 action="#{generarInformeRelacionComprobantesEgresoNoAfectaPptoView.action_generarInforme()}" 
+									 update="men, :frmInformeCE:panlResultados" />
+												 
+								<p:commandButton id="btnLimpiar" value="Limpiar"
+									action="#{generarInformeRelacionComprobantesEgresoNoAfectaPptoView.action_limpiar}"									
+									update=":frmInformeCE, :frmInformeCE:panlResultados" />												 
+							</h:panelGrid>
+						</div>
+					</p:panel>
+
+					<div class="EmptyBox20" />
+					
+					<p:panel id="panlResultados" header="Informe de Relación de Comprobantes de Egreso que No afectan el Presupuesto" rendered="true">
+						
+						<p:dataTable id="tablaInforme" var="informeCE" 
+							value="#{generarInformeRelacionComprobantesEgresoNoAfectaPptoView.listCeNoAfectaPptoDTOs}"
+							selection="#{generarInformeRelacionComprobantesEgresoNoAfectaPptoView.afectaPptoDTO}"
+							rowKey="#{informeCE.enapId}"
+					        emptyMessage="No hay registros encontrados" 
+					        paginator="true" rows="10" 
+					        scrollable="true" scrollWidth="100%"
+					        filterDelay="1000">
+					 
+					  		<p:column headerText="Consecutivo"  style="width: 10%"  filterBy="#{informeCE.consecutivo}" filterMatchMode="contains" >
+								<h:outputText value="#{informeCE.consecutivo}" />
+							</p:column>
+					 
+					        <p:column headerText="Fecha Expedición" filterBy="#{informeCE.fechaComprobante}"
+					        	filterMatchMode="contains" >
+					            <h:outputText value="#{informeCE.fechaComprobante}" >
+					            	<f:convertDateTime pattern="dd-MM-yyyy" />
+					            </h:outputText>
+					        </p:column>
+					        					        					        
+					        <p:column headerText="Valor" filterBy="#{informeCE.valor}"
+					        	filterMatchMode="contains" >
+					            <h:outputText value="#{informeCE.valor}" >
+					            	<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+					            </h:outputText>
+					        </p:column>					        
+					        
+					        <p:column headerText="No. Cheque" filterBy="#{informeCE.numeroCheque}"
+					        	filterMatchMode="contains" >
+					            <h:outputText value="#{informeCE.numeroCheque}" />
+					        </p:column>
+					        
+					        <p:column headerText="Tercero"  style="width: 20%" filterBy="#{informeCE.nombreTercero}" filterMatchMode="contains" >
+								<h:outputText value="#{informeCE.nombreTercero}" />
+							</p:column>
+					        
+					        <p:column headerText="Ver"
+								style="width: 20%">
+								
+								<h:panelGrid columns="3">
+								
+									<p:commandLink 
+										actionListener="#{generarInformeRelacionComprobantesEgresoNoAfectaPptoView.action_seleccionarMaestroCeNoAfectaPpto(informeCE)}"
+										ajax="false">
+									
+										<p:fileDownload value="#{generarInformeRelacionComprobantesEgresoNoAfectaPptoView.reporteCDPPdf}" />
+									
+										<h:graphicImage
+											url="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/pdf-icon.png"
+											style="width: 32px; height: 32px;"/>
+										
+									</p:commandLink>
+									
+									<p:commandLink 
+										actionListener="#{generarInformeRelacionComprobantesEgresoNoAfectaPptoView.action_seleccionarMaestroCeNoAfectaPpto(informeCE)}"
+										ajax="false">
+									
+										<p:fileDownload value="#{generarInformeRelacionComprobantesEgresoNoAfectaPptoView.reporteCDPXls}" />
+									
+										<h:graphicImage
+											url="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/xls.jpeg"
+											style="width: 32px; height: 32px;"/>
+									</p:commandLink>
+									
+									<p:commandLink 
+										actionListener="#{generarInformeRelacionComprobantesEgresoNoAfectaPptoView.action_seleccionarMaestroCeNoAfectaPpto(informeCE)}"
+										ajax="false">
+									
+										<p:fileDownload value="#{generarInformeRelacionComprobantesEgresoNoAfectaPptoView.reporteCDPXlsx}" />
+									
+										<h:graphicImage
+											url="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/xlsx.jpeg"
+											style="width: 32px; height: 32px;"/>
+									</p:commandLink>									
+									
+								</h:panelGrid>
+								
+							</p:column>
+					        
+					    </p:dataTable>
+						
+					</p:panel>
+					
+					
+			<!--        Tercero            -->
+			<!-- ************************* -->
+			<p:dialog modal="true" widgetVar="dlgTercero" header="Tercero"
+				draggable="false" closable="true" resizable="true"
+				width="90%" >
+				
+				<p:scrollPanel id="pnlTerceros" mode="native" style="width:100%; height:400px">
+					<div class="ContainerIndent"/>
+					
+					<p:outputLabel value="Criterios de búsqueda para terceros:"/>
+					
+					<h:panelGrid columns="2" style="width: 50%;">
+								
+						<p:outputLabel value="Identificación: "/>
+						<p:inputText styleClass="Wid50"
+							value="#{generarInformeRelacionComprobantesEgresoNoAfectaPptoView.identificacionFiltro}"/>
+						
+						<p:outputLabel value="Nombre/Razón Social:"/>
+						<p:inputText styleClass="Wid50"
+							value="#{generarInformeRelacionComprobantesEgresoNoAfectaPptoView.nombreRazonSocialFiltro}"/>
+						
+					</h:panelGrid>
+					
+					<p:commandButton value="Buscar Tercero"
+						actionListener="#{generarInformeRelacionComprobantesEgresoNoAfectaPptoView.action_buscarTercero}"
+						update=":frmInformeCE:pnlTerceros"/>
+					
+					<br/>
+				
+					<p:dataTable id="tercerosEncontrados" var="tercero" rows="350" style="width: 100%;"
+						value="#{generarInformeRelacionComprobantesEgresoNoAfectaPptoView.terceros}"
+						paginator="true"
+						paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+						rowsPerPageTemplate="300,400,500"
+						emptyMessage="No hay terceros encontrados"
+						reflow="true" filterDelay="1000">
+						
+						<f:facet name="header">
+                             Terceros
+                         </f:facet>
+                         
+                   		<p:column headerText="Identificación" sortBy="#{tercero.identificacion}"
+							style="width: 10%" filterBy="#{tercero.identificacion}"
+							filterMatchMode="startsWith">
+							<h:outputText value="#{tercero.identificacion}"/>
+						</p:column>
+						
+						<p:column headerText="Primer Nombre" sortBy="#{tercero.primerNombre}"
+							style="width: 10%" filterBy="#{tercero.primerNombre}"
+							filterMatchMode="contains">
+							<h:outputText value="#{tercero.primerNombre}"/>
+						</p:column>
+						
+						<p:column headerText="Segundo Nombre" sortBy="#{tercero.segundoNombre}"
+							style="width: 10%" filterBy="#{tercero.segundoNombre}"
+							filterMatchMode="contains">
+							<h:outputText value="#{tercero.segundoNombre}"/>
+						</p:column>
+						
+						<p:column headerText="Primer Apellido" sortBy="#{tercero.primerApellido}"
+							style="width: 10%" filterBy="#{tercero.primerApellido}"
+							filterMatchMode="contains">
+							<h:outputText value="#{tercero.primerApellido}"/>
+						</p:column>
+						
+						<p:column headerText="Segundo Apellido" sortBy="#{tercero.segundoApellido}"
+							style="width: 10%" filterBy="#{tercero.segundoApellido}"
+							filterMatchMode="contains">
+							<h:outputText value="#{tercero.segundoApellido}"/>
+						</p:column>
+						
+						<p:column headerText="Seleccionar" 
+							style="width: 5%">
+							<p:commandButton title="Seleccionar"  
+				            	icon="ui-icon-check" 
+				            	update=":frmInformeCE:txtIdentTercero" 
+				            	action="#{generarInformeRelacionComprobantesEgresoNoAfectaPptoView.action_seleccionarTercero(tercero)}">
+				            </p:commandButton>
+						</p:column>
+
+					</p:dataTable>
+					
+				</p:scrollPanel>
+
+
+				<div class="EmptyBox20" />
+				
+			</p:dialog>
+			<!--        Tercero            -->
+			<!-- ************************* -->
+					
+		</h:form>
+	</ui:define>
+</ui:composition>

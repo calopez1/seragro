@@ -1,0 +1,220 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+	<ui:define name="content">
+		<f:view>
+			<script type="text/javascript">
+				function start() {
+				    PF('statusDialog').show();
+				}
+			 
+				function stop() {
+				    PF('statusDialog').hide();
+				}
+			</script>
+			<p:ajaxStatus onstart="PF('statusDialog').show()"
+				onsuccess="PF('statusDialog').hide()" />
+			<p:dialog modal="true" widgetVar="statusDialog" header="Cargando"
+				draggable="false" closable="false">
+				<p:graphicImage
+					value="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/ajaxloadingbar.gif" />
+			</p:dialog>
+
+			<!-- Expired session -->
+			<p:idleMonitor onactive="PF('sessionTimeOutDialog').show();"
+				timeout="#{session.maxInactiveInterval * 1000}" />
+			<p:dialog modal="true" widgetVar="sessionTimeOutDialog"
+				header="Sesión terminada" draggable="false" closable="false">
+				<h:outputText value="La sesión ha finalizado" />
+				<input id="confirmBackToLogin" type="button" value="Iniciar sesión"
+					onclick="window.location='#{facesContext.externalContext.requestContextPath}/index.jsp';" />
+			</p:dialog>
+
+			<h:form id="frm" enctype="multipart/form-data">
+
+				<p:panel id="panelDataTableGluoActoAdministrativo"
+					header="Acto Administrativo">
+					<p:growl id="men" autoUpdate="true" showDetail="false"/>
+					<p:dataTable id="dataTableActoAdministrativo" value="#{gluoActoAdministrativoView.actosAdministrativosPresupuesto}" emptyMessage="No se han encontrado actos administrativos registrados"
+						var="gluoActoAdministrativo" paginator="true" rowsPerPageTemplate="5,10,15"
+						filterDelay="1000">
+						
+						<p:column filterBy="#{gluoActoAdministrativo.nombreOperacion}"
+							sortBy="#{gluoActoAdministrativo.nombreOperacion}">
+							<f:facet name="header">
+								<h:outputText value="Nombre de la Operacion" />
+							</f:facet>
+							<h:outputText value="#{gluoActoAdministrativo.nombreOperacion}" />
+						</p:column>
+						
+						<p:column filterBy="#{gluoActoAdministrativo.consecutivo}"
+							sortBy="#{gluoActoAdministrativo.consecutivo}">
+							<f:facet name="header">
+								<h:outputText value="Consecutivo" />
+							</f:facet>
+							<h:outputText value="#{gluoActoAdministrativo.consecutivo}" />
+						</p:column>
+
+						<p:column
+							filterBy="#{gluoActoAdministrativo.fechaActoAdministrativo}"
+							sortBy="#{gluoActoAdministrativo.fechaActoAdministrativo}">
+							<f:facet name="header">
+								<h:outputText value="Fecha del Acto Administrativo" />
+							</f:facet>
+							<h:outputText
+								value="#{gluoActoAdministrativo.fechaActoAdministrativo}" />
+						</p:column>
+
+						<p:column filterBy="#{gluoActoAdministrativo.fundamentoLegal}"
+							sortBy="#{gluoActoAdministrativo.fundamentoLegal}">
+							<f:facet name="header">
+								<h:outputText value="Fundamento Legal" />
+							</f:facet>
+							<h:outputText value="#{gluoActoAdministrativo.fundamentoLegal}" />
+						</p:column>
+
+						<p:column filterBy="#{gluoActoAdministrativo.razon}"
+							sortBy="#{gluoActoAdministrativo.razon}">
+							<f:facet name="header">
+								<h:outputText value="Razon" />
+							</f:facet>
+							<h:outputText value="#{gluoActoAdministrativo.razon}" />
+						</p:column>
+
+						<p:column filterBy="#{gluoActoAdministrativo.nombreEmpresa}"
+							sortBy="#{gluoActoAdministrativo.nombreEmpresa}">
+							<f:facet name="header">
+								<h:outputText value="Empresa" />
+							</f:facet>
+							<h:outputText
+								value="#{gluoActoAdministrativo.nombreEmpresa}" />
+						</p:column>
+
+						<p:column headerText="Opciones">
+							<p:commandButton id="btnEdit" icon="ui-icon-pencil"
+								update=":dialogGluoActoAdministrativo" title="Editar"
+								actionListener="#{gluoActoAdministrativoView.action_edit}">
+								<f:attribute name="selectedGluoActoAdministrativo"
+									value="#{gluoActoAdministrativo}" />
+							</p:commandButton>
+							<p:commandButton id="btnDownload" title="Descargar" ajax="false" 
+				                  onclick="PrimeFaces.monitorDownload(start, stop)" actionListener="#{gluoActoAdministrativoView.download}"  
+				                       icon="ui-icon-arrowthickstop-1-s">  
+				                 <p:fileDownload value="#{gluoActoAdministrativoView.fileDownload}" />
+				                 <f:attribute name="selectedGluoActoAdministrativo"
+									value="#{gluoActoAdministrativo}" />  
+				             </p:commandButton>
+						</p:column>
+					</p:dataTable>
+				</p:panel>
+				<p:panel id="panelBoton">
+					<div align="center">
+						<p:commandButton id="btnNew" value="Realizar Acto Administrativo"
+							action="#{gluoActoAdministrativoView.action_new()}"
+							update=":dialogGluoActoAdministrativo" />
+					</div>
+				</p:panel>
+			</h:form>
+			<p:dialog id="dialogGluoActoAdministrativo" appendTo="@(body)"
+				draggable="true" closable="false" modal="true"
+				visible="#{gluoActoAdministrativoView.showDialog}" resizable="false"
+				 width="90%" height="400px" position="center bottom">
+				<h:form id="formDialog" enctype="multipart/form-data">
+				
+					<p:messages id="msg" autoUpdate="true" showDetail="false" closable="true" />
+					<p:scrollPanel mode="native" style="width:850px;height:400px">
+					<p:panel id="panelGluoActoAdministrativo"
+						header="Acto Administrativo" >
+						<h:panelGrid columns="2" id="panelGrid">
+						
+							<h:outputText id="msgNombreOperacion" value=" Nombre de la operacion" />
+							<p:inputText id="txtNombreOperacion" disabled="false" style="width: 200px"
+								binding="#{gluoActoAdministrativoView.txtNombreOperacion}" />
+								
+							<h:outputText id="msgFundamentoLegal" value=" Fundamento Legal" />
+							<h:panelGrid columns="1" id="panelGridFundamento">
+								<p:inputTextarea id="txtFundamentoLegal" rows="5" cols="50"
+									counter="displayFundamento" maxlength="2000"
+									counterTemplate="{0} caracteres restantes." disabled="false"
+									autoResize="false"
+									binding="#{gluoActoAdministrativoView.txtFundamentoLegal}" />
+								<h:outputText id="displayFundamento" />
+							</h:panelGrid>
+
+							<h:outputText id="msgRazon" value=" Razon" />
+							<h:panelGrid columns="1" id="panelGridRazon">
+								<p:inputTextarea id="txtRazon" rows="5" cols="50"
+									counter="displayRazon" maxlength="2000"
+									counterTemplate="{0} caracteres restantes." disabled="false"
+									autoResize="false"
+									binding="#{gluoActoAdministrativoView.txtRazon}" />
+								<h:outputText id="displayRazon" />
+							</h:panelGrid>	
+							<h:panelGrid columns="2" id="panelGridEmpresa">		
+							<h:outputText id="msgEmpresa"
+								value=" Empresa" />
+							<p:inputText id="txtEmpresa" disabled="true"
+								binding="#{gluoActoAdministrativoView.txtEmprId_GluoEmpresa}" />
+							</h:panelGrid>
+							<h:panelGrid columns="2" id="panelGridAnoFiscal">	
+							<h:outputText id="msgAnoFiscal"
+								value=" Año Fiscal" />
+							<p:inputText id="txtAnoFiscal" disabled="true"
+								binding="#{gluoActoAdministrativoView.txtAnoFiscal}" />	
+							</h:panelGrid>	
+							<h:outputText id="msgFechaActoAdministrativo"
+								value=" Fecha del Acto Administrativo" />
+							<p:calendar showOn="button" navigator="true" locale="en" size="30"
+								binding="#{gluoActoAdministrativoView.txtFechaActoAdministrativo}">
+								<p:ajax event="dateSelect"
+									listener="#{gluoActoAdministrativoView.listener_txtFechaActoAdministrativo}" />		
+							</p:calendar>
+							<h:outputText id="msgArchivo"
+								value=" Archivo adjunto" />
+							<h:panelGrid columns="1" id="panelGridFileUpload">								
+							<p:fileUpload
+										auto="false"
+										skinSimple="true"
+										style="width: 400px"
+										value="#{gluoActoAdministrativoView.file}" 
+										mode="simple"									
+										sizeLimit="10485760" fileLimit="1"
+										allowTypes="/(\.|\/)(doc|docx|xls|xlsx|pdf)$/"
+										label="Escoger archivo de mi computador"
+										cancelLabel="Cancelar"   
+										invalidFileMessage="Archivo no válido"
+										invalidSizeMessage="Tamaño no válido"
+										fileLimitMessage="Numero de archivos maximos excedido"/>
+							<p:commandButton id="btnCargar" 
+							    ajax="false"
+								value="Adjuntar"
+								action="#{gluoActoAdministrativoView.upload()}"
+								disabled="#{gluoActoAdministrativoView.archivoDTO != null}" />				
+							</h:panelGrid>			
+											
+						</h:panelGrid>
+					</p:panel>
+					</p:scrollPanel>
+					<p:panel id="panelBotones">
+						<div align="center">
+							<p:commandButton id="btnSave"
+								binding="#{gluoActoAdministrativoView.btnSave}" value="Guardar"
+								action="#{gluoActoAdministrativoView.action_save()}"
+								update=":dialogGluoActoAdministrativo :frm:panelDataTableGluoActoAdministrativo" />
+							<p:commandButton id="btnClear" value="Limpiar"
+								action="#{gluoActoAdministrativoView.action_clear()}"
+								update=":dialogGluoActoAdministrativo" />
+							<p:commandButton id="btnExit" value="Salir"
+								action="#{gluoActoAdministrativoView.action_closeDialog()}"
+								update=":dialogGluoActoAdministrativo" />
+						</div>
+					</p:panel>
+				</h:form>
+			</p:dialog>
+		</f:view>
+	</ui:define>
+
+</ui:composition>

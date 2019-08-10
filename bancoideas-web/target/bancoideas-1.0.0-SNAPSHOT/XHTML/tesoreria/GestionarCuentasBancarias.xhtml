@@ -1,0 +1,479 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:ps="http://primefaces.org/sentinel"
+	xmlns:p="http://primefaces.org/ui"
+	 template="/WEB-INF/template.xhtml">
+
+	<ui:define name="content">
+		<style type="text/css">
+		.ui-panel {
+			margin-top: 20px
+		}
+		
+		.ui-tabs-top {
+			background-color: #FFFFFF;
+		}
+		</style>
+
+			<div align="center">
+			<h:form id="formCuentasBancarias">
+
+				<p:growl id="messages" autoUpdate="true" closable="true" />
+
+				<p:panel id="pnlCuentasBancarias"
+					header="Gestionar Cuentas Bancarias" style="width: 90%;">
+					<h:panelGrid columns="2">
+
+						<p:outputLabel value="No. Cuenta: " />
+						<p:inputText id="txtNumeroCuenta" binding="#{gluoCuentaBancariaView.txtNumeroCuenta}"
+							maxlength="100" style="width: 240px">
+							<p:ajax listener="#{gluoCuentaBancariaView.numeroCuentaListener}" 
+								update="txtNombre,txtCuentaContable,txtTipoRecurso,somTipoCuentaBancaria,
+								somTipoCuentaBancaria,txtBanco,selectActivar,sorSGP, :formCuentasBancarias:pnlCuentasBancarias" />
+						</p:inputText>
+
+						<p:outputLabel value="Nombre: " />
+						<p:inputText id="txtNombre" binding="#{gluoCuentaBancariaView.txtNombre}" maxlength="100" style="width: 240px" />							
+							
+						<p:outputLabel value="Cuenta Contable: " />
+						<h:panelGrid columns="2">
+							<p:inputText id="txtCuentaContable" value="#{gluoCuentaBancariaView.selectCuentaContable}"
+							 maxlength="100" style="width: 190px" />
+							<p:commandButton style="width:100%" icon="ui-icon-search" onclick="PF('dialogCuentaContable').show();" />
+						</h:panelGrid>
+						
+
+						<p:outputLabel value="Tipo Recurso: " />
+						<h:panelGrid columns="2">
+							<p:inputText id="txtTipoRecurso" value="#{gluoCuentaBancariaView.selectTipoRecurso}"
+							 maxlength="100" style="width: 190px" />
+							<p:commandButton style="width:100%" icon="ui-icon-search"
+								onclick="PF('dialogTipoRecurso').show();" />
+						</h:panelGrid>
+
+						<p:outputLabel value="Tipo Cuenta Bancaria " />
+						<p:selectOneMenu id="somTipoCuentaBancaria" value="#{gluoCuentaBancariaView.selectTipoCuentaBancaria}"
+							style="width: 220px">
+							<f:selectItem itemValue="-1" itemLabel="SELECCIONE TIPO CTA. BANCARIA" />
+							<f:selectItems value="#{gluoCuentaBancariaView.itemsTipoCuentaBancaria}" />
+						</p:selectOneMenu>
+
+						<p:outputLabel value="Banco " />
+						<h:panelGrid columns="2">
+							<p:inputText id="txtBanco" value="#{gluoCuentaBancariaView.selectBanco}"
+							 maxlength="100" style="width: 190px" />
+							<p:commandButton style="width:100%" icon="ui-icon-search" onclick="PF('dialogBanco').show();" />
+						</h:panelGrid>
+												
+						<p:outputLabel value="Activo: " />
+						<p:selectOneRadio id="selectActivar" value="#{gluoCuentaBancariaView.activo}">
+							<f:selectItem itemLabel="Activo" itemValue="A" />
+							<f:selectItem itemLabel="Inactivo" itemValue="I" />
+						</p:selectOneRadio>
+												
+				        <p:outputLabel value="Sistema General de Participaciones: " for="sorSGP" />        			
+	        			<p:selectOneRadio id="sorSGP" binding="#{gluoCuentaBancariaView.sorSGP}">
+				            <f:selectItem itemLabel="Si" itemValue="S" />
+				            <f:selectItem itemLabel="No" itemValue="N" />			            
+				        </p:selectOneRadio>
+
+					</h:panelGrid>
+
+					<!-- Botones -->
+					<br />
+
+					<p:commandButton id="btnSave" value="Guardar" action="#{gluoCuentaBancariaView.action_save}"
+						binding="#{gluoCuentaBancariaView.btnSave}" disabled="false" update=":formCuentasBancarias" />
+
+					<p:commandButton id="btnClear" value="Limpiar" action="#{gluoCuentaBancariaView.action_clear}"
+						binding="#{gluoCuentaBancariaView.btnClear}" disabled="false" update=":formCuentasBancarias" />
+
+					<p:commandButton id="btnGestionarChequera" value="Gestionar Chequera" disabled="#{gluoCuentaBancariaView.esActivoGestionarChequera}"
+						onclick="PF('dlgGestionarChequera').show();" update=":formGestionarChequera:pnlDialogListaChequeras" />
+
+					<p:commandButton id="btnGestionarCheques" value="Anular Cheques" disabled="#{gluoCuentaBancariaView.showDialogCheques}"						
+						onclick="PF('dlgGestionarCheques').show();" update=":formGestionarCheques" />
+
+					<!-- Botones -->
+
+
+				</p:panel>
+
+				<!-- DataTable -->
+				<p:panel id="pnlListaCuentasBancarias" header="Listado de Cuentas Bancarias" style="width: 90%;">
+					<p:dataTable id="pnlListaCuentasBancariasDataTable" value="#{gluoCuentaBancariaView.data}"
+						var="cuentasBancarias" paginator="true" rows="10"
+						scrollable="true" scrollWidth="100%" scrollHeight="500"
+						selectionMode="single"
+						selection="#{gluoCuentaBancariaView.selectedGluoCuentaBancaria}"
+						rowKey="#{cuentasBancarias.cubaId}"
+						filterDelay="1000">
+
+						<p:ajax event="rowSelect" listener="#{gluoCuentaBancariaView.listener_cuenta_bancaria}" update=":formCuentasBancarias" />
+						
+						<p:column selectionMode="single" style="width:26px; text-align:center" />
+
+						<p:column headerText="No. Cuenta Bancaria"
+							filterBy="#{cuentasBancarias.numeroCuenta}" filterMatchMode="contains"
+							style="text-align:center">
+							<p:outputLabel value="#{cuentasBancarias.numeroCuenta}" />
+						</p:column>
+
+						<p:column headerText="Nombre"
+							filterBy="#{cuentasBancarias.nombre}" style="text-align:center">
+							<p:outputLabel value="#{cuentasBancarias.nombre}" />
+						</p:column>
+
+						<p:column headerText="Banco"
+							filterBy="#{cuentasBancarias.bancoNombre}"
+							style="text-align:center">
+							<p:outputLabel value="#{cuentasBancarias.bancoNombre}" />
+						</p:column>
+												
+						<p:column headerText="Cuenta Contable"
+							filterBy="#{cuentasBancarias.descripcion_GluoCuentaContable}"
+							style="text-align:center">
+							<p:outputLabel value="#{cuentasBancarias.descripcion_GluoCuentaContable}" />
+						</p:column>
+												
+						<p:column headerText="Activo"
+							filterBy="#{cuentasBancarias.activoNombre}"
+							style="text-align:center">
+							<p:outputLabel value="#{cuentasBancarias.activoNombre}" />
+						</p:column>
+						
+						<p:column headerText="Tipo Cuenta" filterBy="#{cuentasBancarias.nombre_GluoTipoCuentaBancaria}" 
+						filterMatchMode="contains">
+						<h:outputText value="#{cuentasBancarias.nombre_GluoTipoCuentaBancaria}" />
+					</p:column>
+					
+						
+					</p:dataTable>
+				</p:panel>
+
+				<!-- DataTable -->
+
+			</h:form>
+			</div>
+			
+			<!-- DIÁLOGO GESTIONAR CHEQUERA -->
+				<p:dialog header="Gestionar Chequera" id="dlgGestionarChequera" width="90%" height="400"
+					widgetVar="dlgGestionarChequera" modal="true" position="center center">
+					
+					<div align="center">
+					<h:form id="formGestionarChequera">
+					<p:scrollPanel mode="native" style="width:100%; height:400px">
+						<p:messages id="msgWarningChequera" autoUpdate="true" showDetail="false"/>
+						<p:panel id="dialogoPnlGestionarChequera"
+							header="Gestionar Chequera" style="width: 90%;">
+							<h:panelGrid columns="2">
+								<p:outputLabel value="No. cheque inicio" />
+								<p:inputText id="txtNumeroChequeInicio"
+									value="#{gluoCuentaBancariaView.txtNumeroChequeInicio}" />
+
+								<p:outputLabel value="No. cheque final" />
+								<p:inputText id="txtNumeroChequeFinal"
+									value="#{gluoCuentaBancariaView.txtNumeroChequeFinal}" />
+
+								<p:commandButton id="btnAgregarChequera"
+									value="Agregar Chequera"
+									action="#{gluoCuentaBancariaView.action_create_chequera}"
+									update="dialogoPnlGestionarChequera,pnlDialogListaChequeras" />
+
+								<p:commandButton id="btnClearChequera" value="Limpiar"
+									action="#{gluoCuentaBancariaView.action_clear_gestionar_chequera}"
+									update=":formGestionarChequera" />
+
+							</h:panelGrid>
+						</p:panel>
+
+
+						<!-- DataTable Chequera -->
+						<p:panel id="pnlDialogListaChequeras"
+							header="Listado de Chequeras" style="width: 90%;">
+							
+							
+							<p:dataTable value="#{gluoCuentaBancariaView.dataChequera}"
+								var="chequera" paginator="true" rows="4" scrollable="true"
+								scrollWidth="100%" scrollHeight="100%" selectionMode="single"
+								selection="#{gluoCuentaBancariaView.selectedGluoChequera}"
+								rowKey="#{chequera.cheqId}"
+								filterDelay="1000">
+
+								<p:column headerText="No. Cheque Inicial"
+									filterBy="#{chequera.numeroInicio}" style="text-align:center">
+									<p:outputLabel value="#{chequera.numeroInicio}" />
+								</p:column>
+
+								<p:column headerText="No. Cheque Final"
+									filterBy="#{chequera.numeroFinal}" style="text-align:center">
+									<p:outputLabel value="#{chequera.numeroFinal}" />
+								</p:column>
+								
+								<p:column headerText="Anulada ? "
+									filterBy="#{chequera.anulado}" style="text-align:center">
+									<p:outputLabel value="#{(chequera.anulado.trim() eq 'N')?('No'):('Si')}" />
+								</p:column>
+								
+								<p:column headerText="Opciones"  width="13%">
+									<div align="center">
+										<p:commandButton id="btnAnularChequera" icon="ui-icon-circle-minus"
+											update="@([id$=dlgGestionarChequera])" title="Anular"
+											disabled="#{chequera.botonAnuladoActivo}"
+											actionListener="#{gluoCuentaBancariaView.anularChequera}"
+											onclick="if(!confirm('¿Realmente desea anular esta chequera?')){return false;}">
+											<f:attribute name="chequeraSeleccionadaParaAnular"
+												value="#{chequera}" />
+										</p:commandButton>
+									</div>
+								</p:column>
+
+
+							</p:dataTable>
+							
+							
+						</p:panel>
+
+						<!-- DataTable Chequera -->
+						</p:scrollPanel>
+					</h:form>
+					</div>
+					
+				</p:dialog>
+				<!-- DIÁLOGO GESTIONAR CHEQUERA -->
+
+
+
+
+				<!-- DIÁLOGO ANULAR CHEQUES -->
+				<p:dialog header="Anular Cheques" widgetVar="dlgGestionarCheques"
+					modal="true">
+					
+					<div align="center">
+					<h:form id="formGestionarCheques">
+
+						<p:panel id="dialogoPnlGestionarCheques"
+							header="Gestionar Cheques" style="width: 90%;">
+							<h:panelGrid columns="2">
+
+								<p:outputLabel value="Chequera" />
+								<p:selectOneMenu id="somChequera" value="#{gluoCuentaBancariaView.selectChequera}" style="width: 240px">
+									<f:selectItem itemValue="-1"
+										itemLabel="SELECCIONE UNA CHEQUERA" />
+									<f:selectItems value="#{gluoCuentaBancariaView.itemsChequeras}" />
+								</p:selectOneMenu>
+
+								<p:outputLabel value="Número Cheque" />
+								<p:inputText id="txtNumeroCheque" value="#{gluoCuentaBancariaView.txtNumeroCheque}"
+									style="width: 240px" />
+
+								<p:outputLabel value="Descripción" />
+								<p:inputText id="txtDescripcionCheque" value="#{gluoCuentaBancariaView.txtDescripcionCheque}"
+									style="width: 240px" />								
+								
+							</h:panelGrid>
+							
+							<br/>
+													
+							<p:commandButton id="btnCrearChequesAnulados" value="Anular Cheque"
+								action="#{gluoCuentaBancariaView.action_create_cheque_anulado}" disabled="false"
+								update=":formGestionarCheques" />		
+
+							<p:commandButton id="btnLimpiarChequesAnulados"
+								value="Limpiar" action="#{gluoCuentaBancariaView.action_clear_cheque_anulado}" disabled="false"
+								update=":formGestionarCheques" />
+
+						</p:panel>
+
+
+						<!-- DataTable Cheques -->
+						<p:panel id="pnlDialogListaCheques"
+							header="Listado de Cheques Anulados" style="width: 90%;">
+							
+							<p:scrollPanel mode="native" style="width:100%; height:230px">
+							<p:dataTable value="#{gluoCuentaBancariaView.dataChequeAnulado}"
+								var="cheque" paginator="true" rows="4" scrollable="true"
+								scrollWidth="100%" scrollHeight="100%" selectionMode="single"
+								selection="#{gluoCuentaBancariaView.selectedGluoChequeUsadoDTO}"
+								rowKey="#{cheque.chusId}" filterDelay="1000">
+
+
+								<p:column headerText="No. Cheque"
+									filterBy="#{cheque.numeroCheque}" style="text-align:center">
+									<p:outputLabel value="#{cheque.numeroCheque}" />
+								</p:column>
+								
+								<p:column headerText="Chequera"
+									filterBy="#{cheque.numeroRangoChequera}" style="text-align:center">
+									<p:outputLabel value="#{cheque.numeroRangoChequera}" />
+								</p:column>
+								
+								<p:column headerText="Descripción"
+									filterBy="#{cheque.descripcion}" style="text-align:center">
+									<p:outputLabel value="#{cheque.descripcion}" />
+								</p:column>
+								
+
+							</p:dataTable>
+							</p:scrollPanel>
+							
+						</p:panel>
+
+						<!-- DataTable Cheques -->
+
+					</h:form>
+					</div>
+					
+				</p:dialog>
+				<!-- DIÁLOGO GESTIONAR CHEQUES -->
+				
+				
+				
+				
+				
+				<!--  **************************************************************************** -->
+				<!--  **					Dialogo para Cuenta Contable						** -->
+				<!--  **************************************************************************** -->
+		
+				<p:dialog header="Cuenta Contable" style="align-text: center"
+					widgetVar="dialogCuentaContable" modal="true" height="400" width="80%">
+		
+					<div align="center" style="text-align: center;">
+					<h:form id="formDialogCuentaContable">
+						<p:growl id="msgDlgCuentaContable" autoUpdate="true" closable="true" />
+						<p:scrollPanel mode="native" style="width:100%; height:400px">
+						<p:dataTable var="cuentaContable" paginator="true" rows="10"
+							value="#{gluoCuentaBancariaView.dataCuentaContable}"
+							selectionMode="single"
+							selection="#{gluoCuentaBancariaView.selectedGluoCuentaContableDTO}"
+							rowKey="#{cuentaContable.cconId}"
+							filterDelay="1000">
+		
+							<p:ajax event="rowSelect"
+								listener="#{gluoCuentaBancariaView.onRowSelectCuentaContable}"	
+								update=":formDialogCuentaContable:msgDlgCuentaContable, :formCuentasBancarias" />
+		
+							<p:column headerText="Código" filterBy="#{cuentaContable.codigo}" 
+								filterMatchMode="contains">
+								<h:outputText value="#{cuentaContable.codigo}" />
+							</p:column>
+							
+							<p:column headerText="Descripción" filterBy="#{cuentaContable.descripcion}" 
+								filterMatchMode="contains">
+								<h:outputText value="#{cuentaContable.descripcion}" />
+							</p:column>
+							
+						</p:dataTable>	
+						</p:scrollPanel>
+							
+					</h:form>
+					</div>
+		
+				</p:dialog>
+								
+				
+				
+				<!--  **************************************************************************** -->
+				<!--  **						Dialogo para Tipo Recurso						** -->
+				<!--  **************************************************************************** -->
+		
+				<p:dialog header="Tipo Recurso" style="align-text: center"
+					widgetVar="dialogTipoRecurso" modal="true" height="400" width="80%">
+		
+					<div align="center" style="text-align: center;">
+					<h:form id="formDialogTipoRecurso">
+		
+						<p:scrollPanel mode="native" style="width:100%; height:400px">
+						<p:dataTable var="tipoRecurso"
+							value="#{gluoCuentaBancariaView.dataTipoRecurso}"
+							selectionMode="single"
+							selection="#{gluoCuentaBancariaView.selectedGluoTipoRecursoDTO}"
+							rowKey="#{tipoRecurso.tireId}"
+							paginator="true"
+							rows="10"
+							filterDelay="1000">
+		
+							<p:ajax event="rowSelect"
+								listener="#{gluoCuentaBancariaView.onRowSelectTipoRecurso}"	
+								update=":formCuentasBancarias"								
+								oncomplete="PF('dialogTipoRecurso').hide();" />
+		
+							<p:column headerText="Código" filterBy="#{tipoRecurso.codigo}"
+								filterMatchMode="contains">
+								<h:outputText value="#{tipoRecurso.codigo}" />
+							</p:column>
+							
+							<p:column headerText="Descripción" filterBy="#{tipoRecurso.descripcion}"
+								filterMatchMode="contains">
+								<h:outputText value="#{tipoRecurso.descripcion}" />
+							</p:column>
+							
+						</p:dataTable>	
+						</p:scrollPanel>
+							
+					</h:form>
+					</div>
+		
+				</p:dialog>
+				
+				
+				
+				
+				<!--  **************************************************************************** -->
+				<!--  **						Dialogo para Banco								** -->
+				<!--  **************************************************************************** -->
+		
+				<p:dialog header="Bancos" style="align-text: center"
+					widgetVar="dialogBanco" modal="true" height="400" width="80%">
+		
+					<div align="center" style="text-align: center;">
+					<h:form id="formDialogBanco">
+		
+						<p:scrollPanel mode="native" style="width:100%; height:400px">
+						<p:dataTable var="banco"
+							value="#{gluoCuentaBancariaView.dataBanco}"
+							selectionMode="single"
+							selection="#{gluoCuentaBancariaView.selectedGluoBancoDTO}"
+							rowKey="#{banco.bancId}"
+							paginator="true"
+							rows="10"
+							filterDelay="1000">
+		
+							<p:ajax event="rowSelect"
+								listener="#{gluoCuentaBancariaView.onRowSelectBanco}"	
+								update=":formCuentasBancarias"								
+								oncomplete="PF('dialogBanco').hide();" />
+		
+							<p:column headerText="No. Banco" filterBy="#{banco.numeroBanco}"
+								filterMatchMode="contains">
+								<h:outputText value="#{banco.numeroBanco}" />
+							</p:column>
+							
+							<p:column headerText="Nombre" filterBy="#{banco.nombre}"
+								filterMatchMode="contains">
+								<h:outputText value="#{banco.nombre}" />
+							</p:column>
+							
+							<p:column headerText="Descripción" filterBy="#{banco.descripcion}"
+								filterMatchMode="contains">
+								<h:outputText value="#{banco.descripcion}" />
+							</p:column>
+							
+						</p:dataTable>	
+						</p:scrollPanel>
+							
+					</h:form>
+					</div>
+		
+				</p:dialog>
+				
+				
+				
+		<br />
+		<br />
+
+	</ui:define>
+
+</ui:composition>

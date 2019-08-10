@@ -1,0 +1,581 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.3.1.final using JasperReports Library version 6.3.1  -->
+<!-- 2017-06-22T18:02:03 -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="predial_conceptos" pageWidth="612" pageHeight="792" columnWidth="612" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="39c3ad2c-2e32-4d7d-bd54-6c44fedfc83d">
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.unit." value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageHeight" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.topMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.bottomMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.leftMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.rightMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnSpacing" value="pixel"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="glu-19824.xml"/>
+	<style name="Crosstab_CH" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Crosstab_CG" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Crosstab_CT" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Crosstab_CD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<parameter name="P_PRED_ID" class="java.lang.Integer" isForPrompting="false">
+		<defaultValueExpression><![CDATA[2]]></defaultValueExpression>
+	</parameter>
+	<parameter name="P_ANOF_ID" class="java.lang.Integer" isForPrompting="false">
+		<defaultValueExpression><![CDATA[1]]></defaultValueExpression>
+	</parameter>
+	<parameter name="P_SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<parameterDescription><![CDATA[]]></parameterDescription>
+		<defaultValueExpression><![CDATA["/Users/johan/Documents/JaspersoftWorkspace/erp-reports/1/"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="P_FECHA_EXPEDICION" class="java.util.Date" isForPrompting="false"/>
+	<queryString>
+		<![CDATA[SELECT ANOF.ANO_FISCAL,
+       coim_predial.tipo_agrupador,
+       COIM_PREDIAL.COIM_ID,
+       COIM_PREDIAL.DESCRIPCION,
+       DLMI.VALOR_PREDIAL_CALCULADO       VALOR_CALCULADO,
+       DLMI.VALOR_PREDIAL_PAGAR           VALOR_A_PAGAR,
+       DLMI.SALDO,
+       
+       MPTE.PORCENTAJE_TANTO_X_MIL        TIPO_TARIFA_ESPECIAL,
+       MPTE.VALOR                         VALOR_RATA_TARIFA_ESPECIAL,
+       (DLMI.VALOR_PREDIAL_CALCULADO - DLMI.VALOR_PREDIAL_PAGAR)
+          TARIFA_ESPECIAL_CALCULADA,
+       DLMI.TARIFA_TXM,
+       NULL                               porcentaje_tanto_x_mil,
+       NULL                               valor_porcentaje_tanto_x_mil,
+       CASE
+          WHEN MPTE.PORCENTAJE_TANTO_X_MIL IS NULL
+          THEN
+             ''
+          WHEN MPTE.PORCENTAJE_TANTO_X_MIL IS NOT NULL
+          THEN
+                'LIQUIDADO: '
+             || TO_CHAR (DLMI.VALOR_PREDIAL_CALCULADO,
+                         'FM$999,999,999,990D00')
+             || '. TARIFA ESPECIAL: '
+             || MPTE.VALOR
+             || CASE
+                   WHEN MPTE.PORCENTAJE_TANTO_X_MIL = 'P' THEN '%'
+                   WHEN MPTE.PORCENTAJE_TANTO_X_MIL = 'M' THEN '/1.000'
+                   ELSE ''
+                END
+             || ' (-'
+             || TO_CHAR (
+                   (DLMI.VALOR_PREDIAL_CALCULADO - DLMI.VALOR_PREDIAL_PAGAR),
+                   'FM$999,999,999,990D00')
+             || ')'
+          ELSE
+             NULL
+       END
+          TARIFA_ESPECIAL_TEXTO,
+          TO_CHAR (DLMI.VALOR_AVALUO, 'FM$999,999,999,990D00')
+       || ' x '
+       || DLMI.TARIFA_TXM
+       || ' / 1.000'
+       || CASE
+             WHEN MPTE.PORCENTAJE_TANTO_X_MIL IS NULL
+             THEN
+                ''
+             WHEN MPTE.PORCENTAJE_TANTO_X_MIL IS NOT NULL
+             THEN
+                   ' - ('
+                || TO_CHAR (
+                      (  DLMI.VALOR_PREDIAL_CALCULADO
+                       - DLMI.VALOR_PREDIAL_PAGAR),
+                      'FM$999,999,999,990D00')
+                || ')'
+             ELSE
+                NULL
+          END
+          FORMULA_APLICADA,
+       0                                  ES_CARTERA
+  FROM GLUO_DETALLE_LIQUIDACION_MASIVA_IMPUESTOS DLMI
+       INNER JOIN GLUO_PREDIO_ANO_FISCAL PRAF ON PRAF.PRAF_ID = DLMI.PRAF_ID
+       INNER JOIN gluo_ano_fiscal anof ON anof.anof_id = praf.anof_id
+       INNER JOIN GLUO_PREDIO PRED ON PRED.PRED_ID = PRAF.PRED_ID
+       INNER JOIN GLUO_CONCEPTO_IMPUESTO COIM_PREDIAL
+          ON COIM_PREDIAL.COIM_ID = DLMI.COIM_ID
+       LEFT OUTER JOIN GLUO_MATRICULAR_PREDIO_TARIFA_ESPECIAL MPTE
+          ON MPTE.MPTE_ID = DLMI.MPTE_ID
+       
+ WHERE     PRAF.ACTIVO = 'A'
+       AND DLMI.ACTIVO = 'A'
+       AND PRED.ACTIVO = 'A'
+       AND PRED.ESTADO = 'A'
+       AND COIM_PREDIAL.ACTIVO = 'A'
+       AND DLMI.SALDO > 0
+       AND PRED.PRED_ID = $P{P_PRED_ID}
+       AND DLMI.PRCA_ID IS NULL
+       AND DLMI.CODE_ID IS NULL
+UNION ALL
+
+
+SELECT ANOF.ANO_FISCAL,
+       COIM_OTROS.tipo_agrupador,
+       COIM_OTROS.COIM_ID,
+       COIM_OTROS.DESCRIPCION,
+       LOCI.VALOR_CALCULADO,
+       LOCI.VALOR_CALCULADO VALOR_A_PAGAR,
+       LOCI.SALDO,
+       
+       NULL                 TIPO_TARIFA_ESPECIAL,
+       NULL                 VALOR_RATA_TARIFA_ESPECIAL,
+       NULL                 TARIFA_ESPECIAL_CALCULADA,
+       NULL                 TARIFA_TXM,
+       LOCI.porcentaje_tanto_x_mil,
+       LOCI.valor_porcentaje_tanto_x_mil,
+       NULL                 TARIFA_ESPECIAL_TEXTO,
+          CASE
+             WHEN TILI.CODIGO = 'AV'
+             THEN
+                TO_CHAR (DLMI.VALOR_AVALUO, 'FM$999,999,999,990D00') || ' x '
+             WHEN TILI.CODIGO = 'PR'
+             THEN
+                   TO_CHAR (DLMI.VALOR_PREDIAL_PAGAR,
+                            'FM$999,999,999,990D00')
+                || ' x '
+             WHEN TILI.CODIGO = 'FI'
+             THEN
+                   'VALOR FIJO  => '
+                || TO_CHAR (LOCI.valor_porcentaje_tanto_x_mil,
+                            'FM$999,999,999,990D00')
+             ELSE
+                ''
+          END
+       || CASE
+             WHEN     LOCI.valor_porcentaje_tanto_x_mil IS NOT NULL
+                  AND LOCI.porcentaje_tanto_x_mil IS NOT NULL
+                  AND LOCI.porcentaje_tanto_x_mil != ''
+             THEN
+                LOCI.valor_porcentaje_tanto_x_mil || ''
+             ELSE
+                ''
+          END
+       || CASE
+             WHEN LOCI.porcentaje_tanto_x_mil = 'P' THEN '%'
+             WHEN LOCI.porcentaje_tanto_x_mil = 'M' THEN ' / 1.000'
+             ELSE ''
+          END
+          FORMULA_APLICADA,
+       0                    ES_CARTERA
+  FROM GLUO_DETALLE_LIQUIDACION_MASIVA_IMPUESTOS DLMI
+       INNER JOIN GLUO_LIQUIDACION_OTROS_CONCEPTOS_IMPUESTO LOCI
+          ON LOCI.DLMI_ID = DLMI.DLMI_ID
+       INNER JOIN GLUO_PREDIO_ANO_FISCAL PRAF ON PRAF.PRAF_ID = DLMI.PRAF_ID
+       INNER JOIN gluo_ano_fiscal anof ON anof.anof_id = praf.anof_id
+       INNER JOIN GLUO_PREDIO PRED ON PRED.PRED_ID = PRAF.PRED_ID
+       INNER JOIN GLUO_CONCEPTO_IMPUESTO COIM_OTROS
+          ON COIM_OTROS.COIM_ID = LOCI.COIM_ID
+       INNER JOIN GLUO_TIPO_LIQUIDACION TILI
+          ON TILI.TILI_ID = COIM_OTROS.TILI_ID
+ WHERE     PRAF.ACTIVO = 'A'
+       AND DLMI.ACTIVO = 'A'
+       AND LOCI.ACTIVO = 'A'
+       AND PRED.ACTIVO = 'A'
+       AND PRED.ESTADO = 'A'
+       AND COIM_OTROS.ACTIVO = 'A'
+       AND TILI.ACTIVO = 'A'
+       AND LOCI.SALDO > 0
+       AND PRED.PRED_ID = $P{P_PRED_ID}
+       AND LOCI.PRCA_ID IS NULL
+       AND LOCI.CODE_ID IS NULL
+UNION ALL
+SELECT ANOF.ANO_FISCAL,
+       'B. CAR'             tipo_agrupador,
+       COIM.COIM_ID,
+          'CARTERA: '
+       || COIM.DESCRIPCION
+       || ' - TRIMESTRE '
+       || CART.TRIMESTRE
+       || ' - LIQUIDACION '
+       || ANOF.ANO_FISCAL,
+       CART.VALOR_CALCULADO,
+       CART.VALOR_CALCULADO VALOR_A_PAGAR,
+       CART.SALDO,
+       
+       NULL                 TIPO_TARIFA_ESPECIAL,
+       NULL                 VALOR_RATA_TARIFA_ESPECIAL,
+       0                    TARIFA_ESPECIAL_CALCULADA,
+       NULL                 TARIFA_TXM,
+       NULL                 porcentaje_tanto_x_mil,
+       NULL                 valor_porcentaje_tanto_x_mil,
+          'AÑO '
+       || ANOF.ANO_FISCAL
+       || '. TASA DE INTERES DE '
+       || CART.PORCENTAJE_INTERES
+       || '%'
+          TARIFA_ESPECIAL_TEXTO,
+          TO_CHAR (CART.VALOR_BASE, 'FM$999,999,999,990D00')
+       || ' x '
+       || CART.PORCENTAJE_INTERES
+       || '%'
+          FORMULA_APLICADA,
+       1                    ES_CARTERA
+  FROM GLUO_CARTERA CART
+       INNER JOIN gluo_interes_mora_impuesto inmi
+          ON inmi.inmi_id = cart.inmi_id
+       INNER JOIN GLUO_ANO_FISCAL ANOF ON ANOF.ANOF_ID = CART.ANOF_ID
+       INNER JOIN GLUO_CONCEPTO_IMPUESTO COIM ON COIM.COIM_ID = INMI.COIM_ID
+       INNER JOIN GLUO_DETALLE_LIQUIDACION_MASIVA_IMPUESTOS DLMI
+          ON DLMI.DLMI_ID = CART.DLMI_ID
+       INNER JOIN GLUO_PREDIO_ANO_FISCAL PRAF ON PRAF.PRAF_ID = DLMI.PRAF_ID
+       INNER JOIN GLUO_PREDIO PRED ON PRED.PRED_ID = PRAF.PRED_ID
+       INNER JOIN GLUO_LIQUIDACION_MASIVA_IMPUESTOS LIMI
+          ON LIMI.LIMI_ID = DLMI.LIMI_ID
+ WHERE     DLMI.ACTIVO = 'A'
+       AND COIM.ACTIVO = 'A'
+       AND CART.ACTIVO = 'A'
+       AND PRAF.ACTIVO = 'A'
+       AND PRED.ACTIVO = 'A'
+       AND LIMI.ACTIVO = 'A'
+       AND CART.SALDO > 0
+       AND PRED.PRED_ID = $P{P_PRED_ID}
+       AND CART.PRCA_ID IS NULL
+       AND CART.CODE_ID IS NULL
+UNION ALL
+SELECT ANOF.ANO_FISCAL,
+       'B. CAR'             tipo_agrupador,
+       COIM.COIM_ID,
+          'CARTERA: '
+       || COIM.DESCRIPCION
+       || ' - TRIMESTRE '
+       || CART.TRIMESTRE
+       || ' - LIQUIDACION '
+       || ANOF.ANO_FISCAL,
+       CART.VALOR_CALCULADO,
+       CART.VALOR_CALCULADO VALOR_A_PAGAR,
+       CART.SALDO,
+       
+       NULL                 TIPO_TARIFA_ESPECIAL,
+       NULL                 VALOR_RATA_TARIFA_ESPECIAL,
+       0                    TARIFA_ESPECIAL_CALCULADA,
+       NULL                 TARIFA_TXM,
+       NULL                 porcentaje_tanto_x_mil,
+       NULL                 valor_porcentaje_tanto_x_mil,
+       'AÑO ' || '. TASA DE INTERES DE ' || CART.PORCENTAJE_INTERES || '%'
+          TARIFA_ESPECIAL_TEXTO,
+          TO_CHAR (CART.VALOR_BASE, 'FM$999,999,999,990D00')
+       || ' x '
+       || CART.PORCENTAJE_INTERES
+       || '%'
+          FORMULA_APLICADA,
+       1                    ES_CARTERA
+  FROM GLUO_CARTERA CART
+       INNER JOIN gluo_interes_mora_impuesto inmi
+          ON inmi.inmi_id = cart.inmi_id
+       INNER JOIN GLUO_ANO_FISCAL ANOF ON ANOF.ANOF_ID = CART.ANOF_ID
+       INNER JOIN GLUO_CONCEPTO_IMPUESTO COIM ON COIM.COIM_ID = INMI.COIM_ID
+       INNER JOIN GLUO_LIQUIDACION_OTROS_CONCEPTOS_IMPUESTO LOCI
+          ON LOCI.LOCI_ID = CART.LOCI_ID
+       INNER JOIN GLUO_DETALLE_LIQUIDACION_MASIVA_IMPUESTOS DLMI
+          ON DLMI.DLMI_ID = LOCI.DLMI_ID
+       INNER JOIN GLUO_PREDIO_ANO_FISCAL PRAF ON PRAF.PRAF_ID = DLMI.PRAF_ID
+       INNER JOIN GLUO_PREDIO PRED ON PRED.PRED_ID = PRAF.PRED_ID
+       INNER JOIN GLUO_TIPO_LIQUIDACION TILI ON TILI.TILI_ID = COIM.TILI_ID
+ WHERE     PRAF.ACTIVO = 'A'
+       AND DLMI.ACTIVO = 'A'
+       AND LOCI.ACTIVO = 'A'
+       AND PRED.ACTIVO = 'A'
+       AND PRED.ESTADO = 'A'
+       AND COIM.ACTIVO = 'A'
+       AND TILI.ACTIVO = 'A'
+       AND CART.SALDO > 0
+       AND PRED.PRED_ID = $P{P_PRED_ID}
+       AND CART.PRCA_ID IS NULL
+       AND CART.CODE_ID IS NULL
+	   
+UNION ALL 
+
+SELECT ANOF.ANO_FISCAL,
+       'AA. DES',
+       COIM_PREDIAL.COIM_ID,
+       'Descuento ' || COIM_PREDIAL.DESCRIPCION,
+       0,
+       0,
+       -1*DLMI.SALDO * DEIM.PORCENTAJE/100,
+       
+       MPTE.PORCENTAJE_TANTO_X_MIL        TIPO_TARIFA_ESPECIAL,
+       MPTE.VALOR                         VALOR_RATA_TARIFA_ESPECIAL,
+       (DLMI.VALOR_PREDIAL_CALCULADO - DLMI.VALOR_PREDIAL_PAGAR)
+          TARIFA_ESPECIAL_CALCULADA,
+       DLMI.TARIFA_TXM,
+       NULL                               porcentaje_tanto_x_mil,
+       NULL                               valor_porcentaje_tanto_x_mil,
+       null,
+       null,
+       0                                  ES_CARTERA
+  FROM GLUO_DETALLE_LIQUIDACION_MASIVA_IMPUESTOS DLMI
+       INNER JOIN GLUO_PREDIO_ANO_FISCAL PRAF ON PRAF.PRAF_ID = DLMI.PRAF_ID
+       INNER JOIN gluo_ano_fiscal anof ON anof.anof_id = praf.anof_id
+       INNER JOIN GLUO_PREDIO PRED ON PRED.PRED_ID = PRAF.PRED_ID
+       INNER JOIN GLUO_CONCEPTO_IMPUESTO COIM_PREDIAL
+          ON COIM_PREDIAL.COIM_ID = DLMI.COIM_ID
+       LEFT OUTER JOIN GLUO_MATRICULAR_PREDIO_TARIFA_ESPECIAL MPTE
+          ON MPTE.MPTE_ID = DLMI.MPTE_ID
+       INNER JOIN GLUO_DESCUENTO_IMPUESTO DEIM 
+	      ON DEIM.COIM_ID = COIM_PREDIAL.COIM_ID
+		  AND  $P{P_FECHA_EXPEDICION}  BETWEEN DEIM.FECHA_INICIO AND DEIM.FECHA_FIN 
+	   	 
+ WHERE     PRAF.ACTIVO = 'A'
+       AND DLMI.ACTIVO = 'A'
+       AND PRED.ACTIVO = 'A'
+       AND PRED.ESTADO = 'A'
+       AND COIM_PREDIAL.ACTIVO = 'A'
+       AND DLMI.SALDO > 0
+       AND PRED.PRED_ID = $P{P_PRED_ID}
+       AND DLMI.PRCA_ID IS NULL
+       AND DLMI.CODE_ID IS NULL
+	   
+ORDER BY ANO_FISCAL ASC, TIPO_AGRUPADOR ASC]]>
+	</queryString>
+	<field name="ano_fiscal" class="java.lang.Integer"/>
+	<field name="tipo_agrupador" class="java.lang.String"/>
+	<field name="coim_id" class="java.lang.Integer"/>
+	<field name="descripcion" class="java.lang.String"/>
+	<field name="valor_calculado" class="java.math.BigDecimal"/>
+	<field name="valor_a_pagar" class="java.math.BigDecimal"/>
+	<field name="saldo" class="java.math.BigDecimal"/>
+	<field name="tipo_tarifa_especial" class="java.lang.String"/>
+	<field name="valor_rata_tarifa_especial" class="java.math.BigDecimal"/>
+	<field name="tarifa_especial_calculada" class="java.math.BigDecimal"/>
+	<field name="tarifa_txm" class="java.math.BigDecimal"/>
+	<field name="porcentaje_tanto_x_mil" class="java.lang.String"/>
+	<field name="valor_porcentaje_tanto_x_mil" class="java.math.BigDecimal"/>
+	<field name="tarifa_especial_texto" class="java.lang.String"/>
+	<field name="formula_aplicada" class="java.lang.String"/>
+	<field name="es_cartera" class="java.lang.Integer"/>
+	<variable name="V_SUM_SALDO" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{saldo}]]></variableExpression>
+	</variable>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+		</band>
+	</title>
+	<pageHeader>
+		<band splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+		</band>
+	</columnHeader>
+	<detail>
+		<band splitType="Stretch"/>
+	</detail>
+	<columnFooter>
+		<band splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+		</band>
+	</columnFooter>
+	<pageFooter>
+		<band splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+		</band>
+	</pageFooter>
+	<summary>
+		<band height="105" splitType="Stretch">
+			<subreport>
+				<reportElement positionType="Float" x="0" y="90" width="570" height="15" uuid="dc126ce1-018d-4f22-a8ff-7040addfddaa">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+				</reportElement>
+				<subreportParameter name="P_ANOF_ID">
+					<subreportParameterExpression><![CDATA[$P{P_ANOF_ID}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="P_FECHA_EXPEDICION">
+					<subreportParameterExpression><![CDATA[$P{P_FECHA_EXPEDICION}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{P_SUBREPORT_DIR} + "descuentos_conceptos.jasper"]]></subreportExpression>
+			</subreport>
+			<staticText>
+				<reportElement positionType="Float" mode="Opaque" x="0" y="70" width="570" height="20" backcolor="#FFFFFF" uuid="65d60a06-7bbe-44d7-9555-1cc1310eabb6">
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+				</reportElement>
+				<box rightPadding="5">
+					<topPen lineWidth="0.0" lineStyle="Dashed"/>
+					<leftPen lineWidth="0.0" lineStyle="Dashed"/>
+					<bottomPen lineWidth="0.0" lineStyle="Dashed"/>
+					<rightPen lineWidth="0.0" lineStyle="Dashed"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[TABLA DE DESCUENTOS:]]></text>
+			</staticText>
+			<crosstab>
+				<reportElement x="0" y="0" width="600" height="63" uuid="329dd8b8-62ef-45fe-a977-33e32a4efd67">
+					<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
+				</reportElement>
+				<crosstabHeaderCell>
+					<cellContents>
+						<staticText>
+							<reportElement x="0" y="0" width="50" height="20" uuid="2d3fd44c-6405-4b2d-9065-738111525942"/>
+							<box>
+								<topPen lineWidth="0.2"/>
+								<leftPen lineWidth="0.2"/>
+								<bottomPen lineWidth="0.2"/>
+								<rightPen lineWidth="0.2"/>
+							</box>
+							<textElement textAlignment="Center" verticalAlignment="Middle">
+								<font size="9"/>
+							</textElement>
+							<text><![CDATA[Vigencia]]></text>
+						</staticText>
+					</cellContents>
+				</crosstabHeaderCell>
+				<rowGroup name="ano_fiscal1" width="50" totalPosition="End">
+					<bucket class="java.lang.Integer">
+						<bucketExpression><![CDATA[$F{ano_fiscal}]]></bucketExpression>
+					</bucket>
+					<crosstabRowHeader>
+						<cellContents mode="Opaque" style="Crosstab_CH">
+							<textField>
+								<reportElement x="0" y="0" width="50" height="20" uuid="d32dbf5a-7ba5-4586-8e8a-8849b1ef4ef8"/>
+								<box leftPadding="2" rightPadding="2"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font size="9"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$V{ano_fiscal1}]]></textFieldExpression>
+							</textField>
+						</cellContents>
+					</crosstabRowHeader>
+					<crosstabTotalRowHeader>
+						<cellContents mode="Opaque" style="Crosstab_CT">
+							<staticText>
+								<reportElement x="0" y="0" width="50" height="20" uuid="385d21d9-4a87-471c-9bbe-4ad99ce47841"/>
+								<box leftPadding="2" rightPadding="2"/>
+								<textElement textAlignment="Right" verticalAlignment="Middle">
+									<font size="9"/>
+								</textElement>
+								<text><![CDATA[Totales]]></text>
+							</staticText>
+						</cellContents>
+					</crosstabTotalRowHeader>
+				</rowGroup>
+				<columnGroup name="tipo_agrupador1" height="20" totalPosition="End">
+					<bucket class="java.lang.String">
+						<bucketExpression><![CDATA[$F{tipo_agrupador}]]></bucketExpression>
+					</bucket>
+					<crosstabColumnHeader>
+						<cellContents mode="Opaque" style="Crosstab_CH">
+							<textField isBlankWhenNull="true">
+								<reportElement x="0" y="0" width="60" height="20" uuid="031dfee6-f999-445e-8d36-e93cd8cc54c3"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font size="9"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$V{tipo_agrupador1}.equals("A. IPU")?"Impuesto":
+$V{tipo_agrupador1}.equals("AA. DES")?"Dcto.":
+$V{tipo_agrupador1}.equals("B. CAR")?"Vr. Intereses":
+$V{tipo_agrupador1}.equals("C. CRC")?"C.R.C":
+$V{tipo_agrupador1}.equals("D. BOM")?"Sob. Bomberil":
+$V{tipo_agrupador1}]]></textFieldExpression>
+							</textField>
+						</cellContents>
+					</crosstabColumnHeader>
+					<crosstabTotalColumnHeader>
+						<cellContents mode="Opaque" style="Crosstab_CT">
+							<staticText>
+								<reportElement x="0" y="0" width="100" height="20" uuid="fbfdfc51-ac8b-442d-a380-d71d79a328d9"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font size="9"/>
+								</textElement>
+								<text><![CDATA[Subtotal]]></text>
+							</staticText>
+						</cellContents>
+					</crosstabTotalColumnHeader>
+				</columnGroup>
+				<measure name="valor_a_pagar_MEASURE1" class="java.math.BigDecimal" calculation="Sum">
+					<measureExpression><![CDATA[$F{saldo}]]></measureExpression>
+				</measure>
+				<crosstabCell width="60" height="20">
+					<cellContents mode="Opaque" style="Crosstab_CD">
+						<textField pattern="$#,##0.##;¤-#,##0.##">
+							<reportElement x="0" y="0" width="60" height="20" uuid="f729073c-57b8-42b1-b935-172dbbba7fae"/>
+							<box leftPadding="2" rightPadding="2"/>
+							<textElement textAlignment="Right" verticalAlignment="Middle">
+								<font size="9"/>
+							</textElement>
+							<textFieldExpression><![CDATA[$V{valor_a_pagar_MEASURE1}]]></textFieldExpression>
+						</textField>
+					</cellContents>
+				</crosstabCell>
+				<crosstabCell width="100" height="20" columnTotalGroup="tipo_agrupador1">
+					<cellContents mode="Opaque" style="Crosstab_CT">
+						<textField pattern="$#,##0.00;$-#,##0.00">
+							<reportElement x="0" y="0" width="100" height="20" uuid="b219f217-0d83-40c0-b06e-715d8577f384"/>
+							<box leftPadding="2" rightPadding="2"/>
+							<textElement textAlignment="Right" verticalAlignment="Middle">
+								<font size="9" isBold="true"/>
+							</textElement>
+							<textFieldExpression><![CDATA[$V{valor_a_pagar_MEASURE1}]]></textFieldExpression>
+						</textField>
+					</cellContents>
+				</crosstabCell>
+				<crosstabCell width="60" height="20" rowTotalGroup="ano_fiscal1">
+					<cellContents mode="Opaque" style="Crosstab_CT">
+						<textField pattern="$#,##0.##;¤-#,##0.##">
+							<reportElement x="0" y="0" width="60" height="20" uuid="8f1c0976-ab88-4735-aab3-ccb9f975133a"/>
+							<box leftPadding="2" rightPadding="2"/>
+							<textElement textAlignment="Right" verticalAlignment="Middle">
+								<font size="9" isBold="true"/>
+							</textElement>
+							<textFieldExpression><![CDATA[$V{valor_a_pagar_MEASURE1}]]></textFieldExpression>
+						</textField>
+					</cellContents>
+				</crosstabCell>
+				<crosstabCell width="100" height="20" rowTotalGroup="ano_fiscal1" columnTotalGroup="tipo_agrupador1">
+					<cellContents mode="Opaque" style="Crosstab_CT">
+						<textField pattern="$#,##0.##;¤-#,##0.##">
+							<reportElement x="0" y="0" width="100" height="20" uuid="56fa68d2-d989-48d0-a6f5-af2814b8c3e9"/>
+							<box leftPadding="2" rightPadding="2"/>
+							<textElement textAlignment="Right" verticalAlignment="Middle">
+								<font size="9" isBold="true"/>
+							</textElement>
+							<textFieldExpression><![CDATA[$V{valor_a_pagar_MEASURE1}]]></textFieldExpression>
+						</textField>
+					</cellContents>
+				</crosstabCell>
+			</crosstab>
+		</band>
+	</summary>
+</jasperReport>

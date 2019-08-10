@@ -1,0 +1,113 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+	<ui:define name="content">
+
+		<p:ajaxStatus onstart="PF('statusDialog').show()"
+			onsuccess="PF('statusDialog').hide()" />
+		<p:dialog modal="true" widgetVar="statusDialog" header="Cargando"
+			draggable="false" closable="false">
+			<p:graphicImage
+				value="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/ajaxloadingbar.gif" />
+		</p:dialog>
+
+		<!-- Expired session -->
+		<p:idleMonitor onactive="PF('sessionTimeOutDialog').show();"
+			timeout="#{session.maxInactiveInterval * 1000}" />
+		<p:dialog modal="true" widgetVar="sessionTimeOutDialog"
+			header="Sesión terminada" draggable="false" closable="false">
+			<h:outputText value="La sesión ha finalizado" />
+			<input id="confirmBackToLogin" type="button" value="Iniciar sesión"
+				onclick="window.location='#{facesContext.externalContext.requestContextPath}/index.jsp';" />
+		</p:dialog>
+		
+		<script type="text/javascript">
+			function showStatus() {
+			    statusDialog.show();
+			}
+			 
+			function hideStatus() {
+			    statusDialog.hide();
+			}
+		</script>
+
+		<style type="text/css">
+			.one {
+				width: 20%;
+			}
+			
+			.two {
+				width: 80%;
+			}
+			
+		</style>
+
+		<h:form id="frmCartera">
+
+			<p:growl id="men" showDetail="false" autoUpdate="true"/>
+
+					<p:panel>
+						<h:outputText
+							value="Generar Cartera" styleClass="FontBold Fs18 hardblue" />
+					</p:panel>
+					
+					<p:panel id="pnlDatos">
+						<div align="center">
+							<h:panelGrid id="pnlSeleccionTrimestre" columns="2">
+								<h:outputText value="Año Fiscal Vigente: "/>
+								<p:inputText id="txtAnoFiscal" value="#{gluoCarteraView.anoFiscal.descripcion}" readonly="true"/>
+								
+								<h:outputText value="Trimestre: "/>
+								<p:selectOneMenu id="somTrimestre" binding="#{gluoCarteraView.somTrimestre}">
+									<f:selectItem itemLabel="-------------" itemValue="-1"/>
+									<f:selectItem itemLabel="1er Trimestre" itemValue="1"/>
+									<f:selectItem itemLabel="2do Trimestre" itemValue="2"/>
+									<f:selectItem itemLabel="3er Trimestre" itemValue="3"/>
+									<f:selectItem itemLabel="4to Trimestre" itemValue="4"/>
+									<p:ajax listener="#{gluoCarteraView.listener_trimestre}" update="men, panelInteresesConceptos"/>
+								</p:selectOneMenu>
+							</h:panelGrid>
+						</div>
+					</p:panel>
+					
+					<br/>
+					
+					<p:panel id="panelInteresesConceptos" header="Intereses que se aplicaran para los conceptos de impuesto en el trimestre seleccionado" style="width: 100%;" visible="true">
+						<p:dataTable id="tablaConceptos" var="concepto" paginator="true" rows="10" value="#{gluoCarteraView.listIntereses}" 
+									 emptyMessage="No hay conceptos de impuesto para el trimestre seleccionado">
+									 
+								<p:column headerText="Concepto Impuesto" width="80%">
+									<h:outputText value="#{concepto.descripcionConceptoImpuesto}"/>
+								</p:column>
+								
+								<p:column headerText="Porcentaje de Interes">
+									<h:outputText value="#{concepto.porcentajeInteresesMostrar} %" width="20%"/>
+								</p:column>  
+						</p:dataTable>
+					</p:panel>
+					
+					<div class="EmptyBox20" />
+					
+					<div align="center">
+						<h:panelGrid id="pnlGenerarCartera" columns="2">
+							<p:commandButton id="btnGenerarCartera" value="Generar Cartera" action="#{gluoCarteraView.action_generarCartera()}" update="pnlSeleccionTrimestre, panelInteresesConceptos, men"/>
+						</h:panelGrid>
+					</div>
+					
+					
+			<p:dialog id="dialogConfirm" modal="true" widgetVar="confirmacionDialog" header="Confirmacion" draggable="false" closable="true" resizable="false" position="center"
+				width="90%" height="500px">
+					<div align="center">
+						<h:panelGrid columns="2">
+							<p:commandButton value="Ver Reporte de Cartera" action="generarInformeCartera.xhtml"/>
+							<p:commandButton value="He terminado! Cerrar" oncomplete="PF('confirmacionDialog').hide();"	update=":frmCartera"/>
+						</h:panelGrid>
+					</div>
+				<div class="EmptyBox20" />
+			</p:dialog>
+		</h:form>
+	</ui:define>
+</ui:composition>

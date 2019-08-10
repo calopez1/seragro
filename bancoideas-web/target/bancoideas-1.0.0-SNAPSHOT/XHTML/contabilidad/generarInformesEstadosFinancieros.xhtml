@@ -1,0 +1,131 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+	<ui:define name="content">
+
+		<p:ajaxStatus onstart="PF('statusDialog').show()"
+			onsuccess="PF('statusDialog').hide()" />
+		<p:dialog modal="true" widgetVar="statusDialog" header="Cargando"
+			draggable="false" closable="false">
+			<p:graphicImage
+				value="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/ajaxloadingbar.gif" />
+		</p:dialog>
+
+		<!-- Expired session -->
+		<p:idleMonitor onactive="PF('sessionTimeOutDialog').show();"
+			timeout="#{session.maxInactiveInterval * 1000}" />
+		<p:dialog modal="true" widgetVar="sessionTimeOutDialog"
+			header="Sesión terminada" draggable="false" closable="false">
+			<h:outputText value="La sesión ha finalizado" />
+			<input id="confirmBackToLogin" type="button" value="Iniciar sesión"
+				onclick="window.location='#{facesContext.externalContext.requestContextPath}/index.jsp';" />
+		</p:dialog>
+		
+		<script type="text/javascript">
+			function showStatus() {
+			    statusDialog.show();
+			}
+			 
+			function hideStatus() {
+			    statusDialog.hide();
+			}
+		</script>
+
+		<style type="text/css">
+			.one {
+				width: 20%;
+			}
+			
+			.two {
+				width: 80%;
+			}
+			
+		</style>
+
+		<h:form id="frmLibroAuxiliar">
+
+			<p:growl id="men" showDetail="false" autoUpdate="true"/>
+
+					<p:panel>
+						<h:outputText value="Estados Financieros" styleClass="FontBold Fs18 hardblue" />
+					</p:panel>
+					
+					<p:panel id="pnlDatos">
+						
+						<br/>
+					
+						<div align="center">
+								<h:panelGrid id="panelFechas" columns="6">
+									<h:outputText value="Fecha Inicial: "/>
+									<p:calendar id="fechaInicial" locale="es" showButtonPanel="true"  
+												value="#{generarInformesEstadosFinancierosView.fechaInicial}" readonlyInput="true" 
+												timeZone="GMT-5" style="width: 100%;" disabled="false" navigator="true"
+												pattern="yyyy-MM-dd"/>
+												
+									<h:outputText value="Fecha Final: "/>
+									<p:calendar id="fechaFinal" locale="es" showButtonPanel="true"  
+												value="#{generarInformesEstadosFinancierosView.fechaFinal}" readonlyInput="true" 
+												timeZone="GMT-5" style="width: 100%;" disabled="false" navigator="true"
+												pattern="yyyy-MM-dd"/>
+												
+									<h:outputText value="Tipo de Redondeo: "/>
+									<p:selectOneRadio id="sorTipoRedondeo" binding="#{generarInformesEstadosFinancierosView.sorTipoRedondeo}">
+										<f:selectItem itemLabel="Unidad de Mil" itemValue="M"/>
+										<f:selectItem itemLabel="Pesos" itemValue="P"/>
+									</p:selectOneRadio>
+								</h:panelGrid>
+							</div>
+								
+							<br/>
+							
+							<div align="center">	
+								<h:panelGrid id="panelOtrosDatos" columns="6">
+									<h:outputText value="Desea calcular para el mismo periodo del año anterior? "/>
+									<p:selectOneRadio id="sorCalcularAnoAnterior" binding="#{generarInformesEstadosFinancierosView.sorCalcularParaAnoAnterior}">
+										<f:selectItem itemLabel="Si" itemValue="S"/>
+										<f:selectItem itemLabel="No" itemValue="N"/>
+									</p:selectOneRadio>
+									
+									<h:outputText value="A que nivel desea el informe? "/>
+									<p:selectOneRadio id="sorNivelDelInforme" binding="#{generarInformesEstadosFinancierosView.sorNivelInforme}">
+										<f:selectItem itemLabel="Cuenta" itemValue="C"/>
+										<f:selectItem itemLabel="SubCuenta" itemValue="SC"/>
+										<f:selectItem itemLabel="Auxiliar" itemValue="A"/>
+									</p:selectOneRadio>
+									
+									<h:outputText value="Formato del reporte "/>
+									<p:selectOneMenu id="somFormatoReporte" binding="#{generarInformesEstadosFinancierosView.somFormatoReporte}">
+										<f:selectItem itemLabel="[---Seleccione--]" itemValue="-1"/>
+										<f:selectItem itemLabel="PDF" itemValue="PDF"/>
+										<f:selectItem itemLabel="Excel (XLS)" itemValue="XLS"/>
+										<f:selectItem itemLabel="Excel (XLXS)" itemValue="XLSX"/>
+									</p:selectOneMenu>
+								</h:panelGrid>
+							</div>
+							
+							<br/>
+							
+							<div align="center">
+								<h:panelGrid id="pnlGenerarInforme" columns="4">
+									<p:commandButton value="Generar Reporte Balance General" onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)" icon="ui-icon-arrowthichk-s">
+										<p:fileDownload value="#{generarInformesEstadosFinancierosView.reporteBalanceGeneral}" />
+									</p:commandButton>
+									
+									<p:commandButton value="Generar Reporte Actividad Financiera, Económica, Social y Ambiental" onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)" icon="ui-icon-arrowthichk-s">
+										<p:fileDownload value="#{generarInformesEstadosFinancierosView.reporteActividadFinanciera}" />
+									</p:commandButton>
+									
+									<p:commandButton value="Generar Reporte Cambios en el Patrimonio" onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)" icon="ui-icon-arrowthichk-s">
+										<p:fileDownload value="#{generarInformesEstadosFinancierosView.reporteCambiosEnElPatrimonio}" />
+									</p:commandButton>
+								</h:panelGrid>
+							</div>
+					</p:panel>
+					
+			<div class="EmptyBox20" />
+		</h:form>
+	</ui:define>
+</ui:composition>

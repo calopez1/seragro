@@ -1,0 +1,371 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+<ui:define name="content">
+
+<style type="text/css">
+	.ui-panel {
+		margin-top: 20px
+	}
+	
+	.ui-tabs-top{
+		background-color: #FFFFFF;
+	}
+</style>
+
+<div align="center">
+
+	<h:form id="formInteresMoraImpuesto">
+		
+		<p:growl id="messages" autoUpdate="true" closable="true" />
+	
+		<p:panel id="pnlInteresMoraImpuesto" header="Interes Mora Impuesto Predial" style="width: 90%;">
+				<h:panelGrid columns="2">
+				
+					<p:outputLabel value="Concepto Impuesto" for="txtConceptoImpuesto" />			        			        	
+					<h:panelGrid columns="2">					
+						<p:inputText id="txtConceptoImpuesto" value="#{gluoInteresMoraImpuestoView.txtConceptoImpuesto}" style="width: 200px;"
+							disabled="#{gluoInteresMoraImpuestoView.showConcepto}" />
+						<p:commandButton  icon="ui-icon-search" onclick="PF('dialogConceptoImpuesto').show();"
+							disabled="#{gluoInteresMoraImpuestoView.showConcepto}" />
+					</h:panelGrid>
+					
+					<p:outputLabel value="Fecha Inicio" for="txtFechaInicio" />
+					<p:calendar id="txtFechaInicio" value="#{gluoInteresMoraImpuestoView.txtFechaInicio}" style="width: 200px;" />						
+					
+					<p:outputLabel value="% Trimestre 1" for="txtTrimestre1" />
+					<p:inputText id="txtTrimestre1" value="#{gluoInteresMoraImpuestoView.txtTrimestre1}" style="width: 200px;" >
+						<f:convertNumber pattern="#,##0.00" />
+			        	<p:ajax event="blur" update="@this" />
+					</p:inputText>
+					
+					<p:outputLabel value="% Trimestre 2" for="txtTrimestre2" />
+					<p:inputText id="txtTrimestre2" value="#{gluoInteresMoraImpuestoView.txtTrimestre2}" style="width: 200px;" >
+						<f:convertNumber pattern="#,##0.00" />
+			        	<p:ajax event="blur" update="@this" />
+					</p:inputText>
+					
+					<p:outputLabel value="% Trimestre 3" for="txtTrimestre3" />
+					<p:inputText id="txtTrimestre3" value="#{gluoInteresMoraImpuestoView.txtTrimestre3}" style="width: 200px;" >
+						<f:convertNumber pattern="#,##0.00" />
+			        	<p:ajax event="blur" update="@this" />
+					</p:inputText>
+					
+					<p:outputLabel value="% Trimestre 4" for="txtTrimestre4" />
+					<p:inputText id="txtTrimestre4" value="#{gluoInteresMoraImpuestoView.txtTrimestre4}" style="width: 200px;" >
+						<f:convertNumber pattern="#,##0.00" />
+			        	<p:ajax event="blur" update="@this" />
+					</p:inputText>
+					
+					<p:outputLabel value="Parametrización Concepto:" for="txtParametrizacionConcepto" />
+					<p:panelGrid>
+						<p:inputText id="txtParametrizacionConcepto" value="#{gluoInteresMoraImpuestoView.txtParametrizacionConcepto}"  
+									 style="width: 200px;" />
+						<p:commandButton icon="ui-icon-search" 
+										 oncomplete="PF('dlgParametrizacionConcepto').show();"
+										 update=":formInteresMoraImpuesto"/>
+					</p:panelGrid>
+					
+					<p:outputLabel value="Cuenta Contable Débito" for="txtCuentaContableDebito" />
+					<p:inputText id="txtCuentaContableDebito" value="#{gluoInteresMoraImpuestoView.txtCuentaContableDebito}" style="width: 200px;" />
+					
+					<p:outputLabel value="Cuenta Contable Crédito" for="txtCuentaContableCredito" />
+					<p:inputText id="txtCuentaContableCredito" value="#{gluoInteresMoraImpuestoView.txtCuentaContableCredito}" style="width: 200px;" />
+					
+					
+					<p:outputLabel value="Prioridad" />	
+					<p:spinner id="basic" value="#{gluoInteresMoraImpuestoView.selectPrioridadConceptoImpuesto}" min="1" />
+						
+				</h:panelGrid>
+				
+				<br/>
+				
+				<p:commandButton id="btnGuardar" value="Guardar"
+							action="#{gluoInteresMoraImpuestoView.action_guardar}"							
+							update=":formInteresMoraImpuesto" />
+											
+				<p:commandButton id="btnLimpiar" value="Limpiar"
+							action="#{gluoInteresMoraImpuestoView.action_limpiar}"							
+							update=":formInteresMoraImpuesto" />
+				
+		</p:panel>
+		
+				
+		<p:panel id="pnlListaInteresMoraImpuesto" header="Lista de intereses de mora para impuesto predial" 
+			style="width: 90%; text-align: center;" >
+		
+			<p:dataTable id="listaInteresMoraImpuestoDataTable" var="interesMora" paginator="true" rows="10"
+				value="#{gluoInteresMoraImpuestoView.listaInteresMoraImpuestoDTOs}"					
+				selection="#{gluoInteresMoraImpuestoView.interesMoraImpuestoDTO}"
+				selectionMode="single"
+				rowKey="#{interesMora.inmiId}" 
+				filterDelay="1000">
+				
+				<p:ajax event="rowSelect"
+						listener="#{gluoInteresMoraImpuestoView.onRowSelectInteresMoraImpuesto}"	
+						update=":formInteresMoraImpuesto" />
+				
+				<p:column selectionMode="single" style="width: 25px;"/>
+				
+				<p:column headerText="Concepto Impuesto" filterBy="#{interesMora.nombreConceptoImpuesto}" 
+					filterMatchMode="contains">
+					<h:outputText value="#{interesMora.nombreConceptoImpuesto}" />
+				</p:column>
+
+				<p:column headerText="Parametrización Concepto" filterBy="#{interesMora.codigoConcepto_gluoParametrizacionConcepto}" 
+					filterMatchMode="contains">
+					<h:outputText value="#{interesMora.codigoConcepto_gluoParametrizacionConcepto}" />
+				</p:column>
+
+				
+				<p:column headerText="Fecha inicio" filterBy="#{interesMora.fechaInicio}" 
+					filterMatchMode="contains">
+					<h:outputText value="#{interesMora.fechaInicio}" >
+						<f:convertDateTime type="date" pattern="dd-MM-yyyy"/>
+					</h:outputText>
+				</p:column>
+				
+				<p:column headerText="% Trimestre 1" filterBy="#{interesMora.porcentajeTrimestre1}" 
+					filterMatchMode="contains">
+					<h:outputText value="#{interesMora.porcentajeTrimestre1}" >
+						<f:convertNumber pattern="#,##0.00"  />
+					</h:outputText>
+				</p:column>
+				
+				<p:column headerText="% Trimestre 2" filterBy="#{interesMora.porcentajeTrimestre2}" 
+					filterMatchMode="contains">
+					<h:outputText value="#{interesMora.porcentajeTrimestre2}" >
+						<f:convertNumber pattern="#,##0.00"  />
+					</h:outputText>
+				</p:column>
+				
+				<p:column headerText="% Trimestre 3" filterBy="#{interesMora.porcentajeTrimestre3}" 
+					filterMatchMode="contains">
+					<h:outputText value="#{interesMora.porcentajeTrimestre3}" >
+						<f:convertNumber pattern="#,##0.00"  />
+					</h:outputText>
+				</p:column>
+				
+				<p:column headerText="% Trimestre 4" filterBy="#{interesMora.porcentajeTrimestre4}" 
+					filterMatchMode="contains">
+					<h:outputText value="#{interesMora.porcentajeTrimestre4}" >
+						<f:convertNumber pattern="#,##0.00"  />
+					</h:outputText>
+				</p:column>
+				
+				<p:column headerText="CC. Débito" filterBy="#{interesMora.nombreCuentaContableDebito}" 
+					filterMatchMode="contains">
+					<h:outputText value="#{interesMora.nombreCuentaContableDebito}" />
+				</p:column>
+				
+				<p:column headerText="CC. Crédito" filterBy="#{interesMora.nombreCuentaContableCredito}" 
+					filterMatchMode="contains">
+					<h:outputText value="#{interesMora.nombreCuentaContableCredito}" />
+				</p:column>
+				
+				<p:column headerText="Prioridad" filterBy="#{interesMora.prioridad}" 
+					filterMatchMode="contains">
+					<h:outputText value="#{interesMora.prioridad}" />
+				</p:column>
+						
+			</p:dataTable>
+		
+		</p:panel>
+		
+		<br/><br/>
+		
+		
+		
+		<!-- ************************************************** -->
+		<!-- **			 DIÁLOGO CONCEPTO IMPUESTO		   	 ** -->
+		<!-- ************************************************** -->
+		<p:dialog header="Conceptos Impuesto Predial"
+			widgetVar="dialogConceptoImpuesto" modal="true" height="400" width="90%">		
+			<div style="text-align: center;">			
+				<p:scrollPanel mode="native" style="width:100%; height:400px;">	
+							
+					<p:dataTable id="listaConceptosImpuestoDataTable" var="conceptoImpuesto" paginator="true" rows="10"
+						value="#{gluoInteresMoraImpuestoView.conceptoImpuestoDTOs}"					
+						selection="#{gluoInteresMoraImpuestoView.conceptoImpuestoDTO}"
+						selectionMode="single"
+						rowKey="#{conceptoImpuesto.coimId}" 
+						filterDelay="1000">
+						
+						<p:ajax event="rowSelect"
+							listener="#{gluoInteresMoraImpuestoView.onRowSelectConceptoImpuesto}"	
+							update=":formInteresMoraImpuesto" />
+							
+						<p:column headerText="Año Fiscal" filterBy="#{conceptoImpuesto.anoFiscal}" 
+							filterMatchMode="contains">
+							<h:outputText value="#{conceptoImpuesto.anoFiscal}" />
+						</p:column>
+													
+						<p:column headerText="Descripción" filterBy="#{conceptoImpuesto.descripcion}" 
+							filterMatchMode="contains">
+							<h:outputText value="#{conceptoImpuesto.descripcion}" />
+						</p:column>
+						
+						<p:column headerText="Porcentaje/TantoXMil" filterBy="#{conceptoImpuesto.nombrePorcentajeTantoXMil}" 
+							filterMatchMode="contains">
+							<h:outputText value="#{conceptoImpuesto.nombrePorcentajeTantoXMil}" />
+						</p:column>
+						
+						<p:column headerText="Valor" filterBy="#{conceptoImpuesto.valor}" 
+							filterMatchMode="contains">
+							<h:outputText value="#{conceptoImpuesto.valor}" >
+								<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+							</h:outputText>
+						</p:column>
+						
+						<p:column headerText="Tipo Liquidación" filterBy="#{conceptoImpuesto.nombreLiquidacion}" 
+							filterMatchMode="contains">
+							<h:outputText value="#{conceptoImpuesto.nombreLiquidacion}" />
+						</p:column>
+						
+						
+						<p:column headerText="CC. Débito" filterBy="#{conceptoImpuesto.nombreCuentaContableDebito}" 
+							filterMatchMode="contains">
+							<h:outputText value="#{conceptoImpuesto.nombreCuentaContableDebito}" />
+						</p:column>
+						
+						<p:column headerText="CC. Crédito" filterBy="#{conceptoImpuesto.nombreCuentaContableCredito}" 
+							filterMatchMode="contains">
+							<h:outputText value="#{conceptoImpuesto.nombreCuentaContableCredito}" />
+						</p:column>
+						
+						<p:column headerText="Activo" filterBy="#{conceptoImpuesto.nombreActivo}" 
+							filterMatchMode="contains">
+							<h:outputText value="#{conceptoImpuesto.nombreActivo}" />
+						</p:column>
+								
+					</p:dataTable>
+				</p:scrollPanel>			
+			</div>			
+		</p:dialog>
+			
+			
+	
+		<!-- ************************************************** -->
+		<!-- **		DIÁLOGO CUENTAS CONTABLES DÉBITO		 ** -->
+		<!-- ************************************************** -->
+		<p:dialog header="Cuentas Contables Débito"
+			widgetVar="dialogCuentasContablesDebito" modal="true" height="400" width="90%">
+		
+			<div style="text-align: center;">
+			
+				<p:scrollPanel mode="native" style="width:100%; height:400px;">
+					<p:dataTable var="cuentaContableDebito" paginator="true" rows="10"
+						value="#{gluoInteresMoraImpuestoView.cuentasContablesDebito}"					
+						selection="#{gluoInteresMoraImpuestoView.cuentaContableDebito}"
+						selectionMode="single"
+						rowKey="#{cuentaContableDebito.cconId}" 
+						filterDelay="1000">
+						
+						<p:ajax event="rowSelect"
+							listener="#{gluoInteresMoraImpuestoView.onRowSelectCuentaContableDebito}"	
+							update=":formInteresMoraImpuesto"								
+							oncomplete="PF('dialogCuentasContablesDebito').hide();" />
+	
+						<p:column headerText="Código" filterBy="#{cuentaContableDebito.codigo}" 
+							filterMatchMode="contains">
+							<h:outputText value="#{cuentaContableDebito.codigo}" />
+						</p:column>
+						
+						<p:column headerText="Descripción" filterBy="#{cuentaContableDebito.descripcion}" 
+							filterMatchMode="contains">
+							<h:outputText value="#{cuentaContableDebito.descripcion}" />
+						</p:column>
+						
+						
+					</p:dataTable>	
+				</p:scrollPanel>	
+			
+			</div>
+		
+		</p:dialog>
+				
+				
+				
+		<!-- ************************************************** -->
+		<!-- **		DIÁLOGO CUENTAS CONTABLES CRÉDITO		 ** -->
+		<!-- ************************************************** -->
+		<p:dialog header="Cuentas Contables Crédito"
+			widgetVar="dialogCuentasContablesCredito" modal="true" height="400" width="90%">
+		
+			<div style="text-align: center;">
+			
+				<p:scrollPanel mode="native" style="width:100%; height:400px;">
+					<p:dataTable var="cuentaContableCredito" paginator="true" rows="10"
+						value="#{gluoInteresMoraImpuestoView.cuentasContablesCredito}"					
+						selection="#{gluoInteresMoraImpuestoView.cuentaContableCredito}"
+						selectionMode="single"
+						rowKey="#{cuentaContableCredito.cconId}" 
+						filterDelay="1000">
+						
+						<p:ajax event="rowSelect"
+							listener="#{gluoInteresMoraImpuestoView.onRowSelectCuentaContableCredito}"	
+							update=":formInteresMoraImpuesto"								
+							oncomplete="PF('dialogCuentasContablesCredito').hide();" />
+	
+						<p:column headerText="Código" filterBy="#{cuentaContableCredito.codigo}" 
+							filterMatchMode="contains">
+							<h:outputText value="#{cuentaContableCredito.codigo}" />
+						</p:column>
+						
+						<p:column headerText="Descripción" filterBy="#{cuentaContableCredito.descripcion}" 
+							filterMatchMode="contains">
+							<h:outputText value="#{cuentaContableCredito.descripcion}" />
+						</p:column>
+						
+						
+					</p:dataTable>	
+				</p:scrollPanel>	
+			
+			</div>
+		
+		</p:dialog>
+		
+		
+		<!-- ************************************************** -->
+		<!-- **				PARAMETRIZACION CONCEPTO	     ** -->
+		<!-- ************************************************** -->
+			
+		<p:dialog header="Parametrización Concepto" style="align-text: center"
+				widgetVar="dlgParametrizacionConcepto" modal="true" height="400" width="90%">
+									
+			<p:scrollPanel mode="native" style="width:100%; height:400px">
+			<p:dataTable var="paco" paginator="true" rows="10"
+				value="#{gluoInteresMoraImpuestoView.listParametrizacionConceptoDTOs}"
+				selectionMode="single"
+				selection="#{gluoInteresMoraImpuestoView.selectedParametrizacionConceptoDTO}"
+				rowKey="#{paco.pacoId}"
+				filterDelay="1000">
+
+				<p:ajax event="rowSelect"
+					listener="#{gluoInteresMoraImpuestoView.listener_parametrizacion_concepto}"	
+					update=":formInteresMoraImpuesto"								
+					oncomplete="PF('dlgParametrizacionConcepto').hide();" />
+
+				<p:column headerText="Código" filterBy="#{paco.codigoConcepto}" 
+					filterMatchMode="contains">
+					<h:outputText value="#{paco.codigoConcepto}" />
+				</p:column>
+					
+					
+				</p:dataTable>	
+				</p:scrollPanel>
+		</p:dialog>
+
+	
+			
+			
+			
+	
+	</h:form>
+		
+</div>
+</ui:define>
+</ui:composition>

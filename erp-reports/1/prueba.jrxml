@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.1.1.final using JasperReports Library version 6.1.1  -->
+<!-- 2017-12-07T11:51:01 -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="prueba" pageWidth="612" pageHeight="792" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="e3415da2-1888-44b6-9d41-7bc1eff3e247">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="glu-19824.xml"/>
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<queryString>
+		<![CDATA[select cdp.*, dcdp.* 
+from gluo_cdp cdp
+inner join gluo_detalle_cdp dcdp on dcdp.cdp_id = cdp.cdp_id
+order by cdp.cdp_id
+limit 100]]>
+	</queryString>
+	<field name="cdp_id" class="java.lang.Integer"/>
+	<field name="objeto" class="java.lang.String"/>
+	<field name="valor_total_cdp" class="java.math.BigDecimal"/>
+	<field name="valor_total_disponible" class="java.math.BigDecimal"/>
+	<field name="consecutivo" class="java.lang.String"/>
+	<field name="fecha_expedicion" class="java.sql.Timestamp"/>
+	<field name="fecha_vencimiento" class="java.sql.Timestamp"/>
+	<field name="es_de_aplazamiento" class="java.lang.String"/>
+	<field name="activo" class="java.lang.String"/>
+	<field name="fecha_creacion" class="java.sql.Timestamp"/>
+	<field name="fecha_modificacion" class="java.sql.Timestamp"/>
+	<field name="usu_creador" class="java.lang.Integer"/>
+	<field name="usu_modificador" class="java.lang.Integer"/>
+	<field name="scdp_id" class="java.lang.Integer"/>
+	<field name="anulado" class="java.lang.String"/>
+	<field name="valor_disponible" class="java.math.BigDecimal"/>
+	<field name="dcdp_id" class="java.lang.Integer"/>
+	<field name="saldo_anterior" class="java.math.BigDecimal"/>
+	<field name="valor_certificado" class="java.math.BigDecimal"/>
+	<field name="nuevo_saldo" class="java.math.BigDecimal"/>
+	<field name="COLUMN_21" class="java.lang.String"/>
+	<field name="COLUMN_22" class="java.sql.Timestamp"/>
+	<field name="COLUMN_23" class="java.sql.Timestamp"/>
+	<field name="COLUMN_24" class="java.lang.Integer"/>
+	<field name="COLUMN_25" class="java.lang.Integer"/>
+	<field name="COLUMN_26" class="java.lang.Integer"/>
+	<field name="dpto_id" class="java.lang.Integer"/>
+	<group name="Group1">
+		<groupExpression><![CDATA[$F{objeto}]]></groupExpression>
+		<groupHeader>
+			<band height="50"/>
+		</groupHeader>
+		<groupFooter>
+			<band height="50"/>
+		</groupFooter>
+	</group>
+	<group name="GRP_CDP_ID">
+		<groupExpression><![CDATA[$F{cdp_id}]]></groupExpression>
+		<groupHeader>
+			<band height="30">
+				<textField>
+					<reportElement x="0" y="0" width="100" height="30" uuid="0fb37cc6-376b-44e8-b0b6-7286324cfb76"/>
+					<textFieldExpression><![CDATA[$F{cdp_id}]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band height="50"/>
+		</groupFooter>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="79" splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band height="35" splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="67" splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band height="30" splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+			<textField>
+				<reportElement x="100" y="0" width="100" height="30" uuid="e83ce211-c12e-41e4-83e1-76e8189da755"/>
+				<textFieldExpression><![CDATA[$F{dcdp_id}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="45" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="54" splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="42" splitType="Stretch"/>
+	</summary>
+</jasperReport>

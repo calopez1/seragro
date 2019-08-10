@@ -1,0 +1,701 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+	<ui:define name="content">
+		<f:view>
+			<script type="text/javascript">
+			function justNumbers(e) {
+					var keynum = window.event ? window.event.keyCode : e.which;
+					if ((keynum == 8) || (keynum == 46) || (keynum == 44))
+					return true;
+					 
+					return /\d/.test(String.fromCharCode(keynum));
+			}
+			PrimeFaces.locales['es'] = {
+				    closeText: 'Cerrar',
+				    prevText: 'Anterior',
+				    nextText: 'Siguiente',
+				    monthNames: ['Enero','Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+				    monthNamesShort: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun','Jul','Ago','Sep','Oct','Nov','Dic'],
+				    dayNames: ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'],
+				    dayNamesShort: ['Dom','Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab'],
+				    dayNamesMin: ['D','L','M','M','J','V','S'],
+				    weekHeader: 'Semana',
+				    firstDay: 1,
+				    isRTL: false,
+				    showMonthAfterYear: false,
+				    yearSuffix: '',
+				    timeOnlyTitle: 'Sólo hora',
+				    timeText: 'Tiempo',
+				    hourText: 'Hora',
+				    minuteText: 'Minuto',
+				    secondText: 'Segundo',
+				    currentText: 'Fecha actual',
+				    ampm: false,
+				    month: 'Mes',
+				    week: 'Semana',
+				    day: 'Día',
+				    allDayText : 'Todo el día'
+				};
+			function showStatus() {
+			    statusDialog.show();
+			}
+			 
+			function hideStatus() {
+			    statusDialog.hide();
+			}
+		</script>
+			<p:ajaxStatus onstart="PF('statusDialog').show()"
+				onsuccess="PF('statusDialog').hide()" />
+			<p:dialog modal="true" widgetVar="statusDialog" header="Cargando"
+				draggable="false" closable="false">
+				<p:graphicImage
+					value="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/ajaxloadingbar.gif" />
+			</p:dialog>
+
+			<!-- Expired session -->
+			<p:idleMonitor onactive="PF('sessionTimeOutDialog').show();"
+				timeout="#{session.maxInactiveInterval * 1000}" />
+			<p:dialog modal="true" widgetVar="sessionTimeOutDialog"
+				header="Sesión Finalizada" draggable="false" closable="false">
+				<h:outputText value="La sesión ha caducado." />
+				<input id="confirmBackToLogin" type="button" value="Iniciar Sesión"
+					onclick="window.location='#{facesContext.externalContext.requestContextPath}/index.jsp';" />
+			</p:dialog>
+
+			<h:form id="frm">
+
+				<p:panel id="panelDataTableGluoHoraExtra" header="Horas Extras por Empleado">
+					<p:growl id="men" autoUpdate="true" showDetail="false"/>
+					<p:dataTable id="tblHorasExtrasMain" value="#{gluoHoraExtraView.data}" var="gluoHoraExtra"
+						 rows="10"
+                         paginator="true"
+                         paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         rowsPerPageTemplate="5,10"
+						emptyMessage="No se encontraron horas extras registradas actualmente para su empresa"
+						scrollable="true" scrollWidth="100%" scrollHeight="380" filterDelay="1000">
+						
+						<p:columnGroup type="header">
+				            <p:row>
+				                <p:column colspan="4" headerText="Empleado" width="600"/>
+				                <p:column rowspan="2" headerText="Tipo de Hora Extra" filterBy="#{gluoHoraExtra.descripcionTipoHoraExtra}" sortBy="#{gluoHoraExtra.descripcionTipoHoraExtra}" filterMatchMode="contains" width="150"/>
+				                <p:column rowspan="2" headerText="Cantidad" width="150"/>
+				                <p:column rowspan="2" headerText="Fecha Inicial" width="150"/>
+				                <p:column rowspan="2" headerText="Fecha Final" width="150"/>
+				                <p:column rowspan="2" headerText="Acto Administrativo" width="150"/>
+				                <p:column rowspan="2" headerText="Estado" width="150"/>
+				                <p:column rowspan="2" headerText="Opciones" width="150"/>
+				            </p:row>
+				            <p:row>
+				                <p:column headerText="Primer Nombre" filterBy="#{gluoHoraExtra.primerNombreEmpleado}" sortBy="#{gluoHoraExtra.primerNombreEmpleado}" filterMatchMode="contains"  width="150"/>
+				                <p:column headerText="Segundo Nombre" filterBy="#{gluoHoraExtra.segundoNombreEmpleado}" sortBy="#{gluoHoraExtra.segundoNombreEmpleado}" filterMatchMode="contains" width="150"/>
+				                <p:column headerText="Primer Apellido" filterBy="#{gluoHoraExtra.primerApellidoEmpleado}" sortBy="#{gluoHoraExtra.primerApellidoEmpleado}" filterMatchMode="contains" width="150"/>
+				                <p:column headerText="Segundo Apellido" filterBy="#{gluoHoraExtra.segundoApellidoEmpleado}" sortBy="#{gluoHoraExtra.segundoApellidoEmpleado}" filterMatchMode="contains" width="150"/>
+				            </p:row>
+				        </p:columnGroup>
+				        
+				        <p:column style="text-align: center;">
+							<h:outputText value="#{gluoHoraExtra.primerNombreEmpleado}" />
+						</p:column>
+						
+						<p:column style="text-align: center;">
+							<h:outputText value="#{gluoHoraExtra.segundoNombreEmpleado}" />
+						</p:column>
+						
+						<p:column style="text-align: center;">
+							<h:outputText value="#{gluoHoraExtra.primerApellidoEmpleado}" />
+						</p:column>
+						
+						<p:column style="text-align: center;">
+							<h:outputText value="#{gluoHoraExtra.segundoApellidoEmpleado}" />
+						</p:column>
+				        
+				        <p:column style="text-align: center;">
+							<h:outputText value="#{gluoHoraExtra.descripcionTipoHoraExtra}" />
+						</p:column>
+						
+						<p:column style="text-align: center;">
+							<h:outputText value="#{gluoHoraExtra.cantidad}" />
+						</p:column>
+						
+						<p:column style="text-align: center;">
+							<h:outputText value="#{gluoHoraExtra.fechaHoraTrabajadaInicio}">
+								<f:convertDateTime type="date" pattern="dd-MM-yyyy"/>
+							</h:outputText>
+						</p:column>
+						
+						<p:column style="text-align: center;">
+							<h:outputText value="#{gluoHoraExtra.fechaHoraTrabajadaFin}">
+								<f:convertDateTime type="date" pattern="dd-MM-yyyy"/>
+							</h:outputText>		
+						</p:column>
+						
+						<p:column style="text-align: center;">
+							<h:outputText value="#{gluoHoraExtra.consecutivoActoAdministrativo}" />
+						</p:column>
+						
+						<p:column style="text-align: center;">
+							<h:outputText value="#{(gluoHoraExtra.activo.trim() eq 'A')?'Activo':'Inactivo'}" />
+						</p:column>
+						
+						<p:column headerText="Opciones">
+							<p:commandButton id="btnEdit" icon="#{(gluoHoraExtra.activo.trim() eq 'A')?'ui-icon-minus':'ui-icon-check'}"
+								update="@([id$=panelDataTableGluoHoraExtra]),@([id$=tblHorasExtrasMain]), @([id$=dialogGluoHoraExtra]), @([id$=panelGluoHoraExtra])" title="#{(gluoHoraExtra.activo.trim() eq 'A')?'Inactivar':'Activar'}"
+								actionListener="#{gluoHoraExtraView.action_edit}">
+								<f:attribute name="selectedGluoHoraExtra"
+									value="#{gluoHoraExtra}" />
+							</p:commandButton>
+						</p:column>
+					</p:dataTable>
+				</p:panel>
+				<p:panel id="panelBoton">
+					<div align="center">
+						<p:commandButton id="btnNew" value="Registrar"
+							action="#{gluoHoraExtraView.action_new()}"
+							update=":dialogGluoHoraExtra" />
+					</div>
+				</p:panel>
+				
+									
+			<!-- Empleados -->
+			<!-- ******************************************* -->
+			<p:dialog modal="true" widgetVar="dlgEmpleados" id="dlgEmpleados"
+				header="Empleados" draggable="false" closable="true"
+				resizable="true" width="90%" height="200px;" position="center">
+					
+					<p:scrollPanel mode="native" style="width:100%; height:400px">
+						<p:dataTable id="tblEmpleados" var="empleados"
+							value="#{gluoHoraExtraView.empleados}"
+							rows="10" paginator="true"
+							paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+							rowsPerPageTemplate="10,15,20,30"
+							emptyMessage="No se encontraron empleados registrados para su empresa" reflow="true"
+							rowKey="#{empleados.emplId}"
+							selection="#{gluoHoraExtraView.empleadoSeleccionadoTbl}"
+							filterDelay="1000">
+							
+	                        <p:column selectionMode="single"
+									style="width:5%; text-align:center" />
+									
+							<p:column headerText="Codigo Empleado" sortBy="#{empleados.codigo}"
+								width="200px" filterBy="#{empleados.codigo}"
+								filterMatchMode="contains">
+								<h:outputText value="#{empleados.codigo}" />
+							</p:column>
+	
+							<p:column headerText="Primer Nombre" sortBy="#{empleados.gluoTercero.primerNombre}"
+								width="200px" filterBy="#{empleados.gluoTercero.primerNombre}"
+								filterMatchMode="contains">
+								<h:outputText value="#{empleados.gluoTercero.primerNombre}" />
+							</p:column>
+							
+							<p:column headerText="Segundo Nombre" sortBy="#{empleados.gluoTercero.segundoNombre}"
+								width="200px" filterBy="#{empleados.gluoTercero.segundoNombre}"
+								filterMatchMode="contains">
+								<h:outputText value="#{empleados.gluoTercero.segundoNombre}" />
+							</p:column>
+							
+							<p:column headerText="Primer Apellido" sortBy="#{empleados.gluoTercero.primerApellido}"
+								width="200px" filterBy="#{empleados.gluoTercero.primerApellido}"
+								filterMatchMode="contains">
+								<h:outputText value="#{empleados.gluoTercero.primerApellido}" />
+							</p:column>
+							
+							<p:column headerText="Segundo Apellido" sortBy="#{empleados.gluoTercero.segundoApellido}"
+								width="200px" filterBy="#{empleados.gluoTercero.segundoApellido}"
+								filterMatchMode="contains">
+								<h:outputText value="#{empleados.gluoTercero.segundoApellido}" />
+							</p:column>
+							
+						</p:dataTable>
+					</p:scrollPanel>
+
+					<br />
+					<p:panel id="panelBotonEmpleados" style="border: none;">
+					<div align="center">
+					<p:commandButton value="Seleccionar Empleado"
+						icon="ui-icon-plus" oncomplete="PF('dlgEmpleados').hide();" 
+						actionListener="#{gluoHoraExtraView.action_seleccionarEmpleado}"
+						update="@([id$=empleadoSeleccionado])"/>
+					</div>
+					</p:panel>
+					<div class="EmptyBox20" />
+
+			</p:dialog>
+			<!-- Empleados -->
+			
+			<!-- Tipo de Hora Extra -->
+			<!-- ******************************************* -->
+			<p:dialog modal="true" widgetVar="dlgHoraExtra" id="dlgHoraExtra"
+				header="Tipos de Horas Extras" draggable="false" closable="true"
+				resizable="true" width="90%" height="200px;" position="center">
+					
+					<p:scrollPanel mode="native" style="width:100%; height:200px">
+						<p:dataTable id="tblHorasExtras" var="thoe"
+							value="#{gluoHoraExtraView.tiposHorasExtras}"
+							rows="10" paginator="true"
+							paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+							rowsPerPageTemplate="10,15,20,30"
+							emptyMessage="No se encontraron tipos de situaciones administrativas registradas para su empresa" reflow="true"
+							rowKey="#{thoe.thoeId}"
+							selection="#{gluoHoraExtraView.tipoHoraExtraSeleccionada}"
+							filterDelay="1000">
+							
+	                        <p:column selectionMode="single"
+									style="width:5%; text-align:center" />
+	
+						<p:column filterBy="#{thoe.descripcion}" width="200px"
+							sortBy="#{thoe.descripcion}"
+							filterMatchMode="contains">
+							<f:facet name="header">
+								<h:outputText value="Descripción" />
+							</f:facet>
+							<h:outputText value="#{thoe.descripcion}" />
+						</p:column>
+						
+						<p:column filterBy="#{thoe.incrementoValorHora}" width="200px"
+							sortBy="#{thoe.incrementoValorHora}"
+							filterMatchMode="contains">
+							<f:facet name="header">
+								<h:outputText value="Incremento de Valor por Hora" />
+							</f:facet>
+							<h:outputText value="#{thoe.incrementoValorHora} %" />
+						</p:column>
+							
+						</p:dataTable>
+					</p:scrollPanel>
+
+					<br />
+					
+					<p:panel id="panelBotonTH" style="border: none;">
+						<div align="center">
+							<p:commandButton value="Seleccionar"
+								icon="ui-icon-plus" oncomplete="PF('dlgHoraExtra').hide();" 
+								actionListener="#{gluoHoraExtraView.action_seleccionarTipoHoraExtra}"
+								update="@([id$=horaExtraSeleccionada]), @([id$=panelGluoHoraExtra])"/>
+						</div>
+					</p:panel>
+					
+					
+
+					<div class="EmptyBox20" />
+
+			</p:dialog>
+			<!-- Tipo de Hora Extra -->
+				
+			</h:form>
+			
+			
+			<p:dialog id="dialogGluoHoraExtra" widgetVar="dialogGluoHoraExtra" appendTo="@(body)"
+				draggable="true" closable="false" resizable="false"
+				modal="true" height="530" width="90%" position="center">
+				<h:form id="formDialog">
+					
+					<p:messages id="msg" autoUpdate="true" showDetail="false" closable="true"/>
+					<p:panel id="panelGluoHoraExtra">
+						<div align="center">
+							<h:panelGrid columns="2" id="panelGridEmpleado">
+								<h:outputText value="Empleado:" />
+								<p:panelGrid>
+									<p:inputText styleClass="Wid50" id="empleadoSeleccionado" 
+										value="#{gluoHoraExtraView.descripcionEmpleadoSeleccionado}" 
+										readonly="true" style="width:200px;">
+										<p:ajax />
+									</p:inputText>
+									<p:commandButton icon="ui-icon-search"
+										disabled="#{gluoHoraExtraView.selectedGluoHoraExtra == null ? false : true}" 
+										oncomplete="PF('dlgEmpleados').show();"/>
+								</p:panelGrid>
+							</h:panelGrid>
+						</div>
+						<div align="center">
+							<h:panelGrid columns="2" id="panelGridActoAdministrativo">
+								<h:outputText value="Acto Administrativo: " />
+								<p:panelGrid>
+									<p:inputText styleClass="Wid50" id="actoAdministrativoSeleccionado" 
+										value="#{gluoHoraExtraView.consecutivoActoAdministrativo}" 
+										readonly="true" style="width:200px;">
+										<p:ajax />
+									</p:inputText>
+									<p:commandButton icon="ui-icon-search"
+										disabled="#{gluoHoraExtraView.selectedGluoHoraExtra == null ? false : true}" 
+										action="#{gluoHoraExtraView.action_new_acto_administrativo()}"
+										update="@([id$=panelGluoActoAdministrativo])"/>
+								</p:panelGrid>
+								
+								<h:outputText id="msgActivo" value=" Estado" />
+								<p:selectOneRadio id="sorEstado"
+									binding="#{gluoHoraExtraView.sorEstado}">
+									<f:selectItem itemLabel="Activo" itemValue="A" />
+									<f:selectItem itemLabel="Inactivo" itemValue="I" />
+								</p:selectOneRadio>	
+							</h:panelGrid>
+						</div>
+						<br/>
+						<p:separator />
+						<h:panelGrid columns="4" id="panelGrid" width="100%">
+							
+							
+							
+							<h:outputText id="msgTipoHoraExtra" value="Tipo de Hora Extra: " />
+							<h:outputText id="msgCantidad" value=" Cantidad" />
+							<p:outputLabel id="msgFechaHoraTrabajadaInicio" value="Fecha de Inicio" for="calendarFechaInicio" />
+							<p:outputLabel id="msgFechaHoraTrabajadaFin" value="Fecha Final" for="calendarFechaFinal" />
+							
+							
+							<p:panelGrid>
+								<p:inputText styleClass="Wid50" id="horaExtraSeleccionada" 
+									value="#{gluoHoraExtraView.descripcionHoraExtraSeleccionada}" 
+									readonly="true" style="width:200px;">
+									<p:ajax />
+								</p:inputText>
+								<p:commandButton icon="ui-icon-search"
+									disabled="#{gluoHoraExtraView.selectedGluoHoraExtra == null ? false : true}" 
+									oncomplete="PF('dlgHoraExtra').show();"/>
+							</p:panelGrid>
+								
+							
+							<p:inputText id="txtCantidad"
+								disabled="#{gluoHoraExtraView.selectedGluoHoraExtra == null ? false : true}"
+								onkeypress="return justNumbers(event);"
+								binding="#{gluoHoraExtraView.txtCantidad}" />
+								
+		
+							<p:calendar id="calendarFechaInicio"
+								binding="#{gluoHoraExtraView.txtFechaHoraTrabajadaInicio}"
+								placeholder="Fecha de Inicio " size="32" locale="es"
+								navigator="true" pattern="yyyy-MM-dd" mask="true"
+								converterMessage="Fecha incorrecta"
+								disabled="#{gluoHoraExtraView.selectedGluoHoraExtra == null ? false : true}" >
+								<p:ajax event="dateSelect"
+									listener="#{gluoHoraExtraView.listener_txtFechaHoraTrabajadaInicio}" />
+								<f:converter converterId="timestampConverter" />
+							</p:calendar>	
+							
+							
+							<p:calendar id="calendarFechaFinal"
+								binding="#{gluoHoraExtraView.txtFechaHoraTrabajadaFin}"
+								placeholder="Fecha Final" size="32" locale="es"
+								navigator="true" pattern="yyyy-MM-dd" mask="true"
+								converterMessage="Fecha incorrecta"
+								disabled="#{gluoHoraExtraView.selectedGluoHoraExtra == null ? false : true}" >
+								<p:ajax event="dateSelect"
+									listener="#{gluoHoraExtraView.listener_txtFechaHoraTrabajadaFin}" />
+								<f:converter converterId="timestampConverter" />
+							</p:calendar>
+							
+						</h:panelGrid>
+						<br/>
+						<div align="center">
+							<p:commandButton icon="ui-icon-plus"
+										value="Adicionar"
+										disabled="#{gluoHoraExtraView.selectedGluoHoraExtra == null ? false : true}" 
+										action="#{gluoHoraExtraView.action_adicionar_horas_extras()}"
+										update="@([id$=panelGluoHoraExtra])"/>
+						</div>
+						<div align="center">
+						<h:panelGrid columns="2" id="panelGridEstadoLiquidación" cellpadding="5">
+							<h:outputText id="msgEstadoLiquidacion" value=" Estado Liquidación:	" 
+							rendered="#{gluoHoraExtraView.cantidadLiquidacionesAsociadas > 0}"/>
+							<h:outputText id="txtEstadoLiquidacion"
+							rendered="#{gluoHoraExtraView.cantidadLiquidacionesAsociadas > 0}" 
+							value="#{(gluoHoraExtraView.cantidadLiquidacionesAsociadas > 0)?'Liquidado':'No liquidado'}" />
+						</h:panelGrid>
+						<p:panel style="border: none;" rendered="#{gluoHoraExtraView.cantidadLiquidacionesAsociadas > 0}"/>	
+						<p:dataTable id="tblEstadoLiquidacion"
+                          				value="#{gluoHoraExtraView.liquidacionesAsociadas}"
+                          				var="lino"
+                          				rendered="#{gluoHoraExtraView.cantidadLiquidacionesAsociadas > 0}"
+                          				style="width: 100%;">
+                          				
+                          				<p:column headerText="Fecha Inicial" style="width: 100%; text-align: center;">
+                          					<p:outputLabel value="#{lino.fechaInicio}">
+                          						<f:convertDateTime type="date" pattern="dd-MM-yyyy"/>
+                          					</p:outputLabel>
+                          				</p:column>
+                          				
+                          				<p:column headerText="Fecha Final" style="width: 100%; text-align: center;">
+                          					<p:outputLabel value="#{lino.fechaFin}">
+                          						<f:convertDateTime type="date" pattern="dd-MM-yyyy"/>
+                          					</p:outputLabel>
+                          				</p:column>
+                         </p:dataTable>
+						</div>
+						<br/>
+						<p:separator />
+						
+						<p:dataTable id="tblHorasExtrasAdicionadas"
+            				value="#{gluoHoraExtraView.horasExtrasAdicionadas}"
+            				var="hoex"
+            				rendered="#{gluoHoraExtraView.cantidadHorasExtrasAdiconadas > 0}"
+            				style="width: 100%;">
+            				
+            				<p:column headerText="Tipo de Hora Extra" style="width: 80%">
+            					<p:outputLabel value="#{hoex.descripcionTipoHoraExtra}" />
+            				</p:column>
+            				
+            				<p:column headerText="Cantidad" style="width: 80%">
+            					<p:outputLabel value="#{hoex.cantidad}" />
+            				</p:column>
+            				
+            				<p:column headerText="Fecha Inicio" style="width: 80%">
+            					<p:outputLabel value="#{hoex.fechaHoraTrabajadaInicio}">
+            						<f:convertDateTime type="date" pattern="dd-MM-yyyy"/>
+            					</p:outputLabel>
+            				</p:column>
+            				
+            				<p:column headerText="Fecha Final" style="width: 80%">
+            					<p:outputLabel value="#{hoex.fechaHoraTrabajadaFin}">
+            						<f:convertDateTime type="date" pattern="dd-MM-yyyy"/>
+            					</p:outputLabel>
+            				</p:column>
+            				
+            				<p:column headerText="Borrar" style="width: 15%">
+            					<p:commandButton icon="ui-icon-close"  
+            						action="#{gluoHoraExtraView.action_eliminar_hora_extra_adicionada(hoex)}"
+            						update="@([id$=panelGluoHoraExtra]), @([id$=tblHorasExtrasAdicionadas])"/>
+            				</p:column>
+            				
+            			</p:dataTable>
+						
+						<br/>
+						<p:separator />
+						<br/>	
+					</p:panel>
+					<p:panel id="panelBotones">
+						<div align="center">
+							<p:commandButton id="btnSave"
+								binding="#{gluoHoraExtraView.btnSave}" value="Guardar"
+								action="#{gluoHoraExtraView.action_save()}"
+								update="@([id$=panelGluoHoraExtra]), @([id$=panelDataTableGluoHoraExtra])" />
+							<p:commandButton id="btnClear" value="Limpiar"
+								action="#{gluoHoraExtraView.action_clear()}"
+								update="@([id$=panelGluoHoraExtra])" />
+							<p:commandButton id="btnExit" value="Salir"
+								action="#{gluoHoraExtraView.action_closeDialog()}"
+								update="@([id$=panelGluoHoraExtra])" />
+						</div>
+					</p:panel>
+					
+				</h:form>
+			</p:dialog>		
+
+					
+				
+			
+		<!-- Crear el acto Administrativo  -->
+		<!-- **************************** -->
+		<p:dialog id="dialogGluoActoAdministrativo" widgetVar="dialogGluoActoAdministrativo"
+			draggable="true" closable="true" modal="true" resizable="false"
+			height="400" width="80%" position="center" header="Acto Administrativo">
+			
+			<h:form id="formActoAdministrativo" enctype="multipart/form-data">
+			
+				<p:messages id="msg" autoUpdate="true" showDetail="false" closable="true" />
+				
+				<p:tabView id="crearConsultarActoAdministrativoTab">
+			
+					<p:tab id="crearActoAdministrativoTabTraslado" title="Crear un acto administrativo">
+						
+					<p:scrollPanel mode="native" style="width:850px;height:400px">
+					<p:panel id="panelGluoActoAdministrativo">
+						<h:panelGrid columns="2" id="panelGrid">
+						
+							<h:outputText id="msgNombreOperacion" value=" Nombre de la operacion" />
+							<p:inputText id="txtNombreOperacion" disabled="false" style="width: 200px"
+								binding="#{gluoHoraExtraView.txtNombreOperacion}" />
+								
+							<h:outputText id="msgFundamentoLegal" value=" Fundamento Legal" />
+							<h:panelGrid columns="1" id="panelGridFundamento">
+								<p:inputTextarea id="txtFundamentoLegal" rows="5" cols="50"
+									counter="displayFundamento" maxlength="2000"
+									counterTemplate="{0} caracteres restantes." disabled="false"
+									autoResize="false"
+									binding="#{gluoHoraExtraView.txtFundamentoLegal}" />
+								<h:outputText id="displayFundamento" />
+							</h:panelGrid>
+
+							<h:outputText id="msgRazon" value=" Razon" />
+							<h:panelGrid columns="1" id="panelGridRazon">
+								<p:inputTextarea id="txtRazon" rows="5" cols="50"
+									counter="displayRazon" maxlength="2000"
+									counterTemplate="{0} caracteres restantes." disabled="false"
+									autoResize="false"
+									binding="#{gluoHoraExtraView.txtRazon}" />
+								<h:outputText id="displayRazon" />
+							</h:panelGrid>	
+							<h:panelGrid columns="2" id="panelGridEmpresa">		
+							<h:outputText id="msgEmpresa"
+								value=" Empresa" />
+							<p:inputText id="txtEmpresa" disabled="true"
+								binding="#{gluoHoraExtraView.txtEmprId_GluoEmpresa}" />
+							</h:panelGrid>
+							<h:panelGrid columns="2" id="panelGridAnoFiscal">	
+							<h:outputText id="msgAnoFiscal"
+								value=" Año Fiscal" />
+							<p:inputText id="txtAnoFiscal" disabled="true"
+								binding="#{gluoHoraExtraView.txtAnoFiscal}" />	
+							</h:panelGrid>	
+							<h:outputText id="msgFechaActoAdministrativo"
+								value=" Fecha del Acto Administrativo" />
+							<p:calendar showOn="button" navigator="true" locale="en" size="30"
+								binding="#{gluoHoraExtraView.txtFechaActoAdministrativo}">
+								<p:ajax event="dateSelect"
+									listener="#{gluoHoraExtraView.listener_txtFechaActoAdministrativo}" />		
+							</p:calendar>
+							
+							<h:outputText value="Archivos de soporte:"/>
+							<p:fileUpload 
+								mode="advanced"
+								auto="true" 
+								dragDropSupport="true"
+                        		allowTypes="/(\.|\/)(gif|jpe?g|png|pdf|doc|docx|xls|xlsx)$/" 
+                        		cancelLabel="Cancelar"
+                        		fileLimit="1"
+                        		fileLimitMessage="Número máximo de archivos soportados: 1"
+                        		invalidFileMessage="Tipo de archivo no válido. Solo pdf, Doc(x), Xls(x), gif, jpg, png )"
+                        		invalidSizeMessage="Archivo demasiado grande. Tamaño máximo: 3MB"
+                        		label="Adicionar un nuevo archivo"
+                        		sizeLimit="3145728"
+                        		uploadLabel="Cargar"
+                        		fileUploadListener="#{gluoHoraExtraView.fileUploadListener}"
+                        		update="panelGluoActoAdministrativo"
+                        		process="panelGluoActoAdministrativo"/>
+											
+						</h:panelGrid>
+						
+						<p:dataTable id="pnlTablaArchivosSoporte"
+	                          				value="#{gluoHoraExtraView.archivosDeSoporteDTO}"
+	                          				var="archivo"
+	                          				rendered="#{gluoHoraExtraView.cantidadArchivosSoporte > 0}"
+	                          				style="width: 100%;">
+	                          				
+	                          				<p:column headerText="Archivo" style="width: 80%">
+	                          					<p:outputLabel value="#{archivo.descripcion}" />
+	                          				</p:column>
+	                          				
+	                          				<p:column headerText="Borrar" style="width: 15%">
+	                          					<p:commandButton icon="ui-icon-close"  
+	                          						action="#{gluoHoraExtraView.action_eliminarArchivoSoporte(archivo)}"
+	                          						update="@([id$=panelGluoActoAdministrativo])"/>
+	                          				</p:column>
+	                          				
+	                          				<p:column headerText="Descargar" style="width: 15%">
+	                          					<p:commandButton ajax="false" onclick="PrimeFaces.monitorDownload(start, stop);" icon="ui-icon-arrowstop-1-s">
+											        <p:fileDownload value="#{gluoHoraExtraView.getDocumentoAdjuntoSoportePresupuesto(archivo)}" 
+											        	contentDisposition="attachment" />
+											    </p:commandButton>
+											    
+	                          				</p:column>
+	                          				
+	                          			</p:dataTable>
+					</p:panel>
+					</p:scrollPanel>
+					<p:panel id="panelBotones">
+						<div align="center">
+							<p:commandButton id="btnSave"
+								binding="#{gluoHoraExtraView.btnSaveActoAdministrativo}" value="Guardar"
+								action="#{gluoHoraExtraView.action_save_acto_administrativo()}"
+								update=":dialogGluoActoAdministrativo, @([id$=panelGluoHoraExtra]),@([id$=panelGluoActoAdministrativo]) " />
+							<p:commandButton id="btnClear" value="Limpiar"
+								action="#{gluoHoraExtraView.action_clear_acto_administrativo()}"
+								update="@([id$=panelGluoActoAdministrativo])" />
+							<p:commandButton id="btnExit" value="Salir"
+								action="#{gluoHoraExtraView.action_closeDialog_acto_administrativo()}"
+								update=":dialogGluoActoAdministrativo" />
+						</div>
+					</p:panel>
+						
+					</p:tab>
+					
+					
+					<p:tab id="consultarActoAdministrativoTabTraslado" title="Consultar un acto administrativo existente">
+						<p:scrollPanel mode="native" style="width:100%; height:400px">		
+								<p:dataTable id="dataTableActoAdministrativoTraslado" value="#{gluoHoraExtraView.dataActoAdministrativo}" 
+									emptyMessage="No se han encontrado actos administrativos registrados"
+									rows="5" var="gluoActoAdministrativo" paginator="true" rowsPerPageTemplate="5,10,15"
+									reflow="true" rowKey="#{gluoActoAdministrativo.acadId}" selection="#{gluoHoraExtraView.actoAdministrativoSeleccionado}"
+									filterDelay="1000">
+							
+	                       			 <p:column selectionMode="single" style="width:5%; text-align:center" />
+									
+									<p:column filterBy="#{gluoActoAdministrativo.nombreOperacion}"
+										sortBy="#{gluoActoAdministrativo.nombreOperacion}">
+										<f:facet name="header">
+											<h:outputText value="Nombre de la Operacion" />
+										</f:facet>
+										<h:outputText value="#{gluoActoAdministrativo.nombreOperacion}" />
+									</p:column>
+									
+									<p:column filterBy="#{gluoActoAdministrativo.consecutivo}"
+										sortBy="#{gluoActoAdministrativo.consecutivo}">
+										<f:facet name="header">
+											<h:outputText value="Consecutivo" />
+										</f:facet>
+										<h:outputText value="#{gluoActoAdministrativo.consecutivo}" />
+									</p:column>
+			
+									<p:column
+										filterBy="#{gluoActoAdministrativo.fechaActoAdministrativo}"
+										sortBy="#{gluoActoAdministrativo.fechaActoAdministrativo}">
+										<f:facet name="header">
+											<h:outputText value="Fecha del Acto Administrativo" />
+										</f:facet>
+										<h:outputText
+											value="#{gluoActoAdministrativo.fechaActoAdministrativo}" />
+									</p:column>
+			
+									<p:column filterBy="#{gluoActoAdministrativo.fundamentoLegal}"
+										sortBy="#{gluoActoAdministrativo.fundamentoLegal}">
+										<f:facet name="header">
+											<h:outputText value="Fundamento Legal" />
+										</f:facet>
+										<h:outputText value="#{gluoActoAdministrativo.fundamentoLegal}" />
+									</p:column>
+			
+									<p:column filterBy="#{gluoActoAdministrativo.razon}"
+										sortBy="#{gluoActoAdministrativo.razon}">
+										<f:facet name="header">
+											<h:outputText value="Razon" />
+										</f:facet>
+										<h:outputText value="#{gluoActoAdministrativo.razon}" />
+									</p:column>
+			
+									<p:column filterBy="#{gluoActoAdministrativo.nombreEmpresa}"
+										sortBy="#{gluoActoAdministrativo.nombreEmpresa}">
+										<f:facet name="header">
+											<h:outputText value="Empresa" />
+										</f:facet>
+										<h:outputText
+											value="#{gluoActoAdministrativo.nombreEmpresa}" />
+									</p:column>
+				
+								</p:dataTable>
+								
+								<br />
+					
+							<p:panel id="panelBotonAA" style="border: none;">
+								<div align="center">
+									<p:commandButton value="Seleccionar"
+										icon="ui-icon-plus" oncomplete="PF('dialogGluoActoAdministrativo').hide();" 
+										actionListener="#{gluoHoraExtraView.action_seleccionar_acto_administrativo}"
+										update="@([id$=actoAdministrativoSeleccionado]), @([id$=panelGluoHoraExtra])"/>
+								</div>
+							</p:panel>
+								
+							</p:scrollPanel>
+							
+					</p:tab>
+				</p:tabView>
+			
+				
+			</h:form>
+		</p:dialog>
+			
+		</f:view>
+	</ui:define>
+
+</ui:composition>

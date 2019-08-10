@@ -1,0 +1,390 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.4.3.final using JasperReports Library version 6.4.3  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="op" pageWidth="612" pageHeight="792" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="487da4b1-3628-4e67-b4c6-4b01e07e3e71">
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="GluERP"/>
+	<parameter name="P_MAOP_IDS" class="java.util.List"/>
+	<parameter name="P_SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<parameterDescription><![CDATA[]]></parameterDescription>
+		<defaultValueExpression><![CDATA["/Users/frank/JaspersoftWorkspace/erp-reports/1/"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="P_CABE_LINEA_1" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["REPÚBLICA DE COLOMBIA"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="P_CABE_LINEA_2" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["DEPARTAMENTO DEL CAUCA"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="P_CABE_LINEA_3" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["MUNICIPIO DE TOTORÓ"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="P_CABE_LINEA_4" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["ALCALDÍA MUNICIPAL"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="P_CABE_LINEA_5" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["NIT: 800031874 - 5"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="P_CABE_LINEA_6" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["EDIFICIO CAM CALLE PRINCIPAL. TEL: 827 5130. FAX: 827 5130"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="P_PIE_LINEA_1" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["HACIA LA CONSTRUCCIÓN DEL BUEN VIVIR EN UNIDAD Y DESARROLLO PARA TOTORÓ"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="P_PIE_LINEA_2" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["Generado por: Glu ERP."]]></defaultValueExpression>
+	</parameter>
+	<parameter name="P_PIE_LINEA_3" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["Desarrollado por: VortexBird (www.vortexbird.com)"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="P_CARGO_PRES" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["JEFE DE PRESUPUESTO"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="P_CARGO_SEHA" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["SECRETARIA DE HACIENDA"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="P_NOMBRE_CARGO_PRES" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="P_NOMBRE_CARGO_SEHA" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="P_CARGO_ALCA" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["SECRETARIA DE HACIENDA"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="P_NOMBRE_CARGO_ALCA" class="java.lang.String" isForPrompting="false"/>
+	<queryString>
+		<![CDATA[SELECT	DISTINCT
+				CDP.CONSECUTIVO CONSECUTIVO_CDP, CDP.CDP_ID,
+				GCRP.CONSECUTIVO CONSECUTIVO_CRP,	
+				MAOP.MAOP_ID, MAOP.CONSECUTIVO, MAOP.VALOR_TOTAL,
+				TIID.DESCRIPCION TIPO_IDENTIFICACION, 
+				TERC.IDENTIFICACION, TERC.PRIMER_NOMBRE, TERC.SEGUNDO_NOMBRE,
+				TERC.PRIMER_APELLIDO, TERC.SEGUNDO_APELLIDO, terc.razon_social,
+				MAOP.CONCEPTO,
+				GCRP.CONCEPTO CONCEPTO_CRP
+FROM 		GLUO_MAESTRO_OP MAOP
+INNER		JOIN GLUO_TERCERO TERC ON TERC.TERC_ID = MAOP.TERC_ID
+INNER		JOIN GLUO_TIPO_IDENTIFICACION TIID ON TIID.TIID_ID = TERC.TIID_ID
+INNER		JOIN GLUO_OP GLOP ON GLOP.MAOP_ID = MAOP.MAOP_ID
+INNER		JOIN GLUO_DETALLE_CRP DCRP ON DCRP.DCRP_ID = GLOP.DCRP_ID
+INNER		JOIN GLUO_CRP GCRP ON GCRP.GCRP_ID = DCRP.GCRP_ID
+INNER		JOIN GLUO_CDP CDP ON CDP.CDP_ID = GCRP.CDP_ID
+WHERE	MAOP.ACTIVO='A'
+AND			TERC.ACTIVO='A'
+AND			TIID.ACTIVO='A'
+AND			$X{IN,MAOP.MAOP_ID, P_MAOP_IDS}
+ORDER BY MAOP.MAOP_ID]]>
+	</queryString>
+	<field name="consecutivo_cdp" class="java.lang.String"/>
+	<field name="cdp_id" class="java.lang.Integer"/>
+	<field name="consecutivo_crp" class="java.lang.String"/>
+	<field name="maop_id" class="java.lang.Integer"/>
+	<field name="consecutivo" class="java.lang.String"/>
+	<field name="valor_total" class="java.math.BigDecimal"/>
+	<field name="tipo_identificacion" class="java.lang.String"/>
+	<field name="identificacion" class="java.lang.String"/>
+	<field name="primer_nombre" class="java.lang.String"/>
+	<field name="segundo_nombre" class="java.lang.String"/>
+	<field name="primer_apellido" class="java.lang.String"/>
+	<field name="segundo_apellido" class="java.lang.String"/>
+	<field name="razon_social" class="java.lang.String"/>
+	<field name="concepto" class="java.lang.String"/>
+	<field name="concepto_crp" class="java.lang.String"/>
+	<group name="GRP_GLOP_ID" isStartNewPage="true" isReprintHeaderOnEachPage="true">
+		<groupExpression><![CDATA[$F{maop_id}]]></groupExpression>
+		<groupHeader>
+			<band height="300" splitType="Stretch">
+				<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				<textField>
+					<reportElement x="0" y="124" width="572" height="15" uuid="22529467-1be6-4778-8b89-db3424c4813f">
+						<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					</reportElement>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="10" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA["OBLIGACIÓN."]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="0" y="139" width="572" height="15" uuid="039271dd-9e5d-4b30-9317-23be3af52487"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="10" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA["No.: " + $F{consecutivo}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement mode="Opaque" x="0" y="159" width="200" height="41" backcolor="#FFFFFF" uuid="5cc42f86-1777-4ccf-81f4-9a198ee5548c">
+						<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					</reportElement>
+					<box>
+						<topPen lineWidth="0.2" lineStyle="Solid"/>
+						<leftPen lineWidth="0.2" lineStyle="Solid"/>
+						<bottomPen lineWidth="0.2" lineStyle="Solid"/>
+						<rightPen lineWidth="0.2" lineStyle="Solid"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="10" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Tercero/Beneficiario:]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true">
+					<reportElement x="200" y="159" width="372" height="41" uuid="6eed642a-32f4-4221-96a2-0ef8260c68a8">
+						<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					</reportElement>
+					<box topPadding="0" leftPadding="2" bottomPadding="0" rightPadding="2">
+						<topPen lineWidth="0.2" lineStyle="Solid" lineColor="#000000"/>
+						<leftPen lineWidth="0.2" lineStyle="Solid" lineColor="#000000"/>
+						<bottomPen lineWidth="0.2" lineStyle="Solid" lineColor="#000000"/>
+						<rightPen lineWidth="0.2" lineStyle="Solid" lineColor="#000000"/>
+					</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{tipo_identificacion} + " " + $F{identificacion} + " - " + ($F{razon_social} == null ? "" :$F{razon_social}) + " " +  ($F{primer_nombre} == null ? "" : $F{primer_nombre}) + " " +  
+($F{segundo_nombre} == null ? "" :$F{segundo_nombre}) + " " + 
+($F{primer_apellido} == null ? "" : $F{primer_apellido}) + " " + 
+($F{segundo_apellido} == null?"" : $F{segundo_apellido})]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement positionType="Float" stretchType="RelativeToTallestObject" mode="Opaque" x="0" y="200" width="200" height="18" backcolor="#FFFFFF" uuid="d325e0cd-b73f-4b46-9b6d-571868745566">
+						<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					</reportElement>
+					<box>
+						<topPen lineWidth="0.2" lineStyle="Solid"/>
+						<leftPen lineWidth="0.2" lineStyle="Solid"/>
+						<bottomPen lineWidth="0.2" lineStyle="Solid"/>
+						<rightPen lineWidth="0.2" lineStyle="Solid"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="10" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Tipo recurso:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement positionType="Float" mode="Opaque" x="0" y="218" width="200" height="15" backcolor="#FFFFFF" uuid="ec57c404-dd49-40ab-bc3b-7ae763415ae4">
+						<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					</reportElement>
+					<box>
+						<topPen lineWidth="0.2" lineStyle="Solid"/>
+						<leftPen lineWidth="0.2" lineStyle="Solid"/>
+						<bottomPen lineWidth="0.2" lineStyle="Solid"/>
+						<rightPen lineWidth="0.2" lineStyle="Solid"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="10" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Información Presupuestal:]]></text>
+				</staticText>
+				<textField>
+					<reportElement positionType="Float" x="200" y="218" width="372" height="15" uuid="d44be594-c8d5-4c11-9bad-639fefd23c68">
+						<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					</reportElement>
+					<box topPadding="0" leftPadding="2" bottomPadding="0" rightPadding="2">
+						<topPen lineWidth="0.2" lineStyle="Solid" lineColor="#000000"/>
+						<leftPen lineWidth="0.2" lineStyle="Solid" lineColor="#000000"/>
+						<bottomPen lineWidth="0.2" lineStyle="Solid" lineColor="#000000"/>
+						<rightPen lineWidth="0.2" lineStyle="Solid" lineColor="#000000"/>
+					</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA["C.D.P #: " + $F{consecutivo_cdp} + ". C.R.P #: " + $F{consecutivo_crp}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement positionType="Float" stretchType="RelativeToTallestObject" mode="Opaque" x="0" y="233" width="200" height="34" backcolor="#FFFFFF" uuid="b364d983-cf35-4dc8-8cc2-9680629738f4">
+						<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					</reportElement>
+					<box>
+						<topPen lineWidth="0.2" lineStyle="Solid"/>
+						<leftPen lineWidth="0.2" lineStyle="Solid"/>
+						<bottomPen lineWidth="0.2" lineStyle="Solid"/>
+						<rightPen lineWidth="0.2" lineStyle="Solid"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="10" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Objeto: ]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true">
+					<reportElement positionType="Float" stretchType="RelativeToTallestObject" x="200" y="233" width="372" height="34" uuid="2e63f845-f99b-40a6-8da4-ba3ada4abff0">
+						<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					</reportElement>
+					<box padding="3" topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2">
+						<topPen lineWidth="0.2" lineStyle="Solid" lineColor="#000000"/>
+						<leftPen lineWidth="0.2" lineStyle="Solid" lineColor="#000000"/>
+						<bottomPen lineWidth="0.2" lineStyle="Solid" lineColor="#000000"/>
+						<rightPen lineWidth="0.2" lineStyle="Solid" lineColor="#000000"/>
+					</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{concepto}.length() > 200 ? 
+($F{concepto}.substring( 0, 199 ) + "...") 
+: 
+($F{concepto})]]></textFieldExpression>
+				</textField>
+				<image>
+					<reportElement x="5" y="5" width="120" height="85" uuid="c64739b1-3303-411a-bb89-65c3c1760610">
+						<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					</reportElement>
+					<imageExpression><![CDATA[$P{P_SUBREPORT_DIR}+"logo-titulo-cdp.jpg"]]></imageExpression>
+				</image>
+				<subreport>
+					<reportElement key="" stretchType="RelativeToTallestObject" x="200" y="200" width="372" height="19" uuid="86201139-bb52-4ae4-b843-9ddc5c69a11d">
+						<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+					</reportElement>
+					<subreportParameter name="CDP_ID">
+						<subreportParameterExpression><![CDATA[$F{cdp_id}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="MAOP_ID">
+						<subreportParameterExpression><![CDATA[$F{maop_id}]]></subreportParameterExpression>
+					</subreportParameter>
+					<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					<subreportExpression><![CDATA[$P{P_SUBREPORT_DIR} + "tiposRecursosOP.jasper"]]></subreportExpression>
+				</subreport>
+				<textField>
+					<reportElement x="0" y="2" width="572" height="13" uuid="8f749d58-7805-4797-864b-b80c62587a2e"/>
+					<textElement textAlignment="Center">
+						<font size="10"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$P{P_CABE_LINEA_1}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="0" y="15" width="572" height="15" uuid="d227ed45-4909-4bc5-996d-d1dd4fe76cc5"/>
+					<textElement textAlignment="Center">
+						<font size="10"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$P{P_CABE_LINEA_2}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="0" y="30" width="572" height="15" uuid="83ffb990-4fde-47ea-b4b2-fe8deef480bb"/>
+					<textElement textAlignment="Center">
+						<font size="10"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$P{P_CABE_LINEA_3}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="0" y="45" width="572" height="15" uuid="c4f11f70-2eda-4e62-9485-0c8f3245ea93"/>
+					<textElement textAlignment="Center">
+						<font size="10" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$P{P_CABE_LINEA_4}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="0" y="60" width="572" height="15" uuid="9705603b-cc42-4728-9af1-71a5d27a10f7"/>
+					<textElement textAlignment="Center">
+						<font size="10" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$P{P_CABE_LINEA_5}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="0" y="75" width="572" height="15" uuid="f639be1f-54c0-44ab-85de-3b025cbd7e63"/>
+					<textElement textAlignment="Center">
+						<font size="10" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$P{P_CABE_LINEA_6}]]></textFieldExpression>
+				</textField>
+				<line>
+					<reportElement x="0" y="95" width="572" height="1" uuid="f9f378b4-1851-4fdb-ba7a-1a76bbb485d0"/>
+				</line>
+				<subreport>
+					<reportElement x="0" y="280" width="572" height="20" uuid="eebc48fd-bd52-441c-9887-c97859137e2b">
+						<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+					</reportElement>
+					<subreportParameter name="P_MAOP_ID">
+						<subreportParameterExpression><![CDATA[$F{maop_id}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="P_SUBREPORT_DIR">
+						<subreportParameterExpression><![CDATA[$P{P_SUBREPORT_DIR}]]></subreportParameterExpression>
+					</subreportParameter>
+					<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					<subreportExpression><![CDATA[$P{P_SUBREPORT_DIR}+"detalleOP.jasper"]]></subreportExpression>
+				</subreport>
+			</band>
+		</groupHeader>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band splitType="Stretch"/>
+	</title>
+	<columnHeader>
+		<band>
+			<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="20" splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="180" splitType="Stretch">
+			<line>
+				<reportElement positionType="FixRelativeToBottom" x="0" y="62" width="200" height="1" uuid="b02d9878-9de3-4b07-9543-4ed5d914778c">
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+				</reportElement>
+			</line>
+			<line>
+				<reportElement positionType="FixRelativeToBottom" x="220" y="62" width="200" height="1" uuid="e04f27d3-e268-49a6-a2a8-48331835a86f">
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+				</reportElement>
+			</line>
+			<textField>
+				<reportElement x="0" y="140" width="572" height="15" uuid="b5c678dd-1626-4790-ad73-0348a79e0b33"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{P_PIE_LINEA_1}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="2" y="160" width="160" height="10" uuid="9a9f7325-ce6e-48d6-a8fa-3d3bce42cc90"/>
+				<textElement textAlignment="Left">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{P_PIE_LINEA_2}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="2" y="170" width="160" height="10" uuid="c53fdc56-8836-40a3-8c7b-acf97636c552"/>
+				<textElement>
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{P_PIE_LINEA_3}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="2" y="84" width="154" height="15" uuid="e6d26b0b-3855-499c-a95e-6370d910faed"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{P_CARGO_PRES}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="220" y="84" width="154" height="15" uuid="abc21b61-0759-4d1f-a7c4-31acc4f3b8ef"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{P_CARGO_SEHA}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="5" y="67" width="154" height="15" uuid="f9c240e2-f50e-4201-ac8b-4c1a83d06a54"/>
+				<textElement>
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{P_NOMBRE_CARGO_PRES}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="220" y="67" width="154" height="15" uuid="eb88562d-c820-4e03-8705-40f2dcfec61c"/>
+				<textElement>
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{P_NOMBRE_CARGO_SEHA}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+</jasperReport>

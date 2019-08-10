@@ -1,0 +1,197 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+	<ui:define name="content">
+	  <f:view>
+	  
+	  	<p:ajaxStatus onstart="PF('statusDialog').show()" onsuccess="PF('statusDialog').hide()" />
+			<p:dialog modal="true" widgetVar="statusDialog" header="Cargando Información" draggable="false" closable="false">
+				<p:graphicImage value="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/ajaxloadingbar.gif" />
+			</p:dialog>
+
+			<!-- Expired session -->
+			<p:idleMonitor onactive="PF('sessionTimeOutDialog').show();" timeout="#{session.maxInactiveInterval * 1000}" />
+			<p:dialog modal="true" widgetVar="sessionTimeOutDialog" header="Sesión terminada" draggable="false" closable="false">
+				<h:outputText value="La sesión ha finalizado" />
+				<input id="confirmBackToLogin" type="button" value="Iniciar sesión" onclick="window.location='#{facesContext.externalContext.requestContextPath}/index.jsp';" />
+			</p:dialog>
+
+			<script type="text/javascript">
+				function showStatus() {
+				    statusDialog.show();
+				}
+				 
+				function hideStatus() {
+				    statusDialog.hide();
+				}
+			</script>
+	  
+			<style type="text/css">
+				.ui-panel {
+					margin-top: 20px
+				}
+				
+				.ui-tabs-top {
+					background-color: #FFFFFF;
+				}
+				
+				.ui-autocomplete-input.ui-inputfield
+				{
+				   width : 270px !important;
+				}
+				
+				.ui-autocomplete-panel {
+				   width: 800px !important;
+				}
+			</style>
+
+		<h:form id="idForm">
+
+		<p:growl id="men" showDetail="false" />
+
+		  <p:panel id="pnlCentral" columns="1" style="border:none; width:100%;">
+			
+			<p:tabView id="presupuestosTabView">
+
+				<p:tab id="presupuestoRentasTab" title="Reporte de Gastos de Resguardos 3" rendered="true" style="width: 100%;">
+					<h:panelGrid columns="1" id="pnlPresupuestoRentasData">
+						
+						<h:panelGrid id="idPanelFechas" columns="2">
+							<p:outputLabel value="Fecha Inicial" for="fechaInicial" />
+							<p:calendar id="fechaInicial" mode="popup" navigator="true" value="#{informeResguardos3FUTView.fechaInicial}" timeZone="GMT-5"/>
+							
+							<p:outputLabel value="Fecha Final" for="fechaFinal" />
+							<p:calendar id="fechaFinal" mode="popup" navigator="true" value="#{informeResguardos3FUTView.fechaFinal}" timeZone="GMT-5"/>
+						</h:panelGrid>
+						
+						<br/>
+						
+						<h:panelGrid id="idPanelBtnsConsulta" columns="2">
+							<p:commandButton id="btnConsultar" value="Consultar" action="#{informeResguardos3FUTView.action_generar_informe_inversion}" update=":idForm:men, panelGridDataTable"/>						
+							<p:commandButton id="btnLimpiar" value="Limpiar" action="#{informeResguardos3FUTView.action_limpiar}" update="panelGridDataTable, idPanelFechas"/>
+						</h:panelGrid>
+						
+						<br/>
+						
+						<div class="Container100 Responsive">
+							<h:panelGrid id="panelGridDataTable" columns="1" rendered="true" style="width: 100%;">
+							
+							  <p:scrollPanel id="scrollPanelTables" mode="native" style="width: 100%;">
+							
+									<p:dataTable id="presupuestoRentasData" var="inversion"
+										value="#{informeResguardos3FUTView.cabeceraInformeGastosInversion.listInformeDTO}"
+										rows="20" paginator="true" style="width:100%;"
+										paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+										emptyMessage="No existen registros"
+										scrollable="true" scrollWidth="1260px;"
+										reflow="true">
+										
+										<p:ajax event="filter" delay="1000" />
+										
+										<f:facet name="header">
+		                                     Reporte de Resguardos 3
+		                                </f:facet>
+	
+										<p:column headerText="Código" width="150">
+											<p:outputLabel value="#{inversion.codigoFut}" />										
+										</p:column>
+										<p:column headerText="Nombre" width="400">
+											<p:outputLabel value="#{inversion.nombreFut}" />		
+										</p:column>
+										<p:column headerText="Descripción" width="600">
+											<p:outputLabel value="#{inversion.descripcionFut}" />		
+										</p:column>
+										<p:column headerText="Detalle" width="50">
+								            <p:rowToggler rendered="#{inversion.esFutHoja}"/>
+								        </p:column>
+										<p:column headerText="Fuente" width="400">
+											<p:outputLabel value="" />		
+										</p:column>
+										<p:column headerText="Presupuesto Inicial" width="200">
+											<p:outputLabel value="#{inversion.sumatoriaPresupuestoInicial}" >					
+												<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+											</p:outputLabel>	
+										</p:column>
+										<p:column headerText="Presupuesto Definitivo" width="200">
+											<p:outputLabel value="#{inversion.sumatoriaPresupuestoDefinitivo}" >					
+												<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+											</p:outputLabel>
+										</p:column>
+										<p:column headerText="Compromisos" width="200">
+											<p:outputLabel value="#{inversion.sumatoriaCompromisos}" >					
+												<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+											</p:outputLabel>
+										</p:column>
+										<p:column headerText="Obligaciones" width="200">
+											<p:outputLabel value="#{inversion.sumatoriaObligaciones}" >					
+												<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+											</p:outputLabel>
+										</p:column>
+										<p:column headerText="Pagos" width="200">
+											<p:outputLabel value="#{inversion.sumatoriaPagos}" >					
+												<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+											</p:outputLabel>
+										</p:column>
+										<p:rowExpansion>
+											<p:dataTable id="tablaHija" var="detalle" value="#{inversion.detalleInformesFUT}" style="width:100%;" 
+														 emptyMessage="No existen homologaciones">
+												<p:column width = "1160"/>
+												<p:column headerText="Ver: "  width="50">
+													<p:outputLabel value="#{detalle.iteracion}" style="text-align: right"/>					
+												</p:column>
+												<p:column width="400">
+													<p:outputLabel value="#{detalle.fuenteFinanciacion}" />		
+												</p:column>
+												<p:column width="200">
+													<p:outputLabel value="#{detalle.presupuestoInicial}" >					
+														<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+													</p:outputLabel>	
+												</p:column>
+												<p:column width="200">
+													<p:outputLabel value="#{detalle.presupuestoDefinitivo}" >					
+														<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+													</p:outputLabel>
+												</p:column>
+												<p:column width="200">
+													<p:outputLabel value="#{detalle.compromisos}" >					
+														<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+													</p:outputLabel>
+												</p:column>
+												<p:column width="200">
+													<p:outputLabel value="#{detalle.obligaciones}" >					
+														<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+													</p:outputLabel>
+												</p:column>
+												<p:column width="200">
+													<p:outputLabel value="#{detalle.pagos}" >					
+														<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+													</p:outputLabel>
+												</p:column>
+											</p:dataTable>
+								        </p:rowExpansion>
+									</p:dataTable>
+	
+									<div class="EmptyBox20"></div>
+	
+									<div align="center">
+										<h:panelGrid id="panelgridGeneraReporte" columns="3"> 
+											<p:commandButton value="Generar Reporte en CSV" onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)" icon="ui-icon-arrowthichk-s">
+												<p:fileDownload value="#{informeResguardos3FUTView.reporteFutCsv}" />
+											</p:commandButton>
+										</h:panelGrid>
+									</div>
+									<div class="EmptyBox20"></div>
+								</p:scrollPanel>
+							</h:panelGrid>
+						</div>
+					</h:panelGrid>
+				</p:tab>
+			</p:tabView>
+		</p:panel>
+	   </h:form>
+	   </f:view>
+	</ui:define>
+</ui:composition>

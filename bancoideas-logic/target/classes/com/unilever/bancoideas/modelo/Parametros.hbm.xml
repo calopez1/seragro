@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated 9/08/2019 08:51:24 PM by Hibernate Tools 4.0.0 -->
+<hibernate-mapping>
+    <class name="com.unilever.bancoideas.modelo.Parametros" table="parametros" schema="public">
+        <id name="paraId" type="java.lang.Integer">
+            <column name="para_id" />
+            <generator class="assigned" />
+        </id>
+        <property name="codigo" type="java.lang.String">
+            <column name="codigo" not-null="true" />
+        </property>
+        <property name="valor" type="java.lang.String">
+            <column name="valor" not-null="true" />
+        </property>
+        <property name="fechaCreacion" type="java.util.Date">
+            <column name="fecha_creacion" length="13" not-null="true" />
+        </property>
+        <property name="fechaModificacion" type="java.util.Date">
+            <column name="fecha_modificacion" length="13" />
+        </property>
+        <property name="estadoRegistro" type="java.lang.String">
+            <column name="estado_registro" length="1" not-null="true" />
+        </property>
+        <property name="usuCreador" type="java.lang.String">
+            <column name="usu_creador" not-null="true" />
+        </property>
+        <property name="usuModificador" type="java.lang.String">
+            <column name="usu_modificador" />
+        </property>
+        <property name="descripcion" type="java.lang.String">
+            <column name="descripcion" not-null="true" />
+        </property>
+    </class>
+</hibernate-mapping>

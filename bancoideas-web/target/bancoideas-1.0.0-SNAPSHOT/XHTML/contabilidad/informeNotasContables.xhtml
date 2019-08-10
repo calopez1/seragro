@@ -1,0 +1,257 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:pe="http://primefaces.org/ui/extensions" 
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+<ui:define name="content">
+
+	<p:ajaxStatus onstart="PF('statusDialog').show()"
+		onsuccess="PF('statusDialog').hide()" />
+	<p:dialog modal="true" widgetVar="statusDialog" header="Cargando"
+		draggable="false" closable="false">
+		<p:graphicImage
+			value="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/ajaxloadingbar.gif" />
+	</p:dialog>
+
+	<!-- Expired session -->
+<p:idleMonitor onactive="PF('sessionTimeOutDialog').show();"
+	timeout="#{session.maxInactiveInterval * 1000}" />
+<p:dialog modal="true" widgetVar="sessionTimeOutDialog"
+	header="Sesión terminada" draggable="false" closable="false">
+	<h:outputText value="La sesión ha finalizado" />
+	<input id="confirmBackToLogin" type="button" value="Iniciar sesión"
+		onclick="window.location='#{facesContext.externalContext.requestContextPath}/index.jsp';" />
+</p:dialog>
+
+<script type="text/javascript">
+	function showStatus() {
+	    statusDialog.show();
+	}
+	 
+	function hideStatus() {
+	    statusDialog.hide();
+	}
+</script>
+
+<div align="center">
+<h:form id="frmInformeNotasContables">
+
+	<p:growl id="growl" autoUpdate="true" life="3000" />
+	
+	<p:panel id="pnlInformeNotasContables" header="Generar Informe Notas Contables" style="width: 90%;">
+		<h:panelGrid columns="2">
+		
+			<p:outputLabel value="Cuentas contables:" for="txtCuentaContable" />				
+			<h:panelGrid columns="2">			
+				<p:inputText id="txtCuentaContable" binding="#{informeNotasContablesView.txtCuentaContable}"
+					readonly="true" style="width: 200px;" />		
+				<p:commandButton  icon="ui-icon-search" onclick="PF('dlgCuentasContables').show();" />
+			</h:panelGrid>
+			
+			<p:outputLabel value="Terceros:" for="txtTercero" />				
+			<h:panelGrid columns="2">			
+				<p:inputText id="txtTercero" binding="#{informeNotasContablesView.txtTercero}"
+					readonly="true" style="width: 200px;" />		
+				<p:commandButton  icon="ui-icon-search" onclick="PF('dlgTerceros').show();" />
+			</h:panelGrid>		
+			
+			<p:outputLabel value="Auxiliar:" for="txtAuxiliar" />
+			<p:inputText id="txtAuxiliar" binding="#{informeNotasContablesView.txtAuxiliar}"
+				style="width: 200px;" />
+				
+			<p:outputLabel value="Fecha inicio:" for="calFechaInicio" />				
+			<p:calendar id="calFechaInicio" value="#{informeNotasContablesView.calFechaInicio}"
+				navigator="true" pattern="yyyy-MM-dd" />
+				
+			<p:outputLabel value="Fecha fin:" for="calFechaFinal" />				
+			<p:calendar id="calFechaFinal" value="#{informeNotasContablesView.calFechaFinal}"
+				navigator="true" pattern="yyyy-MM-dd" />
+		
+		</h:panelGrid>	
+		
+		<br/>
+		<p:commandButton id="btnGenerarInforme" value="Generar Informe"
+			action="#{informeNotasContablesView.action_generar_informe_notas_contable}" update=":frmInformeNotasContables" />
+			
+		<p:commandButton id="btnLimpiar" value="Limpiar"
+			action="#{informeNotasContablesView.action_clear}" update=":frmInformeNotasContables" />
+		
+	</p:panel>
+	
+	<br/><br/>
+	
+	<p:panel id="pnlListaInformeNotasContables" header="Informe Notas Contables" style="width: 90%;">
+		<p:scrollPanel mode="native">
+			<p:dataTable id="informeNotasContablesDataTable"
+				scrollable="true" style="text-align: center;"
+				var="informe"
+				value="#{informeNotasContablesView.informeNotasContablesDTOs}"
+				paginator="true"
+				rows="20"
+				emptyMessage="No hay registros encontrados"
+				filterDelay="1000">
+				
+				<p:column headerText="Consecutivo" filterBy="#{informe.consecutivo}"
+					filterMatchMode="startsWith" style="width: 200px;">
+					<p:outputLabel value="#{informe.consecutivo}" />
+				</p:column>
+				
+				<p:column headerText="Fecha expedición" filterBy="#{informe.fechaExpedicion}"
+					filterMatchMode="startsWith">
+					<p:outputLabel value="#{informe.fechaExpedicion}" >
+						<f:convertDateTime type="date" pattern="yyyy-MM-dd" timeZone="GMT-5"/>
+					</p:outputLabel>
+				</p:column>
+				
+				<p:column headerText="Concepto" filterBy="#{informe.concepto}"
+					filterMatchMode="contains">
+					<div align="left">
+						<p:outputLabel value="#{informe.concepto}" />
+					</div>
+				</p:column>
+				
+				<p:column headerText="Ver">
+								
+					<h:panelGrid columns="3">
+					
+						<p:commandLink actionListener="#{informeNotasContablesView.action_seleccionarDocumento(informe)}" ajax="false">
+						
+							<p:fileDownload value="#{informeNotasContablesView.reportePDF}" />
+						
+							<h:graphicImage
+								url="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/pdf-icon.png"
+								style="width: 32px; height: 32px;"/>
+							
+						</p:commandLink>
+						
+						<p:commandLink 
+							actionListener="#{informeNotasContablesView.action_seleccionarDocumento(informe)}"
+							ajax="false">
+						
+							<p:fileDownload value="#{informeNotasContablesView.reporteXlS}" />
+						
+							<h:graphicImage
+								url="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/xls.jpeg"
+								style="width: 32px; height: 32px;"/>
+						</p:commandLink>
+						
+						<p:commandLink 
+							actionListener="#{informeNotasContablesView.action_seleccionarDocumento(informe)}"
+							ajax="false">
+						
+							<p:fileDownload value="#{informeNotasContablesView.reporteXlSX}" />
+						
+							<h:graphicImage
+								url="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/xlsx.jpeg"
+								style="width: 32px; height: 32px;"/>
+						</p:commandLink> 
+							
+					</h:panelGrid>
+					
+				</p:column>
+				
+			</p:dataTable>
+		</p:scrollPanel>
+	</p:panel>
+		
+	<!-- **	DIÁLOGO CUENTAS CONTABLES ** -->
+	<p:dialog widgetVar="dlgCuentasContables" header="Cuentas contables" width="90%" height="400px" modal="true">
+		<p:scrollPanel mode="native">
+			<p:dataTable id="cuentasContablesDataTable"
+				scrollable="true" style="text-align: center;"
+				var="cuentaContable"
+				value="#{informeNotasContablesView.gluoCuentaContableDTOs}"
+				selection="#{informeNotasContablesView.selectedCuentaContableDTO}"
+				selectionMode="single"
+				paginator="true"
+				rows="20"
+				rowKey="#{cuentaContable.cconId}"
+				emptyMessage="No hay registros encontrados"
+				filterDelay="1000">
+				
+				<p:column selectionMode="single" style="width: 50px;" />
+				
+				<p:ajax event="rowSelect" listener="#{informeNotasContablesView.listener_cuenta_contable}"
+					 update=":frmInformeNotasContables" />
+				
+				<p:column headerText="Código" filterBy="#{cuentaContable.codigo}"
+					filterMatchMode="startsWith" style="width: 200px;">
+					<p:outputLabel value="#{cuentaContable.codigo}" />
+				</p:column>
+				
+				<p:column headerText="Descripción" filterBy="#{cuentaContable.descripcion}"
+					filterMatchMode="contains" style="width: 200px;">
+					<div align="left">
+						<p:outputLabel value="#{cuentaContable.descripcion}" />
+					</div>
+				</p:column>
+			
+			</p:dataTable>
+		</p:scrollPanel>
+	</p:dialog><!-- ** FIN DIÁLOGO CUENTAS CONTABLES ** -->
+
+	<!-- ** DIÁLOGO TERCERO ** -->
+	<p:dialog widgetVar="dlgTerceros" header="Terceros" width="90%" height="400px" modal="true">			  
+		<p:scrollPanel mode="native">
+			<p:dataTable id="tercerosDataTable"
+				scrollable="true" style="text-align: center;"
+				var="tercero"				
+				value="#{informeNotasContablesView.gluoTerceroDTOs}"
+				selection="#{informeNotasContablesView.selectedTerceroDTO}"
+				selectionMode="single"
+				rowKey="#{tercero.tercId}"
+				paginator="true"
+				rows="20"
+				emptyMessage="No hay registros encontrados"
+				filterDelay="1000">
+				
+				<p:column selectionMode="single" style="width: 50px;" />
+				
+				<p:ajax event="rowSelect" listener="#{informeNotasContablesView.listener_tercero}"
+					 update=":frmInformeNotasContables" />
+							
+				<p:column headerText="Identificación" filterBy="#{tercero.identificacion}"
+					filterMatchMode="startsWith" style="width: 200px;">
+					<h:outputText value="#{tercero.identificacion}" />
+				</p:column>
+				
+				<p:column headerText="Tipo Persona" filterBy="#{tercero.descripcionTipoPersona}"
+					filterMatchMode="startsWith" style="width: 200px;">
+					<h:outputText value="#{tercero.descripcionTipoPersona}" />
+				</p:column>
+			
+				<p:column headerText="Nombre Completo" filterBy="#{tercero.nombreCompleto}"
+					filterMatchMode="contains" style="width: 200px;">
+					<h:outputText value="#{tercero.nombreCompleto}" />
+				</p:column>
+				
+				<p:column headerText="Razon Social" filterBy="#{tercero.razonSocial}"
+					filterMatchMode="contains" style="width: 200px;">
+					<h:outputText value="#{tercero.razonSocial}" />
+				</p:column>
+				
+				<p:column headerText="Direccion" filterBy="#{tercero.direccionPrincipal}" 
+					filterMatchMode="contains" style="width: 200px;">
+					<h:outputText value="#{tercero.direccionPrincipal}" />
+				</p:column>
+				
+				<p:column headerText="Empresa" filterBy="#{tercero.nombreEmpresa}"
+					filterMatchMode="contains" style="width: 200px;">
+					<h:outputText value="#{tercero.nombreEmpresa}" />
+				</p:column>				
+				
+				<p:column headerText="Municipio" filterBy="#{tercero.nombreMunicipio}"
+					filterMatchMode="contains" style="width: 200px;">
+					<h:outputText value="#{tercero.nombreMunicipio}" />
+				</p:column>				
+								
+			</p:dataTable>
+		</p:scrollPanel>
+	</p:dialog><!-- ** FIN DIÁLOGO TERCERO ** -->
+		
+</h:form>
+</div>
+</ui:define>
+</ui:composition>

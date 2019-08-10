@@ -1,0 +1,1157 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+
+	<ui:define name="content">
+
+		<p:ajaxStatus onstart="PF('statusDialog').show()"
+			onsuccess="PF('statusDialog').hide()" />
+		<p:dialog modal="true" widgetVar="statusDialog" header="Cargando"
+			draggable="false" closable="false">
+			<p:graphicImage
+				value="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/ajaxloadingbar.gif" />
+		</p:dialog>
+
+		<!-- Expired session -->
+		<p:idleMonitor onactive="PF('sessionTimeOutDialog').show();"
+			timeout="#{session.maxInactiveInterval * 1000}" />
+		<p:dialog modal="true" widgetVar="sessionTimeOutDialog"
+			header="Sesión terminada" draggable="false" closable="false">
+			<h:outputText value="La sesión ha finalizado" />
+			<input id="confirmBackToLogin" type="button" value="Iniciar sesión"
+				onclick="window.location='#{facesContext.externalContext.requestContextPath}/index.jsp';" />
+		</p:dialog>
+		
+		<script type="text/javascript">
+			function showStatus() {
+			    statusDialog.show();
+			}
+			 
+			function hideStatus() {
+			    statusDialog.hide();
+			}
+		</script>
+
+		<style type="text/css">
+			.ui-panel {
+				margin-top: 20px
+			}
+			
+			.ui-tabs-top {
+				background-color: #FFFFFF;
+			}
+			
+			.one {
+				width: 15%;
+			}
+			
+			.two {
+				width: 85%;
+			}
+			
+			.col50Left{
+				width: 10%;
+				text-align: left;
+			}
+			
+			.col50Right{
+				width: 10%;
+				text-align: right;
+			}
+			
+			.txt100{
+				width: 100%;
+			}
+			
+		</style>
+			<h:form id="formDialog" enctype="multipart/form-data">
+
+				<p:growl id="men"/>
+				
+					<div align="center">
+					
+						<p:panel id="panelGluoBienMueble" header="Operaciones a Bienes Muebles" style="width:90%;">							
+							
+							<h:panelGrid id="panelPadre" columns="1">
+							
+								<h:panelGrid columns="2" id="panelGridTiposMovimientos" columnClasses="one, two" style="width: 100%;" >
+									<h:outputText value="Tipo de movimiento: "/>
+									<p:selectOneMenu id="somTipoMovimientos" binding="#{gluoBienMuebleView.somTipoMovimientoBienMueble}" style="width:400px" filter="true" filterMatchMode="contains">
+									 	<f:selectItem itemLabel="--- Seleccionar ---" itemValue="-1"/>	
+										<f:selectItems value="#{gluoBienMuebleView.listTiposMovimientoBienMueble}"/>
+										<p:ajax listener="#{gluoBienMuebleView.listener_tipoMovimiento}" event="change" update=":formDialog, men"/>
+									</p:selectOneMenu>
+								</h:panelGrid>
+								
+								<p:panel id="panelActualizacion" header="Actualización y Vida Util de Bienes" rendered="#{gluoBienMuebleView.showPanelActualizacion}">
+									<h:panelGrid id="panelOperacionesActualizacion" style="width: 100%;" columns="2">
+										<h:outputText value="Tipo de Operación:"/>	
+										<p:selectOneRadio id="sorOperacionActualizacion" binding="#{gluoBienMuebleView.sorOperacionActualizacion}">
+											<f:selectItems value="#{gluoBienMuebleView.lasOperaciones}"/>
+											<p:ajax listener="#{gluoBienMuebleView.listener_operacionActualizacion}" event="change" update=":formDialog"/>
+										</p:selectOneRadio>
+									</h:panelGrid>
+								</p:panel>
+								
+								<p:panel id="panelIngreso" header="Ingreso de Bienes" rendered="#{gluoBienMuebleView.showPanelIngreso}">
+									<h:panelGrid id="panelOperacionesIngreso" style="width: 100%;" columns="2">
+										<h:outputText value="Tipo de Operación:"/>	
+										<p:selectOneRadio id="sorOperacionIngreso" binding="#{gluoBienMuebleView.sorOperacionIngreso}" layout="grid" columns="3">
+											<f:selectItems value="#{gluoBienMuebleView.lasOperaciones}"/>
+											<p:ajax listener="#{gluoBienMuebleView.listener_operacionIngreso}" event="change" update=":formDialog"/>
+										</p:selectOneRadio>
+									</h:panelGrid>
+								</p:panel>
+								
+								<p:panel id="panelNuevoOExistente" header="Nuevo o Existente" rendered="#{gluoBienMuebleView.showPanelNuevoOExistente}">
+									<h:panelGrid id="panelOperacionNuevaOExistente" style="width: 100%;" columns="2">
+										<h:outputText value="El bien que desea ingresar es: "/>	
+										<p:selectOneRadio id="sorNuevoExistente" binding="#{gluoBienMuebleView.sorNuevoExistente}">
+											<f:selectItem itemLabel="Nuevo" itemValue="N"/>
+											<f:selectItem itemLabel="Existente" itemValue="E"/>
+											<p:ajax listener="#{gluoBienMuebleView.listener_nuevoExistente}" event="change" update=":formDialog"/>
+										</p:selectOneRadio>
+									</h:panelGrid>
+								</p:panel>
+								
+								<p:panel id="panelSalida" header="Salida de Bienes" rendered="#{gluoBienMuebleView.showPanelSalida}">
+									<h:panelGrid id="panelOperacionesSalida" style="width: 100%;" columns="2">
+										<h:outputText value="Tipo de Operación:"/>	
+										<p:selectOneRadio id="sorOperacionSalida" binding="#{gluoBienMuebleView.sorOperacionSalida}">
+											<f:selectItems value="#{gluoBienMuebleView.lasOperaciones}"/>
+											<p:ajax listener="#{gluoBienMuebleView.listener_operacionSalida}" event="change" update=":formDialog"/>
+										</p:selectOneRadio>
+									</h:panelGrid>
+								</p:panel>
+								
+								<p:panel id="panelTraslado" header="Traslado de Bienes" rendered="#{gluoBienMuebleView.showPanelTraslado}">
+									<h:panelGrid id="panelOperacionesTraslado" style="width: 100%;" columns="2">
+										<h:outputText value="Tipo de Operación:"/>	
+										<p:selectOneRadio id="sorOperacionTraslado" binding="#{gluoBienMuebleView.sorOperacionTraslado}">
+											<f:selectItems value="#{gluoBienMuebleView.lasOperaciones}"/>
+											<p:ajax listener="#{gluoBienMuebleView.listener_operacionTraslado}" event="change" update=":formDialog"/>
+										</p:selectOneRadio>
+									</h:panelGrid>
+								</p:panel>
+							</h:panelGrid>
+						</p:panel>
+					</div>
+					
+					<div align="center">
+						<p:panel id="panelPrimarioDatosBienMueble" header="ADMINISTRACION DE BIENES MUEBLES" rendered="#{gluoBienMuebleView.showPanelPrincipalDatosBienMueble}" style="width:90%;">
+							<h:panelGrid id="panelCentrl" columns="4">
+								<h:outputText value="Clasificación "/>
+								<p:selectOneMenu id="somClasificacionBien" binding="#{gluoBienMuebleView.somClasificacionBienMueble}">
+									<f:selectItem itemLabel="----- Seleccione ------" itemValue="-1"/>
+									<f:selectItems value="#{gluoBienMuebleView.listClasificacionBienMueble}"/>
+									<p:ajax listener="#{gluoBienMuebleView.listener_clasificacionBienMueble}" update="@this, men, panelCentrl"/>
+								</p:selectOneMenu>
+								
+								<h:outputText value="Tipo bien: "/>
+								<p:panelGrid>
+									<p:inputText id="txtTipoBien" styleClass="Wid50" value="#{gluoBienMuebleView.descripcionTipoBienSeleccionado}" disabled="true"/>
+									<p:commandButton icon="ui-icon-search" action="#{gluoBienMuebleView.action_validarTipoBien()}" disabled="#{gluoBienMuebleView.deshabilitarBtnConsultaBien}" 
+													  update="men, :formDialog:pnlTipoBienesMueble"/>
+								</p:panelGrid>
+								
+								<h:outputText value="Descripción"/>
+								<p:inputText id="txtDescripcionBienMueble" binding="#{gluoBienMuebleView.txtDescripcionBienMueble}" maxlength="50"/>
+							
+								<h:outputText value="Vida Util Actual (Años)"/>
+								<p:inputText id="txtVidaUtilActual" binding="#{gluoBienMuebleView.txtVidaUtilActual}" maxlength="50" disabled="true"/>
+								
+								<h:outputText value="Unidad de Medida " rendered="#{gluoBienMuebleView.showDatosDeBienConsumo}"/>
+								<p:inputText id="txtUnidadMedida" binding="#{gluoBienMuebleView.txtUnidadMedida}" rendered="#{gluoBienMuebleView.showDatosDeBienConsumo}"/>
+								
+								<h:outputText value="Responsable"/>
+								<p:panelGrid>
+									<p:inputText id="txtResponsable" styleClass="Wid50" value="#{gluoBienMuebleView.identificacionTercero}" disabled="true"/>
+									<p:commandButton icon="ui-icon-search" action="#{gluoBienMuebleView.action_mostrarDialogoTerceroResponsable()}" disabled="#{gluoBienMuebleView.deshabilitarBtnConsultaTercero}"/>
+								</p:panelGrid>
+								
+								<h:outputText value="Orden de Pago" rendered="#{gluoBienMuebleView.showObligacionInfo}"/>
+								<p:panelGrid rendered="#{gluoBienMuebleView.showObligacionInfo}">
+									<p:inputText id="txtOP" styleClass="Wid50" value="#{gluoBienMuebleView.consecutivoOP}" disabled="true"/>
+									<p:commandButton icon="ui-icon-search" action="#{gluoBienMuebleView.action_mostrarDialogoObligaciones()}" disabled="#{gluoBienMuebleView.deshabilitarBtnConsultaOP}"/>
+								</p:panelGrid>
+								
+								<h:outputText value="Fecha Vencimiento:" rendered="#{gluoBienMuebleView.showDatosDeBienConsumo}"/>
+								<p:calendar id="fechaVencimientoOP" binding="#{gluoBienMuebleView.fechaVencimientoOP}" timeZone="GMT-5" locale="en" disabled="true" rendered="#{gluoBienMuebleView.showDatosDeBienConsumo}"/>
+								
+								<h:outputText value="Cantidad" rendered="#{gluoBienMuebleView.showDatosDeBienConsumo}"/>
+								<p:inputText id="txtCantidad" binding="#{gluoBienMuebleView.txtCantidadBienMueble}" rendered="#{gluoBienMuebleView.showDatosDeBienConsumo}"/>
+						        
+						        <h:outputText value="Valor Unitario" rendered="#{gluoBienMuebleView.showValorUnitario}"/>
+						        <pe:inputNumber id="txtValorUnitario" value="#{gluoBienMuebleView.valorUnitarioBienMueble}" disabled="#{gluoBienMuebleView.deshabilitarValorUnitario}" rendered="#{gluoBienMuebleView.showValorUnitario}"/>
+						        
+								<h:outputText value="Número Factura " rendered="#{gluoBienMuebleView.showNumeroFactura}"/>
+								<p:inputText id="txtNumeroFactura" binding="#{gluoBienMuebleView.txtNumeroFactura}" maxlength="10" rendered="#{gluoBienMuebleView.showNumeroFactura}"/>
+								
+								<h:outputText value="Fecha Factura:" rendered="#{gluoBienMuebleView.showFechaFactura}"/>
+								<p:calendar id="fechaFactura" binding="#{gluoBienMuebleView.fechaFactura}" timeZone="GMT-5" locale="en" rendered="#{gluoBienMuebleView.showFechaFactura}"/>
+								
+								<h:outputText value="Motivo de baja: " rendered="#{gluoBienMuebleView.showMotivoBaja}"/>
+								<p:selectOneMenu id="somMotivosBaja" binding="#{gluoBienMuebleView.somMotivosBaja}" rendered="#{gluoBienMuebleView.showMotivoBaja}">
+									<f:selectItem itemLabel="---- Seleccione -----" itemValue="-1"/>
+									<f:selectItems value="#{gluoBienMuebleView.losMotivosBaja}"/>
+								</p:selectOneMenu>
+								
+								<h:outputText value="Recibo de Caja" rendered="#{gluoBienMuebleView.showReciboCaja}"/>
+								<p:panelGrid rendered="#{gluoBienMuebleView.showReciboCaja}">
+									<p:inputText id="txtReciboCaja" styleClass="Wid50" value="#{gluoBienMuebleView.consecutivoReciboCaja}" disabled="true"/>
+									<p:commandButton icon="ui-icon-search" oncomplete="PF('dialogoConsultarRecibo').show();" disabled="#{gluoBienMuebleView.deshabilitarBtnConsultaReciboCaja}"/>
+								</p:panelGrid>
+								
+								<h:outputText value="Cuenta Contable"/>
+								<p:panelGrid>
+									<p:inputText id="txtCuentaContable" styleClass="Wid50" value="#{gluoBienMuebleView.codigoCuenta}" disabled="true"/>
+									<p:commandButton icon="ui-icon-search" action="#{gluoBienMuebleView.action_cuentaBienMueble}" disabled="#{gluoBienMuebleView.deshabilitarBtnConsultaCuentaContable}"/>
+								</p:panelGrid>
+								
+								<h:outputText value="Cuenta Contable Depreciación"/>
+								<p:panelGrid>
+									<p:inputText id="txtCuentaContableDep" styleClass="Wid50" value="#{gluoBienMuebleView.codigoCuentaDepreciacion}" disabled="true"/>
+									<p:commandButton icon="ui-icon-search" action="#{gluoBienMuebleView.action_cuentaDepreciacion}" disabled="#{gluoBienMuebleView.deshabilitarBtnConsultaCuentaContableDepreciacion}"/>
+								</p:panelGrid>
+								
+								<h:outputText value="Marca " rendered="#{gluoBienMuebleView.showDatosDeBienDevolutivo}"/>
+								<p:inputText id="txtMarca" binding="#{gluoBienMuebleView.txtMarca}" maxlength="50" rendered="#{gluoBienMuebleView.showDatosDeBienDevolutivo}"/>
+								
+								<h:outputText value="Referencia " rendered="#{gluoBienMuebleView.showDatosDeBienDevolutivo}"/>
+								<p:inputText id="txtReferencia" binding="#{gluoBienMuebleView.txtReferencia}" maxlength="50" rendered="#{gluoBienMuebleView.showDatosDeBienDevolutivo}"/>
+								
+								<h:outputText value="Número de serie " rendered="#{gluoBienMuebleView.showDatosDeBienDevolutivo}"/>
+								<p:inputText id="txtNumeroSerie" binding="#{gluoBienMuebleView.txtNumeroSerie}" maxlength="50" rendered="#{gluoBienMuebleView.showDatosDeBienDevolutivo}"/>
+								
+								<h:outputText value="Número de placa " rendered="#{gluoBienMuebleView.showDatosDeBienDevolutivo}"/>
+								<p:inputText id="txtNumeroPlaca" binding="#{gluoBienMuebleView.txtNumeroPlaca}" maxlength="50" rendered="#{gluoBienMuebleView.showDatosDeBienDevolutivo}"/>
+								
+								<h:outputText value="Estado del registro:"/>
+								<p:selectOneRadio id="sorActivo" binding="#{gluoBienMuebleView.sorActivo}" value="A" disabled="true">
+									<f:selectItem itemLabel="Activo" itemValue="A"/>
+									<f:selectItem itemLabel="Inactivo" itemValue="I"/>
+								</p:selectOneRadio>
+							</h:panelGrid>
+						
+							<br/>
+							
+							<h:panelGrid id="panelGridArchivosSoporte" columns="1">
+									<h:outputText value="Debe adjuntar los siguientes documentos: #{gluoBienMuebleView.nombresAdjuntos}" />
+									<p:fileUpload  id="uploadAdjuntos"
+										mode="advanced"
+										auto="true" 
+										dragDropSupport="true"
+                          				allowTypes="/(\.|\/)(gif|jpe?g|png|pdf|doc|docx|xls|xlsx)$/" 
+                          				cancelLabel="Cancelar"
+                          				fileLimit="3"
+                          				fileLimitMessage="Número máximo de archivos soportados: 3"
+                          				invalidFileMessage="Tipo de archivo no válido. Solo pdf, Doc(x), Xls(x), gif, jpg, png )"
+                          				invalidSizeMessage="Archivo demasiado grande. Tamaño máximo: 3MB"
+                          				label="Adicionar un nuevo archivo"
+                          				sizeLimit="3145728"
+                          				uploadLabel="Cargar"
+                          				fileUploadListener="#{gluoBienMuebleView.fileUploadListener}"
+                          				update="panelPrimarioDatosBienMueble"
+                          				process="panelPrimarioDatosBienMueble"
+                          				/>
+                          			
+	                          		<p:dataTable id="pnlTablaArchivosSoporte"
+	                          				value="#{gluoBienMuebleView.archivosDeSoporteDTO}"
+	                          				var="archivo"
+	                          				rendered="#{gluoBienMuebleView.cantidadArchivosSoporte > 0}">
+	                          				
+	                          				<p:column headerText="Archivo" style="width: 80%">
+	                          					<p:outputLabel value="#{archivo.descripcion}" />
+	                          				</p:column>
+	                          				
+	                          				<p:column headerText="Borrar" style="width: 10%">
+	                          					<p:commandButton icon="ui-icon-close"  
+	                          						action="#{gluoBienMuebleView.action_eliminarArchivoSoporte(archivo)}"
+	                          						update=":formDialog:panelPrimarioDatosBienMueble"/>
+	                          				</p:column>
+	                          				
+	                          				<p:column headerText="Ver" style="width: 10%">
+	                          					<p:commandButton ajax="false" onclick="PrimeFaces.monitorDownload(start, stop);" icon="ui-icon-search">
+											        <p:fileDownload value="#{gluoBienMuebleView.getDocumentoAdjuntoSoporte(archivo)}" contentDisposition="inline"/>
+											    </p:commandButton>
+											    
+	                          				</p:column>
+	                          				
+	                          		</p:dataTable>
+							</h:panelGrid>
+							
+							<br/>
+							
+							<h:panelGrid id="panelBotonesDef" columns="2">
+								<p:commandButton id="btnGuardar" value="Guardar" action="#{gluoBienMuebleView.action_guardarBienMueble}" update=":formDialog" icon="ui-icon-disk"/>
+								<p:commandButton id="btnLimpiarCampos" value="Limpiar" action="#{gluoBienMuebleView.limpiar_datosBienMueble}" update=":formDialog"/>
+							</h:panelGrid>
+						</p:panel>
+					</div>
+					<br/>
+					
+					<!-- Consulta de Bienes  -->
+					<!-- ************************* -->
+					<p:dialog id="dialogoConsultaBienesMuebles" widgetVar="dialogConsultaBienesMuebles" closable="true" 
+							  header="Consulta de Bienes Muebles" modal="true" draggable="false" resizable="true" width="90%"> 
+						
+						<p:growl id="msgDialogBienMueble" showDetail="false"/>
+						
+						<p:scrollPanel id="pnlBienes" mode="native" style="width:100%; height:400px">
+							
+							<div class="ContainerIndent"/>
+					
+							<p:outputLabel value="Criterios de búsqueda para bienes muebles:"/>
+							<h:panelGrid columns="2" columnClasses="colAFiltro, colBFiltro" style="width: 100%;">
+								<p:outputLabel value="Codigo:  "/>
+								<p:inputText styleClass="Wid50" value="#{gluoBienMuebleView.codigoBienMuebleBusqueda}"/>
+								
+								<p:outputLabel value="Descripción:"/>
+								<p:inputText styleClass="Wid50" value="#{gluoBienMuebleView.descripcionBienMuebleBusqueda}"/>
+							</h:panelGrid>
+					
+							<p:commandButton value="Buscar Bien Mueble"
+								actionListener="#{gluoBienMuebleView.action_buscarBienMueble}"
+								update=":formDialog:pnlBienesMueble, msgDialogBienMueble"/>
+					
+							<br/>
+				
+							<p:dataTable id="pnlBienesMueble" var="mueble" rows="350" style="width: 100%;"
+								value="#{gluoBienMuebleView.bienesMueble}"
+								paginator="true"
+								paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+								rowsPerPageTemplate="300,400,500"
+								emptyMessage="No hay bienes mueble encontrados"
+								reflow="true" 
+								filterDelay="1000">
+								
+								<f:facet name="header">
+		                             Bienes Muebles
+		                         </f:facet>
+		                         
+		                   		<p:column headerText="Codigo" sortBy="#{mueble.codigo}"
+									style="width: 10%" filterBy="#{mueble.codigo}"
+									filterMatchMode="startsWith">
+									<h:outputText value="#{mueble.codigo}"/>
+								</p:column>
+								
+								<p:column headerText="Descripción" sortBy="#{mueble.nombre}"
+									style="width: 10%" filterBy="#{mueble.nombre}"
+									filterMatchMode="contains">
+									<h:outputText value="#{mueble.nombre}"/>
+								</p:column>
+								
+								<p:column headerText="Marca" sortBy="#{mueble.marca}"
+									style="width: 10%" filterBy="#{mueble.marca}"
+									filterMatchMode="contains">
+									<h:outputText value="#{mueble.marca}"/>
+								</p:column>
+								
+								<p:column headerText="Referencia" sortBy="#{mueble.referencia}"
+									style="width: 10%" filterBy="#{mueble.referencia}"
+									filterMatchMode="contains">
+									<h:outputText value="#{mueble.referencia}"/>
+								</p:column>
+								
+								<p:column headerText="Tipo Bien" sortBy="#{mueble.gluoTipoBien.descripcion}"
+									style="width: 10%" filterBy="#{mueble.gluoTipoBien.descripcion}"
+									filterMatchMode="contains">
+									<h:outputText value="#{mueble.gluoTipoBien.descripcion}"/>
+								</p:column>
+								
+								<p:column headerText="Seleccionar" 
+									style="width: 5%">
+									<p:commandButton title="Seleccionar"  
+						            	icon="ui-icon-check" 
+						            	oncomplete="PF('dialogConsultaBienesMuebles').hide();"
+						            	update=":formDialog, :formDialog:msgDialogBienMueble" 
+						            	action="#{gluoBienMuebleView.action_seleccionarBienMueble(mueble)}">
+						            </p:commandButton>
+								</p:column>
+							</p:dataTable>
+				
+						</p:scrollPanel>
+						
+						<div class="EmptyBox20" />
+						
+					</p:dialog>
+					<!-- ************************* -->
+					<!-- Consulta de Bienes  -->	
+					
+					<!-- Consulta de Tipo de bienes  -->
+					<!-- ************************* -->
+					<p:dialog modal="true" widgetVar="dlgTipoBien" header="Tipo Bien" draggable="false" closable="true" resizable="true" width="90%">
+					
+						<p:growl id="msgTipoDialogBienMueble" showDetail="false"/>
+					
+						<p:scrollPanel id="pnlTipoBien" mode="native" style="width:100%; height:400px">
+							<div class="ContainerIndent"/>
+							
+							<p:outputLabel value="Criterios de búsqueda para tipos de bienes muebles:"/>
+							<h:panelGrid columns="2" columnClasses="colAFiltro, colBFiltro" style="width: 100%;">
+								<p:outputLabel value="Codigo:  "/>
+								<p:inputText styleClass="Wid50" value="#{gluoBienMuebleView.codigoTipoBienMuebleBusqueda}"/>
+								
+								<p:outputLabel value="Descripción:"/>
+								<p:inputText styleClass="Wid50" value="#{gluoBienMuebleView.descripcionTipoBienMuebleBusqueda}"/>
+							</h:panelGrid>
+					
+							<p:commandButton value="Buscar Tipo Bien"
+								actionListener="#{gluoBienMuebleView.action_buscarTipoBienMueble}"
+								update=":formDialog:pnlTipoBienesMueble, msgTipoDialogBienMueble"/>
+					
+							<br/>
+							
+							<p:dataTable id="pnlTipoBienesMueble" var="tipoBien" rows="350" style="width: 100%;"
+								value="#{gluoBienMuebleView.listaTiposBien}"
+								paginator="true"
+								paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+								rowsPerPageTemplate="300,400,500"
+								emptyMessage="No hay bienes mueble encontrados"
+								reflow="true" 
+								filterDelay="1000">
+								
+								<f:facet name="header">
+		                             Tipo de Bienes Muebles
+		                         </f:facet>
+		                         
+		                   		<p:column headerText="Codigo" sortBy="#{tipoBien.codigo}"
+									style="width: 20%" filterBy="#{tipoBien.codigo}"
+									filterMatchMode="startsWith">
+									<h:outputText value="#{tipoBien.codigo}"/>
+								</p:column>
+								
+								<p:column headerText="Descripción" sortBy="#{tipoBien.descripcion}"
+									style="width: 60%" filterBy="#{tipoBien.descripcion}"
+									filterMatchMode="contains">
+									<h:outputText value="#{tipoBien.descripcion}"/>
+								</p:column>
+								
+								<p:column headerText="Seleccionar" 
+									style="width: 10%">
+									<p:commandButton title="Seleccionar"  
+						            	icon="ui-icon-check" 
+						            	oncomplete="PF('dlgTipoBien').hide();"
+						            	update=":formDialog:txtTipoBien, 
+						            			:formDialog:txtTipoBienDev, 
+						            			:formDialog:msgTipoDialogBienMueble, 
+						            			:formDialog:txtVidaUtilActual, 
+						            			:formDialog:txtVidaUtilActualDev"
+						            	action="#{gluoBienMuebleView.action_seleccionarTipoBien(tipoBien)}">
+						            </p:commandButton>
+								</p:column>
+							</p:dataTable>
+							
+						</p:scrollPanel>
+						
+						<div class="EmptyBox20" />
+					
+					</p:dialog>
+					<!-- ************************* -->
+					<!-- Consulta de Tipo de bienes  -->
+						
+					
+			<!--        Tercero            -->
+			<!-- ************************* -->
+			<p:dialog modal="true" widgetVar="dlgTercero" header="Tercero"
+				draggable="false" closable="true" resizable="true"
+				width="90%" >
+				
+				<p:scrollPanel id="pnlTerceros" mode="native" style="width:100%; height:400px">
+					<div class="ContainerIndent"/>
+					
+					<p:outputLabel value="Criterios de búsqueda para terceros:"/>
+					
+					<h:panelGrid columns="2" style="width: 50%;">
+								
+						<p:outputLabel value="Identificación: "/>
+						<p:inputText styleClass="Wid50"
+							value="#{gluoBienMuebleView.identificacionFiltro}"/>
+						
+						<p:outputLabel value="Nombre/Razón Social:"/>
+						<p:inputText styleClass="Wid50"
+							value="#{gluoBienMuebleView.nombreRazonSocialFiltro}"/>
+						
+					</h:panelGrid>
+					
+					<p:commandButton value="Buscar Tercero"
+						actionListener="#{gluoBienMuebleView.action_buscarTercero}"
+						update=":formDialog:pnlTerceros"/>
+					
+					<br/>
+				
+					<p:dataTable id="tercerosEncontrados" var="tercero" rows="350" style="width: 100%;"
+						value="#{gluoBienMuebleView.terceros}"
+						paginator="true"
+						paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+						rowsPerPageTemplate="300,400,500"
+						emptyMessage="No hay terceros encontrados"
+						reflow="true" 
+						filterDelay="1000">
+						
+						<f:facet name="header">
+                             Terceros
+                         </f:facet>
+                         
+                   		<p:column headerText="Identificación" sortBy="#{tercero.identificacion}"
+							style="width: 10%" filterBy="#{tercero.identificacion}"
+							filterMatchMode="startsWith">
+							<h:outputText value="#{tercero.identificacion}"/>
+						</p:column>
+						
+						<p:column headerText="Primer Nombre" sortBy="#{tercero.primerNombre}"
+							style="width: 10%" filterBy="#{tercero.primerNombre}"
+							filterMatchMode="contains">
+							<h:outputText value="#{tercero.primerNombre}"/>
+						</p:column>
+						
+						<p:column headerText="Segundo Nombre" sortBy="#{tercero.segundoNombre}"
+							style="width: 10%" filterBy="#{tercero.segundoNombre}"
+							filterMatchMode="contains">
+							<h:outputText value="#{tercero.segundoNombre}"/>
+						</p:column>
+						
+						<p:column headerText="Primer Apellido" sortBy="#{tercero.primerApellido}"
+							style="width: 10%" filterBy="#{tercero.primerApellido}"
+							filterMatchMode="contains">
+							<h:outputText value="#{tercero.primerApellido}"/>
+						</p:column>
+						
+						<p:column headerText="Segundo Apellido" sortBy="#{tercero.segundoApellido}"
+							style="width: 10%" filterBy="#{tercero.segundoApellido}"
+							filterMatchMode="contains">
+							<h:outputText value="#{tercero.segundoApellido}"/>
+						</p:column>
+						
+						<p:column headerText="Seleccionar" 
+							style="width: 5%">
+							<p:commandButton title="Seleccionar"  
+				            	icon="ui-icon-check" 
+				            	update=":formDialog:txtIdentTercero, 
+				            			:formDialog:txtResponsable,
+				            			:formDialog:txtResponsableDev" 
+				            	action="#{gluoBienMuebleView.action_seleccionarTercero(tercero)}">
+				            </p:commandButton>
+						</p:column>
+                         
+
+					</p:dataTable>
+					
+				</p:scrollPanel>
+
+
+				<div class="EmptyBox20" />
+				
+			</p:dialog>
+			<!--        Tercero            -->
+			<!-- ************************* -->
+				
+			<!--        Obligaciones       -->
+			<!-- ************************* -->			
+			<p:dialog modal="true" widgetVar="dlgObligaciones" header="Obligaciones" 
+				draggable="false" closable="true"
+				resizable="true" height="400px" width="90%" > 
+					
+				<p:growl id="menObligaciones" showDetail="false"/>
+				
+				<div align="center">
+					<h:panelGrid columns="3">
+						<h:outputText value="Tercero: "/>
+						<p:inputText id="txtIdentTercero" value="#{gluoBienMuebleView.identificacionTerceroSeleccionadoEnOP}" readonly="true"/>
+						<p:commandButton icon="ui-icon-search" action="#{gluoBienMuebleView.action_mostrarDialogoTerceroDesdeOP()}"/>
+					</h:panelGrid>
+				</div>
+				
+				<div class="EmptyBox20" />
+				
+				<div align="center">
+					<h:panelGrid id="btnConsultarOPs" columns="2">
+						<p:commandButton id="btnGetOps" value="Consultar Obligaciones de Tercero" action="#{gluoBienMuebleView.action_consultarOPsDeTercero()}" update="menObligaciones, opData"/>
+						<p:commandButton id="btnClearOps" value="Limpiar" action="#{gluoBienMuebleView.action_limpiarOPsDeTercero()}" update="txtIdentTercero, opData"/>
+					</h:panelGrid>
+				</div>
+				
+				<br/>
+					
+				<p:scrollPanel mode="native" style="width:100%; height:400px;">
+							<p:dataTable id="opData" var="op"
+								value="#{gluoBienMuebleView.listaOps}"
+								rows="10" paginator="true"
+								paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+								rowsPerPageTemplate="10,15,20,30"
+								emptyMessage="No existen Obligaciones" reflow="true"
+								rowKey="#{op.maopId}"
+								filterDelay="1000">
+								
+								<f:facet name="header">Obligaciones del Tercero Seleccionado</f:facet>
+								
+								<p:column style="width:16px">
+				            		<p:rowToggler />
+				        		</p:column>
+		
+								<p:column headerText="Consecutivo" sortBy="#{op.consecutivo}"
+									style="width: 15%" filterBy="#{op.consecutivo}"
+									filterMatchMode="startsWith">
+									<h:outputText value="#{op.consecutivo}" />
+								</p:column>
+								
+								<p:column headerText="Concepto"
+									sortBy="#{op.concepto}" style="width: 25%" filterBy="#{op.concepto}"
+									filterMatchMode="startsWith">
+									<h:outputText value="#{op.concepto}" />
+								</p:column>
+								
+								<p:column headerText="Tercero" style="width: 20%" >
+									<h:outputText value="#{op.terceroDTO.identificacion}" />
+								</p:column>
+								
+								<p:column headerText="Valor Obligación" style="width: 15%">
+									<div align="right">
+										<h:outputText value="#{op.valorTotal}">
+											<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+										</h:outputText>
+									</div>
+								</p:column>
+								
+								<p:column headerText="Valor Deducciones" style="width: 15%">
+									<div align="right">
+										<h:outputText value="#{op.valorTotalDeducciones}">
+											<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+										</h:outputText>
+									</div>
+								</p:column>
+								
+								<p:column headerText="Saldo Por Pagar" style="width: 15%">
+										<div align="right">
+											<h:outputText value="#{op.saldoPorPagar}">
+												<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+											</h:outputText>
+										</div>
+								</p:column>
+								
+								<p:column headerText="Valor Total" style="width: 15%">
+										<div align="right">
+											<h:outputText id="valorAPagarPorOPMaster" value="#{op.valorPagarPorOp}">
+												<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+											</h:outputText>
+										</div>
+								</p:column>
+								
+								<p:column headerText="Seleccionar" 
+									style="width: 5%">
+									<p:commandButton title="Seleccionar"  
+						            	icon="ui-icon-check" 
+						            	update=":formDialog:menObligaciones, :formDialog:txtOP, :formDialog:txtOPDev" 
+						            	action="#{gluoBienMuebleView.action_seleccionarObligacion(op)}">
+						            </p:commandButton>
+								</p:column>
+								
+								<p:rowExpansion>
+				        			 	<h:panelGrid columns="2" style="width:100%">
+				        			 		<p:dataTable id="tablaDetalleOPDialog" var="dtlOp" rows="10"
+				        			 					 value="#{op.detalleOpDTO}"
+				        			 					 emptyMessage="No hay registros disponibles"
+				        			 					 paginator="false" reflow="true"
+				        			 					 rowKey="#{op.glopId}">
+				        			 					 
+						        			 		 <p:column headerText="Codigo Rubro">
+											            <h:outputText value="#{dtlOp.codigoRubro}" />
+											        </p:column>
+											        
+											   		<p:column headerText="Descripción Rubro">
+											            <h:outputText value="#{dtlOp.descripcionRubro}" />
+											        </p:column>
+											        
+											        <p:column headerText="Valor Original">
+											          <div align="right">
+														 <h:outputText value="#{dtlOp.valorTotal}">
+															<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+														</h:outputText>
+													 </div>
+											        </p:column>
+											        
+											         <p:column headerText="Saldo Por Pagar">
+											          <div align="right">
+														 <h:outputText value="#{dtlOp.saldoDeduccionesDetalle}">
+															<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+														</h:outputText>
+													 </div>
+											        </p:column>
+											        
+											         <p:column headerText="Valor Deducciones">
+											          <div align="right">
+														 <h:outputText value="#{dtlOp.valorDeducciones}">
+															<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+														</h:outputText>
+													 </div>
+											        </p:column>
+											        
+											        <p:column headerText="Tipo Recurso" >
+											        	<div align="center">
+											        		<h:outputLabel value="#{dtlOp.nombreTipoRecurso}" />
+											        	</div>											          
+											        </p:column>
+				        			 		</p:dataTable>
+				        			 	</h:panelGrid>
+				        			 </p:rowExpansion>
+								
+							</p:dataTable>
+						</p:scrollPanel>
+						<div class="EmptyBox20" />					
+					</p:dialog>
+			<!-- ************************* -->	
+			
+			
+			<!--  Recibo Caja  -->
+			<!-- Dialogo consultar recibo -->
+		<!-- **************************** -->
+		<p:dialog header="Recibo de Caja" widgetVar="dialogoConsultarRecibo" modal="true"  width="90%" height="400px" >
+				
+				<p:growl id="msgReciboCaja" showDetail="false"/>
+				
+				<p:panel id="pnlInformeReciboCaja" header="Informe Recibo de Caja" style="width: 95%;" >
+				
+					<h:panelGrid id="panelDatosReciboCaja" columns="5">
+					
+						<p:outputLabel value="Fecha Inicial:" for="calFechaInicial" />			
+						<p:calendar id="calFechaInicial" value="#{gluoBienMuebleView.fechaInicialReciboCaja}" timeZone="GMT-5" style="width: 100%;" disabled="false"/>
+			            
+			            <p:spacer width="10"></p:spacer>
+			            
+						<p:outputLabel value="Fecha Final:" for="calFechaFinal" />
+						<p:calendar id="calFechaFinal"  value="#{gluoBienMuebleView.fechaFinReciboCaja}"  timeZone="GMT-5" style="width: 100%;" disabled="false"/>
+					
+						<p:outputLabel value="Identificación:" for="txtIdentificacion" />			
+						<p:inputText id="txtIdentificacion" value="#{gluoBienMuebleView.identificacionEnReciboCaja}" style="width: 90%;" disabled="false"/>
+			            
+			            <p:spacer width="10"></p:spacer>
+			            
+						<p:outputLabel value="Nombre:" for="txtNombre" />
+						<p:inputText id="txtNombre"  value="#{gluoBienMuebleView.nombreEnReciboCaja}"  style="width: 90%;" disabled="false"/>
+					
+						<p:outputLabel value="Consecutivo:" for="txtConsecutivo" />
+						<p:inputText id="txtConsecutivo"  value="#{gluoBienMuebleView.consecutivoReciboCajaBusqueda}"  style="width: 90%;" disabled="false"/>
+					
+					
+					</h:panelGrid>
+					
+					<br/>
+					
+					<p:commandButton id="btnConsultar" value="Consultar" action="#{gluoBienMuebleView.action_consultarReciboCaja}" update="panelDatosReciboCaja, pnlListaReciboCajaDataTable, msgReciboCaja" />
+					<p:commandButton id="btnLimpiar" value="Limpiar" action="#{gluoBienMuebleView.action_limpiarReciboCaja}" update="panelDatosReciboCaja, pnlListaReciboCajaDataTable" />
+				
+				</p:panel>
+				
+				<p:panel id="pnlListaReciboCaja" style="width: 95%;" header="Informe Recibo de Caja">
+				
+					<p:dataTable id="pnlListaReciboCajaDataTable" value="#{gluoBienMuebleView.lstReciboCaja}"
+							var="recibo" paginator="true" rows="20"
+							paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+							emptyMessage="No se encontraron recibos de caja " reflow="true"
+							scrollable="true" scrollWidth="100%"				
+							rowKey="#{recibo.rcboId}"
+							filterDelay="1000">
+							
+							<p:column headerText="Consecutivo"
+								filterBy="#{recibo.consecutivo}"
+								style="text-align:center">
+								<p:outputLabel value="#{recibo.consecutivo}" />							
+							</p:column>
+							
+							<p:column headerText="Fecha"
+								filterBy="#{recibo.fechaRecibo}"
+								style="text-align:center">
+								<p:outputLabel value="#{recibo.fechaRecibo}" >
+									<f:convertDateTime type="date" pattern="dd-MM-yyyy"/>
+								</p:outputLabel>									
+							</p:column>
+							
+							<p:column headerText="Valor"
+								filterBy="#{recibo.valorTotal}"
+								style="text-align:center">
+								<p:outputLabel value="#{recibo.valorTotal}" >
+									<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+								</p:outputLabel>							
+							</p:column>
+							
+							<p:column headerText="Identificación"
+								filterBy="#{recibo.identificacionTercero}"
+								style="text-align:center">
+								<p:outputLabel value="#{recibo.identificacionTercero}" />							
+							</p:column>
+							
+							<p:column headerText="Tercero"
+								filterBy="#{recibo.nombreTercero}"
+								style="text-align:center">
+								<p:outputLabel value="#{recibo.nombreTercero}" />							
+							</p:column>
+							
+							<p:column headerText="Seleccionar">
+								<p:commandButton title="Seleccionar"  
+					            	icon="ui-icon-check" 
+					            	update=":formDialog:txtReciboCaja" 
+					            	action="#{gluoBienMuebleView.action_seleccionarReciboCaja(recibo)}">
+					            </p:commandButton>
+							</p:column>
+					        
+					</p:dataTable>
+					
+				</p:panel>
+		    </p:dialog>
+			<!-- Fin Recibo Caja -->
+			
+			<!-- *********************** Cuentas Contbles *********************** -->
+			<p:dialog modal="true" widgetVar="dlgCuentasContables" header="Cuentas Contables"
+					  draggable="false" closable="true" resizable="true" width="90%" height="400px">
+				
+				<p:growl id="menConceptoPago" showDetail="false"/>
+				
+				<p:scrollPanel mode="native" style="width:100%; height:400px">
+					<div class="ContainerIndent">
+					<h:outputText value="Cuentas Contables" />
+					</div>
+				
+					<p:dataTable id="tblConceptosDePago" var="cuentaContable" rows="200" style="width: 100%;"
+						value="#{gluoBienMuebleView.cuentasContables}"
+						paginator="true"
+						paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+						rowsPerPageTemplate="300,400,500"
+						emptyMessage="No hay cuentas contables"
+						reflow="true" 
+						rowKey="#{cuentaContable.cconId}"
+						filterDelay="1000">
+						
+						<f:facet name="header"> Cuentas Contables </f:facet>
+                        
+                        <p:column headerText="Codigo" style="width:15%;" filterBy="#{cuentaContable.codigo}" sortBy="#{cuentaContable.codigo}">
+                        	<h:outputText value="#{cuentaContable.codigo}"/>
+                        </p:column>
+                        
+                         <p:column headerText="Descripción" style="width:75%;" filterBy="#{cuentaContable.descripcion}" sortBy="#{cuentaContable.descripcion}" filterMatchMode="contains">
+                        	<h:outputText value="#{cuentaContable.descripcion}"/>
+                        </p:column>
+                        
+                       	 <p:column headerText="Seleccionar">
+								<p:commandButton title="Seleccionar"  
+					            	icon="ui-icon-check" 
+					            	update=":formDialog:txtCuentaContable, 
+					            			:formDialog:txtCuentaContableDep,
+					            			:formDialog:txtCuentaContableDev, 
+					            			:formDialog:txtCuentaContableDepDev"
+					            	action="#{gluoBienMuebleView.action_seleccionarCuentaContable(cuentaContable)}">
+					            </p:commandButton>
+						</p:column>
+                        
+					</p:dataTable>
+				</p:scrollPanel>
+				<div class="EmptyBox20" />
+			</p:dialog>
+			<!-- *********************** Cuentas Contables *********************** -->
+			
+			
+			<!-- *********************** Dialog de reposicion *********************** -->
+			<p:dialog id="dialogReposicion" widgetVar="dlgReposicion" header="Reposición de bienes muebles" draggable="false" closable="true" resizable="true" width="90%" height="600px;" modal="true">
+
+				<p:growl id="msgReposicion" showDetail="false"/>
+				
+				<h:panelGrid id="panelGridCentralRepo" columns="2">
+						
+					<p:panel id="panelSalidaPantalla" header="SALIDA" style="width:700px;">
+						<p:scrollPanel  id="panelSalidaScroll" mode="native" style="height:400px">
+							<h:panelGrid id="panelDataTableSalida" columns="1">
+								<p:dataTable id="pnlBienesMuebleDevolutivoLectura" var="muebleLect" rows="10" style="width: 100%;"
+									value="#{gluoBienMuebleView.listBienesSalidaDTO}"
+									paginator="true"
+									paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+									emptyMessage="No hay bienes mueble seleccionados"
+									reflow="true" 
+									rowKey="#{muebleLect.bimuId}">
+									
+									<f:facet name="header">
+			                            Bienes Devolutivos de los que desea Salir
+			                         </f:facet>
+			                         
+									<p:column headerText="Descripción" style="width: 10%">
+										<h:outputText value="#{muebleLect.nombre}"/>
+									</p:column>
+									
+									<p:column headerText="Marca" style="width: 10%">
+										<h:outputText value="#{muebleLect.marca}"/>
+									</p:column>
+									
+									<p:column headerText="Referencia" style="width: 10%">
+										<h:outputText value="#{muebleLect.referencia}"/>
+									</p:column>
+									
+									<p:column headerText="Número de Serie" style="width: 10%">
+										<h:outputText value="#{muebleLect.numeroSerie}"/>
+									</p:column>
+									
+									<p:column headerText="Tipo Bien" style="width: 10%">
+										<h:outputText value="#{muebleLect.gluoTipoBien.descripcion}"/>
+									</p:column>
+									
+									<p:column headerText="Borrar" style="width: 10%">
+	                          			<p:commandButton icon="ui-icon-close"  
+	                          					action="#{gluoBienMuebleView.action_eliminarBienSalida(muebleLect)}"
+	                          						update=":formDialog:panelSalidaPantalla"/>
+	                          		</p:column>
+									
+									<f:facet name="footer">
+									      <p:commandButton icon="ui-icon-plus" value="Seleccionar" oncomplete="PF('dlgConsultaBienesDevolutivos').show()" />
+									 </f:facet>							
+								</p:dataTable>
+							</h:panelGrid>
+						</p:scrollPanel>
+					</p:panel>
+					
+					<p:panel id="panelEntradaPantalla" header="ENTRADA" style="width:700px;">
+						<p:scrollPanel  id="panelEntrada" mode="native" style="height:400px">		
+								<h:panelGrid id="panelDataTableEntrada" columns="1">
+									<p:dataTable id="tableBienesMueblesDevolutivosAgregados" var="mueblesAgregados" rows="10" style="width: 100%;"
+												value="#{gluoBienMuebleView.listBienesEntradaDTO}"
+												paginator="true"
+												paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+												emptyMessage="No hay bienes mueble agregados"
+												rowKey="#{mueblesAgregados.bimuId}">
+										
+										 <f:facet name="header">
+				                            Bienes Devolutivos que desea Ingresar al Almacen
+				                         </f:facet>
+										
+									
+										<p:column headerText="Descripción" style="width: 10%">
+											<h:outputText value="#{mueblesAgregados.nombre}"/>
+										</p:column>
+										
+										<p:column headerText="Marca" style="width: 10%">
+											<h:outputText value="#{mueblesAgregados.marca}"/>
+										</p:column>
+										
+										<p:column headerText="Referencia" style="width: 10%">
+											<h:outputText value="#{mueblesAgregados.referencia}"/>
+										</p:column>
+										<p:column headerText="Número de Serie" style="width: 10%" >
+											<h:outputText value="#{mueblesAgregados.numeroSerie}"/>
+										</p:column>
+										
+										<p:column headerText="Tipo Bien" style="width: 10%">
+											<h:outputText value="#{mueblesAgregados.gluoTipoBien.descripcion}"/>
+										</p:column>
+										
+										<p:column headerText="Borrar" style="width: 10%">
+	                          				<p:commandButton icon="ui-icon-close"  
+	                          						action="#{gluoBienMuebleView.action_eliminarBienEntrada(mueblesAgregados)}"
+	                          						update=":formDialog:panelEntradaPantalla"/>
+	                          			</p:column>
+										
+										<f:facet name="footer">
+										      <p:commandButton icon="ui-icon-plus" value="Seleccionar" oncomplete="PF('dialogCrudBienMueble').show()" />
+										 </f:facet>
+									</p:dataTable>								
+								</h:panelGrid>
+						</p:scrollPanel>
+					</p:panel>
+				</h:panelGrid>
+				
+				<br/>
+				
+				<div align="center">
+					<h:panelGrid id="panelBtnDialogReposicion" columns="2">
+						<p:commandButton id="btnReposicion" value="Guardar Reposición" icon="ui-icon-disk" action="#{gluoBienMuebleView.action_guardarReposicion()}" update="panelGridCentralRepo, msgReposicion"/>
+					</h:panelGrid>
+				</div>
+			</p:dialog>
+			<!-- *********************** fin Dialogo de reposicion *********************** -->
+			
+			
+			
+			
+			<!-- *********************** Dialogo de crud de mueble *********************** -->	
+			<p:dialog id="dlgAdminBienDevolutivo" widgetVar="dialogCrudBienMueble" header="Administración Bienes Devolutivos" draggable="false" 
+					  closable="true" resizable="true" width="90%" height="600px;" modal="true">
+				
+				<div align="center">
+					<h:panelGrid id="pnlGridAdminBienesDev" columns="1">
+					
+						<p:growl id="menDialog"/>
+						
+							<h:panelGrid id="panelOperacionesReposicion" style="width: 100%;" columns="2">
+								<h:outputText value="Tipo de Reposición: "/>	
+								<p:selectOneRadio id="sorOperacionReposicion" binding="#{gluoBienMuebleView.sorOperacionReposicion}">
+									<f:selectItems value="#{gluoBienMuebleView.lasOperacionesReposicion}"/>
+									<p:ajax listener="#{gluoBienMuebleView.listener_operacionReposicion}" event="change" update="panelPrimarioDatosBienMuebleDev"/>
+								</p:selectOneRadio>
+							</h:panelGrid>
+									
+							<p:panel id="panelPrimarioDatosBienMuebleDev" header="ADMINISTRACION DE BIENES MUEBLES" style="width:90%;" rendered="true">
+								<h:panelGrid id="panelCentrlDev" columns="4">
+									<h:outputText value="Clasificación "/>
+									<p:selectOneMenu id="somClasificacionBienDev" binding="#{gluoBienMuebleView.somClasificacionBienMuebleDialog}">
+										<f:selectItem itemLabel="----- Seleccione ------" itemValue="-1"/>
+										<f:selectItems value="#{gluoBienMuebleView.listClasificacionBienMuebleDialog}"/>
+										<p:ajax listener="#{gluoBienMuebleView.listener_clasificacionBienMuebleDialog}" update="@this, menDialog, panelCentrlDev"/>
+									</p:selectOneMenu>
+									
+									<h:outputText value="Tipo bien: "/>
+									<p:panelGrid>
+										<p:inputText id="txtTipoBienDev" styleClass="Wid50" value="#{gluoBienMuebleView.descripcionTipoBienSeleccionadoDialog}" disabled="true"/>
+										<p:commandButton icon="ui-icon-search" action="#{gluoBienMuebleView.action_validarTipoBienDialog()}" disabled="#{gluoBienMuebleView.deshabilitarBtnConsultaBien}" 
+														  update="menDialog, :formDialog:panelPrimarioDatosBienMuebleDev, :formDialog:pnlTipoBienesMueble"/>
+									</p:panelGrid>
+									
+									<h:outputText value="Descripción"/>
+									<p:inputText id="txtDescripcionBienMuebleDev" binding="#{gluoBienMuebleView.txtDescripcionBienMuebleDialog}" maxlength="50"/>
+								
+									<h:outputText value="Vida Util Actual (Años)"/>
+									<p:inputText id="txtVidaUtilActualDev" binding="#{gluoBienMuebleView.txtVidaUtilActualDialog}" maxlength="50" disabled="true"/>
+									
+									<h:outputText value="Responsable"/>
+									<p:panelGrid>
+										<p:inputText id="txtResponsableDev" styleClass="Wid50" value="#{gluoBienMuebleView.identificacionTerceroDialog}" disabled="true"/>
+										<p:commandButton icon="ui-icon-search" action="#{gluoBienMuebleView.action_mostrarDialogoTerceroResponsable()}" disabled="#{gluoBienMuebleView.deshabilitarBtnConsultaTercero}"/>
+									</p:panelGrid>
+									
+									<h:outputText value="Orden de Pago" rendered="#{gluoBienMuebleView.showObligacionInfo}"/>
+									<p:panelGrid rendered="#{gluoBienMuebleView.showObligacionInfo}">
+										<p:inputText id="txtOPDev" styleClass="Wid50" value="#{gluoBienMuebleView.consecutivoOPDialog}" disabled="true"/>
+										<p:commandButton icon="ui-icon-search" action="#{gluoBienMuebleView.action_mostrarDialogoObligacionesDialog()}" disabled="#{gluoBienMuebleView.deshabilitarBtnConsultaOP}"/>
+									</p:panelGrid>
+									
+							        <h:outputText value="Valor Unitario" rendered="#{gluoBienMuebleView.showValorUnitario}"/>
+							        <pe:inputNumber id="txtValorUnitarioDev" value="#{gluoBienMuebleView.valorUnitarioBienMuebleDialog}" disabled="#{gluoBienMuebleView.deshabilitarValorUnitario}" rendered="#{gluoBienMuebleView.showValorUnitario}"/>
+							        
+									<h:outputText value="Número Factura " rendered="#{gluoBienMuebleView.showNumeroFactura}"/>
+									<p:inputText id="txtNumeroFacturaDev" binding="#{gluoBienMuebleView.txtNumeroFacturaDialog}" maxlength="10" rendered="#{gluoBienMuebleView.showNumeroFactura}"/>
+									
+									<h:outputText value="Fecha Factura:" rendered="#{gluoBienMuebleView.showFechaFactura}"/>
+									<p:calendar id="fechaFacturaDev" binding="#{gluoBienMuebleView.fechaFacturaDialog}" timeZone="GMT-5" locale="en" rendered="#{gluoBienMuebleView.showFechaFactura}"/>
+									
+									<h:outputText value="Marca" rendered="#{gluoBienMuebleView.showDatosDeBienDevolutivo}"/>
+									<p:inputText id="txtMarcaDev" binding="#{gluoBienMuebleView.txtMarcaDialog}" maxlength="50" rendered="#{gluoBienMuebleView.showDatosDeBienDevolutivo}"/>
+									
+									<h:outputText value="Referencia " rendered="#{gluoBienMuebleView.showDatosDeBienDevolutivo}"/>
+									<p:inputText id="txtReferenciaDev" binding="#{gluoBienMuebleView.txtReferenciaDialog}" maxlength="50" rendered="#{gluoBienMuebleView.showDatosDeBienDevolutivo}"/>
+									
+									<h:outputText value="Número de serie " rendered="#{gluoBienMuebleView.showDatosDeBienDevolutivo}"/>
+									<p:inputText id="txtNumeroSerieDev" binding="#{gluoBienMuebleView.txtNumeroSerieDialog}" maxlength="50" rendered="#{gluoBienMuebleView.showDatosDeBienDevolutivo}"/>
+									
+									<h:outputText value="Número de placa " rendered="#{gluoBienMuebleView.showDatosDeBienDevolutivo}"/>
+									<p:inputText id="txtNumeroPlacaDev" binding="#{gluoBienMuebleView.txtNumeroPlacaDialog}" maxlength="50" rendered="#{gluoBienMuebleView.showDatosDeBienDevolutivo}"/>
+									
+									<h:outputText value="Cuenta Contable"/>
+									<p:panelGrid>
+										<p:inputText id="txtCuentaContableDev" styleClass="Wid50" value="#{gluoBienMuebleView.codigoCuentaDialog}" disabled="true"/>
+										<p:commandButton icon="ui-icon-search" action="#{gluoBienMuebleView.action_cuentaBienMuebleDialog}" disabled="#{gluoBienMuebleView.deshabilitarBtnConsultaCuentaContable}"/>
+									</p:panelGrid>
+									
+									<h:outputText value="Cuenta Contable Depreciación"/>
+									<p:panelGrid>
+										<p:inputText id="txtCuentaContableDepDev" styleClass="Wid50" value="#{gluoBienMuebleView.codigoCuentaDepreciacionDialog}" disabled="true"/>
+										<p:commandButton icon="ui-icon-search" action="#{gluoBienMuebleView.action_cuentaDepreciacionDialog}" disabled="#{gluoBienMuebleView.deshabilitarBtnConsultaCuentaContableDepreciacion}"/>
+									</p:panelGrid>
+								</h:panelGrid>
+							
+								<br/>
+								
+								<div align="center">
+									<h:panelGrid id="panelBotonesDefDev" columns="2">
+										<p:commandButton id="btnGuardarDev" value="Agregar" action="#{gluoBienMuebleView.action_agregarBienesEntrada()}"
+														 update=":formDialog:panelPrimarioDatosBienMuebleDev, :formDialog:panelEntradaPantalla, menDialog" 
+														 icon="ui-icon-plus"/>
+														 
+										<p:commandButton id="btnLimpiarCamposDev" value="Limpiar" action="#{gluoBienMuebleView.action_limpiarDatosDialog()}" 
+														 update=":formDialog:panelPrimarioDatosBienMuebleDev"/>
+									</h:panelGrid>
+								</div>
+							</p:panel>
+					</h:panelGrid>
+				</div>
+			</p:dialog>	
+			<!-- *********************** Fin Dialogo de crud de mueble *********************** -->	
+			
+			<!-- ***********************  Dialogo de seleccion de bienes para salida *********************** -->	
+			<p:dialog id="dialogConsultaBienesDevolutivos" widgetVar="dlgConsultaBienesDevolutivos" modal="true" draggable="false" 
+					  closable="true" resizable="true" width="90%" height="500px;">
+					
+					<p:growl id="msgReposicionDialog" showDetail="false"/>
+					
+					<p:scrollPanel  id="pnlBienesDevolutivos" mode="native" style="width:100%; height:400px">
+							
+							<div class="ContainerIndent"/>
+					
+							<p:outputLabel value="Criterios de búsqueda para bienes muebles:"/>
+							<h:panelGrid columns="2" columnClasses="colAFiltro, colBFiltro">
+								<p:outputLabel value="Codigo:  "/>
+								<p:inputText value="#{gluoBienMuebleView.codigoBienMuebleDevolutivoBusqueda}" maxlength="20"/>
+								
+								<p:outputLabel value="Descripción:"/>
+								<p:inputText value="#{gluoBienMuebleView.descripcionBienMuebleDevolutivoBusqueda}" maxlength="30"/>
+							</h:panelGrid>
+					
+							<p:commandButton value="Buscar Bien Mueble" actionListener="#{gluoBienMuebleView.action_buscarBienMuebleDevolutivo}" 
+											 update=":formDialog:pnlBienesDevolutivos, msgReposicionDialog"/>
+					
+							<br/>
+				
+							<p:dataTable id="pnlBienesMuebleDevolutivo" var="muebleDev" rows="350" style="width: 100%;"
+								value="#{gluoBienMuebleView.bienesMuebleDevolutivos}"
+								paginator="true"
+								paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+								rowsPerPageTemplate="300,400,500"
+								emptyMessage="No hay bienes mueble encontrados"
+								reflow="true" 
+								rowKey="#{muebleDev.bimuId}"
+								selection="#{gluoBienMuebleView.bienesMueblesDevolutivosSeleccionados}"
+								filterDelay="1000">
+								
+								<f:facet name="header">
+		                             Seleccione los bienes Muebles devolutivos de los que desea salir
+		                         </f:facet>
+		                         
+		                        <p:column selectionMode="multiple" style="width:16px;text-align:center"/>
+		                         
+								<p:column headerText="Descripción" sortBy="#{muebleDev.nombre}"
+									style="width: 10%" filterBy="#{muebleDev.nombre}"
+									filterMatchMode="contains">
+									<h:outputText value="#{muebleDev.nombre}"/>
+								</p:column>
+								
+								<p:column headerText="Marca" sortBy="#{muebleDev.marca}"
+									style="width: 10%" filterBy="#{muebleDev.marca}"
+									filterMatchMode="contains">
+									<h:outputText value="#{muebleDev.marca}"/>
+								</p:column>
+								
+								<p:column headerText="Referencia" sortBy="#{muebleDev.referencia}"
+									style="width: 10%" filterBy="#{muebleDev.referencia}"
+									filterMatchMode="contains">
+									<h:outputText value="#{muebleDev.referencia}"/>
+								</p:column>
+								
+								<p:column headerText="Número de Serie" sortBy="#{muebleDev.numeroSerie}"
+									style="width: 10%" filterBy="#{muebleDev.numeroSerie}"
+									filterMatchMode="contains">
+									<h:outputText value="#{muebleDev.numeroSerie}"/>
+								</p:column>
+								
+								<p:column headerText="Tipo Bien" sortBy="#{muebleDev.gluoTipoBien.descripcion}"
+									style="width: 10%" filterBy="#{muebleDev.gluoTipoBien.descripcion}"
+									filterMatchMode="contains">
+									<h:outputText value="#{muebleDev.gluoTipoBien.descripcion}"/>
+								</p:column>
+								<f:facet name="footer">
+						            <p:commandButton process="pnlBienesMuebleDevolutivo" update=":formDialog:panelSalidaPantalla, :formDialog:msgReposicionDialog" icon="ui-icon-plus" 
+						            				 value="Aceptar" action="#{gluoBienMuebleView.action_validarBienesDevolutivosSeleccionados()}"/>
+						        </f:facet>
+							</p:dataTable>
+					</p:scrollPanel>
+			
+			</p:dialog>
+			<!-- ***********************  fin Dialogo de seleccion de bienes para salida *********************** -->
+			</h:form>
+	</ui:define>
+</ui:composition>

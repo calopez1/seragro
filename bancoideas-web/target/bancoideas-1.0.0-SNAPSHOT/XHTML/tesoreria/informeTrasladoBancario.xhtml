@@ -1,0 +1,242 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+<ui:define name="content">
+
+<p:ajaxStatus onstart="PF('statusDialog').show()"
+	onsuccess="PF('statusDialog').hide()" />
+<p:dialog modal="true" widgetVar="statusDialog" header="Cargando"
+	draggable="false" closable="false">
+	<p:graphicImage
+		value="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/ajaxloadingbar.gif" />
+</p:dialog>
+
+<!-- Expired session -->
+<p:idleMonitor onactive="PF('sessionTimeOutDialog').show();"
+	timeout="#{session.maxInactiveInterval * 1000}" />
+<p:dialog modal="true" widgetVar="sessionTimeOutDialog"
+	header="Sesión terminada" draggable="false" closable="false">
+	<h:outputText value="La sesión ha finalizado" />
+	<input id="confirmBackToLogin" type="button" value="Iniciar sesión"
+		onclick="window.location='#{facesContext.externalContext.requestContextPath}/index.jsp';" />
+</p:dialog>
+
+<script type="text/javascript">
+	function showStatus() {
+	    statusDialog.show();
+	}
+	 
+	function hideStatus() {
+	    statusDialog.hide();
+	}
+</script>
+
+
+<style type="text/css">
+	.ui-panel {
+		margin-top: 20px
+	}
+	
+	.ui-tabs-top {
+		background-color: #FFFFFF;
+	}
+	
+	.one {
+		width: 10%;
+	}
+	
+	.two {
+		width: 90%;
+	}
+	
+	.col50Left{
+		width: 10%;
+		text-align: left;
+	}
+	
+	.col50Right{
+		width: 10%;
+		text-align: right;
+	}
+	
+	.txt100{
+		width: 100%;
+	}
+	
+</style>
+
+<div align="center">
+
+<h:form id="frmInformeTrasladosBancarios">
+
+	<p:growl id="men" showDetail="false" autoUpdate="true" closable="true" />
+	
+	<p:panel id="pnlInformeTrasladosBancarios" header="Informe de Traslados Bancarios" style="width: 90%;" >
+	
+		<h:panelGrid columns="2">
+		
+			<p:outputLabel value="Año Fiscal" for="anioFiscal" />			
+			<p:inputText id="anioFiscal" value="#{informeTrasladoBancarioView.txtAnoFiscal}" />  
+            
+			<p:outputLabel value="Fecha de Corte" for="fechaCorte" />
+			<p:calendar id="fechaCorte" value="#{informeTrasladoBancarioView.txtFechaCorte}" 
+				mode="popup" navigator="true" pattern="yyyy-MM-dd" />
+		
+			<h:outputText value="Consecutivo"/>
+			<p:inputText id="txtConsecutivo" binding="#{informeTrasladoBancarioView.txtConsecutivo}" maxlength="20"/>
+		
+		</h:panelGrid>
+		
+		<br/>
+		
+		<p:commandButton id="btnGenerarInformeTrasladosBancarios" value="Generar Informe Traslado Bancarios"
+						 action="#{informeTrasladoBancarioView.action_generar_informe_traslado_bancario}"
+						 update=":frmInformeTrasladosBancarios" />
+		
+		<p:commandButton id="btnLimpiar" value="Limpiar" 
+						 action="#{informeTrasladoBancarioView.action_limpiar}"
+						 update=":frmInformeTrasladosBancarios" />
+	
+	</p:panel>
+	
+	<p:panel id="pnlListaInformeTrasladosBancarios" style="width: 90%;" header="Informe de Traslado Bancario">
+	
+		<p:dataTable id="pnlListaInformeTrasladosBancariosDataTable" 
+				value="#{informeTrasladoBancarioView.listInformeTrasladoBancarioDTOs}"
+				var="informeTraslado" paginator="true" rows="20"
+				paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+				scrollable="true" scrollWidth="100%"				
+				rowKey="#{informeTraslado.cotbId}" filterDelay="1000">
+				
+				<p:column style="width:18px">
+					<p:rowToggler />
+				</p:column>
+				
+				<p:column headerText="Consecutivo"
+					filterBy="#{informeTraslado.consecutivo}"
+					style="text-align:center">
+					<p:outputLabel value="#{informeTraslado.consecutivo}" />							
+				</p:column>
+				
+				<p:column headerText="Fecha Traslado"
+					filterBy="#{informeTraslado.fechaTraslado}"
+					style="text-align:center">
+					<p:outputLabel value="#{informeTraslado.fechaTraslado}" >
+						<f:convertDateTime type="date" pattern="dd-MM-yyyy"/>
+					</p:outputLabel>									
+				</p:column>
+				
+				<p:column headerText="Descripción"
+					filterBy="#{informeTraslado.descripcion}"
+					style="text-align:center">
+					<p:outputLabel value="#{informeTraslado.descripcion}" />							
+				</p:column>
+				
+				<p:column headerText="Valor"
+					filterBy="#{informeTraslado.valor}"
+					style="text-align:center">
+					<p:outputLabel value="#{informeTraslado.valor}" >
+						<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+					</p:outputLabel>							
+				</p:column>
+				
+				<p:column headerText="Banco Origen"
+					filterBy="#{informeTraslado.nombreBancoOrigen}"
+					style="text-align:center">
+					<p:outputLabel value="#{informeTraslado.nombreBancoOrigen}" />							
+				</p:column>
+				
+				<p:column headerText="No. Cuenta Origen"
+					filterBy="#{informeTraslado.numeroCuentaOrigen}"
+					style="text-align:center">
+					<p:outputLabel value="#{informeTraslado.numeroCuentaOrigen}" />							
+				</p:column>
+				
+				<p:column headerText="Nombre Cuenta Origen"
+					filterBy="#{informeTraslado.nombreCuentaOrigen}"
+					style="text-align:center">
+					<p:outputLabel value="#{informeTraslado.nombreCuentaOrigen}" />							
+				</p:column>
+				
+				
+				<p:column headerText="Ver" tyle="width: 20%">
+								
+					<h:panelGrid columns="4">
+								
+								<p:commandLink 
+									actionListener="#{informeTrasladoBancarioView.action_seleccionarDocumento(informeTraslado)}"
+									ajax="false">
+								
+									<p:fileDownload value="#{informeTrasladoBancarioView.archivoPDF}" />
+								
+									<h:graphicImage
+										url="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/pdf-icon.png"
+										style="width: 32px; height: 32px;"/>
+									
+								</p:commandLink>
+								
+								<p:commandLink 
+									actionListener="#{informeTrasladoBancarioView.action_seleccionarDocumento(informeTraslado)}"
+									ajax="false">
+								
+									<p:fileDownload value="#{informeTrasladoBancarioView.archivoXLS}" />
+								
+									<h:graphicImage
+										url="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/xls.jpeg"
+										style="width: 32px; height: 32px;"/>
+								</p:commandLink>
+								
+								<p:commandLink 
+									actionListener="#{informeTrasladoBancarioView.action_seleccionarDocumento(informeTraslado)}"
+									ajax="false">
+								
+									<p:fileDownload value="#{informeTrasladoBancarioView.archivoXLSX}" />
+								
+									<h:graphicImage
+										url="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/xlsx.jpeg"
+										style="width: 32px; height: 32px;"/>
+								</p:commandLink> 
+							</h:panelGrid>
+					</p:column>
+					
+					<p:rowExpansion>
+	      			 	<h:panelGrid columns="2" style="width:100%">
+	      			 		<p:dataTable id="tablaDetalleCTB" var="dtlCTB" rows="10"
+	      			 					 value="#{informeTraslado.detalleComprobanteTrasladoBancario}"
+	      			 					 emptyMessage="No hay registros disponibles"
+	      			 					 paginator="false" reflow="true"
+	      			 					 rowKey="#{dtlCTB.dctbId}">
+	      			 					 
+					            <p:column headerText="Banco Destino" style="text-align:center">
+									<p:outputLabel value="#{dtlCTB.nombreBancoDestino}" />							
+								</p:column>
+								
+								<p:column headerText="Valor" style="text-align:center">
+									<p:outputLabel value="#{dtlCTB.valor}" >
+										<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+									</p:outputLabel>							
+								</p:column>
+								
+								<p:column headerText="No. Cuenta Destino" style="text-align:center">
+									<p:outputLabel value="#{dtlCTB.numeroCuentaDestino}" />							
+								</p:column>
+								
+								<p:column headerText="Nombre Cuenta Destino" style="text-align:center">
+									<p:outputLabel value="#{dtlCTB.nombreCuentaDestino}" />							
+								</p:column>
+								
+								<p:column headerText="No. Cheque" style="text-align:center">
+									<p:outputLabel value="#{dtlCTB.numeroCheque}" />							
+								</p:column>
+	      			 		</p:dataTable>
+	      			 	</h:panelGrid>
+	      			</p:rowExpansion>
+		</p:dataTable>
+	</p:panel>
+</h:form>
+</div>
+</ui:define>
+</ui:composition>

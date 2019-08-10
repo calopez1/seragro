@@ -1,0 +1,317 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+	<ui:define name="content">
+		<style type="text/css">
+			.ui-panel {
+				margin-top: 20px
+			}
+			
+			.ui-tabs-top{
+				background-color: #FFFFFF;
+			}
+			
+			.one {
+				width: 40%;
+			}
+			
+			.two {
+				width: 60%;
+			}
+		</style>
+
+		<h:form id="frmCargarResoluciones">
+			<h:panelGrid columns="1" id="pnlCargarArchivo" rendered="#{cargarResolucionesView.presupuestoRentasDTO == null}">
+				<h:panelGrid columns="1">
+					<div class="ContainerIndent">
+			
+						<p:panel>
+							
+							<p:messages id="msg" showDetail="false" autoUpdate="true" closable="true" />
+							
+							<div class="ContainerIndent">
+								<h:outputText value="Cargar Resoluciones"
+									styleClass="FontBold Fs18 hardblue" />
+							</div>
+			
+							<div class="Container100">
+								<div class="ContainerIndent">
+									<p:outputLabel
+										value="Permite cargar los archivos de las resoluciones que envía el IGAC de tipo registro1 y 
+										registro3, con los trámites que se realizan a los predios. permite los siguientes tipos de trámites:" />
+								</div>
+							</div>
+							
+							<div class="Container100">
+								<div class="ContainerIndent">
+									<p:outputLabel
+										value="1. Mutación" />
+								</div>
+							</div>
+							
+							<div class="Container100">
+								<div class="ContainerIndent">
+									<p:outputLabel
+										value="2. Rectificación" />
+								</div>
+							</div>
+							
+							<div class="Container100">
+								<div class="ContainerIndent">
+									<p:outputLabel
+										value="3. Cancelación" />
+								</div>
+							</div>
+							
+							<div class="Container100">
+								<div class="ContainerIndent">
+									<p:outputLabel
+										value="4. Inscripción" />
+								</div>
+							</div>
+							
+							<div class="Container100">
+								<div class="ContainerIndent">
+									<p:fileUpload
+										fileUploadListener="#{cargarResolucionesView.upload}"
+										auto="true"
+										value="#{cargarResolucionesView.file}" 
+										mode="advanced"
+										sizeLimit="10485760" fileLimit="1"
+										allowTypes="/(\.|\/)(dat)$/"
+										label="Escoger archivo de resolución"
+										uploadLabel="Validar Archivo"
+										cancelLabel="Cancelar" 
+										update=":frmCargarResoluciones"  
+										invalidFileMessage="Archivo no válido"
+										invalidSizeMessage="Tamaño no válido"/>
+								</div>
+							</div>
+						</p:panel>
+					</div>
+				</h:panelGrid>
+			</h:panelGrid>
+			
+			<p:tabView id="presupuestosTabView" rendered="#{cargarResolucionesView.presupuestoRentasDTO != null}">
+			
+				<p:tab id="presupuestoRentasTab" title="Presupuesto de Rentas">
+					<h:panelGrid columns="1" id="pnlPresupuestoRentasData">
+						<h:panelGrid columns="1"  rendered="#{cargarResolucionesView.presupuestoRentasDTO != null}">
+							<div class="Container100">
+					            <div class="ContainerIndent">
+					                    
+		                    		<div class="Container100">
+				                        <div class="ContainerIndent">
+				                                
+				                            <p:dataTable id="presupuestoRentasData" var="cuenta" value="#{cargarResolucionesView.presupuestoRentasDTO.detallesPresupuesto}" 
+				                                         rows="200" paginator="true" paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+				                                         rowsPerPageTemplate="300,400,500" emptyMessage="No existen cuentas del presupuesto" reflow="true">
+				                                <f:facet name="header">
+				                                    Detalle del presupuesto de rentas
+				                                </f:facet>
+				
+				                                <p:column headerText="Cuenta" sortBy="#{cuenta.codigoCuenta}" style="width: 20%">
+				                                    <h:outputText value="#{cuenta.codigoCuenta}" />
+				                                </p:column>
+				                                <p:column headerText="Descripción" sortBy="#{cuenta.descripcionCuenta}" style="width: 50%">
+				                                    <h:outputText value="#{cuenta.descripcionCuenta}" />
+				                                </p:column>
+				                                <p:column headerText="Valor"  style="width: 20%">
+				                                	<div align="right">
+					                                    <h:outputText value="#{cuenta.valorInicial}">
+					                                    	<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+					                                    </h:outputText>
+					                            	</div>
+				                                </p:column>
+				                                <p:column headerText="Opciones"  style="width: 10%">
+				                               	 <div align="center">
+													<p:commandButton id="btnEdit" icon="ui-icon-pencil" title="Editar"
+																update=":frmCargarResoluciones:dialogNewRubroGastos" oncomplete="PF('dlgNewRubroGastos').show();"
+																actionListener="#{cargarResolucionesView.action_edit_rentas}">
+														<f:attribute name="selectedRubro" value="#{cuenta}" />
+													</p:commandButton>
+												  </div>
+												</p:column>	
+				                            </p:dataTable>
+				                            
+				                            <div class="EmptyBox20"></div>
+				                                    
+				                                
+				                        </div>
+				                    </div>
+					            </div>
+					        </div>
+				        </h:panelGrid>
+				        
+				         <p:panel id="panelAgregarNuevoRentas" style="width:100%; border:none">
+				        	<div align="center">	
+				        		<p:commandButton id="btnAgregarRentas" value="Crear Nuevo Rubro de Rentas" actionListener="#{cargarResolucionesView.action_asignarPresupuestoRentas}" oncomplete="PF('dlgNewRubroGastos').show();"/>
+				       		 </div>
+				        </p:panel>
+				        
+				        
+			        </h:panelGrid>
+				</p:tab>
+				
+				<p:tab id="presupuestoGastosTab" title="Presupuesto de Gastos">
+					<h:panelGrid columns="1" id="pnlPresupuestoGastosData">
+						<h:panelGrid columns="1"  rendered="#{cargarResolucionesView.presupuestoGastosDTO != null}">
+							<div class="Container100">
+					            <div class="ContainerIndent">
+					                    
+		                    		<div class="Container100">
+				                        <div class="ContainerIndent">
+				                                
+				                            <p:dataTable id="presupuestoGastosData" var="cuenta" value="#{cargarResolucionesView.presupuestoGastosDTO.detallesPresupuesto}" 
+				                                         rows="200" paginator="true" paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+				                                         rowsPerPageTemplate="300,400,500" emptyMessage="No existen cuentas del presupuesto" reflow="true">
+				                                <f:facet name="header">
+				                                    Detalle del presupuesto de gastos
+				                                </f:facet>
+				
+				                                <p:column headerText="Cuenta" sortBy="#{cuenta.codigoCuenta}" style="width: 20%">
+				                                    <h:outputText value="#{cuenta.codigoCuenta}" />
+				                                </p:column>
+				                                <p:column headerText="Descripción" sortBy="#{cuenta.descripcionCuenta}" style="width: 50%">
+				                                    <h:outputText value="#{cuenta.descripcionCuenta}" />
+				                                </p:column>
+				                                <p:column headerText="Valor"  style="width: 20%">
+				                                	<div align="right">
+					                                    <h:outputText value="#{cuenta.valorInicial}">
+					                                    	<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+					                                    </h:outputText>
+					                            	</div>
+				                                </p:column>
+				                                 <p:column headerText="Opciones" style="width: 10%">
+				                                	<div align="center">
+														<p:commandButton id="btnEditOther" icon="ui-icon-pencil" title="Editar"
+																	update=":frmCargarResoluciones:dialogNewRubroGastos" oncomplete="PF('dlgNewRubroGastos').show();"
+																	actionListener="#{cargarResolucionesView.action_edit_gastos}">
+															<f:attribute name="selectedRubro" value="#{cuenta}" />
+														</p:commandButton>
+													</div>
+												</p:column>	
+				                            </p:dataTable>
+				                            
+				                            <div class="EmptyBox20"></div>
+				                                    
+				                                
+				                        </div>
+				                    </div>
+					            </div>
+					        </div>
+				        </h:panelGrid>
+				       
+				        <p:panel id="panelAgregarNuevo" style="width:100%; border:none"> 
+				        	<div align="center">	
+				        		<p:commandButton id="btnAgregar" value="Crear Nuevo Rubro de Gastos" actionListener="#{cargarResolucionesView.action_asignarPresupuestoGastos}" oncomplete="PF('dlgNewRubroGastos').show();"/>
+				       		 </div>
+				        </p:panel>
+			        </h:panelGrid>
+				</p:tab>
+			</p:tabView>
+			
+			<p:dialog id="dialogNewRubroGastos" widgetVar="dlgNewRubroGastos" draggable="true"
+						closable="false" resizable="false" modal="true" width="90%" height="500" position="center top">
+							
+							<p:growl id="msgDialog" showDetail="false" />
+							
+							<p:panel id="panelNuevoRubro" header="Rubro de Presupuesto">							
+							    <h:panelGrid columns="2" id="panelGrid" columnClasses="one,two">
+							    	
+							    	<h:outputText value="Código "/>
+									<p:inputText id="txtCodigo" binding="#{cargarResolucionesView.txtCodigo}" maxlength="50"/>
+								
+									<h:outputText value="Descripción"/>
+									<h:panelGrid columns="1">
+										<p:inputTextarea id="txtDescripcion" rows="5" cols="30" counter="display" counterTemplate="{0} Caracteres Restantes." autoResize="false" binding="#{cargarResolucionesView.txtDescripcion}" maxlength="100"/>
+										<h:outputText id="display" />
+									</h:panelGrid>
+
+									<h:outputText value=" Rubro presupuestal Padre"/>
+									<p:panelGrid>
+										<p:inputText id="txtDptoId" binding="#{cargarResolucionesView.txtDptoId}" readonly="true"/>
+										<p:commandButton icon="ui-icon-search" action="#{cargarResolucionesView.action_cargarRubros()}" update=":frmCargarResoluciones:scrollPanelPpto, msgDialog"/>
+									</p:panelGrid>
+									
+									<h:outputText value=" Estado Registro"/>
+									<p:selectOneRadio id="sorActivo" binding="#{cargarResolucionesView.sorActivo}" value="A">
+										<f:selectItem itemLabel="Activo" itemValue="A"/>
+										<f:selectItem itemLabel="Inactivo" itemValue="I"/>
+									</p:selectOneRadio>
+									
+									<p:inputText id="txtIdPk" binding="#{cargarResolucionesView.txtPkId}" type="hidden"/>
+								</h:panelGrid>
+							</p:panel>
+							
+							<br />
+								
+							<div align="center">						   
+								<h:panelGrid id="panelBotones" columns="3">
+									<p:commandButton id="btnSave" value="Guardar" action="#{cargarResolucionesView.action_guardar()}" update="frmCargarResoluciones:presupuestosTabView:presupuestoRentasData, frmCargarResoluciones:presupuestosTabView:presupuestoGastosData, panelNuevoRubro, msgDialog" />
+									<p:commandButton id="btnClear" value="Limpiar" action="#{cargarResolucionesView.action_limpiar()}" update="panelNuevoRubro, msgDialog" />
+									<p:commandButton id="btnExit" value="Salir" action="#{cargarResolucionesView.action_salir()}" update="panelNuevoRubro"/>
+								</h:panelGrid>	
+							</div>	
+					</p:dialog>	
+			 
+			 		<!--        Codigos Presupuestales Ingresos        -->
+					<!-- ************************* -->
+					<p:dialog modal="true" widgetVar="dlgCodigosPresupuestales" header="Codigos Presupuestales" draggable="false" closable="true"
+								resizable="true" width="90%" height="200px;" position="center"> 
+							
+							<p:growl id="menRubros" showDetail="false"/>
+							
+							<p:scrollPanel id="scrollPanelPpto" mode="native" style="width:100%; height:400px">
+										<p:dataTable id="presupuestoGastosData" var="cuenta"
+											value="#{cargarResolucionesView.detallePresupuesto}"
+											rows="10" paginator="true"
+											paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+											rowsPerPageTemplate="10,15,20,30"
+											emptyMessage="No existen cuentas del presupuesto" reflow="true"
+											rowKey="#{cuenta.dptoId}"
+											selection="#{cargarResolucionesView.rubroSeleccionado}"
+											filterDelay="1000">
+											
+					                        <p:column selectionMode="single" style="width:5%; text-align:center" />
+					
+											<p:column headerText="Cuenta" sortBy="#{cuenta.codigoCuenta}"
+												style="width: 15%" filterBy="#{cuenta.codigoCuenta}"
+												filterMatchMode="startsWith">
+												<h:outputText value="#{cuenta.codigoCuenta}" />
+											</p:column>
+											
+											<p:column headerText="Descripción"
+												sortBy="#{cuenta.descripcionCuenta}" style="width: 50%" filterBy="#{cuenta.descripcionCuenta}"
+												filterMatchMode="contains">
+												<h:outputText value="#{cuenta.descripcionCuenta}" />
+											</p:column>
+											
+											<p:column headerText="Valor Inicial" style="width: 10%">
+												<div align="right">
+													<h:outputText value="#{cuenta.valorInicial}">
+														<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+													</h:outputText>
+												</div>
+											</p:column>
+										</p:dataTable>
+									</p:scrollPanel>
+									
+									<div align="center">
+										<h:panelGrid id="btnSelecciona" columns="2">
+											<p:commandButton id="btnSeleccionar" value="Seleccionar" action="#{cargarResolucionesView.action_validarRubroSeleccionado}" update="menRubros, :frmCargarResoluciones:txtDptoId"/>
+										</h:panelGrid>
+									</div>
+						
+									<div class="EmptyBox20" />
+							</p:dialog>
+					<!-- ************************* -->
+		
+		</h:form>
+
+	</ui:define>
+
+</ui:composition>

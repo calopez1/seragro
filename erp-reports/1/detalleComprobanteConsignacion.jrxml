@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.1.1.final using JasperReports Library version 6.1.1  -->
+<!-- 2017-03-07T07:25:49 -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="detalleComprobanteConsignacion" pageWidth="612" pageHeight="792" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="5e540f53-cac8-4d07-a54f-0585dc7b8464">
+	<property name="com.jaspersoft.studio.unit." value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageHeight" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.topMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.bottomMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.leftMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.rightMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnSpacing" value="pixel"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="glu-19824.xml"/>
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<parameter name="P_CONS_ID" class="java.lang.Integer" isForPrompting="false"/>
+	<queryString>
+		<![CDATA[select	distinct 
+		
+		rcbo.rcbo_id rcboId,
+		rcbo.consecutivo consecutivoRecibo,
+		rcbo.valor_total valorTotalRecibo,
+		rcbo.observacion observacionRecibo,
+		rcbo.fecha_recibo fechaRecibo,
+		trec.descripcion tipoRecibo,
+		CASE WHEN terc.tite_id = 1 THEN
+			COALESCE(TERC.PRIMER_NOMBRE,'') || ' ' || COALESCE(TERC.SEGUNDO_NOMBRE,'') || ' ' || COALESCE(TERC.PRIMER_APELLIDO,'') || ' ' || COALESCE(TERC.SEGUNDO_APELLIDO,'')
+		ELSE
+			TERC.razon_social
+		END tercero
+		
+from		gluo_arqueo_caja arca
+inner	join gluo_arqueo_x_aforo araf on araf.arca_id = arca.arca_id
+inner	join gluo_arqueo_x_concepto_renta arcr on arcr.araf_id = araf.araf_id
+inner	join gluo_arqueo_x_forma_pago arfp on arfp.arcr_id = arcr.arcr_id
+inner	join gluo_recibo_forma_pago rfdp on rfdp.rfdp_id = arfp.rfdp_id
+inner	join gluo_tipo_forma_pago tfdp on tfdp.tfdp_id = rfdp.tfdp_id
+inner	join gluo_recibo rcbo on rcbo.rcbo_id = rfdp.rcbo_id
+inner	join gluo_detalle_consignacion dcon on dcon.arfp_id = arfp.arfp_id
+inner	join gluo_consignacion cons on cons.cons_id = dcon.cons_id
+inner	join gluo_tipo_recibo trec on trec.trec_id = rcbo.trec_id
+inner	join gluo_cuenta_bancaria cuba on cuba.cuba_id = dcon.cuba_id
+inner	join gluo_banco banc on banc.banc_id = cuba.banc_id
+inner	join gluo_cuenta_contable ccon on ccon.ccon_id = cuba.ccon_id
+inner	join gluo_tercero terc on terc.terc_id = rcbo.terc_id
+where	cons.cons_id = $P{P_CONS_ID} 
+order	by 
+		rcbo.rcbo_id]]>
+	</queryString>
+	<field name="rcboid" class="java.lang.Integer"/>
+	<field name="consecutivorecibo" class="java.lang.String"/>
+	<field name="valortotalrecibo" class="java.math.BigDecimal"/>
+	<field name="observacionrecibo" class="java.lang.String"/>
+	<field name="fecharecibo" class="java.sql.Timestamp"/>
+	<field name="tiporecibo" class="java.lang.String"/>
+	<field name="tercero" class="java.lang.String"/>
+	<variable name="valortotalrecibo1" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{valortotalrecibo}]]></variableExpression>
+	</variable>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+		</band>
+	</title>
+	<pageHeader>
+		<band splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="15" splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+			<staticText>
+				<reportElement x="0" y="0" width="120" height="15" uuid="02cf4ff8-26b8-4024-a665-0e867d4f8c90"/>
+				<box>
+					<topPen lineWidth="0.2"/>
+					<leftPen lineWidth="0.2"/>
+					<bottomPen lineWidth="0.2"/>
+					<rightPen lineWidth="0.2"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[No. Recibo]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="120" y="0" width="80" height="15" uuid="21f8924f-4e4e-4c8c-a9db-86923d4ae25c"/>
+				<box>
+					<topPen lineWidth="0.2"/>
+					<leftPen lineWidth="0.2"/>
+					<bottomPen lineWidth="0.2"/>
+					<rightPen lineWidth="0.2"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Fecha]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="200" y="0" width="241" height="15" uuid="c8a555ac-d44a-468f-b25a-88b49326df51"/>
+				<box>
+					<topPen lineWidth="0.2"/>
+					<leftPen lineWidth="0.2"/>
+					<bottomPen lineWidth="0.2"/>
+					<rightPen lineWidth="0.2"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Tercero]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="441" y="0" width="100" height="15" uuid="83102495-8d15-4da3-b19b-4420f67188ae"/>
+				<box>
+					<topPen lineWidth="0.2"/>
+					<leftPen lineWidth="0.2"/>
+					<bottomPen lineWidth="0.2"/>
+					<rightPen lineWidth="0.2"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Valor]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="15" splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+			<textField>
+				<reportElement x="0" y="0" width="120" height="15" uuid="805dcb91-7798-4381-b413-871ab4452a6a">
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				</reportElement>
+				<box leftPadding="2" rightPadding="2">
+					<topPen lineWidth="0.2" lineStyle="Solid"/>
+					<leftPen lineWidth="0.2" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.2" lineStyle="Solid"/>
+					<rightPen lineWidth="0.2" lineStyle="Solid"/>
+				</box>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{consecutivorecibo}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy">
+				<reportElement x="120" y="0" width="80" height="15" uuid="0cd17cfb-23cc-4239-91cc-037d70ce06ce">
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				</reportElement>
+				<box leftPadding="2" rightPadding="2">
+					<topPen lineWidth="0.2" lineStyle="Solid"/>
+					<leftPen lineWidth="0.2" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.2" lineStyle="Solid"/>
+					<rightPen lineWidth="0.2" lineStyle="Solid"/>
+				</box>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{fecharecibo}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="200" y="0" width="241" height="15" uuid="654870b7-e404-4b1c-b8f4-abb904f2abee">
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				</reportElement>
+				<box leftPadding="2" rightPadding="2">
+					<topPen lineWidth="0.2" lineStyle="Solid"/>
+					<leftPen lineWidth="0.2" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.2" lineStyle="Solid"/>
+					<rightPen lineWidth="0.2" lineStyle="Solid"/>
+				</box>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{tercero}]]></textFieldExpression>
+			</textField>
+			<textField pattern="$#,##0.##;¤-#,##0.##">
+				<reportElement x="441" y="0" width="100" height="15" uuid="0a551c4e-4133-48e1-8e0a-e8823b9025bf">
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				</reportElement>
+				<box leftPadding="2" rightPadding="2">
+					<topPen lineWidth="0.2" lineStyle="Solid"/>
+					<leftPen lineWidth="0.2" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.2" lineStyle="Solid"/>
+					<rightPen lineWidth="0.2" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{valortotalrecibo}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+		</band>
+	</pageFooter>
+	<summary>
+		<band height="20" splitType="Stretch">
+			<textField pattern="$#,##0.##;¤-#,##0.##">
+				<reportElement x="441" y="5" width="100" height="15" uuid="8ff63809-3dd3-42f5-b18e-f54fcc500485">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.2" lineStyle="Solid"/>
+					<leftPen lineWidth="0.2" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.2" lineStyle="Solid"/>
+					<rightPen lineWidth="0.2" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{valortotalrecibo1}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="200" y="5" width="241" height="15" uuid="bce1fb9d-d061-4bbe-8890-205a1bfcfcc4"/>
+				<box rightPadding="2">
+					<topPen lineWidth="0.2"/>
+					<leftPen lineWidth="0.2"/>
+					<bottomPen lineWidth="0.2"/>
+					<rightPen lineWidth="0.2"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Valor Total:]]></text>
+			</staticText>
+		</band>
+	</summary>
+</jasperReport>

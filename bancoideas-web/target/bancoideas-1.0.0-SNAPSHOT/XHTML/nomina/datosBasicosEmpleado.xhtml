@@ -1,0 +1,287 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+<ui:define name="content">
+<f:view>
+	<p:ajaxStatus onstart="PF('statusDialog').show()"
+		onsuccess="PF('statusDialog').hide()" />
+	<p:dialog modal="true" widgetVar="statusDialog" header="Cargando"
+		draggable="false" closable="false">
+		<p:graphicImage
+			value="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/ajaxloadingbar.gif" />
+	</p:dialog>
+
+	<!-- Expired session -->
+	<p:idleMonitor onactive="PF('sessionTimeOutDialog').show();"
+		timeout="#{session.maxInactiveInterval * 1000}" />
+	<p:dialog modal="true" widgetVar="sessionTimeOutDialog"
+		header="Sesión Finalizada" draggable="false" closable="false">
+		<h:outputText value="La sesión ha caducado." />
+		<input id="confirmBackToLogin" type="button" value="Iniciar Sesión"
+			onclick="window.location='#{facesContext.externalContext.requestContextPath}/index.jsp';" />
+	</p:dialog>
+	
+<div align="center">
+<h:form id="frmDatosBasicosEmpleado">
+
+	<p:growl id="growl" />
+
+	<p:panel id="pnlConsultarTercero" header="Consultar Empleado" style="width: 90%;">
+		
+		<h:panelGrid columns="2">
+			<p:outputLabel value="Consultar Empleado:" for="identificacionTercero" />		
+			<h:panelGrid columns="2">			
+				<p:inputText id="identificacionTercero" value="#{gluoEmpleadoView.identificacionEmpleadoSeleccionada}"
+					readonly="true" />
+				<p:commandButton style="width:100%" icon="ui-icon-search"
+									onclick="PF('dialogEmpleados').show();" />
+			</h:panelGrid>
+		</h:panelGrid>
+	</p:panel>
+	
+	<br/>
+
+	<p:panel id="pnlGluoTercero" header="Datos Básicos Empleado" style="width: 90%;">
+			<h:panelGrid id="pnlDatosBasicosEmpleado" columns="5" style="width: 100%;">
+						
+			<p:outputLabel for="cmbTipoIdentificacion" value="Tipo Identificación*: "/>
+			<p:selectOneMenu id="cmbTipoIdentificacion" value="#{gluoEmpleadoView.somTipoIdentificacion}"
+				disabled="#{gluoEmpleadoView.showTipoIdentificacion}" style="width:80%">
+				<f:selectItem itemLabel="- Seleccionar -" itemValue="-1" />
+				<f:selectItems value="#{gluoEmpleadoView.listTipoIdentificacionItems}" />
+				<p:ajax update="@this" />
+			</p:selectOneMenu>
+			
+			<h:outputText value="Identificación*:" />
+			<p:inputText id="txtIdentificacion" style="width: 80%;" value="#{gluoEmpleadoView.identificacion}"
+				disabled="#{gluoEmpleadoView.showIdentificacion}" maxlength="20" >
+				<p:ajax event="blur"
+						listener="#{gluoEmpleadoView.listener_identificacion_buscar_tercero}"											
+						update=":frmDatosBasicosEmpleado" />			
+			</p:inputText>
+
+			<p:spacer width="10"></p:spacer>
+			
+			<h:outputText value="Primer Nombre*:" />
+			<p:inputText id="txtPrimerNombre" style="width: 80%;" value="#{gluoEmpleadoView.primerNombre}" maxlength="50" />
+
+			<h:outputText value="Segundo Nombre:" />
+			<p:inputText id="txtSegundoNombre" style="width: 80%;" value="#{gluoEmpleadoView.segundoNombre}" maxlength="50" />
+
+			<p:spacer width="10"></p:spacer>
+
+			<h:outputText  value="Primer Apellido*:" />
+			<p:inputText id="txtPrimerApellido" style="width: 80%;" value="#{gluoEmpleadoView.primerApellido}" maxlength="50" />
+
+			<h:outputText value="Segundo Apellido:" />
+			<p:inputText id="txtSegundoApellido" style="width: 80%;" value="#{gluoEmpleadoView.segundoApellido}" maxlength="50" />
+			
+			<p:spacer width="10"></p:spacer>
+			
+			<h:outputText value="Fecha de Nacimiento*:" />
+			<p:calendar id="txtFechaNacimiento" value="#{gluoEmpleadoView.fechaNacimiento}" navigator="true" />
+			
+			<h:outputText value="Teléfono 1:" />
+			<p:inputText id="txtTelefonoUno" style="width: 80%;" value="#{gluoEmpleadoView.telefonoUno}" />
+			
+			<p:spacer width="10"></p:spacer>
+			
+			<h:outputText value="Teléfono 2:" />
+			<p:inputText id="txtTelefonoDos" style="width: 80%;" value="#{gluoEmpleadoView.telefonoDos}" />
+			
+			<h:outputText value="Teléfono 3:" />
+			<p:inputText id="txtTelefonoTres" style="width: 80%;" value="#{gluoEmpleadoView.telefonoTres}" />
+			
+			<p:spacer width="10"></p:spacer>
+
+			<h:outputText  value="Dirección:" />
+			<p:inputText id="txtDireccion" style="width: 80%;" value="#{gluoEmpleadoView.direccion}" />
+					
+			<p:outputLabel for="genero" value="Género*: " />
+			<p:selectOneRadio id="genero" value="#{gluoEmpleadoView.sorGenero}">
+				<f:selectItem itemLabel="Masculino" itemValue="M" />
+				<f:selectItem itemLabel="Femenino" itemValue="F" />
+			</p:selectOneRadio>
+			
+			<p:spacer width="10"></p:spacer>
+			
+			<p:outputLabel for="estado" value="Estado Registro*: " />
+			<p:selectOneRadio id="estado" value="#{gluoEmpleadoView.sorEstadoRegistro}">
+				<f:selectItem itemLabel="Activo" itemValue="A" />
+				<f:selectItem itemLabel="Inactivo" itemValue="I" />
+			</p:selectOneRadio>
+			
+			<p:outputLabel for="municipio" value="Municipio*: " />
+			<p:selectOneMenu id="municipio" value="#{gluoEmpleadoView.somMunicipio}" style="width:80%" filter="true" filterMatchMode="contains">
+				<f:selectItem itemLabel="Seleccionar" itemValue="-1" />
+				<f:selectItems value="#{gluoEmpleadoView.listMunicipiosItems}" />
+			</p:selectOneMenu>
+			
+			<p:spacer width="10"></p:spacer>
+			
+			<h:outputText value="Código*:" />
+			<p:inputText id="codigo" style="width: 80%;" value="#{gluoEmpleadoView.codigo}" >
+				<p:ajax event="blur"
+						listener="#{gluoEmpleadoView.listener_codigo_empleado}"
+						update="growl" />
+			</p:inputText>
+		
+			<p:outputLabel value="Jefe Empleado:" for="identificacionEmpleadoJefeSeleccionada" />		
+			<h:panelGrid columns="2">			
+				<p:inputText id="identificacionEmpleadoJefeSeleccionada" readonly="true"
+					value="#{gluoEmpleadoView.identificacionEmpleadoJefeSeleccionada}" />
+				<p:commandButton icon="ui-icon-search" onclick="PF('dialogEmpleadosJefes').show();" />
+			</h:panelGrid>
+			
+		</h:panelGrid>			
+		
+		<div align="center">
+			<h:panelGrid id="panelBotones" columns="2">
+				
+				<p:commandButton id="btnGuardar" value="Guardar" action="#{gluoEmpleadoView.action_guardar}"
+					update=":frmDatosBasicosEmpleado" />
+				
+				<p:commandButton id="btnLimpiar" value="Limpiar"
+					action="#{gluoEmpleadoView.action_limpiar}"
+					update=":frmDatosBasicosEmpleado" />
+				
+			</h:panelGrid>
+		</div>
+	
+	</p:panel>
+	
+	<!-- ************************************************** -->
+	<!-- **				DIÁLOGO EMPLEADOS		     	 ** -->
+	<!-- ************************************************** -->
+	<p:dialog header="Empleados" style="align-text: center"
+		widgetVar="dialogEmpleados" modal="true" height="400" width="90%">
+
+		<p:scrollPanel mode="native" style="width:100%; height:400px">
+			<p:dataTable id="listarEmpleadosDataTable"
+				var="empleado"
+				value="#{gluoEmpleadoView.listEmpleadoDTOs}"
+				paginator="true"
+				rows="10"		
+				selectionMode="single"		
+				selection="#{gluoEmpleadoView.selectedEmpleadoDTO}"
+				rowKey="#{empleado.emplId}"
+				filterDelay="1000">
+				
+				<p:column selectionMode="single" style="width: 28px;" />
+				
+				<p:ajax event="rowSelect" 
+						listener="#{gluoEmpleadoView.listener_seleccionar_empleado}" 						
+						oncomplete="PF('dialogEmpleados').hide();"
+						update=":frmDatosBasicosEmpleado" />			
+				
+				<p:column headerText="Tipo Identificación" filterBy="#{empleado.tipoIdentifiacion}"
+					filterMatchMode="startsWith">
+					<p:outputLabel value="#{empleado.tipoIdentifiacion}" />
+				</p:column>
+				
+				<p:column headerText="Identificación" filterBy="#{empleado.identificacion}"
+					filterMatchMode="startsWith">
+					<p:outputLabel value="#{empleado.identificacion}" />
+				</p:column>
+				
+				<p:column headerText="Código" filterBy="#{empleado.codigo}"
+					filterMatchMode="startsWith">
+					<p:outputLabel value="#{empleado.codigo}" />
+				</p:column>
+				
+				<p:column headerText="Primer Nombre" filterBy="#{empleado.primerNombre}"
+					filterMatchMode="startsWith">
+					<p:outputLabel value="#{empleado.primerNombre}" />
+				</p:column>
+				
+				<p:column headerText="Segundo Nombre" filterBy="#{empleado.segundoNombre}"
+					filterMatchMode="startsWith">
+					<p:outputLabel value="#{empleado.segundoNombre}" />
+				</p:column>
+				
+				<p:column headerText="Primer Apellido" filterBy="#{empleado.primerApellido}"
+					filterMatchMode="startsWith">
+					<p:outputLabel value="#{empleado.primerApellido}" />
+				</p:column>
+				
+				<p:column headerText="Segundo Apellido" filterBy="#{empleado.segundoApellido}"
+					filterMatchMode="startsWith">
+					<p:outputLabel value="#{empleado.segundoApellido}" />
+				</p:column>
+				
+			</p:dataTable>			
+		</p:scrollPanel>
+	</p:dialog> <!-- FIN DIÁLOGO EMPLEADOS -->
+	
+	<!-- ************************************************** -->
+	<!-- **			DIÁLOGO EMPLEADOS JEFES		     	 ** -->
+	<!-- ************************************************** -->
+	<p:dialog header="Empleados Jefes" style="align-text: center"
+		widgetVar="dialogEmpleadosJefes" modal="true" height="400" width="90%">
+
+		<p:scrollPanel mode="native" style="width:100%; height:400px">
+			<p:dataTable id="listarEmpleadosJefesDataTable"
+				var="empleado"
+				value="#{gluoEmpleadoView.listEmpleadoJefesDTOs}"
+				paginator="true"
+				rows="10"		
+				selectionMode="single"		
+				selection="#{gluoEmpleadoView.selectedEmpleadoJefeDTO}"
+				rowKey="#{empleado.emplId}"
+				filterDelay="1000">
+				
+				<p:column selectionMode="single" style="width: 28px;" />
+				
+				<p:ajax event="rowSelect" 
+						listener="#{gluoEmpleadoView.listener_seleccionar_jefe}" 						
+						oncomplete="PF('dialogEmpleadosJefes').hide();"
+						update=":frmDatosBasicosEmpleado" />			
+				
+				<p:column headerText="Tipo Identificación" filterBy="#{empleado.tipoIdentifiacion}"
+					filterMatchMode="startsWith">
+					<p:outputLabel value="#{empleado.tipoIdentifiacion}" />
+				</p:column>
+				
+				<p:column headerText="Identificación" filterBy="#{empleado.identificacion}"
+					filterMatchMode="startsWith">
+					<p:outputLabel value="#{empleado.identificacion}" />
+				</p:column>
+				
+				<p:column headerText="Código" filterBy="#{empleado.codigo}"
+					filterMatchMode="startsWith">
+					<p:outputLabel value="#{empleado.codigo}" />
+				</p:column>
+				
+				<p:column headerText="Primer Nombre" filterBy="#{empleado.primerNombre}"
+					filterMatchMode="startsWith">
+					<p:outputLabel value="#{empleado.primerNombre}" />
+				</p:column>
+				
+				<p:column headerText="Segundo Nombre" filterBy="#{empleado.segundoNombre}"
+					filterMatchMode="startsWith">
+					<p:outputLabel value="#{empleado.segundoNombre}" />
+				</p:column>
+				
+				<p:column headerText="Primer Apellido" filterBy="#{empleado.primerApellido}"
+					filterMatchMode="startsWith">
+					<p:outputLabel value="#{empleado.primerApellido}" />
+				</p:column>
+				
+				<p:column headerText="Segundo Apellido" filterBy="#{empleado.segundoApellido}"
+					filterMatchMode="startsWith">
+					<p:outputLabel value="#{empleado.segundoApellido}" />
+				</p:column>
+				
+			</p:dataTable>			
+		</p:scrollPanel>
+	</p:dialog> <!-- FIN DIÁLOGO EMPLEADOS -->
+
+</h:form>
+</div>
+</f:view>
+</ui:define>
+
+</ui:composition>

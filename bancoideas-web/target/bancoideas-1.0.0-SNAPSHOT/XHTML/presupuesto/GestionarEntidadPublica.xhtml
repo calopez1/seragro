@@ -1,0 +1,221 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+	<ui:define name="content">
+		<style type="text/css">
+			.ui-panel {
+				margin-top: 20px
+			}
+			
+			.ui-tabs-top{
+				background-color: #FFFFFF;
+			}
+
+			.one {
+				width: 20%;
+			}
+			
+			.two {
+				width: 80%;
+			}
+			
+        	.colAFiltro{width: 10%; }
+        	.colBFiltro{width: 50%; }
+			
+			.col50Left{
+				width: 10%;
+				text-align: left;
+			}
+			
+			.col50Right{
+				width: 10%;
+				text-align: right;
+			}
+			
+			.txt100{
+				width: 100%;
+			}
+			
+			.col30{width: 30%;}
+        	.col70{width: 70%;}
+		</style>
+
+		<div align="center">
+		<h:form id="formEntidadPublica">
+			
+			<p:growl id="messages" />
+
+			<p:panel id="pnlEntidadPublica" header="Gestionar Entidad Pública" style="width: 90%;">
+			
+				<h:panelGrid columns="2">
+
+					<p:outputLabel value="Código Institucional: " />
+					<p:inputText id="txtCodigoInstitucional" style="width: 200px" binding="#{gluoEntidadPublicaView.txtCodigoInstitucional}" maxlength="50">		
+						<p:ajax listener="#{gluoEntidadPublicaView.codigoInstitucionalListener}"
+							update="pnlEntidadPublica" />					
+					</p:inputText>
+					
+					<p:outputLabel value="Nombre: " />
+					<p:inputText id="txtNombre" binding="#{gluoEntidadPublicaView.txtNombre}" maxlength="100" style="width: 200px" />
+															
+					<p:outputLabel value="Tercero: "/>
+    				<h:panelGrid columns="2">
+						<p:inputText id="txtIdentTercero" value="#{gluoEntidadPublicaView.identificacionTerceroSeleccionado}" readonly="true"/>
+						<p:commandButton icon="ui-icon-search" oncomplete="PF('dlgTercero').show();"/>
+					</h:panelGrid>
+					
+        			<p:outputLabel value="Activo: " />        			
+        			<p:selectOneRadio id="selectActivar" value="#{gluoEntidadPublicaView.activo}">
+			            <f:selectItem itemLabel="Activo" itemValue="A" />
+			            <f:selectItem itemLabel="Inactivo" itemValue="I" />			            
+			        </p:selectOneRadio>
+			        
+				</h:panelGrid>
+			
+				<!-- Botones -->
+					<br/>
+
+					<p:commandButton id="btnSave" value="Guardar"
+							action="#{gluoEntidadPublicaView.action_save}"
+							binding="#{gluoEntidadPublicaView.btnSave}" disabled="false"
+							update="messages,pnlEntidadPublica,pnlEntidadPublica,formEntidadPublica" />
+		
+					<p:commandButton id="btnClear" value="Limpiar"
+						action="#{gluoEntidadPublicaView.action_clear}"
+						binding="#{gluoEntidadPublicaView.btnClear}" disabled="false"
+						update="messages,pnlEntidadPublica,pnlEntidadPublica,formEntidadPublica,pnlListaEntidadPublica" />
+				
+					<!-- Botones -->
+
+
+			</p:panel>
+			
+			<!-- DataTable -->
+			<p:panel id="pnlListaEntidadPublica" header="Listado Entidades Publicas" style="width: 90%;">
+
+				<p:dataTable value="#{gluoEntidadPublicaView.data}" var="entidadPublica"
+					paginator="true" rows="10" scrollable="true" scrollWidth="100%"
+					scrollHeight="500" selectionMode="single"
+					selection="#{gluoEntidadPublicaView.selectedGluoEntidadPublica}"
+					rowKey="#{entidadPublica.enpuId}" filterDelay="1000">
+					
+					<p:column headerText="Código Institucional" filterBy="#{entidadPublica.codigoInstitucional}"  class="text-center" style="text-align:center"> 
+						<p:outputLabel value="#{entidadPublica.codigoInstitucional}"  />
+					</p:column>
+					
+					<p:column headerText="Nombre" filterBy="#{entidadPublica.nombre}" style="text-align:center"> 
+						<p:outputLabel value="#{entidadPublica.nombre}" />
+					</p:column>
+					
+					<p:column headerText="Tercero" filterBy="#{entidadPublica.nombreTercero}" style="text-align:center"> 
+						<p:outputLabel value="#{entidadPublica.nombreTercero}" />
+					</p:column>					
+					
+					<p:column headerText="Activo" filterBy="#{entidadPublica.activoNombre}" style="text-align:center"> 
+						<p:outputLabel value="#{entidadPublica.activoNombre}" />
+					</p:column>
+				</p:dataTable>
+			</p:panel>
+
+			<!-- DataTable -->
+			
+			
+			<!--        Tercero            -->
+			<!-- ************************* -->
+			<p:dialog modal="true" widgetVar="dlgTercero" header="Tercero"
+				draggable="false" closable="true" resizable="true" width="90%" >
+				
+				<p:scrollPanel id="pnlTerceros" mode="native" style="width:100%; height:400px">
+					
+					<p:outputLabel value="Criterios de búsqueda para terceros:"/>
+					
+					<h:panelGrid columns="2" columnClasses="colAFiltro, colBFiltro" style="width: 100%;">
+								
+						<p:outputLabel value="Identificación: "/>
+						<p:inputText styleClass="Wid50"
+							value="#{gluoEntidadPublicaView.identificacionFiltro}"/>
+						
+						<p:outputLabel value="Nombre/Razón Social:"/>
+						<p:inputText styleClass="Wid50"
+							value="#{gluoEntidadPublicaView.nombreRazonSocialFiltro}"/>
+						
+					</h:panelGrid>
+					
+					<p:commandButton value="Buscar Tercero" icon="ui-icon-search" actionListener="#{gluoEntidadPublicaView.action_buscarTercero}" update=":formEntidadPublica:pnlTerceros"/>
+					
+					<br/>
+				
+					<p:dataTable id="tercerosEncontrados" var="tercero" rows="350" style="width: 100%;"
+						value="#{gluoEntidadPublicaView.terceros}"
+						paginator="true"
+						paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+						rowsPerPageTemplate="300,400,500"
+						emptyMessage="No hay terceros encontrados"
+						reflow="true" 
+						filterDelay="1000">
+						
+						<f:facet name="header">
+                             Terceros
+                         </f:facet>
+                         
+                   		<p:column headerText="Identificación" sortBy="#{tercero.identificacion}"
+							style="width: 10%" filterBy="#{tercero.identificacion}"
+							filterMatchMode="startsWith">
+							<h:outputText value="#{tercero.identificacion}"/>
+						</p:column>
+						
+						<p:column headerText="Primer Nombre" sortBy="#{tercero.primerNombre}"
+							style="width: 10%" filterBy="#{tercero.primerNombre}"
+							filterMatchMode="contains">
+							<h:outputText value="#{tercero.primerNombre}"/>
+						</p:column>
+						
+						<p:column headerText="Segundo Nombre" sortBy="#{tercero.segundoNombre}"
+							style="width: 10%" filterBy="#{tercero.segundoNombre}"
+							filterMatchMode="contains">
+							<h:outputText value="#{tercero.segundoNombre}"/>
+						</p:column>
+						
+						<p:column headerText="Primer Apellido" sortBy="#{tercero.primerApellido}"
+							style="width: 10%" filterBy="#{tercero.primerApellido}"
+							filterMatchMode="contains">
+							<h:outputText value="#{tercero.primerApellido}"/>
+						</p:column>
+						
+						<p:column headerText="Segundo Apellido" sortBy="#{tercero.segundoApellido}"
+							style="width: 10%" filterBy="#{tercero.segundoApellido}"
+							filterMatchMode="contains">
+							<h:outputText value="#{tercero.segundoApellido}"/>
+						</p:column>
+						
+						<p:column headerText="Razon Social" sortBy="#{tercero.razonSocial}"
+							style="width: 10%" filterBy="#{tercero.razonSocial}"
+							filterMatchMode="contains">
+							<h:outputText value="#{tercero.razonSocial}"/>
+						</p:column>
+						
+						<p:column headerText="Seleccionar" 
+							style="width: 5%">
+							<p:commandButton title="Seleccionar"  
+				            	icon="ui-icon-check" 
+				            	oncomplete="PF('dlgTercero').hide();"
+				            	update=":formEntidadPublica" action="#{gluoEntidadPublicaView.action_seleccionarTercero(tercero)}">
+				            </p:commandButton>
+						</p:column>
+					</p:dataTable>
+				</p:scrollPanel>
+
+				<div class="EmptyBox20" />
+				
+			</p:dialog>
+			<!--        Tercero            -->
+			<!-- ************************* -->
+
+
+		</h:form>
+		</div>
+	</ui:define>
+</ui:composition>

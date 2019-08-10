@@ -1,0 +1,154 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+<ui:define name="content">
+<f:view>
+	<p:ajaxStatus onstart="PF('statusDialog').show()"
+		onsuccess="PF('statusDialog').hide()" />
+	<p:dialog modal="true" widgetVar="statusDialog" header="Cargando"
+		draggable="false" closable="false">
+		<p:graphicImage
+			value="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/ajaxloadingbar.gif" />
+	</p:dialog>
+
+	<!-- Expired session -->
+	<p:idleMonitor onactive="PF('sessionTimeOutDialog').show();"
+		timeout="#{session.maxInactiveInterval * 1000}" />
+	<p:dialog modal="true" widgetVar="sessionTimeOutDialog"
+		header="Sesión Finalizada" draggable="false" closable="false">
+		<h:outputText value="La sesión ha caducado." />
+		<input id="confirmBackToLogin" type="button" value="Iniciar Sesión"
+			onclick="window.location='#{facesContext.externalContext.requestContextPath}/index.jsp';" />
+	</p:dialog>
+	
+	<div align="center">
+	<h:form id="frmGestionarEmpleados">
+
+		<div align="center">
+		<p:panel id="pnlGestionarEmpleados"  >
+		
+			<p:growl id="growl" autoUpdate="true" />
+			
+			<h:panelGrid columns="1" style="width: 100%;">
+				<h:panelGrid columns="1" style="width: 100%;">
+					<div class="ContainerIndent">
+						<h:outputText value="Empleados"
+							styleClass="FontBold Fs18 hardblue" />
+					</div>
+
+					<h:panelGrid columns="1" cellpadding="10"
+						style="width: 50%;">
+						
+						<h:panelGrid columns="2" 
+							columnClasses="colA,colB"
+							style="width: 100%;">
+							
+							<div/>
+							<p:commandButton 
+								value="Gestionar Datos Básicos"
+								update=":frmGestionarEmpleados" style="width: 500px"
+								action="datosBasicosEmpleado.xhtml"/>
+						</h:panelGrid>
+						
+						<h:panelGrid columns="2" 
+							columnClasses="colA,colB"
+							style="width: 100%;">
+							
+							<div/>
+							<p:commandButton 
+								value="Gestionar Estudios Realizados"
+								update=":frmGestionarEmpleados" style="width: 500px"
+								action="estudiosRealizadosEmpleado.xhtml"/>
+						</h:panelGrid>
+						
+						<h:panelGrid columns="2" 
+							columnClasses="colA,colB"
+							style="width: 100%;">
+							
+							<div/>
+							<p:commandButton 
+								value="Gestionar Experiencia Laboral"
+								update=":frmGestionarEmpleados" style="width: 500px"
+								action="experienciaLaboralEmpleado.xhtml"/>
+						</h:panelGrid>
+						
+						<h:panelGrid columns="2" 
+							columnClasses="colA,colB"
+							style="width: 100%;">
+							
+							<div/>
+							<p:commandButton 
+								value="Gestionar Acto Administrativo de Nombramiento"
+								update=":frmGestionarEmpleados" style="width: 500px"
+								action="actoAdministrativoDeNombramiento.xhtml"/>
+						</h:panelGrid>
+						
+						<h:panelGrid columns="2" 
+							columnClasses="colA,colB"
+							style="width: 100%;">
+							
+							<div/>
+							<p:commandButton 
+								value="Asociar Colaboradores a un Jefe"
+								update=":frmGestionarEmpleados" style="width: 500px"
+								action="asociarColaboradoresAJefe.xhtml"/>
+						</h:panelGrid>
+						
+						<h:panelGrid columns="2" 
+							columnClasses="colA,colB"
+							style="width: 100%;">
+							
+							<div/>
+							<p:commandButton 
+								value="Registrar Situación Administrativa Empleado"
+								update=":frmGestionarEmpleados" style="width: 500px"
+								action="RegistrarSituacionAEmpleado.xhtml"/>
+						</h:panelGrid>
+						
+						<h:panelGrid columns="2" 
+							columnClasses="colA,colB"
+							style="width: 100%;">
+							
+							<div/>
+							<p:commandButton 
+								value="Registrar Hora Extra a Empleado"
+								update=":frmGestionarEmpleados" style="width: 500px"
+								action="RegistrarHoraExtraAEmpleado.xhtml"/>
+						</h:panelGrid>
+						
+						<h:panelGrid columns="2" 
+							columnClasses="colA,colB"
+							style="width: 100%;">
+							
+							<div/>
+							<p:commandButton 
+								value="Gestionar Deducciones"
+								update=":frmGestionarEmpleados" style="width: 500px"
+								action="gestionarDeducciones.xhtml" />
+						</h:panelGrid>
+						
+						<h:panelGrid columns="2" 
+							columnClasses="colA,colB"
+							style="width: 100%;">
+							
+							<div/>
+							<p:commandButton 
+								value="Registrar Afiliacion a Empleado"
+								update=":frmGestionarEmpleados" style="width: 500px"
+								action="AfiliacionesEmpleados.xhtml"/>
+						</h:panelGrid>
+					</h:panelGrid>
+
+				</h:panelGrid>
+			</h:panelGrid>
+		</p:panel>
+		</div>
+	</h:form>
+	</div>
+</f:view>
+</ui:define>
+
+</ui:composition>

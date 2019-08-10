@@ -1,0 +1,200 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+	<ui:define name="content">
+		<f:view>
+		<script type="text/javascript">
+			function justNumbers(e) {
+					var keynum = window.event ? window.event.keyCode : e.which;
+					if ((keynum == 8) || (keynum == 46) || (keynum == 44))
+					return true;
+					 
+					return /\d/.test(String.fromCharCode(keynum));
+			}
+			PrimeFaces.locales['es'] = {
+				    closeText: 'Cerrar',
+				    prevText: 'Anterior',
+				    nextText: 'Siguiente',
+				    monthNames: ['Enero','Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+				    monthNamesShort: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun','Jul','Ago','Sep','Oct','Nov','Dic'],
+				    dayNames: ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'],
+				    dayNamesShort: ['Dom','Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab'],
+				    dayNamesMin: ['D','L','M','M','J','V','S'],
+				    weekHeader: 'Semana',
+				    firstDay: 1,
+				    isRTL: false,
+				    showMonthAfterYear: false,
+				    yearSuffix: '',
+				    timeOnlyTitle: 'Sólo hora',
+				    timeText: 'Tiempo',
+				    hourText: 'Hora',
+				    minuteText: 'Minuto',
+				    secondText: 'Segundo',
+				    currentText: 'Fecha actual',
+				    ampm: false,
+				    month: 'Mes',
+				    week: 'Semana',
+				    day: 'Día',
+				    allDayText : 'Todo el día'
+				};
+			function showStatus() {
+			    statusDialog.show();
+			}
+			 
+			function hideStatus() {
+			    statusDialog.hide();
+			}
+		</script>
+			<p:ajaxStatus onstart="PF('statusDialog').show()"
+				onsuccess="PF('statusDialog').hide()" />
+			<p:dialog modal="true" widgetVar="statusDialog" header="Cargando"
+				draggable="false" closable="false">
+				<p:graphicImage
+					value="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/ajaxloadingbar.gif" />
+			</p:dialog>
+
+			<!-- Expired session -->
+			<p:idleMonitor onactive="PF('sessionTimeOutDialog').show();"
+				timeout="#{session.maxInactiveInterval * 1000}" />
+			<p:dialog modal="true" widgetVar="sessionTimeOutDialog"
+				header="Sesión Finalizada" draggable="false" closable="false">
+				<h:outputText value="La sesión ha caducado." />
+				<input id="confirmBackToLogin" type="button" value="Iniciar Sesión"
+					onclick="window.location='#{facesContext.externalContext.requestContextPath}/index.jsp';" />
+			</p:dialog>
+					
+		  			<h:form id="frm">								  		
+						
+						<p:panel id="panelDataTableGluoTipoPlanta" header="GluoTipoPlantaData">
+							<p:growl id="men"/>				
+							<p:dataTable value="#{gluoTipoPlantaView.data}" var="gluoTipoPlanta"
+								paginator="true" rows="5">
+																										<p:column filterBy="#{gluoTipoPlanta.tiplId}" sortBy="#{gluoTipoPlanta.tiplId}" >
+										 <f:facet name="header">
+										<h:outputText value="tiplId"/>
+										</f:facet>
+										 <h:outputText value="#{gluoTipoPlanta.tiplId}"/>
+										 </p:column>
+			                    																									
+										<p:column filterBy="#{gluoTipoPlanta.activo}" sortBy="#{gluoTipoPlanta.activo}" >
+										 <f:facet name="header">
+										<h:outputText value="Activo"/>
+										</f:facet>
+										 <h:outputText value="#{gluoTipoPlanta.activo}"/>
+										</p:column>   
+			                    									
+										<p:column filterBy="#{gluoTipoPlanta.codigo}" sortBy="#{gluoTipoPlanta.codigo}" >
+										 <f:facet name="header">
+										<h:outputText value="Codigo"/>
+										</f:facet>
+										 <h:outputText value="#{gluoTipoPlanta.codigo}"/>
+										</p:column>   
+			                    									
+										<p:column filterBy="#{gluoTipoPlanta.descripcion}" sortBy="#{gluoTipoPlanta.descripcion}" >
+										 <f:facet name="header">
+										<h:outputText value="Descripcion"/>
+										</f:facet>
+										 <h:outputText value="#{gluoTipoPlanta.descripcion}"/>
+										</p:column>   
+			                    									
+										<p:column filterBy="#{gluoTipoPlanta.fechaCreacion}" sortBy="#{gluoTipoPlanta.fechaCreacion}" >
+										 <f:facet name="header">
+										<h:outputText value="FechaCreacion"/>
+										</f:facet>
+										 <h:outputText value="#{gluoTipoPlanta.fechaCreacion}"/>
+										</p:column>   
+			                    									
+										<p:column filterBy="#{gluoTipoPlanta.fechaModificacion}" sortBy="#{gluoTipoPlanta.fechaModificacion}" >
+										 <f:facet name="header">
+										<h:outputText value="FechaModificacion"/>
+										</f:facet>
+										 <h:outputText value="#{gluoTipoPlanta.fechaModificacion}"/>
+										</p:column>   
+			                    									
+										<p:column filterBy="#{gluoTipoPlanta.usuCreador}" sortBy="#{gluoTipoPlanta.usuCreador}" >
+										 <f:facet name="header">
+										<h:outputText value="UsuCreador"/>
+										</f:facet>
+										 <h:outputText value="#{gluoTipoPlanta.usuCreador}"/>
+										</p:column>   
+			                    									
+										<p:column filterBy="#{gluoTipoPlanta.usuModificador}" sortBy="#{gluoTipoPlanta.usuModificador}" >
+										 <f:facet name="header">
+										<h:outputText value="UsuModificador"/>
+										</f:facet>
+										 <h:outputText value="#{gluoTipoPlanta.usuModificador}"/>
+										</p:column>   
+			                    			                    
+								<p:column headerText="Options">
+									<p:commandButton id="btnEdit" icon="ui-icon-pencil"
+										update=":dialogGluoTipoPlanta"
+										actionListener="#{gluoTipoPlantaView.action_edit}">
+										<f:attribute name="selectedGluoTipoPlanta" value="#{gluoTipoPlanta}" />
+									</p:commandButton>
+									<p:commandButton id="btnDelete"									
+										title="Delete" actionListener="#{gluoTipoPlantaView.action_delete_datatable}"
+										onclick="if(!confirm('Do you really want to delete this Entry?')){return false;}"
+										icon="ui-icon-trash" update="@form">
+										<f:attribute name="selectedGluoTipoPlanta" value="#{gluoTipoPlanta}" />
+									</p:commandButton>
+								</p:column>									                    
+							</p:dataTable>	
+						</p:panel>
+						<p:panel id="panelBoton">
+							<div align="center">
+								<p:commandButton id="btnNew" value="New"
+									action="#{gluoTipoPlantaView.action_new()}" update=":dialogGluoTipoPlanta" />
+							</div>
+						</p:panel>						
+		   			</h:form>
+					<p:dialog id="dialogGluoTipoPlanta" appendTo="@(body)" draggable="true"
+						closable="false" visible="#{gluoTipoPlantaView.showDialog}" resizable="false"
+						modal="true" width="500">
+						<h:form id="formDialog">
+							<p:messages id="msg" />
+							<p:panel id="panelGluoTipoPlanta" header="GluoTipoPlanta">							
+							    <h:panelGrid columns="2" id="panelGrid" >
+																		 <h:outputText id="msgTiplId" value="TiplId"/>
+									 <p:inputText id="txtTiplId" binding="#{gluoTipoPlantaView.txtTiplId}">
+									 <p:ajax update=":dialogGluoTipoPlanta" listener="#{gluoTipoPlantaView.listener_txtId}"/>
+									 </p:inputText>	
+																											
+																		<h:outputText id="msgActivo" value=" Activo"/>
+									<p:inputText id="txtActivo" disabled="true" binding="#{gluoTipoPlantaView.txtActivo}"/>
+																		<h:outputText id="msgCodigo" value=" Codigo"/>
+									<p:inputText id="txtCodigo" disabled="true" binding="#{gluoTipoPlantaView.txtCodigo}"/>
+																		<h:outputText id="msgDescripcion" value=" Descripcion"/>
+									<p:inputText id="txtDescripcion" disabled="true" binding="#{gluoTipoPlantaView.txtDescripcion}"/>
+																		<h:outputText id="msgUsuCreador" value=" UsuCreador"/>
+									<p:inputText id="txtUsuCreador" disabled="true" binding="#{gluoTipoPlantaView.txtUsuCreador}"/>
+																		<h:outputText id="msgUsuModificador" value=" UsuModificador"/>
+									<p:inputText id="txtUsuModificador" disabled="true" binding="#{gluoTipoPlantaView.txtUsuModificador}"/>
+																		
+																													<h:outputText id="msgFechaCreacion" value=" FechaCreacion"/>
+																				<p:calendar showOn="button" navigator="true" locale="en" 
+										binding="#{gluoTipoPlantaView.txtFechaCreacion}" >
+										<p:ajax event="dateSelect" listener="#{gluoTipoPlantaView.listener_txtFechaCreacion}" />
+										</p:calendar>
+																				<h:outputText id="msgFechaModificacion" value=" FechaModificacion"/>
+																				<p:calendar showOn="button" navigator="true" locale="en" 
+										binding="#{gluoTipoPlantaView.txtFechaModificacion}" >
+										<p:ajax event="dateSelect" listener="#{gluoTipoPlantaView.listener_txtFechaModificacion}" />
+										</p:calendar>
+																										    </h:panelGrid>
+							</p:panel>						   
+							<p:panel id="panelBotones">
+								<div align="center">					
+									<p:commandButton id="btnSave" binding="#{gluoTipoPlantaView.btnSave}" value="Save" action="#{gluoTipoPlantaView.action_save()}" update=":dialogGluoTipoPlanta :frm:panelDataTableGluoTipoPlanta" />
+									<p:commandButton id="btnClear" value="Clear" action="#{gluoTipoPlantaView.action_clear()}" update=":dialogGluoTipoPlanta" />
+									<p:commandButton id="btnExit" value="Exit" action="#{gluoTipoPlantaView.action_closeDialog()}" update=":dialogGluoTipoPlanta" />
+								</div>
+							</p:panel>					
+						</h:form>
+					</p:dialog>
+				</f:view>
+	</ui:define>
+
+</ui:composition>

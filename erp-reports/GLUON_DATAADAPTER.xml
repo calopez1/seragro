@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<beanDataAdapter class="net.sf.jasperreports.data.bean.BeanDataAdapterImpl"><name>InformeEjecucionGastosDataAdapter</name><factoryClass>com.vortexbird.gluon.modelo.dto.InformeEjecucionGastosDTO</factoryClass><methodName>getData</methodName><useFieldDescription>true</useFieldDescription></beanDataAdapter>

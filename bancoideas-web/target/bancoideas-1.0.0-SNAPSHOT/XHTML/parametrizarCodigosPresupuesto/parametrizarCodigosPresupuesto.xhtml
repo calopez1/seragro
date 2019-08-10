@@ -1,0 +1,323 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+	<ui:define name="content">
+		<style type="text/css">
+			.ui-panel {
+				margin-top: 20px
+			}
+			
+			.ui-tabs-top {
+				background-color: #FFFFFF;
+			}
+			
+			.ui-autocomplete-input.ui-inputfield
+			{
+			   width : 90px !important;
+			}
+		</style>
+
+		<h:form id="frmParametrizarCodigosPresupuesto">
+
+		<p:growl id="men" showDetail="false" autoUpdate="true"/>
+
+		  <p:panel id="pnlCentral" columns="1" style="border:none;">
+			
+			<p:tabView id="presupuestosTabView">
+
+				<p:tab id="presupuestoRentasTab" title="Presupuesto de Rentas">
+					<h:panelGrid columns="1" id="pnlPresupuestoRentasData">
+						<h:panelGrid columns="1"
+							rendered="#{parametrizacionCodigosPresupuestoView.presupuestoRentasDTO != null}">
+							<div class="Container100">
+								<div class="ContainerIndent">
+
+									<div class="Container100">
+										<div class="ContainerIndent">
+
+											<p:dataTable id="presupuestoRentasData" var="cuentaRentas"
+												value="#{parametrizacionCodigosPresupuestoView.presupuestoRentasDTO.detallePresupuestoDTOs}"
+												rows="20" paginator="true"
+												paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+												emptyMessage="No existen cuentas del presupuesto"
+												reflow="true">
+												
+												<p:ajax event="filter" delay="1000" />
+												
+												<f:facet name="header">
+				                                    Parametrizacion codigos presupuesto de rentas
+				                                </f:facet>
+
+												<p:columnGroup type="header">
+													<p:row>
+														<p:column colspan="3" headerText="" />
+														<p:column colspan="2" headerText="Cuentas de orden" />
+														<p:column colspan="2" headerText="Cuentas financieras" />
+													</p:row>
+													<p:row>
+														<p:column headerText="Cuenta" filterBy="#{cuentaRentas.codigoCuenta}" filterMatchMode="contains" sortBy="#{cuentaRentas.codigoCuenta}"/>
+														<p:column headerText="Descripción" filterBy="#{cuentaRentas.descripcionCuenta}" filterMatchMode="contains" sortBy="#{cuentaRentas.descripcionCuenta}"/>
+														<p:column headerText="Valor" style="width: 30%" />
+
+														<p:column id="idCuentaDeudoraRenta" headerText="Cta. deudora Db."/>
+														<p:column id="idCuentaAcreedoraRenta" headerText="Cta. deudora Cr." />
+
+														<p:column id="idCuentaActivoRenta" headerText="Cta. activo" />
+														<p:column id="idCuentaIngresoRenta" headerText="Cta. ingreso" />
+													</p:row>
+												</p:columnGroup>
+
+												<p:column headerText="Cuenta" style="width: 20%">
+													<h:outputText value="#{cuentaRentas.codigoCuenta}" />
+												</p:column>
+												<p:column headerText="Descripción" style="width: 50%">
+													<h:outputText value="#{cuentaRentas.descripcionCuenta}" />
+												</p:column>
+												<p:column headerText="Valor" style="width: 30%">
+													<div align="right">
+														<h:outputText value="#{cuentaRentas.valorInicial}">
+															<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+														</h:outputText>
+													</div>
+												</p:column>
+
+												<p:column headerText="Cta. deudora Db.">
+													<p:autoComplete id="txtCtaDeudoraRenta" minQueryLength="1" value="#{cuentaRentas.ctaDeudora}" 
+																	completeMethod="#{parametrizacionCodigosPresupuestoView.action_autoCompleteCuentaDeudora}" 
+																	update=":frmParametrizarCodigosPresupuesto:men" effect="fade"
+																	forceSelection="true" rendered="#{cuentaRentas.hoja}">
+																	
+														<p:ajax event="itemSelect" listener="#{parametrizacionCodigosPresupuestoView.handleSelect}" update="@this" />
+																	
+													</p:autoComplete>
+												</p:column>
+												<p:column headerText="Cta. deudora Cr.">
+													<p:autoComplete id="txtCtaAcrededoraRenta" minQueryLength="1" value="#{cuentaRentas.ctaAcrededora}" 
+																	completeMethod="#{parametrizacionCodigosPresupuestoView.action_autoCompleteCuentaAcreedora}" 
+																	update=":frmParametrizarCodigosPresupuesto:men" effect="fade"
+																	forceSelection="true" rendered="#{cuentaRentas.hoja}">
+																	
+														<p:ajax event="itemSelect" listener="#{parametrizacionCodigosPresupuestoView.handleSelect}" update="@this" />
+																	
+													</p:autoComplete>
+												</p:column>
+												<p:column headerText="Cta. activo">
+													<p:autoComplete id="txtCtaActivoRenta" minQueryLength="1" value="#{cuentaRentas.ctaActivo}"
+																	completeMethod="#{parametrizacionCodigosPresupuestoView.action_autoCompleteCuentaActivo}" 
+																	update=":frmParametrizarCodigosPresupuesto:men" effect="fade" 
+																	forceSelection="true" rendered="#{cuentaRentas.hoja}">
+																	
+														<p:ajax event="itemSelect" listener="#{parametrizacionCodigosPresupuestoView.handleSelect}" update="@this" />
+																	
+													</p:autoComplete>
+													
+												</p:column>
+												<p:column headerText="Cta. ingreso">
+													<p:autoComplete id="txtCtaIngresoRenta" minQueryLength="1" value="#{cuentaRentas.ctaIngreso}"
+																	completeMethod="#{parametrizacionCodigosPresupuestoView.action_autoCompleteCuentaIngreso}" 
+																	update=":frmParametrizarCodigosPresupuesto:men" effect="fade" 
+																	forceSelection="true" rendered="#{cuentaRentas.hoja}">
+																	
+														<p:ajax event="itemSelect" listener="#{parametrizacionCodigosPresupuestoView.handleSelect}" update="@this" />
+																	
+													</p:autoComplete>
+												</p:column>
+											</p:dataTable>
+
+											<div class="EmptyBox20"></div>
+
+										</div>
+									</div>
+
+									<h:panelGrid columns="3">
+										<p:commandButton id="btnActualizarCodigosRentas" value="Actualizar codigos rentas" action="#{parametrizacionCodigosPresupuestoView.action_actualizarCodigosRenta}" update=":frmParametrizarCodigosPresupuesto:men"
+														 binding="#{parametrizacionCodigosPresupuestoView.btnActualizarRenta}"/>
+										<p:commandButton id="btnClearRentas" value="Limpiar" action="#{parametrizacionCodigosPresupuestoView.action_clearRentas()}" update="presupuestoRentasData"/>
+										
+										<p:commandButton value="Contabilizar Presupuesto de Rentas"
+											actionListener="#{parametrizacionCodigosPresupuestoView.action_confirmarContabilizacionRenta}"
+											update="@([id$=men]), @([id$=btnActualizarCodigosRentas])">
+												<p:confirm header="Confirmación" message="Tenga en cuenta que si confirma la contabilización de los rubros presupuestales no podrá modificar los cruces contables. Desea Continuar?" icon="ui-icon-alert" />
+										</p:commandButton>
+	
+										<p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+											<p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+											<p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+										</p:confirmDialog>
+									</h:panelGrid>
+									
+									<div class="EmptyBox20"></div>
+
+								</div>
+							</div>
+						</h:panelGrid>
+					</h:panelGrid>
+				</p:tab>
+
+				<p:tab id="presupuestoGastosTab" title="Presupuesto de Gastos">
+					<h:panelGrid columns="1" id="pnlPresupuestoGastosData">
+						<h:panelGrid columns="1"
+							rendered="#{parametrizacionCodigosPresupuestoView.presupuestoGastosDTO != null}">
+							<div class="Container100">
+								<div class="ContainerIndent">
+
+									<div class="Container100">
+										<div class="ContainerIndent">
+
+											<p:dataTable id="presupuestoGastosData" var="cuentaGastos"
+												value="#{parametrizacionCodigosPresupuestoView.presupuestoGastosDTO.detallePresupuestoDTOs}"
+												rows="20" paginator="true"
+												paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+												emptyMessage="No existen cuentas del presupuesto"
+												reflow="true">
+												
+												<p:ajax event="filter" delay="1000" />
+												
+												<f:facet name="header">
+				                                    Parametrizacion codigos del presupuesto de gastos
+				                                </f:facet>
+
+												<p:columnGroup type="header">
+													<p:row>
+														<p:column colspan="3" headerText="" />
+														<p:column colspan="2" headerText="Cuentas de orden" />
+														<p:column colspan="4" headerText="Cuentas financieras" />
+													</p:row>
+													<p:row>
+														<p:column headerText="Cuenta" filterBy="#{cuentaGastos.codigoCuenta}" filterMatchMode="contains" sortBy="#{cuentaGastos.codigoCuenta}"/>
+														<p:column headerText="Descripción" filterBy="#{cuentaGastos.descripcionCuenta}" filterMatchMode="contains" sortBy="#{cuentaGastos.descripcionCuenta}"/>
+														<p:column headerText="Valor" style="width: 30%" />
+
+														<p:column id="idCuentaDeudoraGasto" headerText="Cta. acreedora Db." />
+														<p:column id="idCuentaAcreedoraGasto" headerText="Cta. acrededora Cr." />
+
+														<p:column id="idCuentaGastoActivoGasto" headerText="Cta. gasto/activo" />
+														<p:column id="idCuentaPasivoGasto" headerText="Cta. pasivo" />
+														<p:column id="idCuentaXCobrarActivoGasto" headerText="Cta. cobrar activo" />
+														<p:column id="idCuentaXCobrarPasivoGasto" headerText="Cta. pagar pasivo" />
+													</p:row>
+												</p:columnGroup>
+
+												<p:column headerText="Cuenta" style="width: 20%">
+													<h:outputText value="#{cuentaGastos.codigoCuenta}" />
+												</p:column>
+												<p:column headerText="Descripción" style="width: 50%">
+													<h:outputText value="#{cuentaGastos.descripcionCuenta}" />
+												</p:column>
+												<p:column headerText="Valor" style="width: 30%">
+													<div align="right">
+														<h:outputText value="#{cuentaGastos.valorInicial}">
+															<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+														</h:outputText>
+													</div>
+												</p:column>
+
+
+												<p:column headerText="Cta. acreedora Db.">
+													<p:autoComplete id="txtCtaDeudoraGastos" minQueryLength="1" value="#{cuentaGastos.ctaDeudoraGastos}" 
+																	completeMethod="#{parametrizacionCodigosPresupuestoView.action_autoCompleteCuentaDeudoraGastos}" 
+																	update=":frmParametrizarCodigosPresupuesto:men" effect="fade" size="90"
+																	forceSelection="true" rendered="#{cuentaGastos.hoja}">
+																	
+														<p:ajax event="itemSelect" listener="#{parametrizacionCodigosPresupuestoView.handleSelect}" update="@this" />
+																	
+													</p:autoComplete>
+												</p:column>
+												<p:column headerText="Cta. acrededora Cr.">
+												<p:autoComplete id="txtCtaAcrededoraGastos" minQueryLength="1" value="#{cuentaGastos.ctaAcreedoraGastos}" 
+																completeMethod="#{parametrizacionCodigosPresupuestoView.action_autoCompleteCuentaAcreedoraGastos}" 
+																update=":frmParametrizarCodigosPresupuesto:men" effect="fade" style="width:90px;"
+																forceSelection="true" rendered="#{cuentaGastos.hoja}">
+																	
+													<p:ajax event="itemSelect" listener="#{parametrizacionCodigosPresupuestoView.handleSelect}" update="@this" />
+																
+												</p:autoComplete>
+												</p:column>
+												<p:column headerText="Cta. gasto/activo">
+													<p:autoComplete id="txtCtaGastoActivoGastos" minQueryLength="1" value="#{cuentaGastos.ctaGastosGastos}" 
+																completeMethod="#{parametrizacionCodigosPresupuestoView.action_autoCompleteCuentaGastosGastos}" 
+																update=":frmParametrizarCodigosPresupuesto:men" effect="fade" style="width:90px;"
+																forceSelection="true" rendered="#{cuentaGastos.hoja}">
+																	
+														<p:ajax event="itemSelect" listener="#{parametrizacionCodigosPresupuestoView.handleSelect}" update="@this" />
+																	
+													</p:autoComplete>
+												</p:column>
+												<p:column headerText="Cta. pasivo">
+													<p:autoComplete id="txtCtaPasivoGastos" minQueryLength="1" value="#{cuentaGastos.ctaPasivoGastos}" 
+																completeMethod="#{parametrizacionCodigosPresupuestoView.action_autoCompleteCuentaPasivoGastos}" 
+																update=":frmParametrizarCodigosPresupuesto:men" effect="fade" style="width:90px;"
+																forceSelection="true" rendered="#{cuentaGastos.hoja}">
+																	
+														<p:ajax event="itemSelect" listener="#{parametrizacionCodigosPresupuestoView.handleSelect}" update="@this" />
+																	
+													</p:autoComplete>
+												</p:column>
+												<p:column headerText="Cta. cobrar activo">
+													<p:autoComplete id="txtCtaCobrarActivoGastos" minQueryLength="1" value="#{cuentaGastos.ctaCxcActivoGastos}" 
+																completeMethod="#{parametrizacionCodigosPresupuestoView.action_autoCompleteCxCActivoGastos}" 
+																update=":frmParametrizarCodigosPresupuesto:men" effect="fade" style="width:90px;"
+																forceSelection="true" rendered="#{cuentaGastos.hoja}">
+																	
+														<p:ajax event="itemSelect" listener="#{parametrizacionCodigosPresupuestoView.handleSelect}" update="@this" />
+																	
+													</p:autoComplete>
+												</p:column>
+												<p:column headerText="Cta. pagar pasivo">
+													<p:autoComplete id="txtCtaPagarPasivoGastos" minQueryLength="1" value="#{cuentaGastos.ctaCxcPasivoGastos}" 
+																completeMethod="#{parametrizacionCodigosPresupuestoView.action_autoCompleteCxCPasivoGastos}" 
+																update=":frmParametrizarCodigosPresupuesto:men" effect="fade" style="width:90px;"
+																forceSelection="true" rendered="#{cuentaGastos.hoja}">
+																	
+														<p:ajax event="itemSelect" listener="#{parametrizacionCodigosPresupuestoView.handleSelect}" update="@this" />
+																	
+													</p:autoComplete>
+												</p:column>
+
+											</p:dataTable>
+
+											<div class="EmptyBox20"></div>
+
+
+										</div>
+									</div>
+
+									<h:panelGrid columns="3">
+										<p:commandButton id="btnActualizarGastos" value="Actualizar codigos gastos" action="#{parametrizacionCodigosPresupuestoView.action_actualizarCodigosGastos}" update=":frmParametrizarCodigosPresupuesto:men"
+														 binding="#{parametrizacionCodigosPresupuestoView.btnActualizarGastos}"/>
+										<p:commandButton id="btnClearGastos" value="Limpiar" action="#{parametrizacionCodigosPresupuestoView.action_clearGastos()}" update="presupuestoGastosData"/>
+										
+										<p:commandButton value="Contabilizar Presupuesto de Gastos"
+											actionListener="#{parametrizacionCodigosPresupuestoView.action_confirmarContabilizacionGastos}"
+											update="@([id$=men]), @([id$=btnActualizarGastos])">
+												<p:confirm header="Confirmación" message="Tenga en cuenta que si confirma la contabilización de los rubros presupuestales no podrá modificar los cruces contables. Desea Continuar?" icon="ui-icon-alert" />
+										</p:commandButton>
+	
+										<p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+											<p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+											<p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+										</p:confirmDialog>
+									</h:panelGrid>
+									
+									<div class="EmptyBox20"></div>
+								</div>
+							</div>
+						</h:panelGrid>
+					</h:panelGrid>
+				</p:tab>
+			</p:tabView>
+			
+			<br/>
+			
+			<div align="center">
+				<h:panelGrid id="panelGridBtnContabilizar" columns="1">
+
+				</h:panelGrid>
+			</div>	
+		</p:panel>
+	   </h:form>
+	</ui:define>
+</ui:composition>

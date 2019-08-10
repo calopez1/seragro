@@ -1,0 +1,43 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+<ui:define name="content">
+
+<style type="text/css">
+	.ui-panel {
+		margin-top: 20px
+	}
+	
+	.ui-tabs-top{
+		background-color: #FFFFFF;
+	}
+</style>
+
+
+<div align="center">
+<h:form id="frmAnularComprobantesDeEgreso" >
+	
+	<p:growl id="growl" autoUpdate="true" closable="true" life="3000" />
+	
+	<p:panel id="pnlAnularComprobantesDeEgreso" header="Anular Comprobantes de Egreso"
+		style="width: 90%;">
+		
+		<br/><br/>
+		
+		<p:commandButton 
+			value="Anular Comprobante de egreso que afecta el presupuesto"			
+			action="AnularComprobanteDeEgresoAfectaPpto.xhtml"/> <br/><br/>				
+			
+		<p:commandButton 
+			value="Anular Comprobante de egreso que no afecta el presupuesto"			
+			action="AnularComprobanteDeEgresoNoAfectaPpto.xhtml"/> <br/><br/>	
+		
+	</p:panel>		
+	
+</h:form>
+</div>	
+</ui:define>
+</ui:composition>

@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated 9/08/2019 11:14:06 AM by Hibernate Tools 4.0.0 -->
+<hibernate-mapping>
+    <class name="com.unilever.bancoideas.modelo.Empleado" table="empleado" schema="public">
+        <id name="emplId" type="java.lang.Integer">
+            <column name="empl_id" />
+            <generator class="assigned" />
+        </id>
+        <many-to-one name="cargo" class="com.unilever.bancoideas.modelo.Cargo" fetch="select">
+            <column name="carg_id" not-null="true" />
+        </many-to-one>
+        <many-to-one name="persona" class="com.unilever.bancoideas.modelo.Persona" fetch="select">
+            <column name="pers_id" not-null="true" />
+        </many-to-one>
+        <property name="fechaIncio" type="java.util.Date">
+            <column name="fecha_incio" length="13" not-null="true" />
+        </property>
+        <property name="fechaFin" type="java.util.Date">
+            <column name="fecha_fin" length="13" />
+        </property>
+        <property name="codigo" type="java.lang.String">
+            <column name="codigo" length="100" not-null="true" />
+        </property>
+        <property name="usuCreador" type="java.lang.String">
+            <column name="usu_creador" length="100" not-null="true" />
+        </property>
+        <property name="usuModifica" type="java.lang.String">
+            <column name="usu_modifica" length="100" />
+        </property>
+        <property name="fechaCreacion" type="java.util.Date">
+            <column name="fecha_creacion" length="13" not-null="true" />
+        </property>
+        <property name="fechaModificacion" type="java.util.Date">
+            <column name="fecha_modificacion" length="13" />
+        </property>
+        <property name="estadoRegistro" type="java.lang.String">
+            <column name="estado_registro" length="1" not-null="true" />
+        </property>
+        <set name="nominaEmpleados" table="nomina_empleado" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="empleadoempl_id" not-null="true" />
+            </key>
+            <one-to-many class="com.unilever.bancoideas.modelo.NominaEmpleado" />
+        </set>
+    </class>
+</hibernate-mapping>

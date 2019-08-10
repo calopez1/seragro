@@ -1,0 +1,297 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:pe="http://primefaces.org/ui/extensions" 
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+<ui:define name="content">
+	
+		<f:view>
+			<p:ajaxStatus onstart="PF('statusDialog').show()" onsuccess="PF('statusDialog').hide()"/>               
+			<p:dialog modal="true" widgetVar="statusDialog" header="Loading"  draggable="false" closable="false">  
+   				<p:graphicImage value="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/ajaxloadingbar.gif" />   
+			</p:dialog>
+			
+			<!-- Expired session -->
+					<p:idleMonitor onactive="PF('sessionTimeOutDialog').show();" timeout="#{session.maxInactiveInterval * 1000}" />
+					<p:dialog modal="true" widgetVar="sessionTimeOutDialog" header="Expired session"  draggable="false" closable="false">  
+	   					<h:outputText value="The session is finished" />
+	                 	<input id="confirmBackToLogin" 
+	                 		type="button" 
+	                 		value="Sign in"
+	                    	onclick="window.location='#{facesContext.externalContext.requestContextPath}/index.jsp';" />   
+					</p:dialog>
+			
+			
+			<h:form id="formDialog">
+				<p:messages id="msg" />
+				<p:growl id="men"/>
+				
+				<div align="center">
+					<p:panel id="panelUsuario" header="Gestión de usuario" style="width:90%">							
+						
+						<div align="left">
+						
+						
+						<h:panelGrid columns="2" id="panelGrid" >
+						
+						
+						
+						<p:wizard id="wiz" widgetVar="wiz" nextLabel="Siguiente" backLabel="Atrás" flowListener="#{empleadoView.onFlowProcess}" style="align: left" >
+					        
+					        <p:tab id="personal" title="Personal" >
+					            <p:panel header="Información Personal">
+					                <p:messages />
+					                <h:panelGrid columns="2" columnClasses="label, value">
+					                
+					                <h:outputText value="Identificación: *" />
+					                    <p:inputText value="#{empleadoView.identificacion}" style="width:95%" disabled="#{empleadoView.deshabilitarModificacion}" required="false" label="Identificacion" type="number" >
+					                    	<p:ajax update="panelUsuario" listener="#{empleadoView.listener_identificacion}"/>
+					                    </p:inputText>
+					                    
+					                	<h:outputText value="Tipo Identificación: *" />
+					                	<p:selectOneMenu value="#{empleadoView.tipoIdentificacionSeleccionado}"  disabled="#{empleadoView.deshabilitarModificacion}"
+								                         effect="fade" filter="true" filterMatchMode="contains" required="false">
+								 
+								           	 <f:selectItem itemLabel="Seleccionar" itemValue="-1" noSelectionOption="false"/>
+          									 <f:selectItems value="#{empleadoView.lstTipoIdentificacionSelectItem}"/>
+								        </p:selectOneMenu>
+					                
+					                  	
+							
+									
+					               		<h:outputText value="Primer nombre: *" />
+					                    <p:inputText value="#{empleadoView.primerNombre}" style="width:95%" disabled="#{empleadoView.deshabilitarModificacion}" required="false" label="primerNombre" />
+					 
+										<h:outputText value="Segundo nombre: " />
+					                    <p:inputText value="#{empleadoView.segundoNombre}" style="width:95%" disabled="#{empleadoView.deshabilitarModificacion}" label="segundoNombre" />
+					 
+										<h:outputText value="Primer apellido: *" />
+					                    <p:inputText value="#{empleadoView.primerApellido}" style="width:95%" disabled="#{empleadoView.deshabilitarModificacion}" required="false" label="primerApellido" />
+					 
+					 					<h:outputText value="Segundo apellido:" />
+					                    <p:inputText value="#{empleadoView.segundoApellido}" style="width:95%" disabled="#{empleadoView.deshabilitarModificacion}" label="segundoApellido" />
+					 
+					                    
+					                </h:panelGrid>
+					            </p:panel>
+					        </p:tab>
+					 
+					        <p:tab id="address" title="Datos Empleado">
+					            <p:panel header="Información Empleado">
+					                <p:messages />
+					                
+					                <h:panelGrid columns="2" columnClasses="label, value">
+					                
+					                	<h:outputText value="Código:" />
+					                    <p:inputText value="#{empleadoView.codigoEmpleado}" required="false" label="Usuario" style="width:95%"/>					 					 
+					                
+					                <h:outputText value="Cargo: *" />
+					              	<p:selectOneMenu value="#{empleadoView.cargoSeleccionado}" 
+								                         effect="fade" filter="true" filterMatchMode="contains" required="false">
+								 
+								           	 <f:selectItem itemLabel="Seleccionar" itemValue="-1" noSelectionOption="false"/>
+          									 <f:selectItems value="#{empleadoView.lstCargoItem}"/>
+								   </p:selectOneMenu>
+					                
+					               <h:outputText value="Fecha de Inicio*:" />
+									<p:calendar id="txtFechaInicio" value="#{empleadoView.fechaInicio}" navigator="true" />
+									
+									<h:outputText value="Fecha de Fin*:" />
+									<p:calendar id="txtFechaFin" value="#{empleadoView.fechaFin}" navigator="true" />
+					                
+					                <h:outputText value="Estado:" />
+										<p:selectOneRadio id="city2" value="#{empleadoView.estadoRegistro}" layout="responsive" columns="5" style="width:100%">
+			          						 <f:selectItem itemLabel="Activo" itemValue="A" />
+			                       			 <f:selectItem itemLabel="Inactivo" itemValue="I" />            
+									    </p:selectOneRadio>	
+					                
+					                
+					                </h:panelGrid>
+					            </p:panel>
+					        </p:tab>
+					 
+					        <p:tab id="confirm" title="Confirmación">
+					            <p:panel header="Confirmar">
+					               
+					                <h:panelGrid id="confirmation" columns="3" columnClasses="grid,grid,grid">
+					                    <h:panelGrid columns="2" columnClasses="label, value">
+					                       
+					                    <h:outputText value="Tipo Identificación: *" />
+					                	<p:selectOneMenu value="#{empleadoView.tipoIdentificacionSeleccionado}"  styleClass="outputLabel"
+								                         effect="fade" filter="true" filterMatchMode="contains" required="true" disabled="true">
+								 
+								           	 <f:selectItem itemLabel="Seleccionar" itemValue="-1" noSelectionOption="true"/>
+          									 <f:selectItems value="#{empleadoView.lstTipoIdentificacionSelectItem}"/>
+								        </p:selectOneMenu>
+					                
+					                  	<h:outputText value="Identificación: *" />
+					                    <h:outputText value="#{empleadoView.identificacion}" styleClass="outputLabel" />
+					 
+					               		<h:outputText value="Primer nombre: *" />
+					                    <h:outputText value="#{empleadoView.primerNombre}" styleClass="outputLabel"/>
+					 
+										<h:outputText value="Segundo nombre: " />
+					                    <h:outputText value="#{empleadoView.segundoNombre}" styleClass="outputLabel"/>
+					 
+										<h:outputText value="Primer apellido: *" />
+					                    <h:outputText value="#{empleadoView.primerApellido}" styleClass="outputLabel" />
+					 
+					 					<h:outputText value="Segundo apellido:" />
+					                    <h:outputText value="#{empleadoView.segundoApellido}"  styleClass="outputLabel" />
+					 
+					                       
+					                    </h:panelGrid>
+					 
+					                    <h:panelGrid columns="2" columnClasses="label, value">
+							                   	<h:outputText value="Código empleado: *" />
+							                    <h:outputText value="#{empleadoView.codigoEmpleado}" styleClass="outputLabel"/>
+							 
+							               		<h:outputText value="Cargo: *" />
+							                	<p:selectOneMenu value="#{empleadoView.cargoSeleccionado}"  disabled="true" styleClass="outputLabel"
+										                         effect="fade" filter="true" filterMatchMode="contains" required="true">
+										 
+										           	 <f:selectItem itemLabel="Seleccionar" itemValue="-1" noSelectionOption="true"/>
+		          									 <f:selectItems value="#{empleadoView.lstCargoItem}" />
+										        </p:selectOneMenu>
+							                
+							                
+							                	<h:outputText value="Fecha de Inicio*:" />
+													<p:calendar id="txtFechaInicioMostrar" value="#{empleadoView.fechaInicio}" navigator="true" disabled="true"/>
+													
+													<h:outputText value="Fecha de Fin*:" />
+													<p:calendar id="txtFechaFinMostrao" value="#{empleadoView.fechaFin}" navigator="true" disabled="true"/>
+										        
+										        
+					                    </h:panelGrid>
+					 
+					 
+					 
+					                </h:panelGrid>
+					 
+					 <p:spacer height="10"></p:spacer>
+					 
+					 <p:separator></p:separator>
+					 
+					 		<div align="center">
+									<p:commandButton id="btnSave" binding="#{empleadoView.btnSave}" disabled="true" value="Guardar" action="#{empleadoView.action_save()}" update="formDialog" oncomplete="PF('tblEmpleados').filter(); PF('wiz').loadStep('personal',false)"/>
+									<p:commandButton id="btnClear" value="Limpiar" action="#{empleadoView.action_clear()}" update="formDialog" oncomplete="PF('wiz').loadStep('personal',false)" />
+							</div>
+							
+							 <p:spacer height="10"></p:spacer>
+							
+					            </p:panel>
+					        </p:tab>
+					    </p:wizard>
+						
+								
+						</h:panelGrid>
+												</div>
+						
+				</p:panel>
+				
+				
+				<p:spacer height="10"></p:spacer>
+				<p:panel id="panelDataTableUsuario" header="Consulta Empleados" style="width:90%" >
+				
+							<p:dataTable id="tblEmpleados"  widgetVar="tblEmpleados"  selectionMode="single" selection="#{empleadoView.empleadoSeleccionado}" rowKey="#{empleado.identificacionPersona}" value="#{empleadoView.data}" var="empleado" paginator="true" rows="10"
+							filterDelay="1000" paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}">
+										
+										<p:ajax event="rowSelect" listener="#{empleadoView.action_cargar_empleado}" update="formDialog" />		
+											
+										<f:facet name="{Exporters}">
+								            <div style="float:right;padding-top: 5px;">
+								                <h:commandLink>
+								                    <img src="../../images/excel.png"/>
+								                    <p:dataExporter type="xls" target="tblEmpleados" fileName="empleados" />
+								                </h:commandLink>
+								 
+								                <h:commandLink>
+								              		<img src="../../images/pdf.png"/>
+								                    <p:dataExporter type="pdf" target="tblEmpleados" fileName="empleados"/>
+								                </h:commandLink>
+								 
+								                <h:commandLink>
+								                	<img src="../../images/csv.png"/>
+								                    <p:dataExporter type="csv" target="tblEmpleados" fileName="empleado" />
+								                </h:commandLink>
+								 
+								                <h:commandLink>
+								                	<img src="../../images/xml.png"/>
+								                    <p:dataExporter type="xml" target="tblEmpleados" fileName="empleados" />
+								                </h:commandLink>
+								            </div>
+								        </f:facet>			
+								        
+										<p:column  filterBy="#{empleado.identificacionPersona}" sortBy="#{empleado.identificacionPersona}"  filterMatchMode="contains">
+											 <f:facet name="header">
+											<h:outputText value="Identificación"/>
+											</f:facet>
+											 <h:outputText value="#{empleado.identificacionPersona}"/>
+										</p:column>  	
+										
+										<p:column  filterBy="#{empleado.primerNombre}" sortBy="#{empleado.primerNombre}"  filterMatchMode="contains">
+											 <f:facet name="header">
+											<h:outputText value="Primer Nombre"/>
+											</f:facet>
+											 <h:outputText value="#{empleado.primerNombre}"/>
+										</p:column>  	
+										
+										<p:column  filterBy="#{empleado.segundoNombre}" sortBy="#{empleado.segundoNombre}"  filterMatchMode="contains">
+											 <f:facet name="header">
+											<h:outputText value="Segundo Nombre"/>
+											</f:facet>
+											 <h:outputText value="#{empleado.segundoNombre}"/>
+										</p:column>  	
+											
+										<p:column  filterBy="#{empleado.primerApellido}" sortBy="#{empleado.primerApellido}"  filterMatchMode="contains">
+											 <f:facet name="header">
+											<h:outputText value="Primer Apellido"/>
+											</f:facet>
+											 <h:outputText value="#{empleado.primerApellido}"/>
+										</p:column>  
+										
+										<p:column  filterBy="#{empleado.segundoApellido}" sortBy="#{empleado.segundoApellido}"  filterMatchMode="contains">
+											 <f:facet name="header">
+											<h:outputText value="Segundo Apellido"/>
+											</f:facet>
+											 <h:outputText value="#{empleado.segundoApellido}"/>
+										</p:column> 	
+										
+										<p:column  filterBy="#{empleado.codigo}" sortBy="#{empleado.codigo}"  filterMatchMode="contains">
+											 <f:facet name="header">
+											<h:outputText value="Código Empleado"/>
+											</f:facet>
+											 <h:outputText value="#{empleado.codigo}"/>
+										</p:column> 	
+										
+										<p:column  filterBy="#{empleado.nombreCarg}" sortBy="#{empleado.nombreCarg}"  filterMatchMode="contains">
+											 <f:facet name="header">
+											<h:outputText value="Cargo"/>
+											</f:facet>
+											 <h:outputText value="#{empleado.nombreCarg}"/>
+										</p:column> 	
+										
+										<p:column filterBy="#{empleado.estadoRegistro}" sortBy="#{empleado.estadoRegistro}" >
+											<f:facet name="header">
+												<h:outputText value="Estado"/>
+											</f:facet>
+											<f:facet name="filter">
+								                <p:selectOneMenu onchange="PF('tblEmpleados').filter()" styleClass="custom-filter">
+								                    <f:selectItem itemLabel="Seleccionar" itemValue="#{null}" noSelectionOption="true" />
+								                    <f:selectItem itemLabel="ACTIVO" itemValue="A" noSelectionOption="false" />
+								                    <f:selectItem itemLabel="INACTIVO" itemValue="I" noSelectionOption="false" />
+								                  
+								                </p:selectOneMenu>
+								            </f:facet>
+											 <h:outputText value="#{(empleado.estadoRegistro == 'A') ? 'ACTIVO':'INACTIVO'}"/>
+										</p:column>       			                    
+												                    
+							</p:dataTable>	
+						</p:panel>
+						</div>		
+			</h:form>
+		</f:view>
+			</ui:define>		
+		</ui:composition>	

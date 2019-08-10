@@ -1,0 +1,157 @@
+<jsp:root jsfc="f:view" xmlns:jsp="http://java.sun.com/JSP/Page"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:c="http://java.sun.com/jstl/core"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+   
+   <html>
+		<body>
+			<f:view>
+				<ui:composition>
+					<!-- Beging Menu -->
+				
+							<h:form>
+							
+								<p:megaMenu style="width:989px">  
+									<p:submenu label="Master" icon="ui-icon-pencil">  
+							            <p:column>
+							            
+							            	 								            	 <p:submenu label="Cargo">  
+								                    <p:menuitem value="Master Cargo" url="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/XHTML/cargo.xhtml" />  
+								               	 </p:submenu>
+											 								            	 <p:submenu label="Empleado">  
+								                    <p:menuitem value="Master Empleado" url="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/XHTML/empleado.xhtml" />  
+								               	 </p:submenu>
+											 								            	 <p:submenu label="TipoHoraExtra">  
+								                    <p:menuitem value="Master TipoHoraExtra" url="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/XHTML/tipoHoraExtra.xhtml" />  
+								               	 </p:submenu>
+											 								            	 <p:submenu label="Persona">  
+								                    <p:menuitem value="Master Persona" url="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/XHTML/persona.xhtml" />  
+								               	 </p:submenu>
+											 								            	 <p:submenu label="DetalleNominaEmpleado">  
+								                    <p:menuitem value="Master DetalleNominaEmpleado" url="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/XHTML/detalleNominaEmpleado.xhtml" />  
+								               	 </p:submenu>
+											 								            	 <p:submenu label="LiquidacionHoraExtra">  
+								                    <p:menuitem value="Master LiquidacionHoraExtra" url="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/XHTML/liquidacionHoraExtra.xhtml" />  
+								               	 </p:submenu>
+											 								            	 <p:submenu label="NominaEmpleado">  
+								                    <p:menuitem value="Master NominaEmpleado" url="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/XHTML/nominaEmpleado.xhtml" />  
+								               	 </p:submenu>
+											 								            	 <p:submenu label="Usuario">  
+								                    <p:menuitem value="Master Usuario" url="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/XHTML/usuario.xhtml" />  
+								               	 </p:submenu>
+											 								            	 <p:submenu label="LiquidacionNomina">  
+								                    <p:menuitem value="Master LiquidacionNomina" url="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/XHTML/liquidacionNomina.xhtml" />  
+								               	 </p:submenu>
+											 								            	 <p:submenu label="TipoUsuario">  
+								                    <p:menuitem value="Master TipoUsuario" url="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/XHTML/tipoUsuario.xhtml" />  
+								               	 </p:submenu>
+											 								            	 <p:submenu label="Departamento">  
+								                    <p:menuitem value="Master Departamento" url="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/XHTML/departamento.xhtml" />  
+								               	 </p:submenu>
+											 								            	 <p:submenu label="TipoIdentificacion">  
+								                    <p:menuitem value="Master TipoIdentificacion" url="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/XHTML/tipoIdentificacion.xhtml" />  
+								               	 </p:submenu>
+											 							            </p:column>
+							        </p:submenu>  
+															
+															
+							  
+							        <p:submenu label="Data Table" icon="ui-icon-document">
+							           <p:column>  
+							                								            	 <p:submenu label="Cargo">  
+								                    <p:menuitem value="Cargo" url="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/XHTML/cargoListDataTable.xhtml" />  
+								               	 </p:submenu>
+											 								            	 <p:submenu label="Empleado">  
+								                    <p:menuitem value="Empleado" url="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/XHTML/empleadoListDataTable.xhtml" />  
+								               	 </p:submenu>
+											 								            	 <p:submenu label="TipoHoraExtra">  
+								                    <p:menuitem value="TipoHoraExtra" url="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/XHTML/tipoHoraExtraListDataTable.xhtml" />  
+								               	 </p:submenu>
+											 								            	 <p:submenu label="Persona">  
+								                    <p:menuitem value="Persona" url="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/XHTML/personaListDataTable.xhtml" />  
+								               	 </p:submenu>
+											 								            	 <p:submenu label="DetalleNominaEmpleado">  
+								                    <p:menuitem value="DetalleNominaEmpleado" url="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/XHTML/detalleNominaEmpleadoListDataTable.xhtml" />  
+								               	 </p:submenu>
+											 								            	 <p:submenu label="LiquidacionHoraExtra">  
+								                    <p:menuitem value="LiquidacionHoraExtra" url="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/XHTML/liquidacionHoraExtraListDataTable.xhtml" />  
+								               	 </p:submenu>
+											 								            	 <p:submenu label="NominaEmpleado">  
+								                    <p:menuitem value="NominaEmpleado" url="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/XHTML/nominaEmpleadoListDataTable.xhtml" />  
+								               	 </p:submenu>
+											 								            	 <p:submenu label="Usuario">  
+								                    <p:menuitem value="Usuario" url="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/XHTML/usuarioListDataTable.xhtml" />  
+								               	 </p:submenu>
+											 								            	 <p:submenu label="LiquidacionNomina">  
+								                    <p:menuitem value="LiquidacionNomina" url="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/XHTML/liquidacionNominaListDataTable.xhtml" />  
+								               	 </p:submenu>
+											 								            	 <p:submenu label="TipoUsuario">  
+								                    <p:menuitem value="TipoUsuario" url="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/XHTML/tipoUsuarioListDataTable.xhtml" />  
+								               	 </p:submenu>
+											 								            	 <p:submenu label="Departamento">  
+								                    <p:menuitem value="Departamento" url="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/XHTML/departamentoListDataTable.xhtml" />  
+								               	 </p:submenu>
+											 								            	 <p:submenu label="TipoIdentificacion">  
+								                    <p:menuitem value="TipoIdentificacion" url="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/XHTML/tipoIdentificacionListDataTable.xhtml" />  
+								               	 </p:submenu>
+											 							            </p:column>
+							        </p:submenu>  
+							  
+							        
+							  
+							  
+							        <p:submenu label="Edit Data Table" icon="ui-icon-contact">  
+							            <p:column>  
+							                								            	 <p:submenu label="Cargo">  
+								                    <p:menuitem value="Cargo" url="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/XHTML/cargoListDataTableEditable.xhtml" />  
+								               	 </p:submenu>
+											 								            	 <p:submenu label="Empleado">  
+								                    <p:menuitem value="Empleado" url="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/XHTML/empleadoListDataTableEditable.xhtml" />  
+								               	 </p:submenu>
+											 								            	 <p:submenu label="TipoHoraExtra">  
+								                    <p:menuitem value="TipoHoraExtra" url="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/XHTML/tipoHoraExtraListDataTableEditable.xhtml" />  
+								               	 </p:submenu>
+											 								            	 <p:submenu label="Persona">  
+								                    <p:menuitem value="Persona" url="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/XHTML/personaListDataTableEditable.xhtml" />  
+								               	 </p:submenu>
+											 								            	 <p:submenu label="DetalleNominaEmpleado">  
+								                    <p:menuitem value="DetalleNominaEmpleado" url="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/XHTML/detalleNominaEmpleadoListDataTableEditable.xhtml" />  
+								               	 </p:submenu>
+											 								            	 <p:submenu label="LiquidacionHoraExtra">  
+								                    <p:menuitem value="LiquidacionHoraExtra" url="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/XHTML/liquidacionHoraExtraListDataTableEditable.xhtml" />  
+								               	 </p:submenu>
+											 								            	 <p:submenu label="NominaEmpleado">  
+								                    <p:menuitem value="NominaEmpleado" url="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/XHTML/nominaEmpleadoListDataTableEditable.xhtml" />  
+								               	 </p:submenu>
+											 								            	 <p:submenu label="Usuario">  
+								                    <p:menuitem value="Usuario" url="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/XHTML/usuarioListDataTableEditable.xhtml" />  
+								               	 </p:submenu>
+											 								            	 <p:submenu label="LiquidacionNomina">  
+								                    <p:menuitem value="LiquidacionNomina" url="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/XHTML/liquidacionNominaListDataTableEditable.xhtml" />  
+								               	 </p:submenu>
+											 								            	 <p:submenu label="TipoUsuario">  
+								                    <p:menuitem value="TipoUsuario" url="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/XHTML/tipoUsuarioListDataTableEditable.xhtml" />  
+								               	 </p:submenu>
+											 								            	 <p:submenu label="Departamento">  
+								                    <p:menuitem value="Departamento" url="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/XHTML/departamentoListDataTableEditable.xhtml" />  
+								               	 </p:submenu>
+											 								            	 <p:submenu label="TipoIdentificacion">  
+								                    <p:menuitem value="TipoIdentificacion" url="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/XHTML/tipoIdentificacionListDataTableEditable.xhtml" />  
+								               	 </p:submenu>
+											 							            </p:column>  
+							        </p:submenu>  
+						  
+						        	<p:menuitem value="Quit" url="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/index.jsp" icon="ui-icon-close" />  
+						    
+						    </p:megaMenu>  
+						</h:form>
+					
+					<!-- end menu -->
+				</ui:composition>
+			</f:view>
+		</body>
+	</html>
+</jsp:root>

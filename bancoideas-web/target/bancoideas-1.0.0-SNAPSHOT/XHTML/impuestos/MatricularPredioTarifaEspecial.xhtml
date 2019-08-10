@@ -1,0 +1,182 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+<ui:define name="content">
+
+<style type="text/css">
+	.ui-panel {
+		margin-top: 20px
+	}
+	
+	.ui-tabs-top{
+		background-color: #FFFFFF;
+	}
+</style>
+
+<div align="center">
+
+<h:form id="formMatricularPredioTarifaEspecial" >
+	
+	<p:growl id="messages" autoUpdate="true" closable="true" />
+
+	<p:panel id="pnlMatricularPredioTarifaEspecial" header="Matricular Predio Tarifa Especial" style="width: 90%;" >
+	
+		<h:panelGrid columns="2">
+		
+			<p:outputLabel value="Seleccione un Predio" for="txtPredio" />
+			<p:commandButton id="txtPredio"  icon="ui-icon-search" onclick="PF('dialogPredio').show();" />
+			
+			<p:outputLabel value="Municipio: " />        			        				
+			<p:outputLabel value="#{gluoMatricularPredioTarifaEspecialView.txtMunicipio}" />
+			
+			<p:outputLabel value="Barrio: " />    
+			<p:outputLabel value="#{gluoMatricularPredioTarifaEspecialView.txtBarrio}" />
+			
+			<p:outputLabel value="Dirección: " />    
+			<p:outputLabel value="#{gluoMatricularPredioTarifaEspecialView.txtDireccion}" />
+			
+			<p:outputLabel value="Comuna: " />    
+			<p:outputLabel value="#{gluoMatricularPredioTarifaEspecialView.txtComuna}" />
+			
+			<p:outputLabel value="Fecha Resolución" for="txtFechaResolucion" />
+			<p:calendar id="txtFechaResolucion" value="#{gluoMatricularPredioTarifaEspecialView.txtFechaResolucion}" navigator="true" />
+			
+			<p:outputLabel value="No. Resolución" />    
+			<p:inputText value="#{gluoMatricularPredioTarifaEspecialView.txtNumeroResolucion}" />
+			
+	        <p:outputLabel value="Porcentaje/TantoXMil " for="radPorcentajeTantoXMil" /> 
+	        <p:selectOneRadio id="radPorcentajeTantoXMil" value="#{gluoMatricularPredioTarifaEspecialView.selectPorcentajeTantoXMil}">
+	            <f:selectItem itemLabel="Porcentaje" itemValue="P" />
+	            <f:selectItem itemLabel="Tanto por mil" itemValue="M" />			            			            
+	        </p:selectOneRadio>
+	        
+	        <p:outputLabel value="Valor" />    
+			<p:inputText value="#{gluoMatricularPredioTarifaEspecialView.txtValor}" >
+				<f:convertNumber pattern="#,##0.00" />
+			    <p:ajax event="blur" update="@this" />
+			</p:inputText>
+		
+		</h:panelGrid>
+		
+		<br/>
+		
+		<p:commandButton id="btnGuardar" value="Guardar"
+				action="#{gluoMatricularPredioTarifaEspecialView.action_guardar}"
+				update=":formMatricularPredioTarifaEspecial" />
+		
+		<p:commandButton id="btnLimpiar" value="Limpiar"
+				action="#{gluoMatricularPredioTarifaEspecialView.action_limpiar}"
+				update=":formMatricularPredioTarifaEspecial" />
+		
+	</p:panel>
+	
+	
+	
+	<p:panel id="pnlListaMatricularPredioTarifaEspecial"
+		header="Listado Matriculas Predios Tarifa Especial" style="width: 90%; text-align: center;">	
+		
+		<p:dataTable id="pnlListaMatricularPredioTarifaEspecialDataTable" 
+			value="#{gluoMatricularPredioTarifaEspecialView.listMatricularPredioTarifaEspecialDTOs}"
+			var="matricularPredioTarifaEspecial" paginator="true" rows="10"
+			scrollable="true" scrollWidth="100%" scrollHeight="500"
+			selectionMode="single"
+			selection="#{gluoMatricularPredioTarifaEspecialView.selectedMatricularPredioTarifaEspecialDTO}"
+			rowKey="#{matricularPredioTarifaEspecial.mpteId}"
+			filterDelay="1000">
+			
+			<p:column headerText="Fecha Resolución"
+				filterBy="#{matricularPredioTarifaEspecial.fechaResolucion}"
+				style="text-align:center">
+				<p:outputLabel value="#{matricularPredioTarifaEspecial.fechaResolucion}" >
+					<f:convertDateTime type="date" pattern="dd-MM-yyyy"/>				
+				</p:outputLabel>									
+			</p:column>
+			
+			<p:column headerText="Número Resolución"
+				filterBy="#{matricularPredioTarifaEspecial.numeroResolucion}"
+				style="text-align:center">
+				<p:outputLabel value="#{matricularPredioTarifaEspecial.numeroResolucion}" />									
+			</p:column>
+			
+			<p:column headerText="Porcentaje/TantoXMil"
+				filterBy="#{matricularPredioTarifaEspecial.nombrePorcentajeTantoXMil}"
+				style="text-align:center">
+				<p:outputLabel value="#{matricularPredioTarifaEspecial.nombrePorcentajeTantoXMil}" />									
+			</p:column>
+			
+			<p:column headerText="Estado"
+				filterBy="#{matricularPredioTarifaEspecial.nombreActivo}"
+				style="text-align:center">
+				<p:outputLabel value="#{matricularPredioTarifaEspecial.nombreActivo}" />									
+			</p:column>
+			
+			<p:column headerText="Activar" style="text-align:center" >
+				<p:commandButton id="btnActivar" icon="ui-icon-cancel" title="Activar"
+					actionListener="#{gluoMatricularPredioTarifaEspecialView.action_activar}"					
+					update=":formMatricularPredioTarifaEspecial">
+					<f:attribute name="selectedMatricularPredioTarifaEspecialDTO"
+						value="#{matricularPredioTarifaEspecial}" />
+				</p:commandButton>								
+			</p:column>
+			
+		</p:dataTable>
+		
+	</p:panel>
+	
+	
+	
+	
+	<!-- ************************************************** -->
+	<!-- **			 		DIÁLOGO PREDIOS			   	 ** -->
+	<!-- ************************************************** -->
+	<p:dialog header="Predios"
+		widgetVar="dialogPredio" modal="true" height="400" width="90%">		
+		<div style="text-align: center;">			
+			<p:scrollPanel mode="native" style="width:100%; height:400px;">	
+						
+				<p:dataTable id="listaPredios" var="predio" paginator="true" rows="10"
+					value="#{gluoMatricularPredioTarifaEspecialView.listPredioDTOs}"					
+					selection="#{gluoMatricularPredioTarifaEspecialView.selectedPredioDTO}"
+					selectionMode="single"
+					rowKey="#{predio.predId}" 
+					filterDelay="1000">
+					
+					<p:ajax event="rowSelect"
+						listener="#{gluoMatricularPredioTarifaEspecialView.onRowSelectPredio}"	
+						update=":formMatricularPredioTarifaEspecial" />
+												
+					<p:column headerText="Municipio" filterBy="#{predio.nombreMunicipio}" 
+						filterMatchMode="contains">
+						<h:outputText value="#{predio.nombreMunicipio}" />
+					</p:column>
+					
+					<p:column headerText="Barrio" filterBy="#{predio.nombreBarrio}" 
+						filterMatchMode="contains">
+						<h:outputText value="#{predio.nombreBarrio}" />
+					</p:column>
+					
+					<p:column headerText="Comuna" filterBy="#{predio.comuna}" 
+						filterMatchMode="contains">
+						<h:outputText value="#{predio.comuna}" />
+					</p:column>
+					
+					<p:column headerText="Dirección" filterBy="#{predio.direccion}" 
+						filterMatchMode="contains">
+						<h:outputText value="#{predio.direccion}" />
+					</p:column>
+					
+							
+				</p:dataTable>
+			</p:scrollPanel>			
+		</div>			
+	</p:dialog>
+			
+		
+</h:form>
+		
+</div>
+</ui:define>
+</ui:composition>

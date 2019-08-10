@@ -1,0 +1,844 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+<ui:define name="content">
+<f:view>
+<script type="text/javascript">
+function start() {
+    PF('statusDialog').show();
+}
+
+function stop() {
+    PF('statusDialog').hide();
+}
+</script>
+<p:ajaxStatus onstart="PF('statusDialog').show()"
+	onsuccess="PF('statusDialog').hide()" />
+<p:dialog modal="true" widgetVar="statusDialog" header="Cargando"
+	draggable="false" closable="false">
+	<p:graphicImage
+		value="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/ajaxloadingbar.gif" />
+</p:dialog>
+
+<!-- Expired session -->
+<p:idleMonitor onactive="PF('sessionTimeOutDialog').show();"
+	timeout="#{session.maxInactiveInterval * 1000}" />
+<p:dialog modal="true" widgetVar="sessionTimeOutDialog"
+header="Sesión terminada" draggable="false" closable="false">
+<h:outputText value="La sesión ha finalizado" />
+<input id="confirmBackToLogin" type="button" value="Iniciar sesión"
+	onclick="window.location='#{facesContext.externalContext.requestContextPath}/index.jsp';" />
+</p:dialog>
+
+<div align="center">
+<h:form id="frmHomologacionCodigosCGR">
+	
+	<p:growl id="growl" autoUpdate="true" life="8000" />
+
+	<p:panel id="pnlCodigosRubrosPresupuestales" header="Homologación Códigos CGR" style="width: 90%;">
+		<h:panelGrid columns="4">
+		
+			<p:outputLabel value="Código Cgr:" for="txtCodigoCgr" />
+			<h:panelGrid columns="2">
+				<p:inputText id="txtCodigoCgr" binding="#{gluoCgrView.txtCodigoCgr}"
+					readonly="true" style="width: 230px;" />
+				<p:commandButton icon="ui-icon-search" onclick="PF('dlgCodigosCgr').show();" />
+			</h:panelGrid>
+			
+			<p:outputLabel value="Código Rubro:" for="txtCodigoRubro" />
+			<h:panelGrid columns="2">
+				<p:inputText id="txtCodigoRubro" binding="#{gluoCgrView.txtCodigoRubro}"
+					readonly="true" style="width: 230px;" />
+				<p:commandButton icon="ui-icon-search" onclick="PF('dlgCodigosRubros').show();" />
+			</h:panelGrid>		
+			
+			<p:outputLabel value="Recurso:" for="txtRecurso" />
+			<h:panelGrid columns="2">
+				<p:inputText id="txtRecurso" binding="#{gluoCgrView.txtRecurso}"
+					readonly="true" style="width: 230px;" />
+				<p:commandButton icon="ui-icon-search" onclick="PF('dlgRecurso').show();" />
+			</h:panelGrid>
+			
+			<p:outputLabel value="Orígen Ingresos:" for="txtOrigenIngresos" />
+			<h:panelGrid columns="2">
+				<p:inputText id="txtOrigenIngresos" binding="#{gluoCgrView.txtOrigenIngresos}"
+					readonly="true" style="width: 230px;" />
+				<p:commandButton icon="ui-icon-search" onclick="PF('dlgOrigenIngresos').show();" />
+			</h:panelGrid>	
+			
+			<p:outputLabel value="Destinación Recursos:" for="txtDestinacionRecursos" />
+			<h:panelGrid columns="2">
+				<p:inputText id="txtDestinacionRecursos" binding="#{gluoCgrView.txtDestinacionRecursos}"
+					readonly="true" style="width: 230px;" />
+				<p:commandButton icon="ui-icon-search" onclick="PF('dlgDestinacionRecursos').show();" />
+			</h:panelGrid>
+			
+			<p:outputLabel value="Situación Fondos:" for="txtSituacionFondos" />
+			<h:panelGrid columns="2">
+				<p:inputText id="txtSituacionFondos" binding="#{gluoCgrView.txtSituacionFondos}"
+					readonly="true" style="width: 230px;" />
+				<p:commandButton icon="ui-icon-search" onclick="PF('dlgSituacionFondos').show();" />
+			</h:panelGrid>		
+			
+			<p:outputLabel value="Entidad Recíproca:" for="txtEntidadReciproca" />
+			<h:panelGrid columns="2">
+				<p:inputText id="txtEntidadReciproca" binding="#{gluoCgrView.txtEntidadReciproca}"
+					readonly="true" style="width: 230px;" />
+				<p:commandButton icon="ui-icon-search" onclick="PF('dlgEntidadReciproca').show();" />
+			</h:panelGrid>
+			
+			<p:outputLabel value="Vigencia:" for="txtVigencia" />
+			<h:panelGrid columns="2">
+				<p:inputText id="txtVigencia" binding="#{gluoCgrView.txtVigencia}"
+					readonly="true" style="width: 230px;" />
+				<p:commandButton icon="ui-icon-search" onclick="PF('dlgVigencia').show();" />
+			</h:panelGrid>
+			
+			<p:outputLabel value="Finalidad Gasto:" for="txtFinalidadGasto" />
+			<h:panelGrid columns="2">
+				<p:inputText id="txtFinalidadGasto" binding="#{gluoCgrView.txtFinalidadGasto}"
+					readonly="true" style="width: 230px;" />
+				<p:commandButton icon="ui-icon-search" onclick="PF('dlgFinalidadGasto').show();" />
+			</h:panelGrid>
+			
+			<p:outputLabel value="Dependencia Territorial:" for="txtDependenciaTerritorial" />
+			<h:panelGrid columns="2">
+				<p:inputText id="txtDependenciaTerritorial" binding="#{gluoCgrView.txtDependenciaTerritorial}"
+					readonly="true" style="width: 230px;" />
+				<p:commandButton icon="ui-icon-search" onclick="PF('dlgDependenciaTerritorial').show();" />
+			</h:panelGrid>
+			
+			<h:outputText value="Acto Administrativo: " />
+			<h:panelGrid columns="2">
+				<p:inputText id="actoAdministrativoSeleccionado"
+					value="#{gluoCgrView.consecutivoActoAdministrativo}" 
+					readonly="true">
+					<p:ajax update="@this" />
+				</p:inputText>
+				<p:commandButton id="btnSearchActoAdm" icon="ui-icon-search"
+					action="#{gluoCgrView.action_new_acto_administrativo()}"
+					update="@([id$=panelGluoActoAdministrativo])"/>
+			</h:panelGrid>
+			
+		</h:panelGrid>		
+		
+		<br/>
+		<p:commandButton id="btnSave" value="Guardar"
+			action="#{gluoCgrView.action_save}" update=":frmHomologacionCodigosCGR" />
+			
+		<p:commandButton id="btnClear" value="Limpiar"
+			action="#{gluoCgrView.action_clear}" update=":frmHomologacionCodigosCGR" />
+				
+	</p:panel>
+	
+	<br/><br/>
+	<p:panel id="pnlListadoHomologacionesCodigosCGR" header="Listado Homologaciones Códigos CGR" style="width: 90%;">
+		<p:dataTable id="listadoHomologacionesDataTable"
+			var="homologacion"
+			value="#{gluoCgrView.listDptoXCgrDTOs}"
+			selection="#{gluoCgrView.selectedDptoXCgrDTO}"
+			selectionMode="single"
+			paginator="true"
+			rows="20"
+			filterDelay="2000"
+			rowKey="#{homologacion.dpcgId}">
+			
+			<p:column selectionMode="single" style="width: 4%;" />
+			
+			<p:ajax event="rowSelect"
+				listener="#{gluoCgrView.listener_homologacion_codigos_cgr}" update=":frmHomologacionCodigosCGR" />
+				
+			<p:column headerText="Año Fiscal" filterBy="#{homologacion.anhoFiscal}"
+				filterMatchMode="startsWith">
+				<p:outputLabel value="#{homologacion.anhoFiscal}" />
+			</p:column>
+			
+			<p:column headerText="Código CGR" filterBy="#{homologacion.codigoCuentaCgr}"
+				filterMatchMode="startsWith">
+				<p:outputLabel value="#{homologacion.codigoCuentaCgr}" />
+			</p:column>
+			
+			<p:column headerText="Descripción CGR" filterBy="#{homologacion.descripcionCuentaCgr}"
+				filterMatchMode="contains">
+				<p:outputLabel value="#{homologacion.descripcionCuentaCgr}" />
+			</p:column>
+			
+			<p:column headerText="Código Dpto" filterBy="#{homologacion.codigoCuentaDpto}"
+				filterMatchMode="startsWith">
+				<p:outputLabel value="#{homologacion.codigoCuentaDpto}" />
+			</p:column>
+			
+			<p:column headerText="Descripción Dpto" filterBy="#{homologacion.descripcionCuentaDpto}"
+				filterMatchMode="contains">
+				<p:outputLabel value="#{homologacion.descripcionCuentaDpto}" />
+			</p:column>
+			
+		</p:dataTable>
+	</p:panel>
+	
+	
+	<!-- ************************************************** -->
+	<!-- **			DIÁLOGO RUBROS PRESUPUESTO 			 **-->
+	<!-- ************************************************** -->
+	<p:dialog widgetVar="dlgCodigosRubros" header="Diálogo Rubros Presupuesto"
+		modal="true" draggable="false" closable="true" height="400px" width="90%">
+		
+		<p:scrollPanel mode="native">		
+		<p:dataTable id="codigosRubrosDataTable"
+			var="rubro"
+			value="#{gluoCgrView.listDetallePresupuestos}"
+			selection="#{gluoCgrView.selectedDetallePresupuesto}"			
+			selectionMode="single"
+			paginator="true"
+			rows="20"
+			filterDelay="2000"
+			rowKey="#{rubro.dptoId}">
+			
+			
+			<p:column selectionMode="single" style="width: 4%;" />
+			
+			<p:ajax event="rowSelect"
+				listener="#{gluoCgrView.listener_rubro_presupuesto}" update=":frmHomologacionCodigosCGR" />
+			
+			<p:column headerText="Código Cuenta" filterBy="#{rubro.codigoCuenta}"
+				filterMatchMode="startsWith">
+				<p:outputLabel value="#{rubro.codigoCuenta}" />
+			</p:column>
+			
+			<p:column headerText="Descripción" filterBy="#{rubro.descripcionCuenta}"
+				filterMatchMode="contains">
+				<p:outputLabel value="#{rubro.descripcionCuenta}" />
+			</p:column>
+			
+			<p:column headerText="Valor Inicial" filterBy="#{rubro.valorInicial}"
+				filterMatchMode="startsWith">
+				<div align="right">
+				<p:outputLabel value="#{rubro.valorInicial}" >
+					<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+				</p:outputLabel>
+				</div>
+			</p:column>
+			
+			<p:column headerText="Activo" filterBy="#{rubro.activo}"
+				filterMatchMode="contains">
+				<div align="center">
+				<p:outputLabel value="#{(rubro.activo == 'A' ? 'Activo' : 'Inactivo')}" />
+				</div>
+			</p:column>
+			
+		</p:dataTable>
+		</p:scrollPanel>
+		
+	</p:dialog><!-- FIN DIÁLOGO RUBROS PRESUPUESTO -->
+	
+	<!-- ************************************************** -->
+	<!-- **				DIÁLOGO CODIGOS CGR 			 **-->
+	<!-- ************************************************** -->
+	<p:dialog widgetVar="dlgCodigosCgr" header="Diálogo Códigos Cgr"
+		modal="true" draggable="false" closable="true" height="400px" width="90%">
+		
+		<p:scrollPanel mode="native">
+		<p:dataTable id="codigosCgrDataTable"
+			var="cgr"
+			value="#{gluoCgrView.listCgrDTO}"
+			selection="#{gluoCgrView.selectedCgrDTO}"			
+			selectionMode="single"
+			paginator="true"
+			rows="20"
+			filterDelay="2000"
+			rowKey="#{cgr.gcgrId}">
+		
+			<p:column selectionMode="single" style="width: 4%;" />
+			
+			<p:ajax event="rowSelect"
+				listener="#{gluoCgrView.listener_codigo_cgr}" update=":frmHomologacionCodigosCGR" />
+			
+			<p:column headerText="Código" filterBy="#{cgr.codigo}"
+				filterMatchMode="startsWith">
+				<p:outputLabel value="#{cgr.codigo}" />
+			</p:column>
+			
+			<p:column headerText="Descripción" filterBy="#{cgr.nombre}"
+				filterMatchMode="contains">
+				<p:outputLabel value="#{cgr.nombre}" />
+			</p:column>
+			
+			<p:column headerText="Activo" filterBy="#{cgr.activo}"
+				filterMatchMode="contains">
+				<div align="center">
+				<p:outputLabel value="#{(cgr.activo == 'A' ? 'Activo' : 'Inactivo')}" />
+				</div>
+			</p:column>
+			
+		</p:dataTable>
+		</p:scrollPanel>
+		
+	</p:dialog><!-- FIN DIÁLOGO CODIGOS CGR -->	
+	
+	<!-- ************************************************** -->
+	<!-- **				DIÁLOGO RECURSOS 			 	 **-->
+	<!-- ************************************************** -->
+	<p:dialog widgetVar="dlgRecurso" header="Diálogo Recursos"
+		modal="true" draggable="false" closable="true" height="400px" width="90%">
+		
+		<p:scrollPanel mode="native">
+		<p:dataTable id="recursoDataTable"
+			var="recurso"
+			value="#{gluoCgrView.listRecursoDTOs}"
+			selection="#{gluoCgrView.selectedRecursoDTO}"			
+			selectionMode="single"
+			paginator="true"
+			rows="20"
+			filterDelay="2000"
+			rowKey="#{recurso.recuId}">
+			
+			<p:column selectionMode="single" style="width: 4%;" />
+			
+			<p:ajax event="rowSelect"
+				listener="#{gluoCgrView.listener_recurso}" update=":frmHomologacionCodigosCGR" />
+				
+			<p:column headerText="Código" filterBy="#{recurso.codigo}"
+				filterMatchMode="startsWith">
+				<p:outputLabel value="#{recurso.codigo}" />
+			</p:column>
+			
+			<p:column headerText="Nombre" filterBy="#{recurso.nombre}"
+				filterMatchMode="contains">
+				<p:outputLabel value="#{recurso.nombre}" />
+			</p:column>
+			
+			<p:column headerText="Activo" filterBy="#{recurso.activo}"
+				filterMatchMode="contains">
+				<div align="center">
+				<p:outputLabel value="#{(recurso.activo == 'A' ? 'Activo' : 'Inactivo')}" />
+				</div>
+			</p:column>
+			
+		</p:dataTable>
+		</p:scrollPanel>
+		
+	</p:dialog> <!-- FIN DIÁLOGO RECURSOS -->
+	
+	<!-- ************************************************** -->
+	<!-- **			  DIÁLOGO ORIGEN INGRESOS 		     **-->
+	<!-- ************************************************** -->
+	<p:dialog widgetVar="dlgOrigenIngresos" header="Diálogo Origen Ingresos"
+		modal="true" draggable="false" closable="true" height="400px" width="90%">
+		
+		<p:scrollPanel mode="native">
+		<p:dataTable id="origenIngresosDataTable"
+			var="origen"
+			value="#{gluoCgrView.listOrigenIngresosDTOs}"
+			selection="#{gluoCgrView.selectedOrigenIngresosDTO}"			
+			selectionMode="single"
+			paginator="true"
+			rows="20"
+			filterDelay="2000"
+			rowKey="#{origen.oingId}">
+			
+			<p:column selectionMode="single" style="width: 4%;" />
+			
+			<p:ajax event="rowSelect"
+				listener="#{gluoCgrView.listener_origen_ingresos}" update=":frmHomologacionCodigosCGR" />
+				
+			<p:column headerText="Código" filterBy="#{origen.codigo}"
+				filterMatchMode="startsWith">
+				<p:outputLabel value="#{origen.codigo}" />
+			</p:column>
+			
+			<p:column headerText="Nombre" filterBy="#{origen.nombre}"
+				filterMatchMode="contains">
+				<p:outputLabel value="#{origen.nombre}" />
+			</p:column>
+			
+			<p:column headerText="Activo" filterBy="#{origen.activo}"
+				filterMatchMode="contains">
+				<div align="center">
+				<p:outputLabel value="#{(origen.activo == 'A' ? 'Activo' : 'Inactivo')}" />
+				</div>
+			</p:column>
+			
+		</p:dataTable>		
+		</p:scrollPanel>
+		
+	</p:dialog><!-- FIN DIÁLOGO ORIGEN INGRESOS -->
+	
+	<!-- ************************************************** -->
+	<!-- **			DIÁLOGO DESTINACIÓN RECURSOS 		 **-->
+	<!-- ************************************************** -->
+	<p:dialog widgetVar="dlgDestinacionRecursos" header="Diálogo Destinación Recursos"
+		modal="true" draggable="false" closable="true" height="400px" width="90%">
+		
+		<p:scrollPanel mode="native">
+		<p:dataTable id="destinacionRecursosDataTable"
+			var="destinacion"
+			value="#{gluoCgrView.listDestinacionRecursosDTO}"
+			selection="#{gluoCgrView.selectedDestinacionRecursosDTO}"			
+			selectionMode="single"
+			paginator="true"
+			rows="20"
+			filterDelay="2000"
+			rowKey="#{destinacion.dereId}">
+			
+			<p:column selectionMode="single" style="width: 4%;" />
+			
+			<p:ajax event="rowSelect"
+				listener="#{gluoCgrView.listener_destinacion_recursos}" update=":frmHomologacionCodigosCGR" />
+				
+			<p:column headerText="Código" filterBy="#{destinacion.codigo}"
+				filterMatchMode="startsWith">
+				<p:outputLabel value="#{destinacion.codigo}" />
+			</p:column>
+			
+			<p:column headerText="Nombre" filterBy="#{destinacion.nombre}"
+				filterMatchMode="contains">
+				<p:outputLabel value="#{destinacion.nombre}" />
+			</p:column>
+			
+			<p:column headerText="Activo" filterBy="#{destinacion.activo}"
+				filterMatchMode="contains">
+				<div align="center">
+				<p:outputLabel value="#{(destinacion.activo == 'A' ? 'Activo' : 'Inactivo')}" />
+				</div>
+			</p:column>
+			
+		</p:dataTable>		
+		</p:scrollPanel>
+		
+	</p:dialog><!-- FIN DIÁLOGO DESTINACIÓN RECURSOS -->
+	
+	<!-- ************************************************** -->
+	<!-- **			DIÁLOGO SITUACIÓN FONDOS 		     ** -->
+	<!-- ************************************************** -->
+	<p:dialog widgetVar="dlgSituacionFondos" header="Diálogo Situación Fondos"
+		modal="true" draggable="false" closable="true" height="400px" width="90%">
+		
+		<p:scrollPanel mode="native">
+		<p:dataTable id="situacionFondosDataTable"
+			var="situacion"
+			value="#{gluoCgrView.listSituacionFondosDTOs}"
+			selection="#{gluoCgrView.selectedSituacionFondosDTO}"			
+			selectionMode="single"
+			paginator="true"
+			rows="20"
+			filterDelay="2000"
+			rowKey="#{situacion.sifoId}">
+			
+			<p:column selectionMode="single" style="width: 4%;" />
+			
+			<p:ajax event="rowSelect"
+				listener="#{gluoCgrView.listener_situacion_fondos}" update=":frmHomologacionCodigosCGR" />
+				
+			<p:column headerText="Código" filterBy="#{situacion.codigo}"
+				filterMatchMode="startsWith">
+				<p:outputLabel value="#{situacion.codigo}" />
+			</p:column>
+			
+			<p:column headerText="Nombre" filterBy="#{situacion.nombre}"
+				filterMatchMode="contains">
+				<p:outputLabel value="#{situacion.nombre}" />
+			</p:column>
+			
+			<p:column headerText="Activo" filterBy="#{situacion.activo}"
+				filterMatchMode="contains">
+				<div align="center">
+				<p:outputLabel value="#{(situacion.activo == 'A' ? 'Activo' : 'Inactivo')}" />
+				</div>
+			</p:column>
+			
+		</p:dataTable>		
+		</p:scrollPanel>
+		
+	</p:dialog><!-- FIN DIÁLOGO SITUACIÓN FONDOS -->
+	
+	<!-- ************************************************** -->
+	<!-- **			DIÁLOGO ENTIDAD RECÍPROCA 		     ** -->
+	<!-- ************************************************** -->
+	<p:dialog widgetVar="dlgEntidadReciproca" header="Diálogo Entidad Recíproca"
+		modal="true" draggable="false" closable="true" height="400px" width="90%">
+		
+		<p:scrollPanel mode="native">
+		<p:dataTable id="entidadReciprocaDataTable"
+			var="entidad"
+			value="#{gluoCgrView.listEntidadReciprocaDTOs}"
+			selection="#{gluoCgrView.selectedEntidadReciprocaDTO}"			
+			selectionMode="single"
+			paginator="true"
+			rows="20"
+			filterDelay="2000"
+			rowKey="#{entidad.enreId}">
+			
+			<p:column selectionMode="single" style="width: 4%;" />
+			
+			<p:ajax event="rowSelect"
+				listener="#{gluoCgrView.listener_entidad_reciproca}" update=":frmHomologacionCodigosCGR" />
+				
+			<p:column headerText="Código" filterBy="#{entidad.codigo}"
+				filterMatchMode="startsWith">
+				<p:outputLabel value="#{entidad.codigo}" />
+			</p:column>
+			
+			<p:column headerText="Nombre" filterBy="#{entidad.nombre}"
+				filterMatchMode="contains">
+				<p:outputLabel value="#{entidad.nombre}" />
+			</p:column>
+			
+			<p:column headerText="Activo" filterBy="#{entidad.activo}"
+				filterMatchMode="contains">
+				<div align="center">
+				<p:outputLabel value="#{(entidad.activo == 'A' ? 'Activo' : 'Inactivo')}" />
+				</div>
+			</p:column>
+			
+		</p:dataTable>		
+		</p:scrollPanel>
+		
+	</p:dialog><!-- FIN DIÁLOGO ENTIDAD RECÍPROCA -->
+	
+	<!-- ************************************************** -->
+	<!-- **				DIÁLOGO VIGENCIA 		         ** -->
+	<!-- ************************************************** -->
+	<p:dialog widgetVar="dlgVigencia" header="Diálogo Vigencia"
+		modal="true" draggable="false" closable="true" height="400px" width="90%">
+		
+		<p:scrollPanel mode="native">
+		<p:dataTable id="vigenciaDataTable"
+			var="vigencia"
+			value="#{gluoCgrView.listVigenciaDTOs}"
+			selection="#{gluoCgrView.selectedVigenciaDTO}"			
+			selectionMode="single"
+			paginator="true"
+			rows="20"
+			filterDelay="2000"
+			rowKey="#{vigencia.vigeId}">
+			
+			<p:column selectionMode="single" style="width: 4%;" />
+			
+			<p:ajax event="rowSelect"
+				listener="#{gluoCgrView.listener_vigencia}" update=":frmHomologacionCodigosCGR" />
+				
+			<p:column headerText="Código" filterBy="#{vigencia.codigo}"
+				filterMatchMode="startsWith">
+				<p:outputLabel value="#{vigencia.codigo}" />
+			</p:column>
+			
+			<p:column headerText="Nombre" filterBy="#{vigencia.nombre}"
+				filterMatchMode="contains">
+				<p:outputLabel value="#{vigencia.nombre}" />
+			</p:column>
+			
+			<p:column headerText="Activo" filterBy="#{vigencia.activo}"
+				filterMatchMode="contains">
+				<div align="center">
+				<p:outputLabel value="#{(vigencia.activo == 'A' ? 'Activo' : 'Inactivo')}" />
+				</div>
+			</p:column>
+			
+		</p:dataTable>		
+		</p:scrollPanel>
+		
+	</p:dialog><!-- FIN DIÁLOGO VIGENCIA -->
+	
+	<!-- ************************************************** -->
+	<!-- **			DIÁLOGO FINALIDAD GASTO 		     ** -->
+	<!-- ************************************************** -->
+	<p:dialog widgetVar="dlgFinalidadGasto" header="Diálogo Finalidad Gasto"
+		modal="true" draggable="false" closable="true" height="400px" width="90%">
+		
+		<p:scrollPanel mode="native">
+		<p:dataTable id="finalidadGastoDataTable"
+			var="finalidad"
+			value="#{gluoCgrView.listFinalidadGastoDTOs}"
+			selection="#{gluoCgrView.selectedFinalidadGastoDTO}"			
+			selectionMode="single"
+			paginator="true"
+			rows="20"
+			filterDelay="2000"
+			rowKey="#{finalidad.figaId}">
+			
+			<p:column selectionMode="single" style="width: 4%;" />
+			
+			<p:ajax event="rowSelect"
+				listener="#{gluoCgrView.listener_finalidad_gasto}" update=":frmHomologacionCodigosCGR" />
+				
+			<p:column headerText="Código" filterBy="#{finalidad.codigo}"
+				filterMatchMode="startsWith">
+				<p:outputLabel value="#{finalidad.codigo}" />
+			</p:column>
+			
+			<p:column headerText="Nombre" filterBy="#{finalidad.nombre}"
+				filterMatchMode="contains">
+				<p:outputLabel value="#{finalidad.nombre}" />
+			</p:column>
+			
+			<p:column headerText="Activo" filterBy="#{finalidad.activo}"
+				filterMatchMode="contains">
+				<div align="center">
+				<p:outputLabel value="#{(finalidad.activo == 'A' ? 'Activo' : 'Inactivo')}" />
+				</div>
+			</p:column>
+			
+		</p:dataTable>		
+		</p:scrollPanel>
+		
+	</p:dialog><!-- FIN DIÁLOGO FINALIDAD GASTO -->
+	
+	<!-- ************************************************** -->
+	<!-- **		  DIÁLOGO DEPENDENCIA TERRITORIAL 		 ** -->
+	<!-- ************************************************** -->
+	<p:dialog widgetVar="dlgDependenciaTerritorial" header="Diálogo Dependencia Territorial"
+		modal="true" draggable="false" closable="true" height="400px" width="90%">
+		
+		<p:scrollPanel mode="native">
+		<p:dataTable id="dependenciaTerritorialDataTable"
+			var="dependencia"
+			value="#{gluoCgrView.listDependenciaTerritorialDTOs}"
+			selection="#{gluoCgrView.selectedDependenciaTerritorialDTO}"			
+			selectionMode="single"
+			paginator="true"
+			rows="20"
+			filterDelay="2000"
+			rowKey="#{dependencia.deteId}">
+			
+			<p:column selectionMode="single" style="width: 4%;" />
+			
+			<p:ajax event="rowSelect"
+				listener="#{gluoCgrView.listener_dependencia_territorial}" update=":frmHomologacionCodigosCGR" />
+				
+			<p:column headerText="Código" filterBy="#{dependencia.codigo}"
+				filterMatchMode="startsWith">
+				<p:outputLabel value="#{dependencia.codigo}" />
+			</p:column>
+			
+			<p:column headerText="Nombre" filterBy="#{dependencia.nombre}"
+				filterMatchMode="contains">
+				<p:outputLabel value="#{dependencia.nombre}" />
+			</p:column>
+			
+			<p:column headerText="Activo" filterBy="#{dependencia.activo}"
+				filterMatchMode="contains">
+				<div align="center">
+				<p:outputLabel value="#{(dependencia.activo == 'A' ? 'Activo' : 'Inactivo')}" />
+				</div>
+			</p:column>
+			
+		</p:dataTable>		
+		</p:scrollPanel>
+		
+	</p:dialog><!-- FIN DIÁLOGO DEPENDENCIA TERRITORIAL -->
+	
+	<!-- ************************************************** -->
+	<!-- **			DIÁLOGO ACTO ADMINISTRATIVO          ** -->
+	<!-- ************************************************** -->
+	<p:dialog id="dialogGluoActoAdministrativo" widgetVar="dlgActoAdministrativo"
+		draggable="true" closable="true" modal="true" resizable="false"
+		height="500" width="90%" position="center" header="Acto Administrativo">
+		
+		<p:messages id="msgDialogActoAdmn" autoUpdate="true" showDetail="false" closable="true" />
+		
+		<p:tabView id="crearConsultarActoAdministrativoTab">
+	
+			<p:tab id="crearActoAdministrativoTabTraslado" title="Crear un acto administrativo">
+				
+			<p:scrollPanel mode="native" style="width:850px;height:400px">
+			<p:panel id="panelGluoActoAdministrativo">
+				<h:panelGrid columns="2" id="panelGrid">
+				
+					<h:outputText id="msgNombreOperacion" value=" Nombre de la operación" />
+					<p:inputText id="txtNombreOperacion" disabled="false" style="width: 200px"
+						binding="#{gluoCgrView.txtNombreOperacion}" />
+						
+					<h:outputText id="msgFundamentoLegal" value=" Fundamento Legal" />
+					<h:panelGrid columns="1" id="panelGridFundamento">
+						<p:inputTextarea id="txtFundamentoLegal" rows="5" cols="50"
+							counter="displayFundamento" maxlength="2000"
+							counterTemplate="{0} caracteres restantes." disabled="false"
+							autoResize="false"
+							binding="#{gluoCgrView.txtFundamentoLegal}" />
+						<h:outputText id="displayFundamento" />
+					</h:panelGrid>
+
+					<h:outputText id="msgRazon" value=" Razon" />
+					<h:panelGrid columns="1" id="panelGridRazon">
+						<p:inputTextarea id="txtRazon" rows="5" cols="50"
+							counter="displayRazon" maxlength="2000"
+							counterTemplate="{0} caracteres restantes." disabled="false"
+							autoResize="false"
+							binding="#{gluoCgrView.txtRazon}" />
+						<h:outputText id="displayRazon" />
+					</h:panelGrid>	
+					<h:panelGrid columns="2" id="panelGridEmpresa">		
+					<h:outputText id="msgEmpresa"
+						value=" Empresa" />
+					<p:inputText id="txtEmpresa" disabled="true"
+						binding="#{gluoCgrView.txtEmprId_GluoEmpresa}" />
+					</h:panelGrid>
+					<h:panelGrid columns="2" id="panelGridAnoFiscal">	
+					<h:outputText id="msgAnoFiscal"
+						value=" Año Fiscal" />
+					<p:inputText id="txtAnoFiscal" disabled="true"
+						binding="#{gluoCgrView.txtAnoFiscal}" />	
+					</h:panelGrid>	
+					<h:outputText id="msgFechaActoAdministrativo"
+						value=" Fecha del Acto Administrativo" />
+					<p:calendar showOn="button" navigator="true" locale="en" size="30"
+						binding="#{gluoCgrView.txtFechaActoAdministrativo}">
+						<p:ajax event="dateSelect"
+							listener="#{gluoCgrView.listener_txtFechaActoAdministrativo}" />		
+					</p:calendar>
+					
+					<h:outputText value="Archivos de soporte:"/>
+					<p:fileUpload 
+						mode="advanced"
+						auto="true" 
+						dragDropSupport="true"
+                      		allowTypes="/(\.|\/)(gif|jpe?g|png|pdf|doc|docx|xls|xlsx)$/" 
+                      		cancelLabel="Cancelar"
+                      		fileLimit="1"
+                      		fileLimitMessage="Número máximo de archivos soportados: 1"
+                      		invalidFileMessage="Tipo de archivo no válido. Solo pdf, Doc(x), Xls(x), gif, jpg, png )"
+                      		invalidSizeMessage="Archivo demasiado grande. Tamaño máximo: 3MB"
+                      		label="Adicionar un nuevo archivo"
+                      		sizeLimit="3145728"
+                      		uploadLabel="Cargar"
+                      		fileUploadListener="#{gluoCgrView.fileUploadListener}"
+                      		update="panelGluoActoAdministrativo"
+                      		process="panelGluoActoAdministrativo"/>
+									
+				</h:panelGrid>
+				
+				<p:dataTable id="pnlTablaArchivosSoporte"
+       				value="#{gluoCgrView.archivosDeSoporteDTO}"
+       				var="archivo"
+       				rendered="#{gluoCgrView.cantidadArchivosSoporte > 0}"
+       				style="width: 100%;">
+       				
+       				<p:column headerText="Archivo" style="width: 80%">
+       					<p:outputLabel value="#{archivo.descripcion}" />
+       				</p:column>
+       				
+       				<p:column headerText="Borrar" style="width: 15%">
+       					<p:commandButton icon="ui-icon-close"  
+       						action="#{gluoCgrView.action_eliminarArchivoSoporte(archivo)}"
+       						update="@([id$=panelGluoActoAdministrativo])"/>
+       				</p:column>
+       				
+       				<p:column headerText="Descargar" style="width: 15%">
+       					<p:commandButton ajax="false" onclick="PrimeFaces.monitorDownload(start, stop);" icon="ui-icon-arrowstop-1-s">
+					    <p:fileDownload value="#{gluoCgrView.getDocumentoAdjuntoSoportePresupuesto(archivo)}" 
+					    	contentDisposition="attachment" />
+					</p:commandButton>
+
+            				</p:column>
+                         				
+                     </p:dataTable>
+			</p:panel>
+			</p:scrollPanel>
+			<p:panel id="panelBotones">
+				<div align="center">
+					<p:commandButton id="btnSave"
+						binding="#{gluoCgrView.btnSaveActoAdministrativo}" value="Guardar"
+						action="#{gluoCgrView.action_save_acto_administrativo()}"
+						update="panelGluoActoAdministrativo, @([id$=panelGluoActoAdministrativo]) " />
+					<p:commandButton id="btnClear" value="Limpiar"
+						action="#{gluoCgrView.action_clear_acto_administrativo()}"
+						update="@([id$=panelGluoActoAdministrativo])" />
+					<p:commandButton id="btnExit" value="Salir"
+						action="#{gluoCgrView.action_closeDialog_acto_administrativo()}"
+						update="panelGluoActoAdministrativo" />
+				</div>
+			</p:panel>
+				
+			</p:tab>
+			
+			
+			<p:tab id="consultarActoAdministrativoTabTraslado" title="Consultar un acto administrativo existente">
+				<p:scrollPanel mode="native" style="width:100%; height:400px">		
+					<p:dataTable id="dataTableActoAdministrativoTraslado" value="#{gluoCgrView.dataActoAdministrativo}" 
+						emptyMessage="No se han encontrado actos administrativos registrados"
+						rows="5" var="gluoActoAdministrativo" paginator="true" rowsPerPageTemplate="5,10,15"
+						reflow="true" rowKey="#{gluoActoAdministrativo.acadId}" selection="#{gluoCgrView.actoAdministrativoSeleccionado}"
+						filterDelay="1000">
+				
+                     		<p:column selectionMode="single" style="width:5%; text-align:center" />
+						
+						<p:column filterBy="#{gluoActoAdministrativo.nombreOperacion}"
+							sortBy="#{gluoActoAdministrativo.nombreOperacion}">
+							<f:facet name="header">
+								<h:outputText value="Nombre de la Operacion" />
+							</f:facet>
+							<h:outputText value="#{gluoActoAdministrativo.nombreOperacion}" />
+						</p:column>
+						
+						<p:column filterBy="#{gluoActoAdministrativo.consecutivo}"
+							sortBy="#{gluoActoAdministrativo.consecutivo}">
+							<f:facet name="header">
+								<h:outputText value="Consecutivo" />
+							</f:facet>
+							<h:outputText value="#{gluoActoAdministrativo.consecutivo}" />
+						</p:column>
+
+						<p:column
+							filterBy="#{gluoActoAdministrativo.fechaActoAdministrativo}"
+							sortBy="#{gluoActoAdministrativo.fechaActoAdministrativo}">
+							<f:facet name="header">
+								<h:outputText value="Fecha del Acto Administrativo" />
+							</f:facet>
+							<h:outputText
+								value="#{gluoActoAdministrativo.fechaActoAdministrativo}" />
+						</p:column>
+
+						<p:column filterBy="#{gluoActoAdministrativo.fundamentoLegal}"
+							sortBy="#{gluoActoAdministrativo.fundamentoLegal}">
+							<f:facet name="header">
+								<h:outputText value="Fundamento Legal" />
+							</f:facet>
+							<h:outputText value="#{gluoActoAdministrativo.fundamentoLegal}" />
+						</p:column>
+
+						<p:column filterBy="#{gluoActoAdministrativo.razon}"
+							sortBy="#{gluoActoAdministrativo.razon}">
+							<f:facet name="header">
+								<h:outputText value="Razon" />
+							</f:facet>
+							<h:outputText value="#{gluoActoAdministrativo.razon}" />
+						</p:column>														
+
+						<p:column filterBy="#{gluoActoAdministrativo.nombreEmpresa}"
+							sortBy="#{gluoActoAdministrativo.nombreEmpresa}">
+							<f:facet name="header">
+								<h:outputText value="Empresa" />
+							</f:facet>
+							<h:outputText
+								value="#{gluoActoAdministrativo.nombreEmpresa}" />
+						</p:column>
+	
+					</p:dataTable>
+					
+					<br />
+			
+					<p:panel id="panelBotonAA" style="border: none;">
+						<div align="center">
+							<p:commandButton value="Seleccionar"
+								icon="ui-icon-plus" oncomplete="PF('dlgActoAdministrativo').hide();" 
+								actionListener="#{gluoCgrView.action_seleccionar_acto_administrativo}"
+								update="@([id$=actoAdministrativoSeleccionado])"/>
+						</div>
+					</p:panel>
+						
+					</p:scrollPanel>
+					
+			</p:tab>
+		</p:tabView>
+			
+	</p:dialog>
+	
+</h:form>
+</div>
+
+</f:view>
+</ui:define>
+</ui:composition>

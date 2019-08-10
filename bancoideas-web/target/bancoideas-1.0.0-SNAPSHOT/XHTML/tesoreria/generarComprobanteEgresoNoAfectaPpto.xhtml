@@ -1,0 +1,414 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" 
+	template="/WEB-INF/template.xhtml"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+
+	<ui:define name="content">
+
+		<p:ajaxStatus onstart="PF('statusDialog').show()"
+			onsuccess="PF('statusDialog').hide()" />
+		<p:dialog modal="true" widgetVar="statusDialog" header="Cargando"
+			draggable="false" closable="false">
+			<p:graphicImage
+				value="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/ajaxloadingbar.gif" />
+		</p:dialog>
+
+		<!-- Expired session -->
+		<p:idleMonitor onactive="PF('sessionTimeOutDialog').show();"
+			timeout="#{session.maxInactiveInterval * 1000}" />
+		<p:dialog modal="true" widgetVar="sessionTimeOutDialog"
+			header="Sesión terminada" draggable="false" closable="false">
+			<h:outputText value="La sesión ha finalizado" />
+			<input id="confirmBackToLogin" type="button" value="Iniciar sesión"
+				onclick="window.location='#{facesContext.externalContext.requestContextPath}/index.jsp';" />
+		</p:dialog>
+		
+		<script type="text/javascript">
+			function showStatus() {
+			    statusDialog.show();
+			}
+			 
+			function hideStatus() {
+			    statusDialog.hide();
+			}
+		</script>
+		
+
+		<style type="text/css">
+			.ui-panel {
+				margin-top: 20px
+			}
+			
+			.ui-tabs-top {
+				background-color: #FFFFFF;
+			}
+			
+			.one {
+				width: 10%;
+			}
+			
+			.two {
+				width: 90%;
+			}
+			
+        	.colAFiltro{width: 10%; }
+        	.colBFiltro{width: 50%; }
+			
+			.col50Left{
+				width: 10%;
+				text-align: left;
+			}
+			
+			.col50Right{
+				width: 10%;
+				text-align: right;
+			}
+			
+			.txt100{
+				width: 100%;
+			}
+			
+			.col30{width: 30%;}
+        	.col70{width: 70%;}
+			
+			.tachado {
+			    position: relative;
+			}
+			
+			.tachado:before {
+			    border-bottom: 1px solid red;
+			    position: absolute;
+			    content: "";
+			    width: 100%;
+			    height: 50%;
+			}
+			
+		</style>
+			<h:form id="formDialog">
+			
+			<div>
+				<div>
+				
+					<p:panel>
+						<h:outputText
+							value="Comprobantes de Egreso que no afectan el presupuesto" styleClass="FontBold Fs18 hardblue" />
+					</p:panel>
+				
+					<p:panel id="panelComprobante" header="Comprobantes de Egreso">
+					
+						<p:growl id="men" showDetail="false" sticky="false"/>
+
+							<br />
+							
+							<div align="left">
+								<h:panelGrid id="pnlInfoDatosCE" columns="2" columnClasses="one,two" style="width: 100%;">
+									
+									<h:outputText value=" Tercero: "/>
+									<p:panelGrid>
+										<p:inputText id="txtIdentificacionTercero" styleClass="Wid20" value="#{gluoCeNoAfectaPptoView.identificacionTerceroSeleccionado}" readonly="true" style="width: 280px;" />
+										<p:commandButton icon="ui-icon-search"  oncomplete="PF('dlgTercero').show();"/>
+									</p:panelGrid>
+									
+									<h:outputText value="Banco: "/>
+									<p:selectOneMenu id="cmbBancos"	value="#{gluoCeNoAfectaPptoView.bancoSeleccionado}" style="width: 290px;">
+										<f:selectItem itemLabel="--- Seleccione un Banco ---" itemValue="-1"/>
+										<f:selectItems value="#{gluoCeNoAfectaPptoView.bancos}"/>	
+										<p:ajax event="change" listener="#{gluoCeNoAfectaPptoView.listener_cargarCuentasBanciaras}"											
+											update=":formDialog, @this"/>
+									</p:selectOneMenu>
+									
+									<h:outputText value="Tipo Cuenta:"/>
+									<p:selectOneMenu id="cmbTiposDeCuenta" value="#{gluoCeNoAfectaPptoView.tipoCuentaBancariaSeleccionada}"
+										style="width: 290px;" disabled="#{gluoCeNoAfectaPptoView.showTipoCuenta}" >
+										<f:selectItem itemLabel="-- Seleccione un tipo de cuenta --" itemValue="-1" />
+										<f:selectItems value="#{gluoCeNoAfectaPptoView.tiposCuentasBancarias}" />	
+										<p:ajax event="change" listener="#{gluoCeNoAfectaPptoView.listener_cargarCuentasBanciaras}"											
+											update=":formDialog, @this"/>									
+									</p:selectOneMenu>
+									
+									<h:outputText value="Cuenta Bancaria:"/>
+									<p:selectOneMenu id="cmbCuentas" value="#{gluoCeNoAfectaPptoView.cuentaBancariaSeleccionada}" 
+										filter="true" filterMatchMode="contains" style="width: 290px;"
+										disabled="#{gluoCeNoAfectaPptoView.showCuentaBancaria}">
+										<f:selectItem itemLabel="--- Seleccione una cuenta bancaria ---" itemValue="-1"/>
+										<f:selectItems value="#{gluoCeNoAfectaPptoView.cuentasBancarias}"/>
+										<p:ajax listener="#{gluoCeNoAfectaPptoView.listener_cargarTipoMovimiento}" update=":formDialog, @this"/>
+									</p:selectOneMenu>
+									
+									<h:outputText value="Tipo Movimiento:" rendered="#{gluoCeNoAfectaPptoView.showTipoMovimiento}"/>
+									<p:selectOneMenu id="cmbTiposDeMovimiento" value="#{gluoCeNoAfectaPptoView.tipoMovimientoSeleccionado}" 
+										filter="true" filterMatchMode="contains" style="width: 290px;"
+										rendered="#{gluoCeNoAfectaPptoView.showTipoMovimiento}">
+										<f:selectItem itemLabel="--- Seleccione una tipo de movimiento ---" itemValue="-1"/>
+										<f:selectItem itemLabel="Transaccion" itemValue="transaccion"/>
+										<f:selectItem itemLabel="Cheque" itemValue="cheque"/>
+										<p:ajax listener="#{gluoCeNoAfectaPptoView.listener_cargarChequeOTransaccion}" update=":formDialog, @this"/>
+									</p:selectOneMenu>
+									
+									<h:outputText value="Chequera: " rendered="#{gluoCeNoAfectaPptoView.showCheque}"/>
+									<p:selectOneMenu id="somChequera" value="#{gluoCeNoAfectaPptoView.chequeraSeleccionada}" rendered="#{gluoCeNoAfectaPptoView.showCheque}"
+										filter="true" filterMatchMode="contains" style="width: 290px;">
+										<f:selectItem itemLabel="--- Seleccione una chequera ---" itemValue="-1"/>
+										<f:selectItems value="#{gluoCeNoAfectaPptoView.listChequeras}"/>										
+									</p:selectOneMenu>
+									
+									<h:outputText value="Número de cheque:" rendered="#{gluoCeNoAfectaPptoView.showCheque}"/>
+									<p:inputText id="txtNumeroCheque" binding="#{gluoCeNoAfectaPptoView.txtNumeroCheque}" rendered="#{gluoCeNoAfectaPptoView.showCheque}"
+										maxlength="10" style="width:290px;"/>
+									
+									<h:outputText value="Código de Transacción:" rendered="#{gluoCeNoAfectaPptoView.showTransaccion}"/>
+									<p:inputText id="txtCodigoTransaccion" binding="#{gluoCeNoAfectaPptoView.txtCodigoTransaccion}" rendered="#{gluoCeNoAfectaPptoView.showTransaccion}"
+										maxlength="10" style="width:290px;"/>
+										
+									<h:outputText value="Fecha Transacción:" rendered="#{gluoCeNoAfectaPptoView.showTransaccion}"/>
+									<p:calendar value="#{gluoCeNoAfectaPptoView.fechaTransaccion}" timeZone="GMT-5" rendered="#{gluoCeNoAfectaPptoView.showTransaccion}"/>
+										
+									<h:outputText value="Concepto de Pago: "/>
+									<p:panelGrid>
+										<p:inputTextarea rows="5" cols="30" value="#{gluoCeNoAfectaPptoView.descripcionConceptoPago}" counter="display" maxlength="2000" counterTemplate="{0} caracteres restantes" autoResize="false" />
+   										<h:outputText id="display" />
+									</p:panelGrid>
+									
+									<h:outputText value=" Fecha Expedicion: "/>
+									<p:calendar showOn="button" navigator="true" locale="en" size="30" readonlyInput="true"
+												value="#{gluoCeNoAfectaPptoView.fechaComprobante}" timeZone="GMT-5"/>
+									
+								</h:panelGrid>
+							</div>	
+							
+							<br />
+							
+							<p:dataTable id="tblCucoSeleccionadas" var="cuentasContablesSeleccionadas" rows="200" style="width: 100%;"
+								value="#{gluoCeNoAfectaPptoView.cuentasContablesConValor}"
+								paginator="true"
+								paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+								rowsPerPageTemplate="300,400,500"
+								emptyMessage="No hay cuentas contables"
+								reflow="true" 
+								rowKey="#{cuentasContablesSeleccionadas.cconId}">
+								
+								<f:facet name="header"> Catalogo de Cuentas Contables</f:facet>
+		                        
+		                        <p:column headerText="Codigo" style="width:15%;">
+		                        	<h:outputText value="#{cuentasContablesSeleccionadas.codigo}"/>
+		                        </p:column>
+		                        
+		                         <p:column headerText="Descripción" style="width:50%;">
+		                        	<h:outputText value="#{cuentasContablesSeleccionadas.descripcion}"/>
+		                        </p:column>
+		                        
+		                        <p:column headerText="Valor a Pagar" style="width:15%;">
+									<div align="right">
+										<pe:inputNumber id="idValPagar" 
+												value="#{cuentasContablesSeleccionadas.valorAPagarPorCuenta}" 
+												styleClass="Wid20" style="text-align: right;" 
+												symbol="$ " symbolPosition="p"  
+							                   	decimalSeparator="," thousandSeparator="."
+							                   	minValue="0"
+							                    validatorMessage="Valor no válido" 
+							                    decimalPlaces="2">
+							                   <p:ajax event="blur" listener="#{gluoCeNoAfectaPptoView.action_recalcularTotalCE}" update="@([id$=lblValorCE])"/>
+										</pe:inputNumber>
+									 </div>
+						        </p:column>
+						        
+						        <f:facet name="footer">
+										<h:panelGrid columns="3">
+											  <p:commandButton id="btnAddCuco" icon="ui-icon-plus" value="Agregar Cuentas Contables" oncomplete="PF('dlgCuentasContables').show();" rendered="true"/>
+										      <h:outputText value="Valor Total del Comprobante:"/>
+										      <h:outputText id="lblValorCE" value="#{gluoCeNoAfectaPptoView.valorComprobanteEgreso}">
+													<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+											  </h:outputText>
+										</h:panelGrid>
+								</f:facet>
+							</p:dataTable>
+							
+							
+							<div align="left">
+								<h:panelGrid id="panelBotones" columns="2">
+									<p:commandButton id="btnSave" value="Guardar" action="#{gluoCeNoAfectaPptoView.action_guardarComprobanteEgreso()}"
+													 update=":formDialog:panelComprobante, men, :formDialog:tercerosEncontrados" />
+													 		 
+									<p:commandButton id="btnClear" value="Limpiar" action="#{gluoCeNoAfectaPptoView.action_clear()}" 
+				 									 update=":formDialog:panelComprobante, men, :formDialog:tercerosEncontrados" />
+								</h:panelGrid>
+							</div>	
+						</p:panel>
+				</div>
+			</div>
+			
+			<!--        Tercero            -->
+			<!-- ************************* -->
+			<p:dialog modal="true" widgetVar="dlgTercero" header="Tercero"
+				draggable="false" closable="true" resizable="true"
+				width="90%" height="500px">
+				
+				<p:growl id="menTerceros" showDetail="false"/>
+				
+				<p:scrollPanel id="pnlTerceros" mode="native" style="width:100%; height:400px">
+					<div class="ContainerIndent"/>
+					
+					<p:outputLabel value="Criterios de búsqueda para terceros:"/>
+					
+					<h:panelGrid columns="2" columnClasses="colAFiltro, colBFiltro" style="width: 100%;">
+								
+						<p:outputLabel value="Identificación: "/>
+						<p:inputText styleClass="Wid50"
+							value="#{gluoCeNoAfectaPptoView.identificacionFiltro}"/>
+						
+						<p:outputLabel value="Nombre/Razón Social:"/>
+						<p:inputText styleClass="Wid50"
+							value="#{gluoCeNoAfectaPptoView.nombreRazonSocialFiltro}"/>
+						
+					</h:panelGrid>
+					
+					<p:commandButton value="Buscar Tercero"
+						actionListener="#{gluoCeNoAfectaPptoView.action_buscarTercero}"
+						update=":formDialog:pnlTerceros"/>
+					
+					<br/>
+				
+					<p:dataTable id="tercerosEncontrados" var="tercero" rows="350" style="width: 100%;"
+						value="#{gluoCeNoAfectaPptoView.listaTerceros}"
+						paginator="true"
+						paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+						rowsPerPageTemplate="300,400,500"
+						emptyMessage="No hay terceros encontrados"
+						reflow="true" rowKey="#{tercero.tercId}"
+						selection="#{gluoCeNoAfectaPptoView.terceroSeleccionado}"
+						filterDelay="1000">
+						
+						<f:facet name="header">
+                             Terceros
+                         </f:facet>
+                        
+                         <p:column selectionMode="single" style="width:5%; text-align:center" />
+                         
+                   		<p:column headerText="Identificación" sortBy="#{tercero.identificacion}"
+							style="width: 10%" filterBy="#{tercero.identificacion}"
+							filterMatchMode="startsWith">
+							<h:outputText value="#{tercero.identificacion}"/>
+						</p:column>
+						
+						<p:column headerText="Razon Social" sortBy="#{tercero.razonSocial}"
+							style="width: 10%" filterBy="#{tercero.razonSocial}"
+							filterMatchMode="contains">
+							<h:outputText value="#{tercero.razonSocial}"/>
+						</p:column>
+						
+						<p:column headerText="Primer Nombre" sortBy="#{tercero.primerNombre}"
+							style="width: 10%" filterBy="#{tercero.primerNombre}"
+							filterMatchMode="contains">
+							<h:outputText value="#{tercero.primerNombre}"/>
+						</p:column>
+						
+						<p:column headerText="Segundo Nombre" sortBy="#{tercero.segundoNombre}"
+							style="width: 10%" filterBy="#{tercero.segundoNombre}"
+							filterMatchMode="contains">
+							<h:outputText value="#{tercero.segundoNombre}"/>
+						</p:column>
+						
+						<p:column headerText="Primer Apellido" sortBy="#{tercero.primerApellido}"
+							style="width: 10%" filterBy="#{tercero.primerApellido}"
+							filterMatchMode="contains">
+							<h:outputText value="#{tercero.primerApellido}"/>
+						</p:column>
+						
+						<p:column headerText="Segundo Apellido" sortBy="#{tercero.segundoApellido}"
+							style="width: 10%" filterBy="#{tercero.segundoApellido}"
+							filterMatchMode="contains">
+							<h:outputText value="#{tercero.segundoApellido}"/>
+						</p:column>
+						
+					</p:dataTable>
+				</p:scrollPanel>
+				
+				<div align="center">
+					<h:panelGrid id="btnSelecciona" columns="2">
+						<p:commandButton id="btnSeleccionar" value="Seleccionar" action="#{gluoCeNoAfectaPptoView.action_validarTercero}" update="menTerceros, :formDialog:txtIdentificacionTercero"/>
+					</h:panelGrid>
+				</div>
+
+				<div class="EmptyBox20" />
+			</p:dialog>
+			<!--        Tercero            -->
+			<!-- ************************* -->
+			
+			
+			
+			<!-- *********************** Cuentas Contbles *********************** -->
+			<p:dialog modal="true" widgetVar="dlgCuentasContables" header="Cuentas Contables"
+					  draggable="false" closable="true" resizable="true" width="90%" height="400px">
+				
+				<p:growl id="menConceptoPago" showDetail="false"/>
+				
+				<p:scrollPanel mode="native" style="width:100%; height:400px">
+					<div class="ContainerIndent">
+					<h:outputText value="Cuentas Contables" />
+					</div>
+				
+					<p:dataTable id="tblConceptosDePago" var="cuentaContable" rows="200" style="width: 100%;"
+						value="#{gluoCeNoAfectaPptoView.cuentasContables}"
+						paginator="true"
+						paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+						rowsPerPageTemplate="300,400,500"
+						emptyMessage="No hay cuentas contables"
+						reflow="true" 
+						rowKey="#{cuentaContable.cconId}"
+						selection="#{gluoCeNoAfectaPptoView.cuentasContableSeleccionadas}"
+						filterDelay="1000">
+						
+						<f:facet name="header"> Cuentas Contables </f:facet>
+                        
+                        <p:column selectionMode="multiple" style="width:10%; text-align:center" />
+                        
+                        <p:column headerText="Codigo" style="width:15%;" filterBy="#{cuentaContable.codigo}" sortBy="#{cuentaContable.codigo}">
+                        	<h:outputText value="#{cuentaContable.codigo}"/>
+                        </p:column>
+                        
+                         <p:column headerText="Descripción" style="width:75%;" filterBy="#{cuentaContable.descripcion}" sortBy="#{cuentaContable.descripcion}" filterMatchMode="contains">
+                        	<h:outputText value="#{cuentaContable.descripcion}"/>
+                        </p:column>
+					</p:dataTable>
+				</p:scrollPanel>
+					
+				<div align="center">
+					<h:panelGrid columns="2">
+						<p:commandButton id="btnSeleccionarConceptoDePago" value="Seleccionar" update="menConceptoPago, :formDialog:tblCucoSeleccionadas"
+							actionListener="#{gluoCeNoAfectaPptoView.action_seleccionarCuentasContables}"/>
+					</h:panelGrid>
+				</div>
+					
+				<div class="EmptyBox20" />
+			</p:dialog>
+			<!-- *********************** Cuentas Contables *********************** -->
+			
+			
+			<p:dialog modal="true" widgetVar="dlgGenerarReportes" header="Reporte Comprobante Egreso Sin Afectación Presupuestal" draggable="false" closable="false" resizable="true" width="90%" >
+					<div align="center">
+						<h:panelGrid columns="4">
+							<p:commandButton value="Generar Reporte en PDF" onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)" icon="ui-icon-arrowthichk-s">
+								<p:fileDownload value="#{gluoCeNoAfectaPptoView.reporteCDPPdf}" />
+							</p:commandButton>
+							
+							<p:commandButton value="Generar Reporte en XLS" onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)" icon="ui-icon-arrowthichk-s">
+								<p:fileDownload value="#{gluoCeNoAfectaPptoView.reporteCDPXls}" />
+							</p:commandButton>
+							
+							<p:commandButton value="Generar Reporte en XLSX" onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)" icon="ui-icon-arrowthichk-s">
+								<p:fileDownload value="#{gluoCeNoAfectaPptoView.reporteCDPXlsx}" />
+							</p:commandButton>
+							
+							<p:commandButton value="He terminado! Cerrar" oncomplete="PF('dlgGenerarReportes').hide();" action="#{gluoCeNoAfectaPptoView.action_clear()}"/>
+						</h:panelGrid>
+					</div>
+					<div class="EmptyBox20" />
+			</p:dialog>
+			
+			
+		</h:form>
+	</ui:define>
+</ui:composition>

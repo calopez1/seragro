@@ -1,0 +1,363 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.1.1.final using JasperReports Library version 6.1.1  -->
+<!-- 2017-10-02T15:51:36 -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="detalleInformeListadoDeSalud" pageWidth="792" pageHeight="612" orientation="Landscape" columnWidth="572" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="f805cb10-60ed-4ca7-b761-34ebebe2b26a">
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="JDBCDataAdapterGluon.xml"/>
+	<property name="com.jaspersoft.studio.unit." value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageHeight" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.topMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.bottomMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.leftMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.rightMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnSpacing" value="pixel"/>
+	<style name="Crosstab_CG" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Crosstab 1_CG" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Crosstab 2_CH" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Crosstab 2_CG" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Crosstab 2_CT" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Crosstab 2_CD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<parameter name="P_LINO_ID" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[5]]></defaultValueExpression>
+	</parameter>
+	<parameter name="P_TINO_ID" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[1]]></defaultValueExpression>
+	</parameter>
+	<parameter name="P_ENEX_ID" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[35]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[select 
+distinct(terc_empl.identificacion)
+, (terc_empl.primer_apellido
+||' '||terc_empl.segundo_apellido
+||' '||terc_empl.primer_nombre
+||' '||terc_empl.segundo_nombre) nombre_completo
+, line.dias_laborados
+, tino.tino_id
+, tino.descripcion tipo_nomina
+, enex.enex_id
+, terc_enex.razon_social entidad
+, cono.descripcion descripcion_salud
+, dlin.valor_calculado
+, dlin.valor_base ibc
+from gluo_empleado empl
+inner join gluo_tercero terc_empl on terc_empl.terc_id = empl.terc_id
+inner join gluo_tipo_nomina tino on tino.tino_id = empl.tino_id
+inner join gluo_liquidacion_nomina_empleado line on empl.empl_id = line.empl_id
+inner join gluo_liquidacion_nomina lino on line.lino_id = lino.lino_id
+inner join gluo_detalle_liquidacion_nomina dlin on dlin.line_id = line.line_id
+inner join gluo_afiliacion afil on afil.afil_id = dlin.afil_id
+inner join gluo_entidad_externa enex on afil.enex_id = enex.enex_id
+inner join gluo_tercero terc_enex on enex.terc_id = terc_enex.terc_id
+inner join gluo_tipo_entidad tien on tien.tien_id = enex.tien_id
+inner join gluo_concepto_nomina cono on dlin.cono_id = cono.cono_id
+where lino.lino_id =  $P{P_LINO_ID} 
+and line.activo = 'A'
+and lino.activo = 'A'
+and dlin.activo = 'A'
+and tien.codigo_aporte in ('SAEPU', 'SAPPU', 'SAEPR', 'SAPPR', 'SP', 'SE', 'SEP','SPP')
+and tino.tino_id =  $P{P_TINO_ID} 
+and enex.enex_id =  $P{P_ENEX_ID} 
+order by tipo_nomina asc, entidad asc, nombre_completo asc, descripcion_salud asc]]>
+	</queryString>
+	<field name="identificacion" class="java.lang.String"/>
+	<field name="nombre_completo" class="java.lang.String"/>
+	<field name="dias_laborados" class="java.math.BigDecimal"/>
+	<field name="tino_id" class="java.lang.Integer"/>
+	<field name="tipo_nomina" class="java.lang.String"/>
+	<field name="enex_id" class="java.lang.Integer"/>
+	<field name="entidad" class="java.lang.String"/>
+	<field name="descripcion_salud" class="java.lang.String"/>
+	<field name="valor_calculado" class="java.math.BigDecimal"/>
+	<field name="ibc" class="java.math.BigDecimal"/>
+	<title>
+		<band height="40" splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+		</band>
+	</columnHeader>
+	<detail>
+		<band splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+		</band>
+	</detail>
+	<columnFooter>
+		<band splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+		</band>
+	</columnFooter>
+	<pageFooter>
+		<band splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="120" splitType="Stretch">
+			<crosstab>
+				<reportElement x="0" y="0" width="750" height="120" uuid="d0ab14f6-dc6f-48dc-bac0-b45a3a36b3ee">
+					<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
+					<property name="com.jaspersoft.studio.crosstab.style.header" value="Crosstab 2_CH"/>
+					<property name="com.jaspersoft.studio.crosstab.style.group" value="Crosstab 2_CG"/>
+					<property name="com.jaspersoft.studio.crosstab.style.total" value="Crosstab 2_CT"/>
+					<property name="com.jaspersoft.studio.crosstab.style.detail" value="Crosstab 2_CD"/>
+					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+				</reportElement>
+				<rowGroup name="identificacion" width="100" totalPosition="End">
+					<bucket class="java.lang.String">
+						<bucketExpression><![CDATA[$F{identificacion}]]></bucketExpression>
+					</bucket>
+					<crosstabRowHeader>
+						<cellContents mode="Opaque" style="Crosstab 2_CH">
+							<textField>
+								<reportElement x="0" y="0" width="100" height="20" uuid="d7269582-22bd-4459-ab94-5bfc37fc212d"/>
+								<textElement textAlignment="Center"/>
+								<textFieldExpression><![CDATA[$V{identificacion}]]></textFieldExpression>
+							</textField>
+						</cellContents>
+					</crosstabRowHeader>
+					<crosstabTotalRowHeader>
+						<cellContents mode="Opaque" style="Crosstab 2_CT">
+							<staticText>
+								<reportElement x="0" y="0" width="460" height="20" uuid="c47a21bd-6942-4138-8b89-422c3d857c03"/>
+								<textElement textAlignment="Center"/>
+								<text><![CDATA[TOTAL: ]]></text>
+							</staticText>
+						</cellContents>
+					</crosstabTotalRowHeader>
+				</rowGroup>
+				<rowGroup name="nombre_completo" width="240">
+					<bucket class="java.lang.String">
+						<bucketExpression><![CDATA[$F{nombre_completo}]]></bucketExpression>
+					</bucket>
+					<crosstabRowHeader>
+						<cellContents mode="Opaque" style="Crosstab 2_CH">
+							<textField>
+								<reportElement x="0" y="0" width="240" height="20" uuid="57637fcb-997c-4423-8d9d-c732b1a87b27"/>
+								<textElement textAlignment="Center"/>
+								<textFieldExpression><![CDATA[$V{nombre_completo}]]></textFieldExpression>
+							</textField>
+						</cellContents>
+					</crosstabRowHeader>
+					<crosstabTotalRowHeader>
+						<cellContents>
+							<staticText>
+								<reportElement x="0" y="0" width="-2147483648" height="-2147483648" uuid="f59d8a37-dfda-4f09-b2a4-2a09afc8209c"/>
+								<text><![CDATA[Total nombre_completo]]></text>
+							</staticText>
+						</cellContents>
+					</crosstabTotalRowHeader>
+				</rowGroup>
+				<rowGroup name="dias_laborados" width="60">
+					<bucket class="java.math.BigDecimal">
+						<bucketExpression><![CDATA[$F{dias_laborados}]]></bucketExpression>
+					</bucket>
+					<crosstabRowHeader>
+						<cellContents mode="Opaque" style="Crosstab 2_CH">
+							<textField>
+								<reportElement x="0" y="0" width="60" height="20" uuid="2347206c-a91f-49cd-8daf-58889dde7b1b"/>
+								<textElement textAlignment="Center"/>
+								<textFieldExpression><![CDATA[$V{dias_laborados}]]></textFieldExpression>
+							</textField>
+						</cellContents>
+					</crosstabRowHeader>
+					<crosstabTotalRowHeader>
+						<cellContents>
+							<staticText>
+								<reportElement x="0" y="0" width="-2147483648" height="-2147483648" uuid="d499d93e-d2bc-4ffa-bf8e-b13c45d8b6d4"/>
+								<text><![CDATA[Total dias_laborados]]></text>
+							</staticText>
+						</cellContents>
+					</crosstabTotalRowHeader>
+				</rowGroup>
+				<rowGroup name="ibc" width="60">
+					<bucket class="java.math.BigDecimal">
+						<bucketExpression><![CDATA[$F{ibc}]]></bucketExpression>
+					</bucket>
+					<crosstabRowHeader>
+						<cellContents mode="Opaque" style="Crosstab 2_CH">
+							<textField>
+								<reportElement x="0" y="0" width="60" height="20" uuid="72f2ddf6-0123-4fd4-b543-ff5c265dfa47"/>
+								<textElement textAlignment="Center"/>
+								<textFieldExpression><![CDATA[$V{ibc}]]></textFieldExpression>
+							</textField>
+						</cellContents>
+					</crosstabRowHeader>
+					<crosstabTotalRowHeader>
+						<cellContents mode="Opaque" style="Crosstab 2_CG">
+							<staticText>
+								<reportElement x="0" y="0" width="60" height="20" uuid="5ea3e458-ce7f-43c3-aae7-246a339d6c6b"/>
+								<text><![CDATA[Total IBC]]></text>
+							</staticText>
+						</cellContents>
+					</crosstabTotalRowHeader>
+				</rowGroup>
+				<columnGroup name="descripcion_salud" height="40" totalPosition="End">
+					<bucket class="java.lang.String">
+						<bucketExpression><![CDATA[$F{descripcion_salud}]]></bucketExpression>
+					</bucket>
+					<crosstabColumnHeader>
+						<cellContents mode="Opaque" style="Crosstab 2_CH">
+							<textField>
+								<reportElement x="0" y="0" width="80" height="40" uuid="aa1996bc-0c7f-4d1a-b58b-65d0759ca906"/>
+								<textElement textAlignment="Center"/>
+								<textFieldExpression><![CDATA[$V{descripcion_salud}]]></textFieldExpression>
+							</textField>
+						</cellContents>
+					</crosstabColumnHeader>
+					<crosstabTotalColumnHeader>
+						<cellContents mode="Opaque" style="Crosstab 2_CT">
+							<staticText>
+								<reportElement x="0" y="0" width="60" height="40" uuid="c6e795f2-1ef7-4707-a6df-3721a8c8db85"/>
+								<textElement textAlignment="Center"/>
+								<text><![CDATA[TOTAL]]></text>
+							</staticText>
+						</cellContents>
+					</crosstabTotalColumnHeader>
+				</columnGroup>
+				<measure name="valor_calculado_MEASURE" class="java.math.BigDecimal" calculation="Sum">
+					<measureExpression><![CDATA[$F{valor_calculado}]]></measureExpression>
+				</measure>
+				<crosstabCell width="80" height="20">
+					<cellContents mode="Opaque" style="Crosstab 2_CD">
+						<textField pattern="$#,##0.##;$-#,##0.##">
+							<reportElement x="0" y="0" width="80" height="20" uuid="9e23833b-ca65-4c23-8931-150d72b32e59"/>
+							<textElement textAlignment="Center"/>
+							<textFieldExpression><![CDATA[$V{valor_calculado_MEASURE}]]></textFieldExpression>
+						</textField>
+					</cellContents>
+				</crosstabCell>
+				<crosstabCell width="60" height="20" columnTotalGroup="descripcion_salud">
+					<cellContents mode="Opaque" style="Crosstab 2_CT">
+						<textField pattern="$#,##0.##;$-#,##0.##">
+							<reportElement x="0" y="0" width="60" height="20" uuid="e16f0aa4-8cb3-42b6-a07a-21c38456d14c"/>
+							<textElement textAlignment="Center"/>
+							<textFieldExpression><![CDATA[$V{valor_calculado_MEASURE}]]></textFieldExpression>
+						</textField>
+					</cellContents>
+				</crosstabCell>
+				<crosstabCell width="80" height="20" rowTotalGroup="identificacion">
+					<cellContents mode="Opaque" style="Crosstab 2_CT">
+						<textField pattern="$#,##0.##;$-#,##0.##">
+							<reportElement x="0" y="0" width="80" height="20" uuid="62fc1e5b-a6d1-4c45-bbef-e57dbaa2384d"/>
+							<textElement textAlignment="Center"/>
+							<textFieldExpression><![CDATA[$V{valor_calculado_MEASURE}]]></textFieldExpression>
+						</textField>
+					</cellContents>
+				</crosstabCell>
+				<crosstabCell width="60" height="20" rowTotalGroup="identificacion" columnTotalGroup="descripcion_salud">
+					<cellContents mode="Opaque" style="Crosstab 2_CT">
+						<textField pattern="$#,##0.##;$-#,##0.##">
+							<reportElement x="0" y="0" width="60" height="20" uuid="95275bbe-9b9e-43a3-8724-7111a435fdd3"/>
+							<textElement textAlignment="Center"/>
+							<textFieldExpression><![CDATA[$V{valor_calculado_MEASURE}]]></textFieldExpression>
+						</textField>
+					</cellContents>
+				</crosstabCell>
+				<crosstabCell width="60" height="20" rowTotalGroup="nombre_completo">
+					<cellContents mode="Opaque" style="Crosstab 2_CG">
+						<textField>
+							<reportElement x="0" y="0" width="60" height="20" uuid="fd152162-351e-46e7-a2aa-edd301e48097"/>
+							<textFieldExpression><![CDATA[$V{valor_calculado_MEASURE}]]></textFieldExpression>
+						</textField>
+					</cellContents>
+				</crosstabCell>
+				<crosstabCell width="60" height="20" rowTotalGroup="nombre_completo" columnTotalGroup="descripcion_salud">
+					<cellContents mode="Opaque" style="Crosstab 2_CT">
+						<textField>
+							<reportElement x="0" y="0" width="60" height="20" uuid="575fd391-7efa-4d6f-b649-62abaa1dc842"/>
+							<textFieldExpression><![CDATA[$V{valor_calculado_MEASURE}]]></textFieldExpression>
+						</textField>
+					</cellContents>
+				</crosstabCell>
+				<crosstabCell width="60" height="20" rowTotalGroup="dias_laborados">
+					<cellContents mode="Opaque" style="Crosstab 2_CG">
+						<textField>
+							<reportElement x="0" y="0" width="60" height="20" uuid="b948f1df-0d57-44e7-a451-10cc7172451c"/>
+							<textFieldExpression><![CDATA[$V{valor_calculado_MEASURE}]]></textFieldExpression>
+						</textField>
+					</cellContents>
+				</crosstabCell>
+				<crosstabCell width="60" height="20" rowTotalGroup="dias_laborados" columnTotalGroup="descripcion_salud">
+					<cellContents mode="Opaque" style="Crosstab 2_CT">
+						<textField>
+							<reportElement x="0" y="0" width="60" height="20" uuid="afe9b8c8-7fdc-471d-b0c4-8189ed13d33d"/>
+							<textFieldExpression><![CDATA[$V{valor_calculado_MEASURE}]]></textFieldExpression>
+						</textField>
+					</cellContents>
+				</crosstabCell>
+				<crosstabCell width="60" height="20" rowTotalGroup="ibc">
+					<cellContents mode="Opaque" style="Crosstab 2_CG">
+						<textField>
+							<reportElement x="0" y="0" width="60" height="20" uuid="3ea33262-0863-4feb-b2db-056d2e3d33e9"/>
+							<textFieldExpression><![CDATA[$V{valor_calculado_MEASURE}]]></textFieldExpression>
+						</textField>
+					</cellContents>
+				</crosstabCell>
+				<crosstabCell width="60" height="20" rowTotalGroup="ibc" columnTotalGroup="descripcion_salud">
+					<cellContents mode="Opaque" style="Crosstab 2_CT">
+						<textField>
+							<reportElement x="0" y="0" width="60" height="20" uuid="4698b60c-75f2-4515-ade3-eba7d0cd7bf3"/>
+							<textFieldExpression><![CDATA[$V{valor_calculado_MEASURE}]]></textFieldExpression>
+						</textField>
+					</cellContents>
+				</crosstabCell>
+			</crosstab>
+		</band>
+	</summary>
+</jasperReport>

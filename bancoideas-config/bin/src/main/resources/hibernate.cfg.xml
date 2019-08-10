@@ -1,0 +1,282 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC
+"-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+    <session-factory>
+        
+        <property name="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</property>
+        <property name="hibernate.enable_lazy_load_no_trans">true</property>
+        <property name="show_sql">false</property>
+        
+        <mapping resource="com/vortexbird/gluon/modelo/GluoTercero.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoTipoInterventor.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoInterventor.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoClaseGarantia.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoFormaContratacion.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoTipoPresupuesto.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoPoliza.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoPresupuesto.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoTipoCuentaContable.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoCdp.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoDetalleCdp.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoTipoIdentificacion.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoReconocimiento.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoEnteGubernamental.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoAplazamiento.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoDetallePresupuesto.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoModificacionRubroPpto.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoDetalleTraslado.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoCrp.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoDetalleModificacionRubroPpto.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoTipoTercero.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoConfCcXNat.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoSoporteActoAdministrativo.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoDetalleCrp.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoActoAdministrativo.hbm.xml" />        
+        <mapping resource="com/vortexbird/gluon/modelo/GluoAnoFiscal.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoArchivoSoporte.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoTipoCruceContable.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoCuentaContable.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoNaturalezaCuentaContable.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoTraslado.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoEmpresa.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoCruceContable.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoCuentaBancaria.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoTipoCuentaBancaria.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoEntidadPublica.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoBanco.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoTipoRecurso.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoIngresoNoPropio.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoTipoIngresoNoPropio.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoParametro.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoSolicitudCdp.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoAdjuntoDocumentoPresupuesto.hbm.xml" />                
+        <mapping resource="com/vortexbird/gluon/modelo/GluoChequera.hbm.xml" />        
+        <mapping resource="com/vortexbird/gluon/modelo/GluoTipoLocalidad.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoParametrizacionConcepto.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoConceptoPago.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoDeduccion.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoDeduccionXConceptoPago.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoTipoFormaPago.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoReciboFormaPago.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoRecibo.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoTipoRecibo.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoTipoUsoCheque.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoChequeUsado.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoDeduccionAplicada.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoCucoXEnap.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoCeNoAfectaPpto.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoComprobanteTrasladoBancario.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoDetalleComprobanteTrasladoBancario.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoTipoComprobante.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoArqueoCaja.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoArqueoXAforo.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoArqueoXConceptoRenta.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoArqueoXFormaPago.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoDetalleConsignacion.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoConsignacion.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoConceptoImpuesto.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoTipoLiquidacion.hbm.xml" />                
+        <mapping resource="com/vortexbird/gluon/modelo/GluoTipoContabilidad.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoNivelContabilidad.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoDocumentoContable.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoConfiguracionContable.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoTipoTransaccion.hbm.xml" />
+         <mapping resource="com/vortexbird/gluon/modelo/GluoDescuentoImpuesto.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoInteresMoraImpuesto.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoExcepcionPredio.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoPredio.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoTipoPredio.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoTipoExcepcionPredio.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoPorcentajeRangoAvaluo.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoTipoConsulta.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoMovimientoContable.hbm.xml" />                
+        <mapping resource="com/vortexbird/gluon/modelo/GluoDepartamento.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoDestinoEconomico.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoPropietario.hbm.xml" />        
+        <mapping resource="com/vortexbird/gluon/modelo/GluoMatricularPredioTarifaEspecial.hbm.xml" />        
+        <mapping resource="com/vortexbird/gluon/modelo/GluoCondicionDePropiedad.hbm.xml" />        
+        <mapping resource="com/vortexbird/gluon/modelo/GluoNumeroPredio.hbm.xml" />        
+        <mapping resource="com/vortexbird/gluon/modelo/GluoPredioAnoFiscal.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoMunicipio.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoLiquidacionMasivaImpuestos.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoDetalleLiquidacionMasivaImpuestos.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoLiquidacionOtrosConceptosImpuesto.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoCartera.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoLogo.hbm.xml" />        
+        <mapping resource="com/vortexbird/gluon/modelo/GluoEslogan.hbm.xml" />        
+        <mapping resource="com/vortexbird/gluon/modelo/GluoTipoEmpresa.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoCentroCostos.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoCuentaContableCentroCostos.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoCierreContable.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoTipoContrato.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoContratoCrp.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoDetalleIngresoNoPropio.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoNotaContabilidad.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoParametroInforme.hbm.xml" />
+		<mapping resource="com/vortexbird/gluon/modelo/GluoPrioridadConcepto.hbm.xml" />     
+		<mapping resource="com/vortexbird/gluon/modelo/GluoAplicacionPago.hbm.xml" />                 
+                 
+        
+        <!--  NOMINA  -->
+        <mapping resource="com/vortexbird/gluon/modelo/GluoConceptoNomina.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoConceptoNominaEmpleado.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoConceptosXCargoGrado.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoCargoEmpleadoGrado.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoFechaLiquidacion.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoLiquidacionNomina.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoAfiliacion.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoEstudio.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoEmpleado.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoGradoSalarial.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoLiquidacionNominaEmpleado.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoDetalleLiquidacionNomina.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoCargoGrado.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoEntidadExterna.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoTipoHoraExtra.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoFechaSituacionAdm.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoSituacionAdministrativa.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoTipoEntidad.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoCargoEmpleado.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoHoraExtra.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoEstudiosXEmpleado.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoExperienciaLaboral.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoSiadXEmpl.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoDiasNoHabiles.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoTipoConceptoNomina.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoSaldoCuentaContable.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoTipoPlanta.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoTipoDeduccionNomina.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoDeduccionXEmpleado.hbm.xml" />        
+        <mapping resource="com/vortexbird/gluon/modelo/GluoTipoNomina.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoDptoXTipoConceptoNomina.hbm.xml" />
+        
+        
+        
+        <!-- CAMBIOS OP -->
+        <mapping resource="com/vortexbird/gluon/modelo/GluoMaestroCeAfectaPpto.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoDetalleCeAfectaPpto.hbm.xml" />
+	    <mapping resource="com/vortexbird/gluon/modelo/GluoMaestroOp.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoOp.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoCeXOp.hbm.xml" />
+        
+        <!-- Archivo de consultas -->
+        <mapping resource="com/vortexbird/gluon/modelo/Consultas.hbm.xml" />
+        <!-- #################### -->
+        
+        <!-- Anulaciones de documentos -->
+        <mapping resource="com/vortexbird/gluon/modelo/GluoCeNoAfectaPptoAnulado.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoMaestroOpAnulado.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoDetalleCeAfectaPptoAnulado.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoCrpAnulado.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoOpAnulado.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoCdpAnulado.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoDetalleCdpAnulado.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoMaestroCeAfectaPptoAnulado.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoCeXOpAnulado.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoCucoXEnapAnulado.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoDetalleCrpAnulado.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoIngresoNoPropioAnulado.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoDetalleIngresoNoPropioAnulado.hbm.xml" />
+
+         
+         <!-- Inventarios -->
+        <mapping resource="com/vortexbird/gluon/modelo/GluoMotivoBaja.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoMovimientoBienMueble.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoMovimientoBienInmueble.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoUsosXBienInmueble.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoClasificacionBien.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoOperacionBienInmueble.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoDependencia.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoUsoDestinoBien.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoBienIntangible.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoTipoMovimientoBienInmueble.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoAreaInmueble.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoClaseBien.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoSegmentoBien.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoTipoMovimientoBienMueble.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoSituacionJuridica.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoAreaXBienInmueble.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoOperacionBienMueble.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoTipoBien.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoArchivosXMovimiento.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoBienInmueble.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoReformaInmueble.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoTipoPosesion.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoDetallePlanAdquisiciones.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoFamiliaBien.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoBienMueble.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoMaestroMovimientoBienMueble.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoTipoReformaInmueble.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoCondicionInmueble.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoMaestroPlanAdquisiciones.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoArchivoXMovimientoMueble.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoArchivoXMovimientoIntangible.hbm.xml" />
+		<mapping resource="com/vortexbird/gluon/modelo/GluoMovimientoBienIntangible.hbm.xml" />
+		<mapping resource="com/vortexbird/gluon/modelo/GluoOperacionBienIntangible.hbm.xml" />
+		<mapping resource="com/vortexbird/gluon/modelo/GluoTipoMovimientoBienIntangible.hbm.xml" />
+         
+        <!-- homologacion de codigos fut y cgr  -->
+        <mapping resource="com/vortexbird/gluon/modelo/GluoRecurso.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoOrigenIngresos.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoFinalidadGasto.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoDestinacionRecursos.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoCgr.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoSituacionFondos.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoDptoXCgr.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoEntidadReciproca.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoVigencia.hbm.xml" />
+        
+        <mapping resource="com/vortexbird/gluon/modelo/GluoFuenteFinanciacion.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoDependenciaTerritorial.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoFut.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoTipoDeuda.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoTipoVigencia.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoTipoInformeFut.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoTipoOperacion.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoDptoXFut.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoActividadFut.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoActividadXDpto.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoFutXCuba.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoSector.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoModalidad.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoTipoFondoTesoreria.hbm.xml" />
+        
+        <mapping resource="com/vortexbird/gluon/modelo/GluoLocalizacion.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoTipoContratoChip.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoTipoActoAdministrativo.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoHechoVictimizante.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoRcdp.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoDetalleRcdp.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoCapturaPago.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoLogCapturaPago.hbm.xml" />
+        
+        <mapping resource="com/vortexbird/gluon/modelo/GluoRangoAvaluoConceptoImpuesto.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoRaavXCoim.hbm.xml" />
+        
+        <mapping resource="com/vortexbird/gluon/modelo/GluoAplicacionPagoMes.hbm.xml" />
+        
+        <mapping resource="com/vortexbird/gluon/modelo/GluoPrescripcionCartera.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoCondonacionDeuda.hbm.xml" />
+        
+        <mapping resource="com/vortexbird/gluon/modelo/GluoComprobanteTrasladoBancarioAnulado.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoDetalleComprobanteTrasladoBancarioAnulado.hbm.xml" />
+        
+         <mapping resource="com/vortexbird/gluon/modelo/GluoSaldoAFavorPredial.hbm.xml" />
+         
+        <mapping resource="com/vortexbird/gluon/modelo/GluoModuloActoAdministrativo.hbm.xml" />
+         
+         <!--  ajuste predial -->
+          <mapping resource="com/vortexbird/gluon/modelo/GluoAjusteLiquidacionPredial.hbm.xml" />
+          <mapping resource="com/vortexbird/gluon/modelo/GluoDetalleAjusteLiquidacionPredial.hbm.xml" />
+
+		<!--  Contabiliad Auxiliares  -->
+		<mapping resource="com/vortexbird/gluon/modelo/GluoAuxiliarContable.hbm.xml" />
+		
+		<!--  Mantenimiento Movimientos Contables  -->
+		<mapping resource="com/vortexbird/gluon/modelo/GluoSaldoCuentaContableHistorico.hbm.xml" />
+        <mapping resource="com/vortexbird/gluon/modelo/GluoMovimientoContableHistorico.hbm.xml" />
+         
+    </session-factory>
+</hibernate-configuration>

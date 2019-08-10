@@ -1,0 +1,87 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated 18-mar-2015 0:14:02 by Hibernate Tools 4.0.0 -->
+<hibernate-mapping>
+
+
+	<sql-query name="consulta_liquidacion_nomina_por_periodo">
+	<return alias="lino" class="com.unilever.bancoideas.modelo.LiquidacionNomina"></return>
+		<![CDATA[
+			select * from liquidacion_nomina
+				where (
+				(:pFechaInicio >= fecha_inicio and :pFechaInicio <= fecha_fin)
+				or (:pFechaFin >= fecha_inicio and :pFechaFin <= fecha_fin)
+				or (:pFechaInicio < fecha_inicio and :pFechaFin > fecha_fin)
+				)
+		]]>
+	</sql-query>
+	
+	<sql-query name="consultar_liquidacion_nomina_empleado_x_liquidacion_nomina">
+		<return-scalar column="codidoEmpleado" type="java.lang.String" />
+		<return-scalar column="emplId" type="java.lang.Integer" />
+		<return-scalar column="noemId" type="java.lang.Integer" />
+		<return-scalar column="persId" type="java.lang.Integer" />
+		<return-scalar column="identificacion" type="java.lang.String" />
+		<return-scalar column="nombre" type="java.lang.String" />
+		<return-scalar column="tiidId" type="java.lang.Integer" />
+		<return-scalar column="codigoTipoIdentificacion" type="java.lang.String" />
+		<return-scalar column="nombreTipoIdentificacion" type="java.lang.String" />
+		<return-scalar column="cargId" type="java.lang.Integer" />
+		<return-scalar column="codigoCargo" type="java.lang.String" />
+		<return-scalar column="nombreCargo" type="java.lang.String" />
+		<return-scalar column="diasLaborados" type="java.lang.Integer" />
+		<return-scalar column="totalPagar" type="java.lang.Double" />
+		<return-scalar column="totalDeduccion" type="java.lang.Double" />
+		<return-scalar column="totalDevengado" type="java.lang.Double" />
+		
+		
+		<![CDATA[				
+			
+			select empl.codigo codidoEmpleado,
+					empl.empl_id emplId,
+					noem.noem_id noemId,
+					pers.pers_id persId,
+					pers.identificacion identificacion,
+					COALESCE (pers.PRIMER_APELLIDO, '') || ' ' || 
+										 	  COALESCE (pers.SEGUNDO_APELLIDO, '') || ' ' || 
+										 	  COALESCE (pers.PRIMER_NOMBRE, '') || ' ' || 
+										 	  COALESCE (pers.SEGUNDO_NOMBRE, '')  nombre,
+					tiid.tiid_id tiidId,
+					tiid.codigo codigoTipoIdentificacion,
+					tiid.nombre nombreTipoIdentificacion,
+					carg.carg_id cargId,
+					carg.codigo codigoCargo,
+					carg.nombre nombreCargo,
+					noem.dias_laborados diasLaborados,
+					noem.total_pagar totalPagar,
+					noem.deducciones totalDeduccion,
+					noem.valor_devengado totalDevengado
+				from nomina_empleado noem
+				inner join empleado empl on empl.empl_id = noem.empl_id
+				inner join persona pers on pers.pers_id = empl.pers_id
+				inner join tipo_identificacion tiid on tiid.tiid_id = pers.tiid_id
+				inner join cargo carg on carg.carg_id = empl.carg_id
+				where noem.lino_id = :pLinoId
+				
+				
+		]]>
+	</sql-query>
+	
+	<sql-query name="eliminar_liquidacion_nomina_empleado">
+	<![CDATA[
+		delete from nomina_empleado where lino_id = :pLinoId
+	]]>
+	</sql-query>
+	
+	
+	<sql-query name="eliminar_detalle_liquidacion_nomina">
+	<![CDATA[
+		delete from detalle_nomina_empleado where noem_id = :pNoemId
+	]]>
+	</sql-query>
+		
+		
+		
+		
+</hibernate-mapping>

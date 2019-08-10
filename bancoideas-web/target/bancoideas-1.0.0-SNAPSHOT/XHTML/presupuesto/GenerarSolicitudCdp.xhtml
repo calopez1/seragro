@@ -1,0 +1,219 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+	<ui:define name="content">
+		<script type="text/javascript">
+			function justNumbers(e) {
+				var keynum = window.event ? window.event.keyCode : e.which;
+				if (keynum == 8)
+					return true;
+
+				return /\d/.test(String.fromCharCode(keynum));
+			}
+			PrimeFaces.locales['es'] = {
+				    closeText: 'Cerrar',
+				    prevText: 'Anterior',
+				    nextText: 'Siguiente',
+				    monthNames: ['Enero','Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+				    monthNamesShort: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun','Jul','Ago','Sep','Oct','Nov','Dic'],
+				    dayNames: ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'],
+				    dayNamesShort: ['Dom','Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab'],
+				    dayNamesMin: ['D','L','M','M','J','V','S'],
+				    weekHeader: 'Semana',
+				    firstDay: 1,
+				    isRTL: false,
+				    showMonthAfterYear: false,
+				    yearSuffix: '',
+				    timeOnlyTitle: 'Sólo hora',
+				    timeText: 'Tiempo',
+				    hourText: 'Hora',
+				    minuteText: 'Minuto',
+				    secondText: 'Segundo',
+				    currentText: 'Fecha actual',
+				    ampm: false,
+				    month: 'Mes',
+				    week: 'Semana',
+				    day: 'Día',
+				    allDayText : 'Todo el día'
+				};
+		</script>
+		<f:view>
+			<p:ajaxStatus onstart="PF('statusDialog').show()"
+				onsuccess="PF('statusDialog').hide()" />
+			<p:dialog modal="true" widgetVar="statusDialog"
+				header="Cargando Información" draggable="false" closable="false">
+				<p:graphicImage
+					value="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/ajaxloadingbar.gif" />
+			</p:dialog>
+
+			<!-- Expired session -->
+			<p:idleMonitor onactive="PF('sessionTimeOutDialog').show();"
+				timeout="#{session.maxInactiveInterval * 1000}" />
+			<p:dialog modal="true" widgetVar="sessionTimeOutDialog"
+				header="Sesión Caducada" draggable="false" closable="false">
+				<h:outputText value="La sesión ha finalizado" />
+				<input id="confirmBackToLogin" type="button" value="Iniciar Sesión"
+					onclick="window.location='#{facesContext.externalContext.requestContextPath}/index.jsp';" />
+			</p:dialog>
+
+			<h:form id="frm">
+
+				<p:panel id="panelDataTableGluoSolicitudCdp"
+					header="Generar una Solicitud de CDP">
+					<p:growl id="men" autoUpdate="true" showDetail="false" />
+					<p:dataTable value="#{solicitudCdpView.data}"
+						emptyMessage="No hay Solicitudes de CDP Registradas"
+						var="gluoSolicitudCdp" paginator="true" rows="5">
+
+						<p:column sortBy="#{gluoSolicitudCdp.descripcion}" width="20%">
+							<f:facet name="header">
+								<h:outputText value="Descripción" />
+							</f:facet>
+							<h:outputText value="#{gluoSolicitudCdp.descripcion}" />
+						</p:column>
+
+						<p:column sortBy="#{gluoSolicitudCdp.fechaExpedicion}" width="25%">
+							<f:facet name="header">
+								<h:outputText value="Fecha de Expedición" />
+							</f:facet>
+							<h:outputText value="#{gluoSolicitudCdp.fechaExpedicion}" />
+						</p:column>
+
+						<p:column sortBy="#{gluoSolicitudCdp.fechaVencimiento}" width="25%">
+							<f:facet name="header">
+								<h:outputText value="Fecha de Vencimiento" />
+							</f:facet>
+							<h:outputText value="#{gluoSolicitudCdp.fechaVencimiento}" />
+						</p:column>
+
+						<p:column sortBy="#{gluoSolicitudCdp.estado}" style="text-align: center;" width="12%">
+							<f:facet name="header">
+								<h:outputText value="Estado"  />
+							</f:facet>
+							<h:outputText
+								value="#{(gluoSolicitudCdp.estado.trim() eq 'A')?('Abierta'):('Cerrada')}" />
+						</p:column>
+
+						<p:column sortBy="#{gluoSolicitudCdp.activo}" style="text-align: center;" width="11%">
+							<f:facet name="header">
+								<h:outputText value="Activo"/>
+							</f:facet>
+							<h:outputText
+								value="#{(gluoSolicitudCdp.activo.trim() eq 'A')?('Activo'):('Inactivo')}" />
+						</p:column>
+
+						<p:column sortBy="#{gluoSolicitudCdp.anulado}" style="text-align: center;" width="13%">
+							<f:facet name="header">
+								<h:outputText value="Anulado"/>
+							</f:facet>
+							<h:outputText
+								value="#{(gluoSolicitudCdp.anulado.trim() eq 'S')?('Si'):('No')}" />
+						</p:column>
+
+						<p:column headerText="Opciones"  width="13%">
+							<div align="center">
+								<p:commandButton id="btnEdit" icon="ui-icon-pencil"
+									update=":dialogGluoSolicitudCdp" title="Editar"
+									actionListener="#{solicitudCdpView.editar}">
+									<f:attribute name="selectedGluoSolicitudCdp"
+										value="#{gluoSolicitudCdp}" />
+								</p:commandButton>
+								<p:commandButton id="btnDelete" title="Anular"
+									actionListener="#{solicitudCdpView.anular}"
+									onclick="if(!confirm('¿Realmente desea anular esa solicitud de cdp?')){return false;}"
+									icon="ui-icon-cancel" update="@form">
+									<f:attribute name="selectedGluoSolicitudCdp"
+										value="#{gluoSolicitudCdp}" />
+								</p:commandButton>
+							</div>
+						</p:column>
+						
+					</p:dataTable>
+				</p:panel>
+				<p:panel id="panelBoton">
+					<div align="center">
+						<p:commandButton id="btnNew" value="Nueva Solicitud de CDP"
+							action="#{solicitudCdpView.nuevaSolicitudCDP()}"
+							update=":dialogGluoSolicitudCdp" />
+					</div>
+				</p:panel>
+			</h:form>
+			<p:dialog id="dialogGluoSolicitudCdp" appendTo="@(body)"
+				draggable="true" closable="false"
+				visible="#{solicitudCdpView.showDialog}" resizable="false"
+				modal="true"  height="400px">
+				<h:form id="formDialog">
+					<p:messages id="msg" autoUpdate="true" showDetail="false"
+						closable="true" />
+					<p:panel id="panelGluoSolicitudCdp" header="Solicitud de CDP">
+						<h:panelGrid columns="2" id="panelGrid">
+							<h:outputText id="msgDescripcion" value=" Descripcion" />
+							<h:panelGrid columns="1" id="panelGridDescripcion">
+								<p:inputTextarea id="txtDescripcion" rows="5" cols="50"
+									counter="displayDescripcion" maxlength="2000"
+									counterTemplate="{0} caracteres restantes." disabled="false"
+									autoResize="false" binding="#{solicitudCdpView.txtDescripcion}" />
+								<h:outputText id="displayDescripcion" />
+							</h:panelGrid>
+
+							<h:outputText id="msgAnofId_GluoAnoFiscal" value=" Año Fiscal" />
+							<p:inputText id="txtAnofId_GluoAnoFiscal" disabled="true"
+								binding="#{solicitudCdpView.txtAnofId_GluoAnoFiscal}" />
+
+							<h:outputText id="msgFechaExpedicion"
+								value=" Fecha de Expedición" />
+							<p:calendar showOn="button" navigator="true" locale="es"
+								placeholder="Fecha de Expedición " 
+								pattern="yyyy-MM-dd" mask="true"
+								converterMessage="Fecha incorrecta"
+								binding="#{solicitudCdpView.txtFechaExpedicion}" >
+								<p:ajax event="dateSelect"
+									listener="#{solicitudCdpView.fechaDeExpedicion}" />
+								<f:converter converterId="timestampConverter" />
+							</p:calendar>
+							<h:outputText id="msgFechaVencimiento"
+								value=" Fecha de Vencimiento" />
+							<p:calendar showOn="button" navigator="true" locale="es"
+								placeholder="Fecha de Expedición " 
+								pattern="yyyy-MM-dd" mask="true"
+								converterMessage="Fecha incorrecta"
+								binding="#{solicitudCdpView.txtFechaVencimiento}">
+								<p:ajax event="dateSelect"
+									listener="#{solicitudCdpView.fechaDeVencimiento}" />
+								<f:converter converterId="timestampConverter" />
+							</p:calendar>
+							<h:outputText id="msgActivo" value=" Anulado"
+								rendered="#{solicitudCdpView.selectedGluoSolicitudCdp == null ? false : true}" />
+							<p:selectOneRadio id="console"
+								binding="#{solicitudCdpView.sorAnulado}" disabled="true"
+								rendered="#{solicitudCdpView.selectedGluoSolicitudCdp == null ? false : true}">
+								<f:selectItem itemLabel="Si" itemValue="S" />
+								<f:selectItem itemLabel="No" itemValue="N" />
+							</p:selectOneRadio>
+						</h:panelGrid>
+					</p:panel>
+					<p:panel id="panelBotones">
+						<div align="center">
+							<p:commandButton id="btnSave"
+								binding="#{solicitudCdpView.btnSave}" value="Guardar"
+								disabled="#{solicitudCdpView.selectedGluoSolicitudCdp.anulado.trim() eq 'S' ? true : false}"
+								action="#{solicitudCdpView.actionGuardar()}"
+								update=":dialogGluoSolicitudCdp :frm:panelDataTableGluoSolicitudCdp" />
+							<p:commandButton id="btnClear" value="Limpiar"
+								disabled="#{solicitudCdpView.selectedGluoSolicitudCdp.anulado.trim() eq 'S' ? true : false}"
+								action="#{solicitudCdpView.limpiar()}"
+								update=":dialogGluoSolicitudCdp" />
+							<p:commandButton id="btnExit" value="Salir"
+								action="#{solicitudCdpView.cerrarDialogo()}"
+								update=":dialogGluoSolicitudCdp" />
+						</div>
+					</p:panel>
+				</h:form>
+			</p:dialog>
+		</f:view>
+	</ui:define>
+
+</ui:composition>

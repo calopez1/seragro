@@ -1,0 +1,190 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+
+	<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+	</h:head>
+
+	<h:body>
+		  <ui:composition template="/WEB-INF/facelets/template.xhtml">	
+		 
+		 	<ui:define name="body">	
+				<f:view>
+					<p:ajaxStatus onstart="PF('statusDialog').show()" onsuccess="PF('statusDialog').hide()"/>               
+					<p:dialog modal="true" widgetVar="statusDialog" header="Loading"  draggable="false" closable="false">  
+   						<p:graphicImage value="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/ajaxloadingbar.gif" />   
+					</p:dialog>
+					
+					<!-- Expired session -->
+					<p:idleMonitor onactive="PF('sessionTimeOutDialog').show();" timeout="#{session.maxInactiveInterval * 1000}" />
+					<p:dialog modal="true" widgetVar="sessionTimeOutDialog" header="Expired session"  draggable="false" closable="false">  
+	   					<h:outputText value="The session is finished" />
+	                 	<input id="confirmBackToLogin" 
+	                 		type="button" 
+	                 		value="Sign in"
+	                    	onclick="window.location='#{facesContext.externalContext.requestContextPath}/index.jsp';" />   
+					</p:dialog>
+					
+		  			<h:form id="frm">								  		
+						
+						<p:panel id="panelDataTableCargo" header="CargoData">
+							<p:growl id="men"/>				
+							<p:dataTable value="#{cargoView.data}" var="cargo"
+								paginator="true" rows="5">
+																										<p:column filterBy="#{cargo.cargId}" sortBy="#{cargo.cargId}" >
+										 <f:facet name="header">
+										<h:outputText value="cargId"/>
+										</f:facet>
+										 <h:outputText value="#{cargo.cargId}"/>
+										 </p:column>
+			                    																									
+										<p:column filterBy="#{cargo.auxilioAlimentacion}" sortBy="#{cargo.auxilioAlimentacion}" >
+										 <f:facet name="header">
+										<h:outputText value="AuxilioAlimentacion"/>
+										</f:facet>
+										 <h:outputText value="#{cargo.auxilioAlimentacion}"/>
+										</p:column>   
+			                    									
+										<p:column filterBy="#{cargo.auxilioTransporte}" sortBy="#{cargo.auxilioTransporte}" >
+										 <f:facet name="header">
+										<h:outputText value="AuxilioTransporte"/>
+										</f:facet>
+										 <h:outputText value="#{cargo.auxilioTransporte}"/>
+										</p:column>   
+			                    									
+										<p:column filterBy="#{cargo.codigo}" sortBy="#{cargo.codigo}" >
+										 <f:facet name="header">
+										<h:outputText value="Codigo"/>
+										</f:facet>
+										 <h:outputText value="#{cargo.codigo}"/>
+										</p:column>   
+			                    									
+										<p:column filterBy="#{cargo.estadoRegistro}" sortBy="#{cargo.estadoRegistro}" >
+										 <f:facet name="header">
+										<h:outputText value="EstadoRegistro"/>
+										</f:facet>
+										 <h:outputText value="#{cargo.estadoRegistro}"/>
+										</p:column>   
+			                    									
+										<p:column filterBy="#{cargo.fechaCreacion}" sortBy="#{cargo.fechaCreacion}" >
+										 <f:facet name="header">
+										<h:outputText value="FechaCreacion"/>
+										</f:facet>
+										 <h:outputText value="#{cargo.fechaCreacion}"/>
+										</p:column>   
+			                    									
+										<p:column filterBy="#{cargo.fechaModificacion}" sortBy="#{cargo.fechaModificacion}" >
+										 <f:facet name="header">
+										<h:outputText value="FechaModificacion"/>
+										</f:facet>
+										 <h:outputText value="#{cargo.fechaModificacion}"/>
+										</p:column>   
+			                    									
+										<p:column filterBy="#{cargo.nombre}" sortBy="#{cargo.nombre}" >
+										 <f:facet name="header">
+										<h:outputText value="Nombre"/>
+										</f:facet>
+										 <h:outputText value="#{cargo.nombre}"/>
+										</p:column>   
+			                    									
+										<p:column filterBy="#{cargo.salario}" sortBy="#{cargo.salario}" >
+										 <f:facet name="header">
+										<h:outputText value="Salario"/>
+										</f:facet>
+										 <h:outputText value="#{cargo.salario}"/>
+										</p:column>   
+			                    									
+										<p:column filterBy="#{cargo.usuCreador}" sortBy="#{cargo.usuCreador}" >
+										 <f:facet name="header">
+										<h:outputText value="UsuCreador"/>
+										</f:facet>
+										 <h:outputText value="#{cargo.usuCreador}"/>
+										</p:column>   
+			                    									
+										<p:column filterBy="#{cargo.usuModificacion}" sortBy="#{cargo.usuModificacion}" >
+										 <f:facet name="header">
+										<h:outputText value="UsuModificacion"/>
+										</f:facet>
+										 <h:outputText value="#{cargo.usuModificacion}"/>
+										</p:column>   
+			                    			                    
+								<p:column headerText="Options">
+									<p:commandButton id="btnEdit" icon="ui-icon-pencil"
+										update=":dialogCargo"
+										actionListener="#{cargoView.action_edit}">
+										<f:attribute name="selectedCargo" value="#{cargo}" />
+									</p:commandButton>
+									<p:commandButton id="btnDelete"									
+										title="Delete" actionListener="#{cargoView.action_delete_datatable}"
+										onclick="if(!confirm('Do you really want to delete this Entry?')){return false;}"
+										icon="ui-icon-trash" update="@form">
+										<f:attribute name="selectedCargo" value="#{cargo}" />
+									</p:commandButton>
+								</p:column>									                    
+							</p:dataTable>	
+						</p:panel>
+						<p:panel id="panelBoton">
+							<div align="center">
+								<p:commandButton id="btnNew" value="New"
+									action="#{cargoView.action_new()}" update=":dialogCargo" />
+							</div>
+						</p:panel>						
+		   			</h:form>
+					<p:dialog id="dialogCargo" appendTo="@(body)" draggable="true"
+						closable="false" visible="#{cargoView.showDialog}" resizable="false"
+						modal="true" width="500">
+						<h:form id="formDialog">
+							<p:messages id="msg" />
+							<p:panel id="panelCargo" header="Cargo">							
+							    <h:panelGrid columns="2" id="panelGrid" >
+																		 <h:outputText id="msgCargId" value="CargId"/>
+									 <p:inputText id="txtCargId" binding="#{cargoView.txtCargId}">
+									 <p:ajax update=":dialogCargo" listener="#{cargoView.listener_txtId}"/>
+									 </p:inputText>	
+																											
+																		<h:outputText id="msgAuxilioAlimentacion" value=" AuxilioAlimentacion"/>
+									<p:inputText id="txtAuxilioAlimentacion" disabled="true" binding="#{cargoView.txtAuxilioAlimentacion}"/>
+																		<h:outputText id="msgAuxilioTransporte" value=" AuxilioTransporte"/>
+									<p:inputText id="txtAuxilioTransporte" disabled="true" binding="#{cargoView.txtAuxilioTransporte}"/>
+																		<h:outputText id="msgCodigo" value=" Codigo"/>
+									<p:inputText id="txtCodigo" disabled="true" binding="#{cargoView.txtCodigo}"/>
+																		<h:outputText id="msgEstadoRegistro" value=" EstadoRegistro"/>
+									<p:inputText id="txtEstadoRegistro" disabled="true" binding="#{cargoView.txtEstadoRegistro}"/>
+																		<h:outputText id="msgNombre" value=" Nombre"/>
+									<p:inputText id="txtNombre" disabled="true" binding="#{cargoView.txtNombre}"/>
+																		<h:outputText id="msgSalario" value=" Salario"/>
+									<p:inputText id="txtSalario" disabled="true" binding="#{cargoView.txtSalario}"/>
+																		<h:outputText id="msgUsuCreador" value=" UsuCreador"/>
+									<p:inputText id="txtUsuCreador" disabled="true" binding="#{cargoView.txtUsuCreador}"/>
+																		<h:outputText id="msgUsuModificacion" value=" UsuModificacion"/>
+									<p:inputText id="txtUsuModificacion" disabled="true" binding="#{cargoView.txtUsuModificacion}"/>
+																		
+																													<h:outputText id="msgFechaCreacion" value=" FechaCreacion"/>
+																				<p:calendar showOn="button" navigator="true" locale="en" 
+										binding="#{cargoView.txtFechaCreacion}" >
+										<p:ajax event="dateSelect" listener="#{cargoView.listener_txtFechaCreacion}" />
+										</p:calendar>
+																				<h:outputText id="msgFechaModificacion" value=" FechaModificacion"/>
+																				<p:calendar showOn="button" navigator="true" locale="en" 
+										binding="#{cargoView.txtFechaModificacion}" >
+										<p:ajax event="dateSelect" listener="#{cargoView.listener_txtFechaModificacion}" />
+										</p:calendar>
+																										    </h:panelGrid>
+							</p:panel>						   
+							<p:panel id="panelBotones">
+								<div align="center">					
+									<p:commandButton id="btnSave" binding="#{cargoView.btnSave}" value="Save" action="#{cargoView.action_save()}" update=":dialogCargo :frm:panelDataTableCargo" />
+									<p:commandButton id="btnClear" value="Clear" action="#{cargoView.action_clear()}" update=":dialogCargo" />
+									<p:commandButton id="btnExit" value="Exit" action="#{cargoView.action_closeDialog()}" update=":dialogCargo" />
+								</div>
+							</p:panel>					
+						</h:form>
+					</p:dialog>
+				</f:view>
+			</ui:define>		
+		</ui:composition>	
+	</h:body>	
+</html>	

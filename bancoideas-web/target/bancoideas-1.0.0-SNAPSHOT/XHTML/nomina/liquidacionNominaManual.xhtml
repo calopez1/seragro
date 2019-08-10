@@ -1,0 +1,308 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+	<ui:define name="content">
+		<f:view>
+			<script type="text/javascript">
+				function justNumbers(e) {
+					var keynum = window.event ? window.event.keyCode : e.which;
+					if ((keynum == 8) || (keynum == 46) || (keynum == 44))
+						return true;
+
+					return /\d/.test(String.fromCharCode(keynum));
+				}
+			</script>
+			
+			<p:ajaxStatus onstart="PF('statusDialog').show()"
+				onsuccess="PF('statusDialog').hide()" />
+			<p:dialog modal="true" widgetVar="statusDialog" header="Cargando"
+				draggable="false" closable="false">
+				<p:graphicImage
+					value="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/ajaxloadingbar.gif" />
+			</p:dialog>
+
+			<!-- Expired session -->
+			<p:idleMonitor onactive="PF('sessionTimeOutDialog').show();"
+				timeout="#{session.maxInactiveInterval * 1000}" />
+			<p:dialog modal="true" widgetVar="sessionTimeOutDialog"
+				header="Sesión Finalizada" draggable="false" closable="false">
+				<h:outputText value="La sesión ha caducado." />
+				<input id="confirmBackToLogin" type="button" value="Iniciar Sesión"
+					onclick="window.location='#{facesContext.externalContext.requestContextPath}/index.jsp';" />
+			</p:dialog>
+
+	<!-- //////////////////////////////////////////////////////// FORMULARIO PRINCIPAL ////////////////////////////////////////////////////////  -->
+			
+			<h:form id="frmNominaManual">
+
+			<div align="center">
+				<p:panel style="width:90%;" header="Liquidación Nómina Manual">
+				<p:messages showDetail="false" autoUpdate="true" closable="true" />
+				<p:growl autoUpdate="true" />
+					<div align="left">
+					<h:panelGrid columns="2">	
+						<h:panelGrid columns="3">		
+							<p:outputLabel value="Seleccionar Liquidación Nómina:" />	
+							<p:inputText value="#{liquidacionNominaManualView.liquidacionNominaSeleccionada.descripcion}" readonly="true"></p:inputText>
+							<p:commandButton icon="ui-icon-search" title="Ver Liquidación" action="#{liquidacionNominaManualView.action_consultar_liquidacion}" update=":frmDlgLiquidacionesNomina" />
+							<p:outputLabel value="Seleccionar Empleado:" for="identificacionTercero" />		
+							<p:inputText id="identificacionTercero" value="#{liquidacionNominaManualView.empleadoSeleccionado.identificacion}" readonly="true" />
+							<p:commandButton icon="ui-icon-search"  action="#{liquidacionNominaManualView.action_consultar_empleados}" update=":frmDlgEmpleados" />
+							
+						</h:panelGrid>
+						<h:panelGrid columns="2">		
+							<p:outputLabel value="Salario base:" />	
+							<pe:inputNumber value="#{liquidacionNominaManualView.salarioBase}" styleClass="Wid20" style="text-align: right;" symbol="$ "
+										symbolPosition="p" decimalSeparator="," thousandSeparator="." minValue="0" validatorMessage="Valor no válido" decimalPlaces="2">
+										<p:ajax event="blur" update="@this" />
+							</pe:inputNumber>
+							<p:outputLabel value="Dias laborados:" />
+							 <p:spinner id="minMax" value="#{liquidacionNominaManualView.diasLaborados}" min="0" />
+						</h:panelGrid>
+					</h:panelGrid>
+					</div>
+				</p:panel>
+				
+				<p:spacer height="10"></p:spacer>
+				
+				<p:panel style="width:90%;" >
+					<div align="left">
+					
+					<p:dataTable id="tblConceptoNomina" var="item" value="#{liquidacionNominaManualView.lstLiquidacionNominaManual}"
+						style="width:100%; text-align: center" rows="10" paginator="true" paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+						rowsPerPageTemplate="5,10,15" filterDelay="1000">
+
+							<f:facet name="header">
+									Conceptos de Nómina a Liquidar
+							</f:facet>
+	
+							<p:column headerText="Concepto Nómina" sortBy="#{item.descripcionConcepto}"
+								filterBy="#{item.descripcionConcepto}" filterMatchMode="contains">
+								<h:outputText value="#{item.descripcionConcepto}" />
+							</p:column>
+							<p:column headerText="Tipo Concepto" sortBy="#{item.descripcionTipoConcepto}"
+								filterBy="#{item.descripcionTipoConcepto}" filterMatchMode="contains">
+								<h:outputText value="#{item.descripcionTipoConcepto}" />
+							</p:column>
+							
+							<p:column headerText="Valor" sortBy="#{item.valorCalculado}"
+								filterBy="#{item.valorCalculado}" filterMatchMode="contains">
+								<p:inputText value="#{item.valorCalculado}"/>
+							</p:column>
+							
+							<p:column headerText="Afiliación" style="width:50px;text-align: center">
+								<p:commandButton icon="ui-icon-search" title="Seleccionar Afiliación" oncomplete="PF('dlgAfiliaciones').show();" update=":frmDlgAfiliaaciones"
+								action="#{liquidacionNominaManualView.action_consultar_afiliaciones_empleado}">
+									<f:setPropertyActionListener value="#{item}" target="#{liquidacionNominaManualView.liquidacionManualSeleccionada}" />
+								</p:commandButton>
+							</p:column>
+							
+							<p:column headerText="Afiliacion" sortBy="#{item.afiliacionDTO.razonSocial}"
+								filterBy="#{item.afiliacionDTO.razonSocial}" filterMatchMode="contains">
+								<h:outputText value="#{item.afiliacionDTO.razonSocial}" />
+							</p:column>
+	
+					</p:dataTable>	
+					
+					</div>
+				</p:panel>
+				
+				<p:commandButton value="Guardar Liquidación" action="#{liquidacionNominaManualView.action_guardar_liquidacion}"></p:commandButton>
+			</div>
+			</h:form>
+
+	<!-- ////////////////////////////////////////////////// DIALOGO LIQUIDACIONES DE NOMINA //////////////////////////////////////////////////  -->
+
+
+	<p:dialog modal="true" widgetVar="dlgLiquidacionesNomina" header="Periodos Liquidación de Nómina" draggable="false" resizable="true" width="90%">
+				
+				<h:form id="frmDlgLiquidacionesNomina">
+				<p:outputLabel escape="false" value="Por favor seleccionar el periodo de nómina a modificar: "/>
+					
+					<div align="center">
+						<p:dataTable id="tblLiquidaciones" var="item" value="#{liquidacionNominaManualView.lstLiquidacionNomina}"
+						style="width:90%; text-align: center" rows="10" paginator="true" paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+						rowsPerPageTemplate="5,10,15" filterDelay="1000">
+
+							<f:facet name="header">
+									Periodos Liquidación de Nómina
+							</f:facet>
+	
+							<p:column headerText="Liquidación" sortBy="#{item.consecutivo}"
+								filterBy="#{item.consecutivo}" filterMatchMode="contains">
+								<h:outputText value="#{item.consecutivo}" />
+							</p:column>
+							<p:column headerText="Descripción" sortBy="#{item.descripcion}"
+								filterBy="#{item.descripcion}" filterMatchMode="contains">
+								<h:outputText value="#{item.descripcion}" />
+							</p:column>
+							<p:column headerText="Fecha Inicio" sortBy="#{item.fechaInicio}"
+								filterBy="#{item.fechaInicio}" filterMatchMode="contains">
+	
+								<p:outputLabel value="#{item.fechaInicio}">
+									<f:convertDateTime type="date" pattern="dd-MM-yyyy" />
+								</p:outputLabel>
+	
+							</p:column>
+	
+							<p:column headerText="Fecha Fin" sortBy="#{item.fechaFin}"
+								filterBy="#{item.fechaFin}" filterMatchMode="contains">
+	
+								<p:outputLabel value="#{item.fechaFin}">
+									<f:convertDateTime type="date" pattern="dd-MM-yyyy" />
+								</p:outputLabel>
+	
+							</p:column>
+							<p:column headerText="Estado" sortBy="#{item.estado}"
+								filterBy="#{item.estado}" filterMatchMode="contains">
+								<h:outputText value="#{item.estado}" />
+							</p:column>
+	
+							<p:column style="width:32px;text-align: center">
+								<p:commandButton icon="ui-icon-check" title="Ver Liquidación" onclick="PF('dlgLiquidacionesNomina').hide();" update=":frmNominaManual">
+									<f:setPropertyActionListener value="#{item}" target="#{liquidacionNominaManualView.liquidacionNominaSeleccionada}" />
+								</p:commandButton>
+							</p:column>
+
+					</p:dataTable>		
+									
+						
+						<div class="EmptyBox20" />
+						
+					</div>
+					<div class="EmptyBox20" />
+				</h:form>
+			</p:dialog>
+
+	<!-- ////////////////////////////////////////////////// DIALOGO EMPLEADOS //////////////////////////////////////////////////////////////  -->
+
+			<p:dialog header="Empleados" style="align-text: center"
+					widgetVar="dialogEmpleados" modal="true" height="400" width="90%">
+						<h:form id="frmDlgEmpleados">
+						
+						<div align="center">
+							<p:dataTable id="listarEmpleadosDataTable"
+								var="empleado"
+								value="#{liquidacionNominaManualView.lstEmpleados}"
+								style="width:90%; text-align: center" rows="10" paginator="true" paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+								rowsPerPageTemplate="5,10,15" filterDelay="1000">
+								
+								<f:facet name="header">
+									Empleados
+							</f:facet>
+								
+								<p:column headerText="Tipo Identificación" filterBy="#{empleado.tipoIdentifiacion}"
+									filterMatchMode="startsWith">
+									<p:outputLabel value="#{empleado.tipoIdentifiacion}" />
+								</p:column>
+								
+								<p:column headerText="Identificación" filterBy="#{empleado.identificacion}"
+									filterMatchMode="startsWith">
+									<p:outputLabel value="#{empleado.identificacion}" />
+								</p:column>
+								
+								<p:column headerText="Código" filterBy="#{empleado.codigo}"
+									filterMatchMode="startsWith">
+									<p:outputLabel value="#{empleado.codigo}" />
+								</p:column>
+								
+								<p:column headerText="Primer Nombre" filterBy="#{empleado.primerNombre}"
+									filterMatchMode="startsWith">
+									<p:outputLabel value="#{empleado.primerNombre}" />
+								</p:column>
+								
+								<p:column headerText="Segundo Nombre" filterBy="#{empleado.segundoNombre}"
+									filterMatchMode="startsWith">
+									<p:outputLabel value="#{empleado.segundoNombre}" />
+								</p:column>
+								
+								<p:column headerText="Primer Apellido" filterBy="#{empleado.primerApellido}"
+									filterMatchMode="startsWith">
+									<p:outputLabel value="#{empleado.primerApellido}" />
+								</p:column>
+								
+								<p:column headerText="Segundo Apellido" filterBy="#{empleado.segundoApellido}"
+									filterMatchMode="startsWith">
+									<p:outputLabel value="#{empleado.segundoApellido}" />
+								</p:column>
+								
+								<p:column style="width:32px;text-align: center">
+									<p:commandButton icon="ui-icon-check" title="Seleccionar Empleado" onclick="PF('dialogEmpleados').hide();" update=":frmNominaManual">
+										<f:setPropertyActionListener value="#{empleado}" target="#{liquidacionNominaManualView.empleadoSeleccionado}" />
+									</p:commandButton>
+								</p:column>	
+								
+							</p:dataTable>	
+						</div>		
+					</h:form>
+			</p:dialog>
+			
+			<!-- ////////////////////////////////////////////////// DIALOGO AFILIACIONES  DE EMPLEADO //////////////////////////////////////////////////  -->
+
+
+		<p:dialog modal="true" widgetVar="dlgAfiliaciones" header="Afiliaciones" draggable="false" resizable="true" width="90%">
+				
+				<h:form id="frmDlgAfiliaaciones">
+				<p:outputLabel escape="false" value="Por favor seleccione la afiliación correspondiente: "/>
+					
+					<div align="center">
+						<p:dataTable id="tblAfiliaciones" var="item" value="#{liquidacionNominaManualView.lstAfiliaciones}"
+						style="width:90%; text-align: center" rows="10" paginator="true" paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+						rowsPerPageTemplate="5,10,15" filterDelay="1000">
+
+							<f:facet name="header">
+									Afiliaciones
+							</f:facet>
+	
+							<p:column headerText="Tipo Entidad" sortBy="#{item.descripcionTipoEntidad}"
+								filterBy="#{item.descripcionTipoEntidad}" filterMatchMode="contains">
+								<h:outputText value="#{item.descripcionTipoEntidad}" />
+							</p:column>
+							<p:column headerText="Razón Social" sortBy="#{item.razonSocial}"
+								filterBy="#{item.razonSocial}" filterMatchMode="contains">
+								<h:outputText value="#{item.razonSocial}" />
+							</p:column>
+							<p:column headerText="Fecha Inicio" sortBy="#{item.fechaInicio}"
+								filterBy="#{item.fechaInicio}" filterMatchMode="contains">
+	
+								<p:outputLabel value="#{item.fechaInicio}">
+									<f:convertDateTime type="date" pattern="dd-MM-yyyy" />
+								</p:outputLabel>
+	
+							</p:column>
+	
+							<p:column headerText="Fecha Fin" sortBy="#{item.fechaFin}"
+								filterBy="#{item.fechaFin}" filterMatchMode="contains">
+	
+								<p:outputLabel value="#{item.fechaFin}">
+									<f:convertDateTime type="date" pattern="dd-MM-yyyy" />
+								</p:outputLabel>
+	
+							</p:column>
+							
+							<p:column style="width:32px;text-align: center">
+								<p:commandButton icon="ui-icon-check" title="Seleccionar Afiliación" oncomplete="PF('dlgAfiliaciones').hide();" update=":frmNominaManual"
+								action="#{liquidacionNominaManualView.action_seleccionar_afiliacion}">
+									<f:setPropertyActionListener value="#{item}" target="#{liquidacionNominaManualView.afiliacionSeleccionada}" />
+								</p:commandButton>
+							</p:column>
+
+					</p:dataTable>		
+									
+						
+						<div class="EmptyBox20" />
+						
+					</div>
+					<div class="EmptyBox20" />
+				</h:form>
+			</p:dialog>
+
+
+		</f:view>
+	</ui:define>
+
+</ui:composition>

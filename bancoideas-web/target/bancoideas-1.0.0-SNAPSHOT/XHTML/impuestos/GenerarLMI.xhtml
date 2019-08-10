@@ -1,0 +1,375 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	template="/WEB-INF/template.xhtml">
+
+	<ui:define name="content">
+		<script type="text/javascript">
+			function justNumbers(e) {
+				var keynum = window.event ? window.event.keyCode : e.which;
+				if ((keynum == 8) || (keynum == 46) || (keynum == 44))
+					return true;
+
+				return /\d/.test(String.fromCharCode(keynum));
+			}
+			PrimeFaces.locales['es'] = {
+				closeText : 'Cerrar',
+				prevText : 'Anterior',
+				nextText : 'Siguiente',
+				monthNames : [ 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo',
+						'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre',
+						'Noviembre', 'Diciembre' ],
+				monthNamesShort : [ 'Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun',
+						'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic' ],
+				dayNames : [ 'Domingo', 'Lunes', 'Martes', 'Miércoles',
+						'Jueves', 'Viernes', 'Sábado' ],
+				dayNamesShort : [ 'Dom', 'Lun', 'Mar', 'Mie', 'Jue', 'Vie',
+						'Sab' ],
+				dayNamesMin : [ 'D', 'L', 'M', 'M', 'J', 'V', 'S' ],
+				weekHeader : 'Semana',
+				firstDay : 1,
+				isRTL : false,
+				showMonthAfterYear : false,
+				yearSuffix : '',
+				timeOnlyTitle : 'Sólo hora',
+				timeText : 'Tiempo',
+				hourText : 'Hora',
+				minuteText : 'Minuto',
+				secondText : 'Segundo',
+				currentText : 'Fecha actual',
+				ampm : false,
+				month : 'Mes',
+				week : 'Semana',
+				day : 'Día',
+				allDayText : 'Todo el día'
+			};
+		</script>
+		<style type="text/css">
+.inputOnDataTable input {
+	width: 200px !important;
+}
+</style>
+		<f:view>
+			<p:ajaxStatus onstart="PF('statusDialog').show()"
+				onsuccess="PF('statusDialog').hide()" />
+			<p:dialog modal="true" widgetVar="statusDialog"
+				header="Cargando Información" draggable="false" closable="false">
+				<p:graphicImage
+					value="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/ajaxloadingbar.gif" />
+			</p:dialog>
+
+			<!-- Expired session -->
+			<p:idleMonitor onactive="PF('sessionTimeOutDialog').show();"
+				timeout="#{session.maxInactiveInterval * 1000}" />
+			<p:dialog modal="true" widgetVar="sessionTimeOutDialog"
+				header="Sesión Caducada" draggable="false" closable="false">
+				<h:outputText value="La sesión ha finalizado" />
+				<input id="confirmBackToLogin" type="button" value="Iniciar Sesión"
+					onclick="window.location='#{facesContext.externalContext.requestContextPath}/index.jsp';" />
+			</p:dialog>
+
+
+			<h:form id="frm" style="text-align: center;">
+
+				<p:panel id="panelLmi"
+					header="Generar Liquidación Masiva de Impuestos">
+					<div align="left">
+						<h:panelGrid columns="2" columnClasses="label,value"
+							cellpadding="2">
+							<p:outputLabel value="Año Fiscal" for="txtAnoFiscal" />
+							<p:inputText id="txtAnoFiscal"
+								binding="#{gluoLiquidacionMasivaImpuestosView.txtAnoFiscal}"
+								style="width: 200px;" />
+
+							<h:outputText id="msgDescripcion" value=" Descripcion" />
+							<h:panelGrid columns="1" id="panelGridDescripcion">
+								<p:inputTextarea id="txtDescripcion" rows="5" cols="50"
+									counter="displayDescripcion" maxlength="2000"
+									counterTemplate="{0} caracteres restantes." disabled="false"
+									autoResize="false"
+									binding="#{gluoLiquidacionMasivaImpuestosView.txtDescripcion}" />
+								<h:outputText id="displayDescripcion" />
+							</h:panelGrid>
+							
+							<p:outputLabel value="Fecha de Vencimiento" for="calendarFechaVencimiento" />
+							<p:calendar id="calendarFechaVencimiento"
+								binding="#{gluoLiquidacionMasivaImpuestosView.txtFechaVencimiento}"
+								placeholder="Fecha de Vencimiento " size="32" locale="es"
+								navigator="true" pattern="yyyy-MM-dd" mask="true"
+								converterMessage="Fecha incorrecta">
+								<p:ajax event="dateSelect"
+										listener="#{gluoLiquidacionMasivaImpuestosView.fechaVencimiento}" />
+								<f:converter converterId="timestampConverter" />
+							</p:calendar>
+
+							<p:commandButton id="btnNew" value="Generar"
+								action="#{gluoLiquidacionMasivaImpuestosView.generarLmi()}"
+								update="@([id$=panelDataTableGluoLiquidacionMasivaImpuestos]),
+										@([id$=dataTableGluoLiquidacionMasivaImpuestos]), @([id$=panelLmi]),
+										@([id$=dialogOtrosImpuestos]), @([id$=listaOtrosImpuestos])" />
+						</h:panelGrid>
+					</div>
+				</p:panel>
+
+				<p:panel id="panelDataTableGluoLiquidacionMasivaImpuestos"
+					header="Liquidaciones Generadas">
+					<p:growl id="men" autoUpdate="true" showDetail="false" />
+					<p:dataTable id="dataTableGluoLiquidacionMasivaImpuestos"
+						value="#{gluoLiquidacionMasivaImpuestosView.data}"
+						paginator="true"
+						paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+						rows="6" var="gluoLiquidacionMasivaImpuestos"
+						emptyMessage="No se han encontrado liquidaciones de impuestos registradas activos."
+						filterDelay="1000">
+
+						<p:column filterBy="#{gluoLiquidacionMasivaImpuestos.descripcion}"
+							sortBy="#{gluoLiquidacionMasivaImpuestos.descripcion}"
+							filterMatchMode="contains">
+							<f:facet name="header">
+								<h:outputText value="Descripción" />
+							</f:facet>
+							<h:outputText
+								value="#{gluoLiquidacionMasivaImpuestos.descripcion}" />
+						</p:column>
+
+						<p:column
+							filterBy="#{gluoLiquidacionMasivaImpuestos.fechaCreacion}"
+							sortBy="#{gluoLiquidacionMasivaImpuestos.fechaCreacion}">
+							<f:facet name="header">
+								<h:outputText value="Fecha de Creación" />
+							</f:facet>
+							<h:outputText
+								value="#{gluoLiquidacionMasivaImpuestos.fechaCreacion}" />
+						</p:column>
+
+						<p:column filterBy="#{gluoLiquidacionMasivaImpuestos.anoFiscal}"
+							sortBy="#{gluoLiquidacionMasivaImpuestos.anoFiscal}">
+							<f:facet name="header">
+								<h:outputText value="Año Fiscal" />
+							</f:facet>
+							<h:outputText value="#{gluoLiquidacionMasivaImpuestos.anoFiscal}" />
+						</p:column>
+
+						<p:column filterBy="#{gluoLiquidacionMasivaImpuestos.activo}"
+							sortBy="#{gluoLiquidacionMasivaImpuestos.activo}"
+							filterMatchMode="contains">
+							<f:facet name="header">
+								<h:outputText value="Activo" />
+							</f:facet>
+							<h:outputText
+								value="#{(gluoLiquidacionMasivaImpuestos.activo.trim() eq 'A')?('Activo'):('Inactivo')}" />
+						</p:column>
+
+						<p:column headerText="Opciones">
+							<p:commandButton id="btnEdit" icon="ui-icon-search"
+								title="Ver Detalle"
+								update=":dialogGluoLiquidacionMasivaImpuestos, @([id$=gluoDetalleLiquidacionMasivaImpuestos])"
+								actionListener="#{gluoLiquidacionMasivaImpuestosView.verDetalle}"
+								oncomplete="PF('dialogGluoLiquidacionMasivaImpuestos').show();">
+								<f:attribute name="selectedGluoLiquidacionMasivaImpuestos"
+									value="#{gluoLiquidacionMasivaImpuestos}" />
+							</p:commandButton>
+							
+							<p:commandButton id="txtOtrosImpuestos" title="Ver Detalle Otros Impuestos"
+											icon="ui-icon-search" update="@([id$=dialogOtrosImpuestos]), @([id$=listaOtrosImpuestos])"
+											actionListener="#{gluoLiquidacionMasivaImpuestosView.verOtrosImpuestos}"
+											oncomplete="PF('dialogOtrosImpuestos').show();" />
+							
+						</p:column>
+					</p:dataTable>
+				</p:panel>
+								
+			
+	<!-- ************************************************** -->
+	<!-- **		DIÁLOGO LIQUIDACIÓN OTROS IMPUESTOS	     ** -->
+	<!-- ************************************************** -->
+	<p:dialog header="Liquidación otros conceptos impuestos" id="dialogOtrosImpuestos"
+		widgetVar="dialogOtrosImpuestos" modal="true" height="450" width="90%">		
+		<div style="text-align: center;">			
+			<p:scrollPanel mode="native" style="width:100%; height:500px;">	
+						
+				<p:dataTable id="listaOtrosImpuestos" var="otrosImpuestos" paginator="true" rows="10"
+					value="#{gluoLiquidacionMasivaImpuestosView.listOtrosConceptosImpuestoDTOs}"															
+					rowKey="#{otrosImpuestos.lociId}" filterDelay="1000">
+					
+					<p:column headerText="Número Predio" filterBy="#{otrosImpuestos.numeroPredio}" 
+						filterMatchMode="contains" >
+						<h:outputText value="#{otrosImpuestos.numeroPredio}" />
+					</p:column>
+					
+					<p:column headerText="Predio" filterBy="#{otrosImpuestos.nombrePredio}" 
+						filterMatchMode="contains" >
+						<h:outputText value="#{otrosImpuestos.nombrePredio}" >
+						</h:outputText>
+					</p:column>
+					
+					<p:column headerText="Concepto Impuesto" filterBy="#{otrosImpuestos.nombreConceptoImpuesto}" 
+						filterMatchMode="contains" >
+						<h:outputText value="#{otrosImpuestos.nombreConceptoImpuesto}" >
+						</h:outputText>
+					</p:column>
+					
+					<p:column headerText="Valor Base" filterBy="#{otrosImpuestos.valorBase}" 
+						filterMatchMode="contains" >
+						<h:outputText value="#{otrosImpuestos.valorBase}" >
+							<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+						</h:outputText>
+					</p:column>
+
+					<p:column headerText="Porcentaje/TantoXMil" filterBy="#{otrosImpuestos.nombrePorcentajeTantoXMil}" 
+						filterMatchMode="contains">
+						<h:outputText value="#{otrosImpuestos.nombrePorcentajeTantoXMil}" />
+					</p:column>	
+					
+					<p:column headerText="Valor Porcentaje/TantoXMil" filterBy="#{otrosImpuestos.valorPorcentajeTantoXMil}" 
+						filterMatchMode="contains">
+						<h:outputText value="#{otrosImpuestos.valorPorcentajeTantoXMil}" >
+							<f:convertNumber pattern="#,##0.00" />
+						</h:outputText>
+					</p:column>		
+					
+					<p:column headerText="Valor Calculado" filterBy="#{otrosImpuestos.valorCalculado}" 
+						filterMatchMode="contains">
+						<h:outputText value="#{otrosImpuestos.valorCalculado}" >
+							<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+						</h:outputText>
+					</p:column>	
+							
+				</p:dataTable>
+			</p:scrollPanel>			
+		</div>			
+	</p:dialog> <!-- **		DIÁLOGO LIQUIDACIÓN OTROS IMPUESTOS	     ** -->
+				
+				
+				
+				
+				
+				
+				
+
+			</h:form>
+			<p:dialog id="dialogGluoLiquidacionMasivaImpuestos"
+				widgetVar="dialogGluoLiquidacionMasivaImpuestos" appendTo="@(body)"
+				draggable="true" closable="true"
+				resizable="false" modal="true" height="400" width="90%"
+				header="Detalle de liquidación masiva de impuestos">
+				<h:form id="formDialog">
+					<p:messages id="msg" autoUpdate="true" showDetail="false"
+						closable="true" />
+					<p:scrollPanel mode="native" style="width:100%; height:400px;">
+						<p:dataTable id="gluoDetalleLiquidacionMasivaImpuestos" var="gluoDetalleLiquidacionMasivaImpuestos"
+							paginator="true"
+							paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+							rows="6"
+							value="#{gluoLiquidacionMasivaImpuestosView.dataDlmi}"
+							emptyMessage="No se han encontrado registros activos."
+							filterDelay="1000">
+							
+							<p:column
+								filterBy="#{gluoDetalleLiquidacionMasivaImpuestos.numeroPredio}"
+								sortBy="#{gluoDetalleLiquidacionMasivaImpuestos.numeroPredio}"
+								filterMatchMode="contains">
+								<f:facet name="header">
+									<h:outputText value="Número predio" />
+								</f:facet>
+								<h:outputText
+									value="#{gluoDetalleLiquidacionMasivaImpuestos.numeroPredio}" />
+							</p:column>	
+							
+							<p:column
+								filterBy="#{gluoDetalleLiquidacionMasivaImpuestos.descripcionPredio}"
+								sortBy="#{gluoDetalleLiquidacionMasivaImpuestos.descripcionPredio}"
+								filterMatchMode="contains">
+								<f:facet name="header">
+									<h:outputText value="Predio" />
+								</f:facet>
+								<h:outputText
+									value="#{gluoDetalleLiquidacionMasivaImpuestos.descripcionPredio}" />
+							</p:column>
+							
+							
+							<p:column
+								filterBy="#{gluoDetalleLiquidacionMasivaImpuestos.rangoAvaluoInicial}"
+								sortBy="#{gluoDetalleLiquidacionMasivaImpuestos.rangoAvaluoInicial}"
+								filterMatchMode="contains">
+								<f:facet name="header">
+									<h:outputText value="Rango Avalúo" />
+								</f:facet>
+								<h:outputText
+									value="#{gluoDetalleLiquidacionMasivaImpuestos.rangoAvaluoInicial}">
+									<f:convertNumber type="currency" currencySymbol="$" locale="es_CO"/>
+								</h:outputText>
+								<h:outputText value=" - " />
+								<h:outputText
+									value="#{gluoDetalleLiquidacionMasivaImpuestos.rangoAvaluoFinal}">
+									<f:convertNumber type="currency" currencySymbol="$" locale="es_CO"/>
+								</h:outputText>
+							</p:column>
+
+
+							<p:column
+								filterBy="#{gluoDetalleLiquidacionMasivaImpuestos.tarifaTxm}"
+								sortBy="#{gluoDetalleLiquidacionMasivaImpuestos.tarifaTxm}"
+								filterMatchMode="contains">
+								<f:facet name="header">
+									<h:outputText value="Tarifa(Tanto x Mil)" />
+								</f:facet>
+								<h:outputText
+									value="#{gluoDetalleLiquidacionMasivaImpuestos.tarifaTxm} / 1000" />
+							</p:column>
+
+							<p:column
+								filterBy="#{gluoDetalleLiquidacionMasivaImpuestos.valorAvaluo}"
+								sortBy="#{gluoDetalleLiquidacionMasivaImpuestos.valorAvaluo}"
+								filterMatchMode="contains">
+								<f:facet name="header">
+									<h:outputText value="Valor Avalúo" />
+								</f:facet>
+								<h:outputText
+									value="#{gluoDetalleLiquidacionMasivaImpuestos.valorAvaluo}">
+									<f:convertNumber type="currency" currencySymbol="$" locale="es_CO"/>
+									</h:outputText>
+							</p:column>
+
+							<p:column
+								filterBy="#{gluoDetalleLiquidacionMasivaImpuestos.valorPredialCalculado}"
+								sortBy="#{gluoDetalleLiquidacionMasivaImpuestos.valorPredialCalculado}"
+								filterMatchMode="contains">
+								<f:facet name="header">
+									<h:outputText value="Valor del Predial Calculado" />
+								</f:facet>
+								<h:outputText
+									value="#{gluoDetalleLiquidacionMasivaImpuestos.valorPredialCalculado}">
+									<f:convertNumber type="currency" currencySymbol="$" locale="es_CO"/>
+									</h:outputText>
+							</p:column>
+
+							<p:column
+								filterBy="#{gluoDetalleLiquidacionMasivaImpuestos.valorPredialPagar}"
+								sortBy="#{gluoDetalleLiquidacionMasivaImpuestos.valorPredialPagar}"
+								filterMatchMode="contains">
+								<f:facet name="header">
+									<h:outputText value="Valor del Predial a Pagar" />
+								</f:facet>
+								<h:outputText
+									value="#{gluoDetalleLiquidacionMasivaImpuestos.valorPredialPagar}">
+									<f:convertNumber type="currency" currencySymbol="$" locale="es_CO"/>
+									</h:outputText>
+							</p:column>
+							
+							
+							
+						</p:dataTable>
+					</p:scrollPanel>
+				</h:form>
+			</p:dialog>
+			
+			
+			
+		</f:view>
+	</ui:define>
+
+</ui:composition>

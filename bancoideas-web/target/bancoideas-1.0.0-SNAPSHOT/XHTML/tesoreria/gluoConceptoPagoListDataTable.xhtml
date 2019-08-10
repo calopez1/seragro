@@ -1,0 +1,204 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/template.xhtml"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+
+	<ui:define name="content">
+		<f:view>
+		<p:ajaxStatus onstart="PF('statusDialog').show()"
+			onsuccess="PF('statusDialog').hide()" />
+		<p:dialog modal="true" widgetVar="statusDialog" header="Cargando"
+			draggable="false" closable="false">
+			<p:graphicImage
+				value="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/ajaxloadingbar.gif" />
+		</p:dialog>
+
+		<!-- Expired session -->
+		<p:idleMonitor onactive="PF('sessionTimeOutDialog').show();"
+			timeout="#{session.maxInactiveInterval * 1000}" />
+		<p:dialog modal="true" widgetVar="sessionTimeOutDialog"
+			header="Sesión terminada" draggable="false" closable="false">
+			<h:outputText value="La sesión ha finalizado" />
+			<input id="confirmBackToLogin" type="button" value="Iniciar sesión"
+				onclick="window.location='#{facesContext.externalContext.requestContextPath}/index.jsp';" />
+		</p:dialog>
+		
+		<script type="text/javascript">
+			function showStatus() {
+			    statusDialog.show();
+			}
+			 
+			function hideStatus() {
+			    statusDialog.hide();
+			}
+		</script>
+
+		<style type="text/css">
+			.ui-panel {
+				margin-top: 20px
+			}
+			
+			.ui-tabs-top {
+				background-color: #FFFFFF;
+			}
+			
+			.one {
+				width: 40%;
+			}
+			
+			.two {
+				width: 60%;
+			}
+			
+			.col50Left{
+				width: 10%;
+				text-align: left;
+			}
+			
+			.col50Right{
+				width: 10%;
+				text-align: right;
+			}
+			
+			.txt100{
+				width: 100%;
+			}
+			
+		</style>
+
+		<h:form id="idForm">	
+		
+			<p:panel>
+				<h:outputText value="Gestione conceptos de pago" styleClass="FontBold Fs18 hardblue" />
+			</p:panel>							  		
+						
+			<p:panel id="panelDataTableGluoConceptoPago" header="Listado de Conceptos de Pago">
+			
+				<p:growl id="men" showDetail="false" autoUpdate="true"/>
+								
+					<p:dataTable value="#{gluoConceptoPagoView.listaConceptoPagoDTOAnhoFiscal}" var="gluoConceptoPago" paginator="true" rows="10" reflow="true"
+							 	  emptyMessage="Sin registros" filterDelay="2000" rowKey="#{gluoConceptoPago.copaId}" rendered="true" scrollable="true" 
+							 	  scrollWidth="100%">
+						
+						<p:column headerText="Concepto" filterBy="#{gluoConceptoPago.concepto}" sortBy="#{gluoConceptoPago.concepto}" filterMatchMode="contains">
+							 <h:outputText value="#{gluoConceptoPago.concepto}"/>
+						</p:column>
+						
+						<p:column headerText="Estado de Registro" filterBy="#{gluoConceptoPago.estadoRegistro}" sortBy="#{gluoConceptoPago.estadoRegistro}" >
+							 <h:outputText value="#{gluoConceptoPago.estadoRegistro}"/>
+						</p:column>     
+				                    									
+			                    			                    
+						<p:column headerText="Opciones">
+							<p:commandButton id="btnEdit" icon="ui-icon-pencil"
+										update=":idForm:dialogGluoConceptoPago" oncomplete="PF('dialogConceptoPago').show();" title="Editar"
+										actionListener="#{gluoConceptoPagoView.action_edit}">
+								<f:attribute name="selectedGluoConceptoPago" value="#{gluoConceptoPago}" />
+							</p:commandButton>
+							
+							<p:commandButton id="btnDelete"									
+										title="Inactivar" actionListener="#{gluoConceptoPagoView.action_delete_datatable}"
+										onclick="if(!confirm('Realmente desea inactivar este registro?')){return false;}"
+										icon="ui-icon-trash" update="@form">
+								<f:attribute name="selectedGluoConceptoPago" value="#{gluoConceptoPago}" />
+							</p:commandButton>
+						</p:column>									                    
+					</p:dataTable>	
+					
+					<br />
+					
+					<div align="center">
+						<h:panelGrid id="panelGridNew" columns="1">
+							<p:commandButton id="btnNew" value="Crear nuevo" action="#{gluoConceptoPagoView.action_new()}" oncomplete="PF('dialogConceptoPago').show();" update=":idForm:dialogGluoConceptoPago" />
+						</h:panelGrid>
+					</div>
+				</p:panel>
+						
+					<p:dialog id="dialogGluoConceptoPago" widgetVar="dialogConceptoPago" draggable="true"
+						closable="false" resizable="false" position="center top" modal="true" width="900">
+						
+							<p:growl id="msgDialog" showDetail="false"/>
+							
+							<p:panel id="panelGluoConceptoPago" header="Concepto de Pago" columnClasses="one,two">							
+							   <div align="center">
+								    <h:panelGrid columns="2" id="panelGrid">
+										<h:outputText value=" Concepto"/>
+										<p:inputText id="txtConcepto"  binding="#{gluoConceptoPagoView.txtConcepto}" maxlength="50"/>
+										
+										<h:outputText value=" Activo"/>
+										<p:selectOneMenu id="somActivo" binding="#{gluoConceptoPagoView.somActivo}">
+											<f:selectItem itemLabel="Activo" itemValue="A"/>
+											<f:selectItem itemLabel="Inactivo" itemValue="I"/>
+										</p:selectOneMenu>
+										
+										<p:inputText id="txtCopaId" binding="#{gluoConceptoPagoView.txtCopaId}" type="hidden"/>
+									</h:panelGrid>
+								</div>
+							</p:panel>
+							
+							<h:panelGrid id="panelDeducciones" columns="1" style="width:850px;">
+								<p:scrollPanel id="pnlCuentasDeducciones" mode="native" style="width:850px; height:380px">
+									<p:dataTable id="tableDeducciones" binding="#{gluoConceptoPagoView.dtTableDeducciones}" value="#{gluoConceptoPagoView.listDeducciones}" var="gluoDeduccion" paginator="true" rows="10" reflow="true"
+											 	 emptyMessage="Sin registros" filterDelay="2000" rowKey="#{gluoDeduccion.deduId}" rendered="true" scrollable="true" 
+											 	 scrollWidth="100%" selection="#{gluoConceptoPagoView.listSelectedGluoDeduccion}">
+											 
+										<f:facet name="header">
+                             				Deducciones asociadas
+                         				</f:facet>
+											 	
+										<p:column selectionMode="multiple" style="width:5%; text-align:center" width="50"/>	 	  
+							
+										<p:column headerText="Año Fiscal" filterBy="#{gluoDeduccion.anioFiscal}" sortBy="#{gluoDeduccion.anioFiscal}" width="70" filterMatchMode="contains">
+											 <h:outputText value="#{gluoDeduccion.anioFiscal}"/>
+										</p:column>
+							
+										<p:column headerText="Concepto" filterBy="#{gluoDeduccion.concepto}" sortBy="#{gluoDeduccion.concepto}" width="200">
+											 <h:outputText value="#{gluoDeduccion.concepto}"/>
+										</p:column>  
+										
+										<p:column headerText="Cuenta Contable" filterBy="#{gluoDeduccion.descripcionCuentaContable}" sortBy="#{gluoDeduccion.descripcionCuentaContable}" width="200">
+											 <h:outputText value="#{gluoDeduccion.descripcionCuentaContable}"/>
+										</p:column>   
+							                    	
+										<p:column headerText="Valor Base" filterBy="#{gluoDeduccion.valorBase}" sortBy="#{gluoDeduccion.valorBase}" width="200">
+											 <h:outputText value="#{gluoDeduccion.valorBase}">
+											 	<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+											 </h:outputText>
+										</p:column>  				 
+							            
+							            <p:column headerText="Porcentaje" filterBy="#{gluoDeduccion.porcentaje}" sortBy="#{gluoDeduccion.porcentaje}" width="200">
+											 <h:outputText value="#{gluoDeduccion.porcentaje}">
+											 	<f:convertNumber pattern="#,##0 ¤" currencySymbol="%"/>
+											 </h:outputText>
+										</p:column> 
+							             
+							            <p:column headerText="Tarifa" filterBy="#{gluoDeduccion.tarifa}" sortBy="#{gluoDeduccion.tarifa}" width="200">
+											<h:outputText value="#{gluoDeduccion.tarifa}">
+												<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+											</h:outputText>
+										</p:column>
+										         									
+										<p:column headerText="Rubro" filterBy="#{gluoDeduccion.descripcionRubroPresupuesto}" sortBy="#{gluoDeduccion.descripcionRubroPresupuesto}" width="200">
+											 <h:outputText value="#{gluoDeduccion.descripcionRubroPresupuesto}"/>
+										</p:column>   
+									</p:dataTable>	
+								</p:scrollPanel>
+							</h:panelGrid>	
+							
+							<br />
+							
+							<div align="center">						   
+								<h:panelGrid id="panelBotones" columns="3">
+									<p:commandButton id="btnSave"  value="Guardar" action="#{gluoConceptoPagoView.action_save()}" update="panelGluoConceptoPago, panelDeducciones, :idForm:panelDataTableGluoConceptoPago, msgDialog"/>
+									<p:commandButton id="btnClear" value="Limpiar" action="#{gluoConceptoPagoView.action_clear()}" update="panelGluoConceptoPago, panelDeducciones" />
+									<p:commandButton id="btnExit" value="Salir" oncomplete="PF('dialogConceptoPago').hide();"/>
+								</h:panelGrid>	
+							</div>				   
+					</p:dialog>
+		   	</h:form>
+		</f:view>
+	</ui:define>
+</ui:composition>

@@ -1,0 +1,191 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+<ui:define name="content">
+	<style type="text/css">
+		.ui-panel {
+			margin-top: 20px
+		}
+		
+		.ui-tabs-top{
+			background-color: #FFFFFF;
+		}
+		
+		.one {
+			width: 40%;
+		}
+		
+		.two {
+			width: 60%;
+		}
+		
+		.fileupload-simple > .ui-fileupload-content {
+		    display: none;
+		}
+		.fileupload-simple > .ui-fileupload-buttonbar {
+		    -moz-border-radius: 4px;
+		    -webkit-border-radius: 4px;
+		    border-radius: 4px;
+		}
+	</style>
+
+<div align="center">
+
+	<h:form id="frmCargarPredios" enctype="multipart/form-data" >
+		
+		<p:growl id="messages" autoUpdate="true" closable="true" />
+		
+		<p:panel id="pnlCargarPredios" style="width: 90%;" rendered="#{cargarPrediosView.listPredioDTOs.isEmpty()}" >
+		
+			<div class="ContainerIndent">
+				<h:outputText value="Cargar Predios"
+					styleClass="FontBold Fs18 hardblue" />
+					
+				<br/><br/>
+					
+				
+				<div style="width: 60%;">
+				<p:outputLabel
+						value="Permite cargar el archivo de predios. Una vez haya finalizado exitosamente el proceso
+								de carga del archivo, se visualizarán los predios existentes en el sistema:" />
+				</div>
+						
+				<br/><br/>
+				
+				<p:fileUpload
+						fileUploadListener="#{cargarPrediosView.upload}"
+						auto="true"
+						value="#{cargarPrediosView.file}" 
+						mode="advanced"
+						sizeLimit="10485760" fileLimit="1"						
+						label="Seleccionar archivo de Predios.."
+						uploadLabel="Validar Archivo"
+						cancelLabel="Cancelar" 
+						update=":frmCargarPredios"  						
+						invalidSizeMessage="Tamaño no válido"
+						styleClass="fileupload-simple"
+						onstart="PF('pbAjax').start()" />
+						
+				<br/><br/>
+				
+				<p:progressBar widgetVar="pbAjax" ajax="true" value="#{cargarPrediosView.progress}" labelTemplate="{value}%" styleClass="animated" global="false">
+			        <p:ajax event="complete" listener="#{cargarPrediosView.onComplete}"/>
+			    </p:progressBar>
+				
+			</div>						
+		
+		</p:panel>
+		
+		
+		
+		<p:scrollPanel id="pnlListaPredios" mode="native" style="width:90%;"
+			rendered="#{cargarPrediosView.listPredioDTOs.isEmpty() == false}">
+		
+			<p:dataTable id="pnlListaPrediosDataTable" value="#{cargarPrediosView.listPredioDTOs}"
+				var="predio" paginator="true" rows="20"
+				paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+				scrollable="true" scrollWidth="100%"				
+				rowKey="#{predio.idPredio}"
+				filterDelay="1000">
+				
+				<f:facet name="{Exporters}">
+		            <h:commandLink>
+		                <img src="../../images/xls.jpeg" width="34px" />                
+		                <p:dataExporter type="xls" target="pnlListaPrediosDataTable" fileName="Predios" pageOnly="true" />
+		            </h:commandLink>
+		 
+		            <h:commandLink>
+		                <img src="../../images/iconoPdf.png" width="30px" />
+		                <p:dataExporter type="pdf" target="pnlListaPrediosDataTable" fileName="Predios" pageOnly="true" />
+		            </h:commandLink>	            
+		 
+		        </f:facet>
+								
+				<p:column headerText="Dirección"
+					filterMatchMode="contains"
+					filterBy="#{predio.direccion}"
+					style="text-align:center">
+					<p:outputLabel value="#{predio.direccion}" />									
+				</p:column>
+				
+				<p:column headerText="Núm. Predio Ant."
+					filterMatchMode="contains"
+					filterBy="#{predio.numeroPredioAnterior}"
+					style="text-align:center">
+					<p:outputLabel value="#{predio.numeroPredioAnterior}" />									
+				</p:column>
+				
+				<p:column headerText="Núm. Predial Nacional"
+					filterMatchMode="contains"
+					filterBy="#{predio.numeroPredioNacional}"
+					style="text-align:center">
+					<p:outputLabel value="#{predio.numeroPredioNacional}" />									
+				</p:column>
+				
+				<p:column headerText="Id. Prop. Actual"
+					filterMatchMode="contains"
+					filterBy="#{predio.identificacionPropietarioActual}"
+					style="text-align:center">
+					<p:outputLabel value="#{predio.identificacionPropietarioActual}" />									
+				</p:column>
+				
+				<p:column headerText="Nombre"
+					filterMatchMode="contains"
+					filterBy="#{predio.nombrePropietarioActual}"
+					style="text-align:center">
+					<p:outputLabel value="#{predio.nombrePropietarioActual}" />									
+				</p:column>
+				
+			</p:dataTable>
+			
+			<h3>Exportar todos los Predios del sistema</h3>
+		    <h:commandLink>
+		        <img src="../../images/xls.jpeg" width="34px" />
+		        <p:dataExporter type="xls" target="pnlListaPrediosDataTable" fileName="Predios" />
+		    </h:commandLink>
+		 
+		    <h:commandLink>
+		        <img src="../../images/iconoPdf.png" width="30px" />
+		        <p:dataExporter type="pdf" target="pnlListaPrediosDataTable" fileName="Predios" />
+		    </h:commandLink>
+		    
+		    <br/><br/>
+		
+		</p:scrollPanel>
+		
+		
+		
+		<p:panel id="pnlErroresPrediosCargados" style="width: 90%;"
+		 		 rendered="#{cargarPrediosView.showErroresPrediosCargados}" >
+		 		 
+		 		 <div class="ContainerIndent">
+					<h:outputText value="Error Predios Cargados"
+						styleClass="FontBold Fs18 hardblue" />
+						
+					<br/><br/>
+						
+					
+					<div style="width: 60%;">
+						<p:outputLabel value="#{cargarPrediosView.erroresPrediosCargados}" escape="false" />
+					</div>
+							
+					<br/><br/>
+					
+				</div>			
+			
+		 		 
+		</p:panel>
+				
+				
+	</h:form>
+	
+	<br/><br/>
+	
+</div>
+
+</ui:define>
+
+</ui:composition>

@@ -1,0 +1,106 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+<ui:define name="content">
+<f:view>
+	<p:ajaxStatus onstart="PF('statusDialog').show()"
+		onsuccess="PF('statusDialog').hide()" />
+	<p:dialog modal="true" widgetVar="statusDialog" header="Cargando"
+		draggable="false" closable="false">
+		<p:graphicImage
+			value="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/ajaxloadingbar.gif" />
+	</p:dialog>
+
+	<!-- Expired session -->
+	<p:idleMonitor onactive="PF('sessionTimeOutDialog').show();"
+		timeout="#{session.maxInactiveInterval * 1000}" />
+	<p:dialog modal="true" widgetVar="sessionTimeOutDialog"
+		header="Sesión terminada" draggable="false" closable="false">
+		<h:outputText value="La sesión ha finalizado" />
+		<input id="confirmBackToLogin" type="button" value="Iniciar sesión"
+			onclick="window.location='#{facesContext.externalContext.requestContextPath}/index.jsp';" />
+	</p:dialog>
+	
+	<style type="text/css">
+		
+       	.colA{width: 5%; }
+       	.colB{width: 30%; }
+       	
+	</style>
+
+	<div align="center">
+	<h:form id="frmImpuestos" >
+
+		<p:growl id="messages" autoUpdate="true" closable="true" />
+		
+		<p:panel id="pnlImpuestos" style="width: 90%;" >
+		
+			<div class="ContainerIndent">
+				<h:outputText value="Informes de Impuestos"
+					styleClass="FontBold Fs18 hardblue" />
+			</div>
+			
+			<div class="Container100">
+				<div class="ContainerIndent">
+				<h:panelGrid columns="1" cellpadding="10"
+					style="width: 50%;">
+					
+					<h:panelGrid columns="2" 
+						columnClasses="colA,colB"
+						style="width: 100%;">
+												
+						<p:commandButton 
+							value="Deseo consultar el informe de Predial"
+							update="@([id$=pnlImpuestos])" style="width: 500px"
+							action="informePredial.xhtml"/>
+					</h:panelGrid>		
+					
+					
+					<h:panelGrid columns="2" 
+						columnClasses="colA,colB"
+						style="width: 100%;">
+												
+						<p:commandButton 
+							value="Generar Certificado de Paz y Salvo"
+							update="@([id$=pnlImpuestos])" style="width: 500px"
+							action="CertificadoPazYSalvo.xhtml"/>
+					</h:panelGrid>	
+					
+					
+					<h:panelGrid columns="2" 
+						columnClasses="colA,colB"
+						style="width: 100%;">
+												
+						<p:commandButton 
+							value="Deseo consultar los recibos de predial"
+							update="@([id$=pnlImpuestos])" style="width: 500px"
+							action="consultaReciboImpuestos.xhtml"/>
+					</h:panelGrid>	
+					
+					
+					<h:panelGrid columns="2" 
+						columnClasses="colA,colB"
+						style="width: 100%;">
+												
+						<p:commandButton 
+							value="Generar un Informe de Recaudo de Predial"
+							update="@([id$=pnlImpuestos])" style="width: 500px"
+							action="informeRecaudoPredial.xhtml"/>
+					</h:panelGrid>											
+						
+				</h:panelGrid>		
+				</div>
+			</div>
+		
+		</p:panel>
+
+	</h:form>
+	</div>
+
+</f:view>
+</ui:define>
+
+</ui:composition>

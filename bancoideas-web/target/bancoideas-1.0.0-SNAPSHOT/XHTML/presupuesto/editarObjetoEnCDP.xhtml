@@ -1,0 +1,410 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+	<ui:define name="content">
+
+		<p:ajaxStatus onstart="PF('statusDialog').show()"
+			onsuccess="PF('statusDialog').hide()" />
+		<p:dialog modal="true" widgetVar="statusDialog" header="Cargando"
+			draggable="false" closable="false">
+			<p:graphicImage
+				value="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/ajaxloadingbar.gif" />
+		</p:dialog>
+
+		<!-- Expired session -->
+		<p:idleMonitor onactive="PF('sessionTimeOutDialog').show();"
+			timeout="#{session.maxInactiveInterval * 1000}" />
+		<p:dialog modal="true" widgetVar="sessionTimeOutDialog"
+			header="Sesión terminada" draggable="false" closable="false">
+			<h:outputText value="La sesión ha finalizado" />
+			<input id="confirmBackToLogin" type="button" value="Iniciar sesión"
+				onclick="window.location='#{facesContext.externalContext.requestContextPath}/index.jsp';" />
+		</p:dialog>
+		
+		<script type="text/javascript">
+			function showStatus() {
+			    statusDialog.show();
+			}
+			 
+			function hideStatus() {
+			    statusDialog.hide();
+			}
+		</script>
+
+		<style type="text/css">
+			.one {
+				width: 20%;
+			}
+			
+			.two {
+				width: 80%;
+			}
+			
+		</style>
+
+		<h:form id="fromEditarObjetoEnCDP">
+
+
+					<p:panel>
+						<h:outputText
+							value="Consultar documentos de presupuesto (CDP)"
+							styleClass="FontBold Fs18 hardblue" />
+					</p:panel>
+					
+					<p:panel id="pnlFiltros">
+						<p:messages showDetail="false" autoUpdate="true" closable="true" />
+	
+						<div class="EmptyBox20" />
+	
+						<p:outputLabel
+							value="Si desea filtrar con más detalle, ingrese uno o varios de los siguientes criterios de búsqueda:" />
+							
+						<div class="EmptyBox20" />
+
+						<h:panelGrid columns="2" columnClasses="one, two"
+							style="width: 100%;">
+
+							<h:outputText value="Tipo de documento:" />
+							<p:inputText styleClass="Wid20"
+								value="CDP" disabled="true" binding="#{gluoEditarObjetoEnCDPView.txtTipoDocumento}"/>
+							
+							<h:outputText value="Consecutivo de documento:" />
+							<p:inputText styleClass="Wid20"
+								value="#{gluoEditarObjetoEnCDPView.consecutivoDocumento}"/>
+							
+							<h:outputText value="Rubro presupuestal:" />
+							
+							<p:panelGrid>
+								<p:inputText value="#{gluoEditarObjetoEnCDPView.codigoCuentaRubroSeleccionado}"
+									id="txtRubro"
+									onkeypress="return false;"/>
+								<p:commandButton icon="ui-icon-search" 
+									oncomplete="PF('dlgRubros').show();"/>
+							</p:panelGrid>
+							
+	
+							<h:outputText value="Fecha Inicial:" />
+							<p:calendar value="#{gluoEditarObjetoEnCDPView.fechaInicial}" timeZone="GMT-5"
+								/>
+
+							<h:outputText value="Fecha Final:" />
+							<p:calendar value="#{gluoEditarObjetoEnCDPView.fechaFinal}" timeZone="GMT-5"/>
+
+							<h:outputText value="Tercero"/>
+							<p:panelGrid>
+								<p:inputText id="txtIdentTercero" value="#{gluoEditarObjetoEnCDPView.identificacionTercero}" readonly="true"/>
+								<p:commandButton icon="ui-icon-search" onclick="PF('dlgTercero').show();"/>
+							</p:panelGrid>
+							
+							<h:outputText value="Objeto"/>
+							<p:inputTextarea id="txtObjeto" rows="5" cols="30"  value="#{gluoEditarObjetoEnCDPView.txtConcepto}" maxlength="2000" 
+											 counter="display"  counterTemplate="{0} caracteres restantes" autoResize="false" />
+   							<p:inputText type="hidden"/>
+   							<h:outputText id="display" />
+						</h:panelGrid>
+						
+						<div class="EmptyBox20" />
+						
+						<p:commandButton
+							value="Consultar documentos"
+							actionListener="#{gluoEditarObjetoEnCDPView.action_buscarDocumentos}"
+							update=":fromEditarObjetoEnCDP"/>
+							
+						<p:commandButton
+							value="Limpiar filtros de búsqueda"
+							actionListener="#{gluoEditarObjetoEnCDPView.action_limpiar}"
+							update=":fromEditarObjetoEnCDP"/>
+							
+					</p:panel>
+					
+					
+					<p:panel id="pnlDocumentosEncontrados">
+					
+						<p:dataTable id="documentosEncontrados" var="documento"
+							value="#{gluoEditarObjetoEnCDPView.documentosEncontrados}"
+							rows="100" paginator="true"
+							paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+							rowsPerPageTemplate="100,200,300"
+							emptyMessage="No se han encontrado documentos" reflow="true">
+							
+							<p:column headerText="Tipo" 
+										style="width: 5%" >
+								<h:outputText value="#{documento.tipoDocumento}" />
+							</p:column>
+							
+							<p:column headerText="Consecutivo" 
+										style="width: 10%" >
+								<h:outputText value="#{documento.consecutivo}" />
+							</p:column>
+							
+							<p:column headerText="Vr. Total" 
+										style="width: 10%" >
+								<div align="right">
+									<h:outputText value="#{documento.valorTotal}">
+										<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+									</h:outputText>
+								</div>
+							</p:column>
+							
+							<p:column headerText="Vr. Disponible" 
+										style="width: 10%" >
+								<div align="right">
+									<h:outputText value="#{documento.valorTotalDisponible}">
+										<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+									</h:outputText>
+								</div>
+							</p:column>
+							
+							<p:column headerText="% Disponible" style="width: 10%">
+								<p:panelGrid rendered="#{documento.tipoDocumento != 'OP'}">
+									<div align="left" style="width: 100%; border:1px solid black; background: -webkit-linear-gradient(left, #175787 #{documento.porcentajeConsumido-(documento.porcentajeConsumido==100?0:20)}%, white #{documento.porcentajeConsumido}%); background: -moz-linear-gradient(left, blue #{documento.porcentajeConsumido-(documento.porcentajeConsumido==100?0:20)}%, white #{documento.porcentajeConsumido}%); background: -ms-linear-gradient(left, blue #{documento.porcentajeConsumido-(documento.porcentajeConsumido==100?0:20)}%, white #{documento.porcentajeConsumido}%); background: linear-gradient(left, blue #{documento.porcentajeConsumido-(documento.porcentajeConsumido==100?0:20)}%, white #{documento.porcentajeConsumido}%);">
+										<h:outputText value="#{documento.porcentajeDisponible/100}">
+											<f:convertNumber type="percent" maxFractionDigits="1"/>
+										</h:outputText>
+									</div>
+								</p:panelGrid>
+								<p:outputLabel value="N/A" rendered="#{documento.tipoDocumento == 'OP'}"/>
+							</p:column>
+							
+							<p:column headerText="Fecha Creacion"
+								style="width: 10%">
+								<h:outputText value="#{documento.fechaCreacion}">
+									<f:convertDateTime pattern="dd/MMM/yyyy" />
+								</h:outputText>
+							</p:column>
+							
+							<p:column headerText="Tercero" style="width: 20%">
+								<h:outputText value="#{documento.nombreTercero}"/>
+							</p:column>
+							
+							<p:column headerText="Ver"
+								style="width: 20%">
+								
+								<h:panelGrid columns="4">
+								
+									<p:commandLink 
+										action="#{gluoEditarObjetoEnCDPView.action_editar(documento)}"
+										ajax="false">
+									
+										<h:graphicImage
+											url="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/pencil.png"
+											style="width: 32px; height: 32px;"/>
+										
+									</p:commandLink>
+								
+									<p:commandLink 
+										actionListener="#{gluoEditarObjetoEnCDPView.action_seleccionarDocumento(documento)}"
+										ajax="false">
+									
+										<p:fileDownload value="#{gluoEditarObjetoEnCDPView.archivoPDF}" />
+									
+										<h:graphicImage
+											url="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/pdf-icon.png"
+											style="width: 32px; height: 32px;"/>
+										
+									</p:commandLink>
+									
+									<p:commandLink 
+										actionListener="#{gluoEditarObjetoEnCDPView.action_seleccionarDocumento(documento)}"
+										ajax="false">
+									
+										<p:fileDownload value="#{gluoEditarObjetoEnCDPView.archivoXLS}" />
+									
+										<h:graphicImage
+											url="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/xls.jpeg"
+											style="width: 32px; height: 32px;"/>
+									</p:commandLink>
+									
+									<p:commandLink 
+										actionListener="#{gluoEditarObjetoEnCDPView.action_seleccionarDocumento(documento)}"
+										ajax="false">
+									
+										<p:fileDownload value="#{gluoEditarObjetoEnCDPView.archivoXLSX}" />
+									
+										<h:graphicImage
+											url="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/xlsx.jpeg"
+											style="width: 32px; height: 32px;"/>
+									</p:commandLink> 
+										
+								</h:panelGrid>
+								
+							</p:column>
+							
+							
+							
+						</p:dataTable>
+						
+					</p:panel>
+
+					<div class="EmptyBox20" />
+					
+					<!-- Rubros presupuestales  -->
+					<!-- ******************************************* -->
+					<p:dialog modal="true" widgetVar="dlgRubros"
+						header="Rubros presupuestales del gasto" draggable="false" closable="true"
+						resizable="true" width="90%" height="200px;" position="center">
+							
+							<p:scrollPanel mode="native" style="width:100%; height:400px">
+								<p:dataTable id="presupuestoGastosData" var="cuenta"
+									value="#{gluoEditarObjetoEnCDPView.presupuestoGastosDTO.detallesPresupuesto}"
+									rows="10" paginator="true"
+									paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+									rowsPerPageTemplate="10,15,20,30"
+									emptyMessage="No existen cuentas del presupuesto" reflow="true"
+									rowKey="#{cuenta.dptoId}"
+									selection="#{gluoEditarObjetoEnCDPView.rubrosSeleccionado}"
+									filterDelay="1000">
+									
+			                        <p:column selectionMode="single"
+											style="width:5%; text-align:center" />
+			
+									<p:column headerText="Cuenta" sortBy="#{cuenta.codigoCuenta}"
+										style="width: 15%" filterBy="#{cuenta.codigoCuenta}"
+										filterMatchMode="startsWith">
+										<h:outputText value="#{cuenta.codigoCuenta}" />
+									</p:column>
+									
+									<p:column headerText="Descripción"
+										sortBy="#{cuenta.descripcionCuenta}" style="width: 50%" filterBy="#{cuenta.descripcionCuenta}"
+										filterMatchMode="contains">
+										<h:outputText value="#{cuenta.descripcionCuenta}" />
+									</p:column>
+									
+									<p:column headerText="Valor Inicial" style="width: 10%">
+										<div align="right">
+											<h:outputText value="#{cuenta.valorInicial}">
+												<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+											</h:outputText>
+										</div>
+									</p:column>
+									
+									<p:column headerText="Saldo para CDPs" style="width: 10%">
+										<div align="right">
+											<h:outputText value="#{cuenta.saldoEnCdps}">
+												<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+											</h:outputText>
+										</div>
+									</p:column>
+									
+									<p:column headerText="% Disponible" style="width: 10%">
+										<div align="right">
+											<h:outputText value="#{cuenta.saldoEnCdps/cuenta.valorInicial}">
+												<f:convertNumber type="percent" maxFractionDigits="1"/>
+											</h:outputText>
+										</div>
+									</p:column>
+			
+								</p:dataTable>
+							</p:scrollPanel>
+		
+							<br />
+							<p:commandButton value="Adicionar rubros seleccionados"
+								actionListener="#{gluoEditarObjetoEnCDPView.action_seleccionarRubros}"
+								icon="ui-icon-plus" oncomplete="PF('dlgRubros').hide();"
+								update=":fromEditarObjetoEnCDP" />
+		
+							<div class="EmptyBox20" />
+		
+					</p:dialog>
+					<!-- Rubros presupuestales -->
+					
+					<!--        Tercero            -->
+			<!-- ************************* -->
+			<p:dialog modal="true" widgetVar="dlgTercero" header="Tercero"
+				draggable="false" closable="true" resizable="true"
+				width="90%" >
+				
+				<p:scrollPanel id="pnlTerceros" mode="native" style="width:100%; height:400px">
+					<div class="ContainerIndent"/>
+					
+					<p:outputLabel value="Criterios de búsqueda para terceros:"/>
+					
+					<h:panelGrid columns="2" style="width: 50%;">
+								
+						<p:outputLabel value="Identificación: "/>
+						<p:inputText styleClass="Wid50"
+							value="#{gluoEditarObjetoEnCDPView.identificacionFiltro}"/>
+						
+						<p:outputLabel value="Nombre/Razón Social:"/>
+						<p:inputText styleClass="Wid50"
+							value="#{gluoEditarObjetoEnCDPView.nombreRazonSocialFiltro}"/>
+						
+					</h:panelGrid>
+					
+					<p:commandButton value="Buscar Tercero"
+						actionListener="#{gluoEditarObjetoEnCDPView.action_buscarTercero}"
+						update=":fromEditarObjetoEnCDP:pnlTerceros"/>
+					
+					<br/>
+				
+					<p:dataTable id="tercerosEncontrados" var="tercero" rows="350" style="width: 100%;"
+						value="#{gluoEditarObjetoEnCDPView.terceros}"
+						paginator="true"
+						paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+						rowsPerPageTemplate="300,400,500"
+						emptyMessage="No hay terceros encontrados"
+						reflow="true" filterDelay="1000">
+						
+						<f:facet name="header">
+                             Terceros
+                         </f:facet>
+                         
+                   		<p:column headerText="Identificación" sortBy="#{tercero.identificacion}"
+							style="width: 10%" filterBy="#{tercero.identificacion}"
+							filterMatchMode="startsWith">
+							<h:outputText value="#{tercero.identificacion}"/>
+						</p:column>
+						
+						<p:column headerText="Primer Nombre" sortBy="#{tercero.primerNombre}"
+							style="width: 10%" filterBy="#{tercero.primerNombre}"
+							filterMatchMode="contains">
+							<h:outputText value="#{tercero.primerNombre}"/>
+						</p:column>
+						
+						<p:column headerText="Segundo Nombre" sortBy="#{tercero.segundoNombre}"
+							style="width: 10%" filterBy="#{tercero.segundoNombre}"
+							filterMatchMode="contains">
+							<h:outputText value="#{tercero.segundoNombre}"/>
+						</p:column>
+						
+						<p:column headerText="Primer Apellido" sortBy="#{tercero.primerApellido}"
+							style="width: 10%" filterBy="#{tercero.primerApellido}"
+							filterMatchMode="contains">
+							<h:outputText value="#{tercero.primerApellido}"/>
+						</p:column>
+						
+						<p:column headerText="Segundo Apellido" sortBy="#{tercero.segundoApellido}"
+							style="width: 10%" filterBy="#{tercero.segundoApellido}"
+							filterMatchMode="contains">
+							<h:outputText value="#{tercero.segundoApellido}"/>
+						</p:column>
+						
+						<p:column headerText="Seleccionar" 
+							style="width: 5%">
+							<p:commandButton title="Seleccionar"  
+				            	icon="ui-icon-check" 
+				            	update=":fromEditarObjetoEnCDP:txtIdentTercero" 
+				            	action="#{gluoEditarObjetoEnCDPView.action_seleccionarTercero(tercero)}">
+				            </p:commandButton>
+						</p:column>
+                         
+
+					</p:dataTable>
+					
+				</p:scrollPanel>
+
+
+				<div class="EmptyBox20" />
+				
+			</p:dialog>
+			<!--        Tercero            -->
+			<!-- ************************* -->
+	
+		</h:form>
+
+	</ui:define>
+
+</ui:composition>

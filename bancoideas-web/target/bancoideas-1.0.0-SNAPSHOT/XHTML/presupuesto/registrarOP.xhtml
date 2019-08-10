@@ -1,0 +1,568 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+
+	<ui:define name="content">
+
+		<p:ajaxStatus onstart="PF('statusDialog').show()"
+			onsuccess="PF('statusDialog').hide()" />
+		<p:dialog modal="true" widgetVar="statusDialog" header="Cargando"
+			draggable="false" closable="false">
+			<p:graphicImage
+				value="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/ajaxloadingbar.gif" />
+		</p:dialog>
+
+		<!-- Expired session -->
+		<p:idleMonitor onactive="PF('sessionTimeOutDialog').show();"
+			timeout="#{session.maxInactiveInterval * 1000}" />
+		<p:dialog modal="true" widgetVar="sessionTimeOutDialog"
+			header="Sesión terminada" draggable="false" closable="false">
+			<h:outputText value="La sesión ha finalizado" />
+			<input id="confirmBackToLogin" type="button" value="Iniciar sesión"
+				onclick="window.location='#{facesContext.externalContext.requestContextPath}/index.jsp';" />
+		</p:dialog>
+		
+		<script type="text/javascript">
+			function showStatus() {
+			    statusDialog.show();
+			}
+			 
+			function hideStatus() {
+			    statusDialog.hide();
+			}
+		</script>
+		
+
+		<style type="text/css">
+			.ui-panel {
+				margin-top: 20px
+			}
+			
+			.ui-tabs-top {
+				background-color: #FFFFFF;
+			}
+			
+			.one {
+				width: 15%;
+			}
+			
+			.two {
+				width: 85%;
+			}
+			
+			.col50Left{
+				width: 10%;
+				text-align: left;
+			}
+			
+			.col50Right{
+				width: 10%;
+				text-align: right;
+			}
+			
+			.txt100{
+				width: 100%;
+			}
+			
+			.tachado {
+			    position: relative;
+			}
+			
+			.tachado:before {
+			    border-bottom: 1px solid red;
+			    position: absolute;
+			    content: "";
+			    width: 100%;
+			    height: 50%;
+			}
+			
+		</style>
+
+		<h:form id="frmCargarCuentasPresupuesto">
+
+			<div>
+				<div>
+
+					<p:panel>
+						<h:outputText
+							value="Registre una Obligación a partir de un CRP previamente creado." styleClass="FontBold Fs18 hardblue" />
+					</p:panel>
+
+					<p:panel id="pnlEncabezadoOP">
+						
+						<p:messages autoUpdate="true" escape="false" />
+						<p:growl showDetail="false" autoUpdate="true" closable="true" escape="false"/>
+						
+						<div class="ContainerIndent">
+							<h:outputText value="Datos de la Obligación" />
+						</div>
+
+						<div>
+							<div>
+
+								<h:panelGrid columns="2" columnClasses="one, two" style="width: 100%;">
+									<h:outputText value="CRP:" />
+									<p:panelGrid>
+										<p:inputText id="txtConsecutivo" styleClass="Wid50" value="#{registrarOpView.consecutivoCRP}" readonly="true"/>
+										<p:commandButton icon="ui-icon-search" oncomplete="PF('dlgCrpsVigentes').show();"
+											rendered="#{registrarOpView.gluoOpParaGuardarConCrp == null}"/>
+									</p:panelGrid>
+									
+									<h:outputText value="Concepto: " />
+									<h:panelGrid columns="1" style="width: 100%;">
+										<p:inputTextarea styleClass="Wid50" 
+											counter="counterObjeto" maxlength="2000"
+											counterTemplate="{0} caracteres restantes." disabled="false"
+											autoResize="false"
+											value="#{registrarOpView.objeto}"/>
+										<p:outputLabel id="counterObjeto" />
+									</h:panelGrid>
+									
+									<h:outputText value="Fecha Expedición:" />
+									<p:calendar value="#{registrarOpView.fechaExpedicion}" timeZone="GMT-5"
+										navigator="true" pattern="yyyy-MM-dd" />
+	
+									<h:outputText value="Fecha Vencimiento:" />
+									<p:calendar value="#{registrarOpView.fechaVencimiento}" timeZone="GMT-5"
+										navigator="true" pattern="yyyy-MM-dd" />
+									
+								</h:panelGrid>
+								
+								
+							</div>
+						</div>
+					</p:panel>
+					
+					<p:panel id="pnlDetallesOP">
+
+						<p:dataTable id="gruposOPs" var="grupoOP" rows="200"
+							value="#{registrarOpView.opsAgrupadas}"
+							paginator="false"
+							emptyMessage="No hay rubros presupuestales adicionados"
+							reflow="true"
+							rendered="#{registrarOpView.crpSeleccionado != null or (registrarOpView.detallesCrp!=null and registrarOpView.detallesCrp.size()>0)}">
+							
+							
+							<p:column style="width: 100%">
+							
+								<br/>
+								
+								<p:dataTable id="rubrosOP" var="rubro" rows="200"
+									value="#{grupoOP.detallesCrp}"
+									paginator="false"
+									paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+									rowsPerPageTemplate="300,400,500"
+									emptyMessage="No hay rubros presupuestales adicionados"
+									reflow="true"
+									rowKey="#{rubro.idDetallePresupuesto}">
+									
+									<f:facet name="header">OBLIGACIÓN #: #{grupoOP.serialConsecutivo}. BENEFICIARIO: #{grupoOP.nombreTercero}</f:facet>
+			
+									<p:column headerText="Rubro" style="width: 20%">
+										<h:outputText value="#{rubro.codigoRubro}" />
+									</p:column>
+									
+									<p:column headerText="Descripción" style="width: 30%">
+										<h:outputText value="#{rubro.descripcionRubro}" />
+									</p:column>
+									
+									<p:column headerText="Tercero" style="width: 30%">
+		                        		<h:outputText value="#{rubro.nombreTercero}"/>
+		                      	  	</p:column>
+		                      	  	
+		                      	  	<p:column headerText="Tipo Recurso" style="width: 30%">
+		                        		<h:outputText value="#{rubro.tipoRecurso}"/>
+		                      	  	</p:column>
+									
+									<p:column headerText="Valor disponible en CRP" style="width: 20%">
+		                        		<div align="right">
+			                        		<h:outputText value="#{rubro.valorEnCrp}">
+			                        			<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+			                        		</h:outputText>
+		                        		</div>
+		                      	  	</p:column>
+		                      	  	
+									<p:column headerText="Valor OP" style="width: 20%" >
+										<div align="right">
+											<pe:inputNumber
+												value="#{rubro.valorAPagarEnOp}"
+												styleClass="Wid20" style="text-align: right;" 
+												symbol=" $" symbolPosition="p"  
+		                            			decimalSeparator="," thousandSeparator="."
+		                            			minValue="0" maxValue="#{rubro.valorEnCrp}"
+		                            			validatorMessage="Monto no válido"
+		                            			decimalPlaces="2">
+													<p:ajax event="blur" update="@this"/>
+											</pe:inputNumber>
+										</div>
+									</p:column>
+									
+								</p:dataTable>
+							</p:column>
+						</p:dataTable>
+
+						
+						<br />
+					</p:panel>
+					
+					<br />
+
+					<p:commandButton value="Guardar OP" icon="ui-icon-disk" action="#{registrarOpView.action_preGuardarOP}"
+						update=":frmCargarCuentasPresupuesto:pnlDeducciones, :frmCargarCuentasPresupuesto:pnlOpsGeneradas"/>
+ 
+					
+				</div>
+			</div>
+
+			<p:dialog modal="true" widgetVar="dlgCrpsVigentes" header="CRPs Vigentes"
+					  draggable="false" closable="true" resizable="true" width="90%" >
+				
+				<p:scrollPanel mode="native" style="width:100%; height:400px">
+					<div class="ContainerIndent">
+					<h:outputText value="CRPs del año fiscal vigente" />
+					</div>
+				
+					
+					<p:dataTable id="crpsVigentes" var="crp" rows="200" style="width: 100%;"
+						value="#{registrarOpView.crpsVigentesDelAno}"
+						paginator="true"
+						paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+						rowsPerPageTemplate="300,400,500"
+						emptyMessage="No hay CRPs vigentes"
+						reflow="true" 
+						rowKey="#{crp.gcrpId}"
+						selection="#{registrarOpView.crpSeleccionado}"
+						filterDelay="1000"> 
+						
+						<f:facet name="header"> CRPs </f:facet>
+                        
+                        <p:column selectionMode="single" style="width:10%; text-align:center" />
+                        
+                        <p:column headerText="Consecutivo" filterBy="#{crp.consecutivo}"
+                        	filterMatchMode="contains">
+                        	<h:outputText value="#{crp.consecutivo}"/>
+                        </p:column>
+                        
+                        <p:column headerText="Concepto" filterBy="#{crp.concepto}"
+                        	filterMatchMode="contains">
+                        	<h:outputText value="#{crp.concepto}"/>
+                        </p:column>
+                        
+                         <p:column headerText="Valor Total">
+                        	<h:outputText value="#{crp.valorTotal}">
+                        		<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+                        	</h:outputText>
+                        </p:column>
+					</p:dataTable>
+					</p:scrollPanel>
+					
+					<div align="center">
+						<h:panelGrid id="panelBotones" columns="2">
+							<p:commandButton id="btnSeleccionar" value="Seleccionar" action="#{registrarOpView.action_validarCRP}" update="@form"/>
+						</h:panelGrid>
+					</div>
+				
+				<div class="EmptyBox20" />
+			</p:dialog>
+			
+			
+			<!-- *********************** Deducciones asociadas *********************** -->
+			<p:dialog modal="true" widgetVar="dlgDeducciones" header="DEDUCCIONES A APLICAR A LAS OBLIGACIONES"
+					  draggable="false" closable="false" resizable="true" width="90%" height="500px">
+				
+				<p:scrollPanel id="pnlDeducciones" mode="native" style="width:100%; height:400px">
+					<div class="ContainerIndent">
+					<h:outputText value="Seleccione un Concepto de Pago por cada Obligación que se generará (Una por cada tercero/beneficiario)" />
+					</div>
+				
+					
+					<p:dataTable id="gruposOPsEnDeducciones" var="grupoOP" rows="200"
+							value="#{registrarOpView.opsAgrupadas}"
+							paginator="false"
+							emptyMessage="No hay rubros presupuestales adicionados"
+							reflow="true">
+							
+						<p:column style="width: 100%">
+							
+							<br/>
+							
+							<h:outputText value="Obligación # #{grupoOP.serialConsecutivo} de #{registrarOpView.opsAgrupadas.size()}:"
+								styleClass="FontBold Fs15 hardblue" />
+							
+							<br/>
+							
+							<p:panelGrid columns="2" columnClasses="one, two" style="width: 100%;">
+								<h:outputText value="Concepto de Pago: " />
+								<p:panelGrid>
+									<p:inputText id="txtConceptoPago" styleClass="Wid50" value="#{grupoOP.descripcionConceptoPago}" readonly="true"/>
+									<p:commandButton icon="ui-icon-search"
+										action="#{registrarOpView.action_seleccionarGrupoOP(grupoOP)}"
+										onclick="document.getElementById('frmCargarCuentasPresupuesto:btnCancelarGuardarOP').focus();"
+										oncomplete="PF('dlgConceptosDePago').show();" />
+								</p:panelGrid>
+								
+							</p:panelGrid>
+							
+							<br/>
+					
+							<p:dataTable id="tblDeducciones" var="deduccion" rows="200" style="width: 100%;"
+								value="#{grupoOP.deducciones}" 
+								emptyMessage="No hay deducciones asociadas al concepto de pago"
+								reflow="true" 
+								rowKey="#{deduccion.deduId}">
+								
+								<f:facet name="header">
+									
+								</f:facet>
+		                        
+		                        <p:column headerText="Deducción" style="width:25%;">
+		                        	<h:outputText value="#{deduccion.concepto}"
+		                        		styleClass="#{deduccion.aplicaDescuentoPorValorBase?'':'tachado'}"/>
+		                        </p:column>
+		                        
+		                        <p:column headerText="Tipo" style="width:10%;">
+		                        	<h:outputText value="#{(deduccion.tipoDeduccion == 'P'?'Porcentaje':(deduccion.tipoDeduccion == 'V'?'Valor Fijo':(deduccion.tipoDeduccion == 'I'?'Ingreso Valor':'?')))}"
+		                        		styleClass="#{deduccion.aplicaDescuentoPorValorBase?'':'tachado'}" />
+		                        </p:column>
+		                        
+		                        <p:column headerText="Valor" style="width:10%;">
+		                        	<div align="right">
+			                        	<h:outputText value="#{deduccion.porcentaje} %" rendered="#{deduccion.tipoDeduccion == 'P'}" styleClass="#{deduccion.aplicaDescuentoPorValorBase?'':'tachado'}" />
+			                        	<h:outputText value="#{deduccion.tarifa}" rendered="#{deduccion.tipoDeduccion == 'V'}" styleClass="#{deduccion.aplicaDescuentoPorValorBase?'':'tachado'}">
+			                        		<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+			                        	</h:outputText>
+			                        	<h:outputText value="N/A" rendered="#{deduccion.tipoDeduccion == 'I'}" styleClass="#{deduccion.aplicaDescuentoPorValorBase?'':'tachado'}" />
+			                        </div>
+		                        </p:column>
+		                        
+		                        <p:column headerText="Aplica si" style="width:15%;">
+		                        	<h:outputText value="OP &gt; #{deduccion.valorBase}" styleClass="#{deduccion.aplicaDescuentoPorValorBase?'':'tachado'}" />
+		                        </p:column>
+		                        
+		                        <p:column headerText="Valor base" style="width:20%;">
+		                        	
+		                        	<div align="right">
+										<pe:inputNumber
+											value="#{deduccion.valorBaseAplicada}"
+											rendered="#{deduccion.tipoDeduccion == 'P' and deduccion.aplicaDescuentoPorValorBase == true}"
+											styleClass="Wid20" style="text-align: right;" 
+											symbol=" $" symbolPosition="p"  
+				                   			decimalSeparator="," thousandSeparator="."
+				                   			minValue="0" maxValue="#{deduccion.valorBaseAplicadaMaxValue}"
+				                   			validatorMessage="Monto no válido"
+				                   			decimalPlaces="2">
+												<p:ajax event="blur" 
+													update="@this,lblValorDeduccionAplicadoPorcentaje,:frmCargarCuentasPresupuesto:pnlResumenOP"
+													listener="#{registrarOpView.action_actualizarValorDeduccion(grupoOP.serialConsecutivo, deduccion.deduId, deduccion.valorBaseAplicada, null)}"/>
+										</pe:inputNumber>
+										
+										<h:outputText value="N/A" rendered="#{deduccion.tipoDeduccion != 'P'}" styleClass="#{deduccion.aplicaDescuentoPorValorBase?'':'tachado'}"/>
+									</div>
+		
+		                        </p:column>
+		                        
+		                        <p:column headerText="Vr. Deducción" style="width:20%;">
+		                        	<div align="right">
+										<pe:inputNumber
+											id="txtValorDeduccionAplicado"
+											value="#{deduccion.valorDeduccionAplicada}"
+											rendered="#{deduccion.tipoDeduccion == 'I' and deduccion.aplicaDescuentoPorValorBase == true}"
+											styleClass="Wid20" style="text-align: right;" 
+											symbol=" $" symbolPosition="p"  
+				                   			decimalSeparator="," thousandSeparator="."
+				                   			minValue="0" maxValue="999999999999"
+				                   			validatorMessage="Monto no válido"
+				                   			decimalPlaces="2">
+												<p:ajax event="blur" 
+													update="@this,lblValorDeduccionAplicadoPorcentaje,:frmCargarCuentasPresupuesto:pnlResumenOP"
+													listener="#{registrarOpView.action_actualizarValorDeduccion(grupoOP.serialConsecutivo, deduccion.deduId, null, deduccion.valorDeduccionAplicada)}"/>
+										</pe:inputNumber>
+										
+										<h:outputText
+											id="lblValorDeduccionAplicadoPorcentaje" 
+											value="#{deduccion.valorDeduccionAplicada}" 
+											rendered="#{deduccion.tipoDeduccion == 'P' or deduccion.tipoDeduccion == 'V'}" 
+											styleClass="#{deduccion.aplicaDescuentoPorValorBase?'':'tachado'}">
+											<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+										</h:outputText>
+									</div>
+		                        </p:column>
+		                        
+							</p:dataTable>
+						</p:column>
+					</p:dataTable>
+					
+					<div class="EmptyBox20" />
+					
+					<div align="right">
+						<h:panelGrid columns="2" id="pnlResumenOP" style="width: 40%;">
+							<h:outputText
+								value="Valor total de la OP:" styleClass="FontBold Fs18 hardblue" />
+							<h:outputText
+								value="#{registrarOpView.valorAcumuladoAPagarEnOPs}" styleClass="FontBold Fs18 hardblue"  style="float:right">
+								
+								<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+								
+							</h:outputText>
+							
+							<h:outputText
+								value="Valor total deducciones:" styleClass="FontBold Fs18 orange"/>
+							<h:outputText
+								value="#{registrarOpView.valorTotalDeducciones}" styleClass="FontBold Fs18 orange"  style="float:right">
+							
+								<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+									
+							</h:outputText>
+							
+							<h:outputText
+								value="Gran total" styleClass="Animated05 FontBold Fs18 hardblue"/>
+							<h:outputText
+								value="#{registrarOpView.valorDespuesDeDeducciones}" styleClass="FontBold Fs18 hardblue"  style="float:right">
+							
+								<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+									
+							</h:outputText>
+								
+						</h:panelGrid>
+					</div>
+					
+				</p:scrollPanel>
+					
+				<div align="center">
+					<h:panelGrid columns="2">
+						<p:commandButton id="btnAceptarDeduccionesAsociadas" value="Guardar OP." 
+							action="#{registrarOpView.action_guardarOP}" 
+							update=":frmCargarCuentasPresupuesto:pnlOpsGeneradas"/>
+							
+						<p:commandButton value="Cancelar" id="btnCancelarGuardarOP" 
+							actionListener="#{registrarOpView.action_cancelarInfoDeducciones}" 
+							oncomplete="PF('dlgDeducciones').hide()"/>
+					</h:panelGrid>
+				</div>
+					
+				
+				<div class="EmptyBox20" />
+			</p:dialog>
+			<!-- *********************** Deducciones asociadas *********************** -->
+			
+			
+			<p:dialog modal="true" widgetVar="dlgOpsGeneradas" header="Obligaciones generadas" draggable="false" closable="false" resizable="true" width="90%" >
+				
+				<p:scrollPanel id="pnlOpsGeneradas" mode="native" style="width:100%; height:400px">
+				
+					<p:dataTable id="dataTableOpsVigentes" var="op" rows="200" style="width: 100%;"
+						value="#{registrarOpView.opsGuardadas}" 
+						paginator="false"
+						paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+						rowsPerPageTemplate="300,400,500"
+						emptyMessage="No hay obligaciones generadas"
+						reflow="true" 
+						rowKey="#{op.maopId}"
+						selection="#{registrarOpView.opsPagadasSeleccionadasParaReporte}"> 
+						
+						<f:facet name="header"> Obligaciones Generadas </f:facet>
+                        
+                        <p:column selectionMode="multiple" style="width:10%; text-align:center" />
+                        
+                        <p:column headerText="OP No.">
+                        	<h:outputText value="#{op.consecutivo}"/>
+                        </p:column>
+                        
+                        <p:column headerText="Fecha Expedicion">
+                        	<h:outputText value="#{op.fechaExpedicion}">
+                        		<f:convertDateTime pattern="dd/MMM/yyyy" />
+                        	</h:outputText>
+                        </p:column>
+                        
+                        <p:column headerText="Fecha Vencimiento">
+                        	<h:outputText value="#{op.fechaVencimiento}">
+                        		<f:convertDateTime pattern="dd/MMM/yyyy" />
+                        	</h:outputText>
+                        </p:column>
+                        
+                        <p:column headerText="Tercero">
+                        	<h:outputText value="#{registrarOpView.getNombreTercero(op.gluoTercero)}"/>
+                        </p:column>
+                        
+                         <p:column headerText="Valor Obligación">
+                        	<h:outputText value="#{op.valorTotal}">
+                        		<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+                        	</h:outputText>
+                        </p:column>
+					</p:dataTable>
+					
+					<div align="center">
+						<h:panelGrid columns="4">
+							<p:commandButton value="Generar Reporte en PDF" onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)" icon="ui-icon-arrowthichk-s">
+								<p:fileDownload value="#{registrarOpView.reporteCDPPdf}" />
+							</p:commandButton>
+							
+							<p:commandButton value="Generar Reporte en XLS" onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)" icon="ui-icon-arrowthichk-s">
+								<p:fileDownload value="#{registrarOpView.reporteCDPXls}" />
+							</p:commandButton>
+							
+							<p:commandButton value="Generar Reporte en XLSX" onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)" icon="ui-icon-arrowthichk-s">
+								<p:fileDownload value="#{registrarOpView.reporteCDPXlsx}" />
+							</p:commandButton>
+							
+							<p:commandButton value="He terminado! Cerrar" 
+								oncomplete="PF('dlgOpsGeneradas').hide();"
+								update=":frmCargarCuentasPresupuesto"
+								actionListener="#{registrarOpView.action_limpiar}"/>
+						</h:panelGrid>
+					</div>
+				</p:scrollPanel>
+				<div class="EmptyBox20" />
+			</p:dialog>
+			
+			
+			<!-- *********************** Conceptos de Pago *********************** -->
+			<p:dialog modal="true" widgetVar="dlgConceptosDePago" header="Conceptos de Pago"
+					  draggable="false" closable="true" resizable="true" width="70%" >
+				
+				<p:scrollPanel mode="native" style="width:100%; height:400px">
+					<div class="ContainerIndent">
+					<h:outputText value="Conceptos de pago" />
+					</div>
+				
+					
+					<p:dataTable id="tblConceptosDePago" var="conceptoDePago" rows="200" style="width: 100%;"
+						value="#{registrarOpView.conceptosDePago}"
+						paginator="true"
+						paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+						rowsPerPageTemplate="300,400,500"
+						emptyMessage="No hay conceptos de pago"
+						reflow="true" 
+						rowKey="#{conceptoDePago.copaId}"
+						selection="#{registrarOpView.conceptoPagoSeleccionado}"> 
+						
+						<f:facet name="header"> Conceptos de pago </f:facet>
+                        
+                        <p:column headerText="Descripción" style="width:85%;">
+                        	<h:outputText value="#{conceptoDePago.concepto}"/>
+                        </p:column>
+                        
+                        <p:column headerText="Descripción" style="width:85%;">
+                        	<p:commandButton icon="ui-icon-check"
+                        		action="#{registrarOpView.action_seleccionarConceptoDePago(conceptoDePago)}"
+                        		update=":frmCargarCuentasPresupuesto:pnlDeducciones"
+                        		oncomplete="PF('dlgConceptosDePago').hide()">
+							</p:commandButton>
+						</p:column>
+                        
+                        
+					</p:dataTable>
+				</p:scrollPanel>
+					
+				<div class="EmptyBox20" />
+			</p:dialog>
+			<!-- *********************** Conceptos de Pago *********************** -->
+			
+
+			<div class="EmptyBox20"></div>
+		</h:form>
+	</ui:define>
+</ui:composition>

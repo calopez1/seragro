@@ -1,0 +1,206 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+<ui:define name="content">
+
+	<p:ajaxStatus onstart="PF('statusDialog').show()"
+		onsuccess="PF('statusDialog').hide()" />
+	<p:dialog modal="true" widgetVar="statusDialog" header="Cargando"
+		draggable="false" closable="false">
+		<p:graphicImage
+			value="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/ajaxloadingbar.gif" />
+	</p:dialog>
+
+	<!-- Expired session -->
+<p:idleMonitor onactive="PF('sessionTimeOutDialog').show();"
+	timeout="#{session.maxInactiveInterval * 1000}" />
+<p:dialog modal="true" widgetVar="sessionTimeOutDialog"
+	header="Sesión terminada" draggable="false" closable="false">
+	<h:outputText value="La sesión ha finalizado" />
+	<input id="confirmBackToLogin" type="button" value="Iniciar sesión"
+		onclick="window.location='#{facesContext.externalContext.requestContextPath}/index.jsp';" />
+</p:dialog>
+
+<script type="text/javascript">
+	function showStatus() {
+	    statusDialog.show();
+	}
+	 
+	function hideStatus() {
+	    statusDialog.hide();
+	}
+</script>
+
+
+<style type="text/css">
+	.ui-panel {
+		margin-top: 20px
+	}
+	
+	.ui-tabs-top {
+		background-color: #FFFFFF;
+	}
+	
+	.one {
+		width: 10%;
+	}
+	
+	.two {
+		width: 90%;
+	}
+	
+	.col50Left{
+		width: 10%;
+		text-align: left;
+	}
+	
+	.col50Right{
+		width: 10%;
+		text-align: right;
+	}
+	
+	.txt100{
+		width: 100%;
+	}
+	
+</style>
+
+<div align="center">
+<h:form id="frmInformeCuentasPorPagar">
+
+	<p:growl id="men" showDetail="false" autoUpdate="true" closable="true" />
+	
+	<p:panel id="pnlInformeDisponibilidadesConSaldo" header="Generar Informe Cuentas por Pagar"
+		style="width: 90%;" >		
+		<h:panelGrid columns="2">		
+			<p:outputLabel value="Fecha Inicial" for="txtFechaInicial" />
+			<p:calendar id="txtFechaInicial" 
+				value="#{gluoInformeCuentasPorPagarFutView.txtFechaInicial}"
+				navigator="true" pattern="yyyy-MM-dd" />
+				
+			<p:outputLabel value="Fecha Final" for="txtFechaFinal" />
+			<p:calendar id="txtFechaFinal" 
+				value="#{gluoInformeCuentasPorPagarFutView.txtFechaFinal}"
+				navigator="true" pattern="yyyy-MM-dd" />
+			
+		</h:panelGrid>			
+		
+		<p:commandButton id="btnGenerarInforme" value="Generar Informe"
+			action="#{gluoInformeCuentasPorPagarFutView.action_generar_informe}"
+			update=":frmInformeCuentasPorPagar" />
+			
+		<p:commandButton id="btnLimpiar" value="Limpiar"
+			action="#{gluoInformeCuentasPorPagarFutView.action_limpiar}"
+			update=":frmInformeCuentasPorPagar" />
+		
+	</p:panel>
+	
+	
+	
+	<p:panel id="pnlListarInformeCuentasPorPagar" header="Informe Cuentas por Pagar"
+		style="width: 90%;" >
+				
+		<p:scrollPanel mode="native">		
+		<p:dataTable id="listarInformeCuentasPorPagarDataTable"
+			scrollable="true" scrollWidth="100%"
+			var="informeCuentas"
+			value="#{gluoInformeCuentasPorPagarFutView.listInformeCuentasPorPagarDTOs}"
+			rows="10"
+			paginator="true" filterDelay="1000">
+			
+			
+			<p:column headerText="Consecutivo CDP" filterBy="#{informeCuentas.consecutivoCdp}"
+				filterMatchMode="startsWith">
+				<h:outputLabel value="#{informeCuentas.consecutivoCdp}" />
+			</p:column>
+			
+			<p:column headerText="Consecutivo CRP" filterBy="#{informeCuentas.consecutivoCrp}"
+				filterMatchMode="startsWith">
+				<h:outputLabel value="#{informeCuentas.consecutivoCrp}" />
+			</p:column>
+			
+			<p:column headerText="Consecutivo Obligación" filterBy="#{informeCuentas.consecutivoMaop}"
+				filterMatchMode="startsWith">
+				<h:outputLabel value="#{informeCuentas.consecutivoMaop}" />
+			</p:column>
+			
+			<p:column headerText="Tipo Identificación" filterBy="#{informeCuentas.tipoIdentificacion}"
+				filterMatchMode="startsWith">
+				<h:outputLabel value="#{informeCuentas.tipoIdentificacion}" />
+			</p:column>
+			
+			<p:column headerText="Identificación" filterBy="#{informeCuentas.identificacion}"
+				filterMatchMode="startsWith">
+				<h:outputLabel value="#{informeCuentas.identificacion}" />
+			</p:column>
+			
+			<p:column headerText="Nombre Tercero / Razón Social" filterBy="#{informeCuentas.nombreORazonSocialTercero}"
+				filterMatchMode="contains">
+				<h:outputLabel value="#{informeCuentas.nombreORazonSocialTercero}" />
+			</p:column>
+			
+			<p:column headerText="Rubro" filterBy="#{informeCuentas.codigoRubro}"
+				filterMatchMode="startsWith">
+				<h:outputLabel value="#{informeCuentas.codigoRubro}" />
+			</p:column>
+			
+			<p:column headerText="Descripción Rubro" filterBy="#{informeCuentas.descripcionRubro}"
+				filterMatchMode="contains">
+				<h:outputLabel value="#{informeCuentas.descripcionRubro}" />
+			</p:column>			
+			
+			<p:column headerText="Valor Obligación" filterBy="#{informeCuentas.valorOP}"
+				filterMatchMode="startsWith">
+				<h:outputLabel value="#{informeCuentas.valorOP}" >
+					<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+				</h:outputLabel>
+			</p:column>
+			
+			<p:column headerText="Valor Pagado" filterBy="#{informeCuentas.valorPagadoCeXOp}"
+				filterMatchMode="startsWith">
+				<h:outputLabel value="#{informeCuentas.valorPagadoCeXOp}" >
+					<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+				</h:outputLabel>
+			</p:column>
+			
+			<p:column headerText="Cuenta X Pagar" filterBy="#{informeCuentas.valorEnObligacion}"
+				filterMatchMode="startsWith">
+				<h:outputLabel value="#{informeCuentas.valorEnObligacion}" >
+					<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+				</h:outputLabel>
+			</p:column>
+			
+		</p:dataTable>
+		</p:scrollPanel>		
+		
+		<br/><br/>
+		
+		<h:panelGrid columns="3">
+		
+			<p:commandButton id="btnPDF" value="Descarga Reporte PDF"				
+				onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)" ajax="false" >
+				<p:fileDownload value="#{gluoInformeCuentasPorPagarFutView.reporteCDPPdf}" />				
+			</p:commandButton>
+		
+			<p:commandButton id="btnXLS" value="Descarga Reporte XLS"				
+				onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)" ajax="false" >
+				<p:fileDownload value="#{gluoInformeCuentasPorPagarFutView.reporteCDPXls}" />				
+			</p:commandButton>
+		
+			<p:commandButton id="btnXLSX" value="Descarga Reporte XLSX"				
+				onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)" ajax="false" >
+				<p:fileDownload value="#{gluoInformeCuentasPorPagarFutView.reporteCDPXlsx}" />				
+			</p:commandButton>
+						
+		</h:panelGrid>
+		<br/>
+		
+	</p:panel>		
+	
+</h:form>
+</div>
+</ui:define>
+</ui:composition>

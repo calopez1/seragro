@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated 9/08/2019 11:14:06 AM by Hibernate Tools 4.0.0 -->
+<hibernate-mapping>
+    <class name="com.unilever.bancoideas.modelo.LiquidacionNomina" table="liquidacion_nomina" schema="public">
+        <id name="linoId" type="java.lang.Integer">
+            <column name="lino_id" />
+            <generator class="identity" />
+        </id>
+        <property name="fechaInicio" type="java.util.Date">
+            <column name="fecha_inicio" length="13" not-null="true" />
+        </property>
+        <property name="fechaFin" type="java.util.Date">
+            <column name="fecha_fin" length="13" not-null="true" />
+        </property>
+        <property name="diasNomina" type="java.lang.Integer">
+            <column name="dias_nomina" not-null="true" />
+        </property>
+        <property name="descripcion" type="java.lang.String">
+            <column name="descripcion" length="100" />
+        </property>
+        <property name="codigo" type="java.lang.String">
+            <column name="codigo" length="100" not-null="true" />
+        </property>
+        <property name="usuCreador" type="java.lang.String">
+            <column name="usu_creador" length="100" not-null="true" />
+        </property>
+        <property name="usuModificador" type="java.lang.String">
+            <column name="usu_modificador" length="100" />
+        </property>
+        <property name="fechaCreacion" type="java.util.Date">
+            <column name="fecha_creacion" length="13" not-null="true" />
+        </property>
+        <property name="fechaModificacion" type="java.util.Date">
+            <column name="fecha_modificacion" length="13" />
+        </property>
+        <property name="estadoRegistro" type="java.lang.String">
+            <column name="estado_registro" length="1" not-null="true" />
+        </property>
+        <property name="estado" type="java.lang.String">
+            <column name="estado" length="20" not-null="true" />
+        </property>
+        
+        <set name="nominaEmpleados" table="nomina_empleado" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="lino_id" not-null="true" />
+            </key>
+            <one-to-many class="com.unilever.bancoideas.modelo.NominaEmpleado" />
+        </set>
+    </class>
+</hibernate-mapping>

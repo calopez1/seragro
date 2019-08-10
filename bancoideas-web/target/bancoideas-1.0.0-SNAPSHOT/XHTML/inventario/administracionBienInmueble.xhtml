@@ -1,0 +1,1140 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+
+<ui:define name="content">
+
+<p:ajaxStatus onstart="PF('statusDialog').show()"
+	onsuccess="PF('statusDialog').hide()" />
+<p:dialog modal="true" widgetVar="statusDialog" header="Cargando"
+	draggable="false" closable="false">
+	<p:graphicImage
+		value="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/ajaxloadingbar.gif" />
+</p:dialog>
+
+	<!-- Expired session -->
+<p:idleMonitor onactive="PF('sessionTimeOutDialog').show();"
+	timeout="#{session.maxInactiveInterval * 1000}" />
+<p:dialog modal="true" widgetVar="sessionTimeOutDialog"
+	header="Sesión terminada" draggable="false" closable="false">
+	<h:outputText value="La sesión ha finalizado" />
+	<input id="confirmBackToLogin" type="button" value="Iniciar sesión"
+		onclick="window.location='#{facesContext.externalContext.requestContextPath}/index.jsp';" />
+</p:dialog>
+
+<script type="text/javascript">
+	function showStatus() {
+	    statusDialog.show();
+	}
+	 
+	function hideStatus() {
+	    statusDialog.hide();
+	}
+</script>
+
+<style type="text/css">
+	.ui-panel {
+		margin-top: 20px
+	}
+	
+	.ui-tabs-top {
+		background-color: #FFFFFF;
+	}
+	
+	.one {
+		width: 15%;
+	}
+	
+	.two {
+		width: 85%;
+	}
+	
+	.col50Left{
+		width: 10%;
+		text-align: left;
+	}
+	
+	.col50Right{
+		width: 10%;
+		text-align: right;
+	}
+	
+	.txt100{
+		width: 100%;
+	}
+	
+</style>
+
+<div align="center">
+<h:form id="frmAdministracionBienInmueble"  enctype="multipart/form-data">
+
+	<p:growl id="growl" autoUpdate="true" />
+	
+	<p:panel id="pnlAdministracionBienInmueble" header="Administración Bien Inmueble" style="width: 90%;">
+		<h:panelGrid columns="2">
+			<p:outputLabel value="Movimiento Bien Inmueble:" for="somMovimientoBienInmueble" />
+			<p:selectOneMenu id="somMovimientoBienInmueble" binding="#{gluoBienInmuebleView.somMovimientoBienInmueble}"
+				filter="true" >
+				<f:selectItem itemLabel="- Seleccionar -" itemValue="-1" />				
+				<f:selectItems value="#{gluoBienInmuebleView.itemsTipoMovimientoBienInmueble}" />
+				<p:ajax event="change"
+						listener="#{gluoBienInmuebleView.seleccionar_tipo_movimiento}"
+						update=":frmAdministracionBienInmueble" />				
+			</p:selectOneMenu>						
+		</h:panelGrid>
+		
+		<br/>
+
+		<p:panel header="Tipo de cambio:" rendered="#{gluoBienInmuebleView.showCambioRendered}"
+			style="width: 80%;">					
+			<p:selectOneRadio id="sorCambio" binding="#{gluoBienInmuebleView.sorCambio}">						
+				<f:selectItems value="#{gluoBienInmuebleView.itemsTipoMovimientoCambio}" />
+				<p:ajax event="change"
+					 	listener="#{gluoBienInmuebleView.listener_seleccionar_item_tipo_movimiento}"
+					 	update=":frmAdministracionBienInmueble" />
+			</p:selectOneRadio>			
+		</p:panel>
+		
+		<p:panel header="Tipo de ingreso:" rendered="#{gluoBienInmuebleView.showIngresoRendered}"
+			style="width: 80%;">
+			<p:selectOneRadio id="sorIngreso" binding="#{gluoBienInmuebleView.sorIngreso}">
+				<f:selectItems value="#{gluoBienInmuebleView.itemsTipoMovimientoIngreso}" />
+				<p:ajax event="change"
+					 	listener="#{gluoBienInmuebleView.listener_seleccionar_item_tipo_movimiento}"
+					 	update=":frmAdministracionBienInmueble" />
+			</p:selectOneRadio>
+		</p:panel>
+		
+		<p:panel header="Tipo de salida:" rendered="#{gluoBienInmuebleView.showSalidaRendered}"
+			style="width: 80%;">		
+			<p:selectOneRadio id="sorSalida" binding="#{gluoBienInmuebleView.sorSalida}">
+				<f:selectItems value="#{gluoBienInmuebleView.itemsTipoMovimientoSalida}" />
+				<p:ajax event="change"
+					 	listener="#{gluoBienInmuebleView.listener_seleccionar_item_tipo_movimiento}"
+					 	update=":frmAdministracionBienInmueble" />
+			</p:selectOneRadio>
+		</p:panel>
+		
+		<p:panel header="Tipo de actualización vida útil:" rendered="#{gluoBienInmuebleView.showActualizacionVidaUtilRendered}"
+			style="width: 80%;">				
+			<p:selectOneRadio id="sorActualizacionVidaUtil" binding="#{gluoBienInmuebleView.sorActualizacionVidaUtil}">
+				<f:selectItems value="#{gluoBienInmuebleView.itemsTipoMovimientoActualizacion}" />
+				<p:ajax event="change"
+					 	listener="#{gluoBienInmuebleView.listener_seleccionar_item_tipo_movimiento}"
+					 	update=":frmAdministracionBienInmueble" />
+			</p:selectOneRadio>
+		</p:panel>
+	</p:panel>
+	
+	
+	<!-- CREACIÓN BIEN INMUEBLE -->
+	<p:panel id="pnlCrearBienInmueble" header="Crear Bien Inmueble" style="width: 90%;"
+		rendered="#{gluoBienInmuebleView.showCreacionBienInmueble}">		
+		<h:panelGrid columns="4">
+			<p:outputLabel value="Código:" for="txtCodigo" />
+			<p:inputText id="txtCodigo" binding="#{gluoBienInmuebleView.txtCodigo}"
+			  style="width: 200px;" >
+			  <p:ajax event="blur" listener="#{gluoBienInmuebleView.listener_codigo_inmueble}"
+			  	update=":frmAdministracionBienInmueble" />
+			  </p:inputText>
+		  
+			<p:outputLabel value="Tipo Bien:" for="txtTipoBien" />
+			<h:panelGrid columns="2">
+				<p:inputText id="txtTipoBien" binding="#{gluoBienInmuebleView.txtTipoBien}"
+					readonly="true" style="width: 200px;" />
+				<p:commandButton style="width: 100%" icon="ui-icon-search"
+					onclick="PF('dialogTipoBien').show()" disabled="#{gluoBienInmuebleView.showBtnTipoBien}" />
+			</h:panelGrid>
+			
+			<p:outputLabel value="Municipio:" for="txtMunicipio" />
+			<h:panelGrid columns="2">
+				<p:inputText id="txtMunicipio" binding="#{gluoBienInmuebleView.txtMunicipio}"
+					readonly="true" style="width: 200px;" />
+				<p:commandButton style="width: 100%" icon="ui-icon-search"
+					onclick="PF('dialogMunicipios').show()" disabled="#{gluoBienInmuebleView.showBtnMunicipio}" />				
+			</h:panelGrid>	
+			
+			<p:outputLabel value="Dirección:" for="txtDireccion" />
+			<p:inputText id="txtDireccion" binding="#{gluoBienInmuebleView.txtDireccion}"
+			  style="width: 200px;" />
+			
+			<p:outputLabel value="Tipo Posesión:" for="txtTipoPosesion" />
+			<h:panelGrid columns="2">
+				<p:inputText id="txtTipoPosesion" binding="#{gluoBienInmuebleView.txtTipoPosesion}"
+					readonly="true" style="width: 200px;" />
+					<p:commandButton style="width: 100%" icon="ui-icon-search"
+						onclick="PF('dialogTipoPosesion').show()" disabled="#{gluoBienInmuebleView.showBtnTipoPosesion}" />
+			</h:panelGrid>	
+			
+			<p:outputLabel value="Situación Jurídica:" for="txtSituacionJuridica" />
+			<h:panelGrid columns="2">
+				<p:inputText id="txtSituacionJuridica" binding="#{gluoBienInmuebleView.txtSituacionJuridica}"
+					readonly="true" style="width: 200px;" />
+				<p:commandButton style="width: 100%" icon="ui-icon-search"
+							onclick="PF('dialogSituacionJuridica').show()" disabled="#{gluoBienInmuebleView.showBtnSituacionJuridica}" />
+			</h:panelGrid>
+			
+			<p:outputLabel value="Recibo de Caja:" for="txtReciboCaja" />
+			<h:panelGrid columns="2">
+				<p:inputText id="txtReciboCaja" binding="#{gluoBienInmuebleView.txtReciboCaja}"
+					readonly="true" style="width: 200px;" />
+				<p:commandButton style="width: 100%" icon="ui-icon-search" 					
+					onclick="PF('dialogoConsultarRecibo').show()"
+					disabled="#{gluoBienInmuebleView.showBtnReciboCaja}"/>
+			</h:panelGrid>
+			
+			<p:outputLabel value="Motivo Baja" for="txtMotivoBaja" />
+			<h:panelGrid columns="2">
+				<p:inputText id="txtMotivoBaja" binding="#{gluoBienInmuebleView.txtMotivoBaja}"
+					readonly="true" style="width: 200px;" />
+				<p:commandButton style="width: 100%" icon="ui-icon-search"
+					onclick="PF('dialogMotivoBaja').show()"
+					disabled="#{gluoBienInmuebleView.showBtnMotivoBaja}"/>
+			</h:panelGrid>
+			
+			<p:outputLabel value="Área Lote:" for="txtAreaLote" />
+			<p:inputText id="txtAreaLote" binding="#{gluoBienInmuebleView.txtAreaLote}"
+				 placeholder="Área Lote" style="width: 200px;" />
+			
+			<p:outputLabel value="Área Construída:" for="txtAreaConstruia" />
+			<p:inputText id="txtAreaConstruia" binding="#{gluoBienInmuebleView.txtAreaConstruia}"
+				 placeholder="Área Construída" style="width: 200px;" />
+			
+			<p:outputLabel value="Área Libre:" for="txtAreaLibre" />
+			<p:inputText id="txtAreaLibre" binding="#{gluoBienInmuebleView.txtAreaLibre}"
+				 placeholder="Área Libre" style="width: 200px;" />
+				 
+			<p:outputLabel value="Está en uso:" for="sorEstaEnUso" />
+			<p:selectOneRadio id="sorEstaEnUso" binding="#{gluoBienInmuebleView.sorEstaEnUso}">
+				<f:selectItem itemLabel="Si" itemValue="S" />
+				<f:selectItem itemLabel="No" itemValue="N" />
+				<p:ajax event="change" listener="#{gluoBienInmuebleView.listener_esta_en_uso}"
+					update="@this, @([id$=txtUsoDestinoBien]), @([id$=btnTxtUsoDestinoBien])" />
+			</p:selectOneRadio>								
+
+			<p:outputLabel value="Tipo Uso:" for="txtUsoDestinoBien" />
+			<h:panelGrid columns="2">
+				<p:inputText id="txtUsoDestinoBien" binding="#{gluoBienInmuebleView.txtUsoDestinoBien}"
+					readonly="true" style="width: 200px;" />
+				<p:commandButton id="btnTxtUsoDestinoBien" style="width: 100%" icon="ui-icon-search"
+							onclick="PF('dialogUsoDestinoBien').show()" disabled="#{gluoBienInmuebleView.showBtnUsoDestinoBien}" />
+			</h:panelGrid>
+			
+			<p:outputLabel value="Responsable:" for="txtTercero" />
+			<h:panelGrid columns="2">
+				<p:inputText id="txtTercero" binding="#{gluoBienInmuebleView.txtTercero}"
+					readonly="true" style="width: 200px;" />
+				<p:commandButton style="width: 100%" icon="ui-icon-search"
+							onclick="PF('dialogTercero').show()" disabled="#{gluoBienInmuebleView.showBtnTercero}" />
+			</h:panelGrid>
+			
+			<p:outputLabel value="Número Escritura:" for="txtNumeroEscritura" />
+			<p:inputText id="txtNumeroEscritura" binding="#{gluoBienInmuebleView.txtNumeroEscritura}"
+				style="width: 200px;" />
+				
+			<p:outputLabel value="Fecha Escritura:" for="fechaEscritura" />
+			<p:calendar id="fechaEscritura" binding="#{gluoBienInmuebleView.fechaEscritura}"
+				navigator="true" pattern="yyyy-MM-dd" />
+				
+			<p:outputLabel value="Ciudad Notaría:" for="txtCiudadNotaria" />
+			<p:inputText id="txtCiudadNotaria" binding="#{gluoBienInmuebleView.txtCiudadNotaria}"
+				style="width: 200px;" />
+			
+			<p:outputLabel value="Número Notaría:" for="txtNumeroNotaria" />
+			<p:inputText id="txtNumeroNotaria" binding="#{gluoBienInmuebleView.txtNumeroNotaria}"
+				style="width: 200px;" />
+			
+			<p:outputLabel value="Matrícula Inmobiliaria:" for="txtMatriculaInmobiliaria" />
+			<p:inputText id="txtMatriculaInmobiliaria" binding="#{gluoBienInmuebleView.txtMatriculaInmobiliaria}"
+				style="width: 200px;" />
+			
+			<p:outputLabel value="Cédula Catastral:" for="txtCedulaCatastral" />
+			<p:inputText id="txtCedulaCatastral" binding="#{gluoBienInmuebleView.txtCedulaCatastral}"
+				style="width: 200px;" />
+			
+			<p:outputLabel value="Número Pisos:" for="txtNumeroPisos" />
+			<p:inputText id="txtNumeroPisos" binding="#{gluoBienInmuebleView.txtNumeroPisos}"
+				style="width: 200px;" />
+			
+			<p:outputLabel value="Número Acta:" for="txtNumeroActa" />
+			<p:inputText id="txtNumeroActa" binding="#{gluoBienInmuebleView.txtNumeroActa}"
+				style="width: 200px;" />
+			
+			<p:outputLabel value="Fecha Acta:" for="fechaActa" />
+			<p:calendar id="fechaActa" binding="#{gluoBienInmuebleView.fechaActa}"
+				navigator="true" pattern="yyyy-MM-dd" />
+				
+			<p:outputLabel value="Obligaciones:" for="txtOP" />
+			<h:panelGrid columns="2">
+				<p:inputText id="txtOP" binding="#{gluoBienInmuebleView.txtOP}" 
+					readonly="true" style="width: 200px;" />
+				<p:commandButton style="width: 100%" icon="ui-icon-search"
+							onclick="PF('dialogOP').show()" disabled="#{gluoBienInmuebleView.showBtnOP}" />
+			</h:panelGrid>
+			
+			<p:outputLabel value="Valor Catastral:" for="txtValorCatastral" />
+			<p:inputText id="txtValorCatastral" binding="#{gluoBienInmuebleView.txtValorCatastral}"
+				style="width: 200px;" >
+				<f:convertNumber pattern="#,##0.00" />
+				<p:ajax update="@this" />
+			</p:inputText>
+				
+			<p:outputLabel value="Valor Libros:" for="txtValorLibros" />
+			<p:inputText id="txtValorLibros" binding="#{gluoBienInmuebleView.txtValorLibros}"
+				style="width: 200px;" >
+				<f:convertNumber pattern="#,##0.00" />
+				<p:ajax update="@this" />
+			</p:inputText>
+			
+			<p:outputLabel value="Valor Comercial:" for="txtValorComercial" />
+			<p:inputText id="txtValorComercial" binding="#{gluoBienInmuebleView.txtValorComercial}"
+				style="width: 200px;" >
+				<f:convertNumber pattern="#,##0.00" />
+				<p:ajax update="@this" />
+			</p:inputText>
+				
+			<p:outputLabel value="Es Exento Impuestos:" for="sorEsExentoImpuestos" />
+			<p:selectOneRadio id="sorEsExentoImpuestos" binding="#{gluoBienInmuebleView.sorEsExentoImpuestos}">
+				<f:selectItem itemLabel="Si" itemValue="S" />
+				<f:selectItem itemLabel="No" itemValue="N" />
+			</p:selectOneRadio>
+			
+			<p:outputLabel value="Cuenta Contable:" for="txtCuentaContable" />
+			<h:panelGrid columns="2">
+				<p:inputText id="txtCuentaContable" binding="#{gluoBienInmuebleView.txtCuentaContable}" 
+					readonly="true" style="width: 200px;" />
+				<p:commandButton style="width: 100%" icon="ui-icon-search"
+							onclick="PF('dialogCuentaContable').show()" disabled="#{gluoBienInmuebleView.showBtnCuentaContable}" />
+			</h:panelGrid>
+			
+			<p:outputLabel value="Cuenta Contable Depreciación:" for="txtCuentaContableDepreciacion" />
+			<h:panelGrid columns="2">
+				<p:inputText id="txtCuentaContableDepreciacion" binding="#{gluoBienInmuebleView.txtCuentaContableDepreciacion}" 
+					readonly="true" style="width: 200px;" />
+				<p:commandButton style="width: 100%" icon="ui-icon-search"
+							onclick="PF('dialogCuentaContableDepreciacion').show()" disabled="#{gluoBienInmuebleView.showBtnCuentaContableDepreciacion}" />
+			</h:panelGrid>
+			
+			<p:outputLabel value="Vida Útil" for="txtVidaUtil" />
+			<p:inputText id="txtVidaUtil" binding="#{gluoBienInmuebleView.txtVidaUtil}"
+				 style="width: 200px;" />
+			
+		</h:panelGrid>
+		
+		<br/>
+		<p:fileUpload fileUploadListener="#{gluoBienInmuebleView.upload}"
+			auto="true"
+			value="#{gluoBienInmuebleView.file}" 
+			mode="advanced"
+			sizeLimit="10485760" fileLimit="1"						
+			label="Seleccionar archivo.."
+			uploadLabel="Validar Archivo"
+			cancelLabel="Cancelar" 
+			update=":frmAdministracionBienInmueble"  						
+			invalidSizeMessage="Tamaño no válido"
+			styleClass="fileupload-simple"
+			disabled="#{gluoBienInmuebleView.showArchivoSoporte}" />
+			
+		<p:dataTable id="pnlTablaArchivosSoporte" style="text-align: center; width: 90%;"
+			value="#{gluoBienInmuebleView.gluoArchivoDTO}"
+			var="archivo"
+			rendered="#{gluoBienInmuebleView.gluoArchivoDTO != null}">
+			
+			<p:column headerText="Archivo" style="width: 80%">
+				<p:outputLabel value="#{archivo.fileName}" />
+			</p:column>
+			
+			<p:column headerText="Borrar" style="width: 10%">
+				<p:commandButton icon="ui-icon-close"  
+					action="#{gluoBienInmuebleView.action_delete_archivo_soporte}"
+					update=":frmAdministracionBienInmueble"/>
+			</p:column>
+						
+   		</p:dataTable>
+			
+		<br/>
+		<p:commandButton id="btnCrearBienInmueble" value="Crear Bien Inmueble"
+			action="#{gluoBienInmuebleView.action_create_inmueble}"
+			rendered="#{gluoBienInmuebleView.showBtnCrearBienInmueble}"
+			update=":frmAdministracionBienInmueble" />
+			
+		<p:commandButton id="btnSalidaBaja" value="Salida Baja"
+			action="#{gluoBienInmuebleView.action_salida_baja}"
+			rendered="#{gluoBienInmuebleView.showBtnSalidaBaja}"
+			update=":frmAdministracionBienInmueble" />
+			
+		<p:commandButton id="btnSalidaVenta" value="Salida Venta"
+			action="#{gluoBienInmuebleView.action_salida_venta}"
+			rendered="#{gluoBienInmuebleView.showBtnSalidaVenta}"
+			update=":frmAdministracionBienInmueble" />
+			
+		<p:commandButton id="btnActualizacionMejora" value="Actualización Mejora"
+			action="#{gluoBienInmuebleView.action_actualizacion_mejora}"
+			rendered="#{gluoBienInmuebleView.showBtnActualizacionMejora}"
+			update=":frmAdministracionBienInmueble" />
+			
+		<p:commandButton id="btnActualizacionDepreciacion" value="Actualización Depreciación"
+			action="#{gluoBienInmuebleView.action_actualizacion_depreciacion}"
+			rendered="#{gluoBienInmuebleView.showBtnActualizacionDepreciacion}"
+			update=":frmAdministracionBienInmueble" />
+			
+		<p:commandButton id="btnActualizacionAdicion" value="Actualización Adición"
+			action="#{gluoBienInmuebleView.action_actualizacion_adicion}"
+			rendered="#{gluoBienInmuebleView.showBtnActualizacionAdicion}"
+			update=":frmAdministracionBienInmueble" />
+			
+		<p:commandButton id="btnCambioPosesion" value="Cambio Posesión"
+			action="#{gluoBienInmuebleView.action_cambio_posesion}"
+			rendered="#{gluoBienInmuebleView.showBtnCambioPosesion}"
+			update=":frmAdministracionBienInmueble" />
+			
+		<p:commandButton id="btnCambioSituacionJuridica" value="Cambio Situación Jurídica"
+			action="#{gluoBienInmuebleView.action_cambio_situacion_juridica}"
+			rendered="#{gluoBienInmuebleView.showBtnCambioSituacionJuridica}"
+			update=":frmAdministracionBienInmueble" />
+			
+		<p:commandButton id="btnCambioUso" value="Cambio Uso"
+			action="#{gluoBienInmuebleView.action_cambio_uso}"
+			rendered="#{gluoBienInmuebleView.showBtnCambioUso}"
+			update=":frmAdministracionBienInmueble" />
+		
+		<p:commandButton id="btnLimpiar" value="Limpiar"
+			action="#{gluoBienInmuebleView.action_clear_inmueble}"
+			update=":frmAdministracionBienInmueble" />
+								
+	</p:panel>
+	
+	
+	<!-- ************************************************** -->
+	<!-- **		    DIÁLOGO LISTA BIENES INMUEBLES       ** -->
+	<!-- ************************************************** -->
+	<p:dialog id="dialogConsultaBienesInmuebles" widgetVar="dialogConsultaBienesInmuebles" closable="true" 
+			  header="Consulta de Bienes Inmuebles" modal="true" draggable="false" resizable="true" width="90%"> 				
+		
+		<p:scrollPanel id="pnlInmuebles" mode="native" style="width:100%; height:400px">			
+			<p:dataTable id="pnlInmuebleDataTable" style="text-align: center;" scrollable="true"
+				var="inmueble"								
+				value="#{gluoBienInmuebleView.listBienInmuebleDTOs}"
+				selection="#{gluoBienInmuebleView.selectedBienInmuebleDTO}"
+				selectionMode="single"
+				rowKey="#{inmueble.biinId}"				
+				paginator="true"				
+				rows="10"
+				filterDelay="1000">		
+				
+				<p:column selectionMode="single" style="width: 2%;" />
+				
+				<p:ajax event="rowSelect"
+					listener="#{gluoBienInmuebleView.listener_seleccionar_bien_inmueble}"
+					update=":frmAdministracionBienInmueble" />						
+			
+				<p:column headerText="Código" filterBy="#{inmueble.codigo}"
+	            	filterMatchMode="startsWith" style="width: 200px;">
+	            	<p:outputLabel value="#{inmueble.codigo}" />
+	            </p:column>
+				
+	            <p:column headerText="Cédula Catastral" filterBy="#{inmueble.cedulaCatastral}"
+	            	filterMatchMode="startsWith" style="width: 200px;">
+	            	<p:outputLabel value="#{inmueble.cedulaCatastral}" />
+	            </p:column>
+	           
+	           	<p:column headerText="Ciudad Notaría" filterBy="#{inmueble.ciudadNotaria}"
+	            	filterMatchMode="contains" style="width: 200px;">
+	            	<p:outputLabel value="#{inmueble.ciudadNotaria}" />
+	            </p:column>
+	            
+	            <p:column headerText="Dirección" filterBy="#{inmueble.direccion}"
+	            	filterMatchMode="contains" style="width: 200px;">
+	            	<p:outputLabel value="#{inmueble.direccion}" />
+	            </p:column>
+	            
+	            <p:column headerText="Exento Impuestos" filterBy="#{inmueble.esExentoImpuestos}"
+	            	filterMatchMode="startsWith" style="width: 200px;">
+	            	<p:outputLabel value="#{(inmueble.esExentoImpuestos == 'S' ? 'Si' : 'No')}" />
+	            </p:column>
+	            
+	            <p:column headerText="Está en Uso" filterBy="#{inmueble.estaEnUso}"
+	            	filterMatchMode="startsWith" style="width: 200px;">
+	            	<p:outputLabel value="#{(inmueble.estaEnUso == 'S' ? 'Si' : 'No')}" />
+	            </p:column>
+	            
+	            <p:column headerText="Fecha Acta Inmueble Municipal" filterBy="#{inmueble.fechaActaInmuebleMunicipal}"
+	            	filterMatchMode="startsWith" style="width: 200px;">
+	            	<p:outputLabel value="#{inmueble.fechaActaInmuebleMunicipal}" >
+	            		<f:convertDateTime type="date" pattern="yyyy-MM-dd" />
+	            	</p:outputLabel>
+	            </p:column>
+	            
+	            <p:column headerText="Fecha Escritura" filterBy="#{inmueble.fechaEscritura}"
+	            	filterMatchMode="startsWith" style="width: 200px;">
+	            	<p:outputLabel value="#{inmueble.fechaEscritura}" >
+	            		<f:convertDateTime type="date" pattern="yyyy-MM-dd" />
+	            	</p:outputLabel>
+	            </p:column>
+	            
+	            <p:column headerText="Matrícula Inmobiliaria" filterBy="#{inmueble.matriculaInmobiliaria}"
+	            	filterMatchMode="startsWith" style="width: 200px;">
+	            	<p:outputLabel value="#{inmueble.matriculaInmobiliaria}" />
+	            </p:column>
+	            
+	            <p:column headerText="Número Acta Inmueble Municipal" filterBy="#{inmueble.numeroActaInmuebleMunicipal}"
+	            	filterMatchMode="startsWith" style="width: 200px;">
+	            	<p:outputLabel value="#{inmueble.numeroActaInmuebleMunicipal}" />
+	            </p:column>
+	            
+	            <p:column headerText="Número Escritura" filterBy="#{inmueble.numeroEscritura}"
+	            	filterMatchMode="startsWith" style="width: 200px;">
+	            	<p:outputLabel value="#{inmueble.numeroEscritura}" />
+	            </p:column>
+	            
+	            <p:column headerText="Número Notaría" filterBy="#{inmueble.numeroNotaria}"
+	            	filterMatchMode="startsWith" style="width: 200px;">
+	            	<p:outputLabel value="#{inmueble.numeroNotaria}" />
+	            </p:column>
+	            
+	            <p:column headerText="Vida Útil Actual (Meses)" filterBy="#{inmueble.vidaUtilActual}"
+	            	filterMatchMode="startsWith" style="width: 200px;">
+	            	<p:outputLabel value="#{inmueble.vidaUtilActual}" />
+	            </p:column>
+					
+			</p:dataTable>
+		</p:scrollPanel>					
+	</p:dialog> <!-- FIN DIÁLOGO LISTA BIENES INMUEBLES -->
+	
+	
+	<!-- ************************************************** -->
+	<!-- **		    	DIÁLOGO TIPO BIEN	             ** -->
+	<!-- ************************************************** -->
+	<p:dialog id="dialogTipoBien" widgetVar="dialogTipoBien" closable="true" 
+			  header="Consultar Tipo Bien" modal="true" draggable="false" resizable="true" width="90%">
+			  
+		<p:scrollPanel id="tipoBienDataTableScroll" mode="native" style="width:100%; height:400px">	
+		<p:dataTable id="tipoBienDataTable" style="text-align: center;"
+			var="tipoBien"
+			value="#{gluoBienInmuebleView.listTipoBienDTOs}"
+			selection="#{gluoBienInmuebleView.selectedTipoBienDTO}"
+			selectionMode="single"
+			rowKey="#{tipoBien.tibiId}"
+			paginator="true"
+			rows="10"
+			filterDelay="1000">
+			
+			<p:column selectionMode="single" style="width: 6%;" />
+			
+			<p:ajax event="rowSelect"
+				listener="#{gluoBienInmuebleView.listener_seleccionar_tipo_bien}"				
+				update=":frmAdministracionBienInmueble" />
+			
+			<p:column headerText="Código" filterBy="#{tipoBien.codigo}"
+				filterMatchMode="startsWith">
+				<p:outputLabel value="#{tipoBien.codigo}" />
+			</p:column>
+			
+			<p:column headerText="Descripción" filterBy="#{tipoBien.descripcion}"
+				filterMatchMode="startsWith">
+				<p:outputLabel value="#{tipoBien.descripcion}" />
+			</p:column>
+		
+		</p:dataTable>
+		</p:scrollPanel>
+	</p:dialog> <!-- FIN DIÁLOGO TIPO BIEN -->
+	
+	<!-- ************************************************** -->
+	<!-- **		    	DIÁLOGO MUNICIPIOS	             ** -->
+	<!-- ************************************************** -->
+	<p:dialog id="dialogMunicipios" widgetVar="dialogMunicipios" closable="true" 
+			  header="Consultar Municipios" modal="true" draggable="false" resizable="true" width="90%">			  
+		<p:scrollPanel id="dialogMunicipiosDataTableScroll" mode="native" style="width:100%; height:400px">
+			<p:dataTable id="municipiosDataTable" style="text-align: center;"
+				var="municipio"
+				value="#{gluoBienInmuebleView.listMunicipioDTOs}"
+				selection="#{gluoBienInmuebleView.selectedMunicipioDTO}"
+				selectionMode="single"
+				rowKey="#{municipio.muniId}"
+				paginator="true"
+				rows="10"
+				filterDelay="1000">
+				
+				<p:column selectionMode="single" style="width: 6%;" />
+			
+				<p:ajax event="rowSelect"
+					listener="#{gluoBienInmuebleView.listener_seleccionar_municipio}"				
+					update=":frmAdministracionBienInmueble" />
+					
+				<p:column headerText="Código" filterBy="#{municipio.codigo}"
+					filterMatchMode="startsWith">
+					<p:outputLabel value="#{municipio.codigo}" />
+				</p:column>
+				
+				<p:column headerText="Ciudad" filterBy="#{municipio.nombre}"
+					filterMatchMode="contains">
+					<p:outputLabel value="#{municipio.nombre}" />
+				</p:column>
+				
+				<p:column headerText="Departamento" filterBy="#{municipio.nombreDepartamento}"
+					filterMatchMode="contains">
+					<p:outputLabel value="#{municipio.nombreDepartamento}" />
+				</p:column>
+			
+			</p:dataTable>
+		</p:scrollPanel>		
+	</p:dialog><!-- FIN DIÁLOGO MUNICIPIOS -->
+	
+	<!-- ************************************************** -->
+	<!-- **		    	DIÁLOGO TIPO POSESIÓN	         ** -->
+	<!-- ************************************************** -->
+	<p:dialog id="dialogTipoPosesion" widgetVar="dialogTipoPosesion" closable="true" 
+			  header="Consultar Posesiones" modal="true" draggable="false" resizable="true" width="90%">			  
+		<p:scrollPanel id="dialogPosesionDataTableScroll" mode="native" style="width:100%; height:400px">
+			<p:dataTable id="posesionDataTable" style="text-align: center;"
+				var="posesion"
+				value="#{gluoBienInmuebleView.listTipoPosesionDTOs}"
+				selection="#{gluoBienInmuebleView.selectedTipoPosesion}"
+				selectionMode="single"
+				rowKey="#{posesion.tipoId}"
+				paginator="true"
+				rows="10"
+				filterDelay="1000">
+				
+				<p:column selectionMode="single" style="width: 6%;" />
+			
+				<p:ajax event="rowSelect"
+					listener="#{gluoBienInmuebleView.listener_seleccionar_tipo_posesion}"				
+					update=":frmAdministracionBienInmueble" />
+				
+				<p:column headerText="Código" filterBy="#{posesion.codigo}"
+					filterMatchMode="startsWith">
+					<p:outputLabel value="#{posesion.codigo}" />
+				</p:column>
+				
+				<p:column headerText="Descripción" filterBy="#{posesion.descripcion}"
+					filterMatchMode="contains">
+					<p:outputLabel value="#{posesion.descripcion}" />
+				</p:column>
+			
+			</p:dataTable>
+		</p:scrollPanel>		
+	</p:dialog> <!-- FIN DIÁLOGO TIPO POSESIÓN -->
+	
+	<!-- ************************************************** -->
+	<!-- **		    DIÁLOGO SITUACIÓN JURÍDICA	         ** -->
+	<!-- ************************************************** -->
+	<p:dialog id="dialogSituacionJuridica" widgetVar="dialogSituacionJuridica" closable="true" 
+			  header="Consultar Situaciones jurídica" modal="true" draggable="false" resizable="true" width="90%">			  
+		<p:scrollPanel id="dialogSituacionesJuridicasDataTableScroll" mode="native" style="width:100%; height:400px">
+			<p:dataTable id="SituacionJuridica" style="text-align: center;"
+				var="situacion"
+				value="#{gluoBienInmuebleView.listSituacionJuridicaDTOs}"
+				selection="#{gluoBienInmuebleView.selectedSituacionJuridicaDTO}"
+				selectionMode="single"
+				rowKey="#{situacion.sijuId}"
+				paginator="true"
+				rows="10"
+				filterDelay="1000">
+				
+				<p:column selectionMode="single" style="width: 6%;" />
+			
+				<p:ajax event="rowSelect"
+					listener="#{gluoBienInmuebleView.listener_seleccionar_situacion_juridica}"				
+					update=":frmAdministracionBienInmueble" />
+					
+				<p:column headerText="Código" filterBy="#{situacion.codigo}"
+					filterMatchMode="startsWith">
+					<p:outputLabel value="#{situacion.codigo}" />
+				</p:column>
+				
+				<p:column headerText="Descripción" filterBy="#{situacion.descripcion}"
+					filterMatchMode="contains">
+					<p:outputLabel value="#{situacion.descripcion}" />
+				</p:column>
+					
+			</p:dataTable>
+		</p:scrollPanel>
+	</p:dialog>
+		
+	<!-- ************************************************** -->
+	<!-- **		    DIÁLOGO RECIBOS DE CAJA	             ** -->
+	<!-- ************************************************** -->	
+	<p:dialog header="Detalle Recibo Caja" widgetVar="dialogoConsultarRecibo" modal="true"  width="90%" height="400px" >       
+		<p:panel id="pnlInformeReciboCaja" header="Informe Recibo de Caja" style="width: 90%;" >
+		
+			<h:panelGrid columns="5">
+			
+				<p:outputLabel value="Fecha Inicial:" for="calFechaInicial" />			
+				<p:calendar id="calFechaInicial" binding="#{gluoBienInmuebleView.fechaInicialReciboCaja}"
+					navigator="true" style="width: 100%;"/>
+	            
+	            <p:spacer width="10"></p:spacer>
+	            
+				<p:outputLabel value="Fecha Final:" for="calFechaFinal" />
+				<p:calendar id="calFechaFinal"  binding="#{gluoBienInmuebleView.fechaFinReciboCaja}"
+					navigator="true" style="width: 100%;"/>
+			
+				<p:outputLabel value="Identificación:" for="txtIdentificacion" />			
+				<p:inputText id="txtIdentificacion" binding="#{gluoBienInmuebleView.txtIdentificacionReciboCaja}"
+					style="width: 90%;"/>
+	            
+	            <p:spacer width="10"></p:spacer>
+	            
+				<p:outputLabel value="Nombre:" for="txtNombre" />
+				<p:inputText id="txtNombre"  binding="#{gluoBienInmuebleView.txtNombreReciboCaja}"
+					style="width: 90%;"/>
+			
+				<p:outputLabel value="Consecutivo:" for="txtConsecutivo" />
+				<p:inputText id="txtConsecutivo" binding="#{gluoBienInmuebleView.txtConsecutivoReciboCaja}" 
+					style="width: 90%;"/>
+						
+			</h:panelGrid>
+			
+			<br/>			
+			<p:commandButton id="btnConsultar" value="Consultar"
+							 action="#{gluoBienInmuebleView.action_consultar_recibo_caja}"
+							 update="pnlListaReciboCajaDataTable" />
+			
+			<p:commandButton id="btnLimpiarReciboCaja" value="Limpiar" 
+							 action="#{gluoBienInmuebleView.action_clear_recibo_caja}"
+							 update="pnlListaReciboCajaDataTable" />		
+		</p:panel>
+		
+		<p:panel id="pnlListaReciboCaja" style="width: 90%;" header="Informe Recibo de Caja">								
+			<p:dataTable id="pnlListaReciboCajaDataTable"
+					var="recibo" 					
+					emptyMessage="No se encontraron recibos de caja "					
+					value="#{gluoBienInmuebleView.listReciboCajaDTOs}"									
+					selection="#{gluoBienInmuebleView.selectedReciboCajaDTO}"
+					selectionMode="single"
+					paginator="true" rows="10"
+					rowKey="#{recibo.rcboId}"
+					filterDelay="1000">
+					
+					<p:column selectionMode="single" style="width: 6%;" />
+					
+					<p:ajax event="rowSelect"
+						listener="#{gluoBienInmuebleView.listener_seleccionar_recibo_caja}"
+						update=":frmAdministracionBienInmueble"/>
+					
+					<p:column headerText="Consecutivo"
+						filterBy="#{recibo.consecutivo}"
+						style="text-align:center">
+						<p:outputLabel value="#{recibo.consecutivo}" />							
+					</p:column>
+					
+					<p:column headerText="Fecha"
+						filterBy="#{recibo.fechaRecibo}"
+						style="text-align:center">
+						<p:outputLabel value="#{recibo.fechaRecibo}" >
+							<f:convertDateTime type="date" pattern="YYYY-MM-dd"/>
+						</p:outputLabel>									
+					</p:column>
+					
+					<p:column headerText="Valor"
+						filterBy="#{recibo.valorTotal}"
+						style="text-align:center">
+						<p:outputLabel value="#{recibo.valorTotal}" >
+							<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+						</p:outputLabel>							
+					</p:column>
+					
+					<p:column headerText="Identificación"
+						filterBy="#{recibo.identificacionTercero}"
+						style="text-align:center">
+						<p:outputLabel value="#{recibo.identificacionTercero}" />							
+					</p:column>
+					
+					<p:column headerText="Tercero"
+						filterBy="#{recibo.nombreTercero}"
+						style="text-align:center">
+						<p:outputLabel value="#{recibo.nombreTercero}" />							
+					</p:column>								        
+			</p:dataTable>				
+		</p:panel>					
+    </p:dialog><!-- FIN DIÁLOGO RECIBOS DE CAJA -->
+	
+	<!-- ************************************************** -->
+	<!-- **		   	 	DIÁLOGO MOTIVO BAJA	             ** -->
+	<!-- ************************************************** -->
+	<p:dialog id="dialogMotivoBaja" widgetVar="dialogMotivoBaja" closable="true" 
+			  header="Consultar Motivo Baja" modal="true" draggable="false" resizable="true" width="90%">			  
+		<p:scrollPanel id="dialogMotivoBajaDataTableScroll" mode="native" style="width:100%; height:400px">
+			<p:dataTable id="dialogMotivoBajaDataTable" style="text-align: center"
+				var="motivo"
+				value="#{gluoBienInmuebleView.listMotivoBajaDTOs}"
+				selection="#{gluoBienInmuebleView.selectedMotivoBajaDTO}"
+				selectionMode="single"
+				rowKey="#{motivo.mobaId}"
+				paginator="true"
+				rows="10"
+				filterDelay="1000">
+				
+				<p:column selectionMode="single" style="width: 6%;" />
+				
+				<p:ajax event="rowSelect"
+					listener="#{gluoBienInmuebleView.listener_seleccionar_motivo_baja}"
+					update=":frmAdministracionBienInmueble" />
+					
+				<p:column headerText="Código" filterBy="#{motivo.codigo}"
+					filterMatchMode="starts">
+					<p:outputLabel value="#{motivo.codigo}" />
+				</p:column>
+				
+				<p:column headerText="Descripción" filterBy="#{motivo.descripcion}"
+					filterMatchMode="contains">
+					<p:outputLabel value="#{motivo.descripcion}" />
+				</p:column>
+				
+			</p:dataTable>
+		</p:scrollPanel>
+	</p:dialog><!-- FIN DIÁLOGO MOTIVO BAJA -->
+	
+	<!-- ************************************************** -->
+	<!-- **		   	 DIÁLOGO USO DESTINO BIEN	         ** -->
+	<!-- ************************************************** -->
+	<p:dialog id="dialogUsoDestinoBien" widgetVar="dialogUsoDestinoBien" closable="true" 
+			  header="Consultar Uso Destino Bien" modal="true" draggable="false" resizable="true" width="90%">			  
+		<p:scrollPanel id="dialogUsoDestinoBienDataTableScroll" mode="native" style="width:100%; height:400px">
+			<p:dataTable id="usoDestinoBienDataTable" style="text-align: center;"
+				var="tipoUso"
+				value="#{gluoBienInmuebleView.listUsoDestinoBienDTOs}"
+				selection="#{gluoBienInmuebleView.selectedUsoDestinoBienDTO}"
+				selectionMode="single"
+				rowKey="#{tipoUso.udebId}"
+				paginator="true"
+				rows="10"
+				filterDelay="1000">
+				
+				<p:column selectionMode="single" style="width: 6%;" />
+				
+				<p:ajax event="rowSelect"
+					listener="#{gluoBienInmuebleView.listener_seleccionar_uso_destino_bien}"
+					update=":frmAdministracionBienInmueble" />
+					
+				<p:column headerText="Código" filterBy="#{tipoUso.codigo}"
+					filterMatchMode="startsWith" >
+					<p:outputLabel value="#{tipoUso.codigo}" />
+				</p:column>
+					
+				<p:column headerText="Descripción" filterBy="#{tipoUso.descripcion}"
+					filterMatchMode="contains" >
+					<p:outputLabel value="#{tipoUso.descripcion}" />
+				</p:column>
+			</p:dataTable>
+		</p:scrollPanel>
+	</p:dialog><!-- FIN DIÁLOGO USO DESTINO BIEN -->
+	
+	<!-- ************************************************** -->
+	<!-- **		   	     DIÁLOGO TERCERO	             ** -->
+	<!-- ************************************************** -->
+	<p:dialog id="dialogTercero" widgetVar="dialogTercero" closable="true" 
+			  header="Consultar Tercero" modal="true" draggable="false" resizable="true" width="90%">			  
+		<p:scrollPanel id="dialogTerceroDataTableScroll" mode="native" style="width:100%; height:400px">
+			<p:dataTable id="tercerosDataTable" style="width: 100%;"
+				var="tercero"				
+				value="#{gluoBienInmuebleView.listTerceroDTOs}"
+				selection="#{gluoBienInmuebleView.selectedTerceroDTO}"
+				selectionMode="single"
+				rowKey="#{tercero.tercId}"
+				paginator="true"
+				rows="10"
+				filterDelay="1000">
+				
+				<p:column selectionMode="single" style="width: 8%;" />
+				
+				<p:ajax event="rowSelect"
+					listener="#{gluoBienInmuebleView.listener_seleccionar_tercero}"
+					update=":frmAdministracionBienInmueble" />
+							
+				<p:column headerText="Identificación"
+					sortBy="#{tercero.identificacion}" style="width: 30%"
+					filterBy="#{tercero.identificacion}"
+					filterMatchMode="startsWith">
+					<h:outputText value="#{tercero.identificacion}" />
+				</p:column>
+				
+				<p:column headerText="Tipo Persona" sortBy="#{tercero.descripcionTipoPersona}" style="width: 30%"
+					filterBy="#{tercero.descripcionTipoPersona}"
+					filterMatchMode="startsWith">
+					<h:outputText value="#{tercero.descripcionTipoPersona}" />
+				</p:column>
+			
+				<p:column headerText="Nombre Completo"
+					sortBy="#{tercero.nombreCompleto}" style="width: 40%"
+					filterBy="#{tercero.nombreCompleto}" filterMatchMode="contains">
+					<h:outputText value="#{tercero.nombreCompleto}" />
+				</p:column>
+				
+				<p:column headerText="Razon Social"
+					sortBy="#{tercero.razonSocial}" style="width: 40%"
+					filterBy="#{tercero.razonSocial}" filterMatchMode="contains">
+					<h:outputText value="#{tercero.razonSocial}" />
+				</p:column>
+				
+				<p:column headerText="Direccion"
+					sortBy="#{tercero.direccionPrincipal}" style="width: 30%"
+					filterBy="#{tercero.direccionPrincipal}" filterMatchMode="contains">
+					<h:outputText value="#{tercero.direccionPrincipal}" />
+				</p:column>
+				
+				<p:column headerText="Empresa"
+					sortBy="#{tercero.nombreEmpresa}" style="width: 30%"
+					filterBy="#{tercero.nombreEmpresa}" filterMatchMode="contains">
+					<h:outputText value="#{tercero.nombreEmpresa}" />
+				</p:column>				
+				
+				<p:column headerText="Municipio"
+					sortBy="#{tercero.nombreMunicipio}" style="width: 30%"
+					filterBy="#{tercero.nombreMunicipio}" filterMatchMode="contains">
+					<h:outputText value="#{tercero.nombreMunicipio}" />
+				</p:column>				
+								
+			</p:dataTable>
+		</p:scrollPanel>
+	</p:dialog><!-- FIN DIÁLOGO TERCERO -->
+	
+	<!-- ************************************************** -->
+	<!-- **		   	     DIÁLOGO TERCERO OPs	         ** -->
+	<!-- ************************************************** -->
+	<p:dialog id="dialogTerceroOP" widgetVar="dialogTerceroOP" closable="true" 
+			  header="Consultar Tercero Obligación" modal="true" draggable="false" resizable="true" width="90%">			  
+		<p:scrollPanel id="dialogTerceroOPDataTableScroll" mode="native" style="width:100%; height:400px">
+			<p:dataTable id="tercerosOPDataTable" style="width: 100%;"
+				var="tercero"				
+				value="#{gluoBienInmuebleView.listTerceroOPDTOs}"
+				selection="#{gluoBienInmuebleView.selectedTerceroOPDTO}"
+				selectionMode="single"
+				rowKey="#{tercero.tercId}"
+				paginator="true"
+				rows="10"
+				filterDelay="1000">
+				
+				<p:column selectionMode="single" style="width: 8%;" />
+				
+				<p:ajax event="rowSelect"
+					listener="#{gluoBienInmuebleView.listener_seleccionar_tercero_op}"
+					onsuccess="PF('dialogTerceroOP').hide()"
+					update="@([id$=OPDataTable])" />
+							
+				<p:column headerText="Identificación"
+					sortBy="#{tercero.identificacion}" style="width: 30%"
+					filterBy="#{tercero.identificacion}"
+					filterMatchMode="startsWith">
+					<h:outputText value="#{tercero.identificacion}" />
+				</p:column>
+				
+				<p:column headerText="Tipo Persona" sortBy="#{tercero.descripcionTipoPersona}" style="width: 30%"
+					filterBy="#{tercero.descripcionTipoPersona}"
+					filterMatchMode="startsWith">
+					<h:outputText value="#{tercero.descripcionTipoPersona}" />
+				</p:column>
+			
+				<p:column headerText="Nombre Completo"
+					sortBy="#{tercero.nombreCompleto}" style="width: 40%"
+					filterBy="#{tercero.nombreCompleto}" filterMatchMode="contains">
+					<h:outputText value="#{tercero.nombreCompleto}" />
+				</p:column>
+				
+				<p:column headerText="Razon Social"
+					sortBy="#{tercero.razonSocial}" style="width: 40%"
+					filterBy="#{tercero.razonSocial}" filterMatchMode="contains">
+					<h:outputText value="#{tercero.razonSocial}" />
+				</p:column>
+				
+				<p:column headerText="Direccion"
+					sortBy="#{tercero.direccionPrincipal}" style="width: 30%"
+					filterBy="#{tercero.direccionPrincipal}" filterMatchMode="contains">
+					<h:outputText value="#{tercero.direccionPrincipal}" />
+				</p:column>
+				
+				<p:column headerText="Empresa"
+					sortBy="#{tercero.nombreEmpresa}" style="width: 30%"
+					filterBy="#{tercero.nombreEmpresa}" filterMatchMode="contains">
+					<h:outputText value="#{tercero.nombreEmpresa}" />
+				</p:column>				
+				
+				<p:column headerText="Municipio"
+					sortBy="#{tercero.nombreMunicipio}" style="width: 30%"
+					filterBy="#{tercero.nombreMunicipio}" filterMatchMode="contains">
+					<h:outputText value="#{tercero.nombreMunicipio}" />
+				</p:column>				
+								
+			</p:dataTable>
+		</p:scrollPanel>
+	</p:dialog><!-- FIN DIÁLOGO TERCERO OPs -->
+	
+	<!-- ************************************************** -->
+	<!-- **		   	       DIÁLOGO OPs	                 ** -->
+	<!-- ************************************************** -->
+	<p:dialog id="dialogOP" widgetVar="dialogOP" closable="true" 
+			  header="Consultar Obligaciones" modal="true" draggable="false" resizable="true" width="90%">	
+			  
+		<div align="center">
+			<h:panelGrid columns="3">
+				<h:outputText value="Tercero: "/>
+				<p:inputText id="txtTerceroOP" binding="#{gluoBienInmuebleView.txtTerceroOP}" readonly="true"/>
+				<p:commandButton icon="ui-icon-search" oncomplete="PF('dialogTerceroOP').show();"/>
+			</h:panelGrid>
+		</div>
+		
+		<div class="EmptyBox20" />
+		
+		<div align="center">
+			<h:panelGrid id="btnConsultarOPs" columns="2">
+				<p:commandButton id="btnGetOps" value="Consultar Obligaciones de Tercero"
+					action="#{gluoBienInmuebleView.action_consultarOPsDeTercero}" update="@([id$=txtTerceroOP]), @([id$=OPDataTable])"/>
+				<p:commandButton id="btnClearOps" value="Limpiar" action="#{gluoBienInmuebleView.action_limpiarOPsDeTercero}"
+					update="@([id$=txtTerceroOP]), @([id$=OPDataTable]), @([id$=dialogOP])"/>
+			</h:panelGrid>
+		</div>
+		
+		<br/>
+			  		  
+		<p:scrollPanel id="dialogOPDataTableScroll" mode="native" style="width:100%; height:400px">
+			<p:dataTable id="OPDataTable" style="text-align: center;"
+				var="op"
+				value="#{gluoBienInmuebleView.listMaestroOpDTOs}"
+				selection="#{gluoBienInmuebleView.selectedMaestroOpDTOs}"
+				selectionMode="single"
+				rowKey="#{op.maopId}"
+				paginator="true"
+				rows="10"
+				filterDelay="1000">
+				
+				<p:column selectionMode="single" style="width: 6%;" />
+				
+				<p:ajax event="rowSelect"
+					listener="#{gluoBienInmuebleView.listener_seleccionar_op}"
+					update=":frmAdministracionBienInmueble" />
+					
+				<p:column headerText="Consecutivo" filterBy="#{op.consecutivo}"
+					filterMatchMode="startsWith">
+					<p:outputLabel value="#{op.consecutivo}" />
+				</p:column>
+				
+				<p:column headerText="Concepto" filterBy="#{op.concepto}"
+					filterMatchMode="contains">
+					<p:outputLabel value="#{op.concepto}" />
+				</p:column>
+				
+				<p:column headerText="Identificación Tercero" filterBy="#{op.terceroDTO.identificacion}"
+					filterMatchMode="startsWith">
+					<p:outputLabel value="#{op.terceroDTO.identificacion}" />
+				</p:column>
+				
+				<p:column headerText="Valor Obligación" filterBy="#{op.valorTotal}"
+					filterMatchMode="startsWith">
+					<p:outputLabel value="#{op.valorTotal}" >
+						<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+					</p:outputLabel>
+				</p:column>
+				
+				<p:column headerText="Valor Deducciones" filterBy="#{op.valorTotalDeducciones}"
+					filterMatchMode="startsWith">
+					<p:outputLabel value="#{op.valorTotalDeducciones}" >
+						<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+					</p:outputLabel>
+				</p:column>
+				
+				<p:column headerText="Saldo por Pagar" filterBy="#{op.saldoPorPagar}"
+					filterMatchMode="startsWith">
+					<p:outputLabel value="#{op.saldoPorPagar}" >
+						<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+					</p:outputLabel>
+				</p:column>
+				
+				<p:column headerText="Valor Total" filterBy="#{op.valorPagarPorOp}"
+					filterMatchMode="startsWith">
+					<p:outputLabel value="#{op.valorPagarPorOp}" >
+						<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+					</p:outputLabel>
+				</p:column>
+					
+			</p:dataTable>
+		</p:scrollPanel>
+	</p:dialog><!-- FIN DIÁLOGO OPs -->
+	
+	<!-- ************************************************** -->
+	<!-- **		   	   DIÁLOGO CUENTA CONTABLE	         ** -->
+	<!-- ************************************************** -->
+	<p:dialog id="dialogCuentaContable" widgetVar="dialogCuentaContable" closable="true" 
+			  header="Consultar Cuenta Contable" modal="true" draggable="false" resizable="true" width="90%">			  
+		<p:scrollPanel id="cuentaContableDataTableScroll" mode="native" style="width:100%; height:400px">
+			<p:dataTable id="cuentaContableDataTable" style="text-align: center;"
+				var="cuenta"
+				value="#{gluoBienInmuebleView.listCuentaContableDTOs}"
+				selection="#{gluoBienInmuebleView.selectedCuentaContableDTO}"
+				selectionMode="single"
+				rowKey="#{cuenta.cconId}"
+				paginator="true"
+				rows="10"
+				filterDelay="1000">		
+				
+				<p:column selectionMode="single" style="width: 6%;" />
+				
+				<p:ajax event="rowSelect"
+					listener="#{gluoBienInmuebleView.listener_seleccionar_cuenta_contable}"
+					update=":frmAdministracionBienInmueble" />		
+					
+				<p:column headerText="Código" filterBy="#{cuenta.codigo}"
+					filterMatchMode="startsWith">
+					<p:outputLabel value="#{cuenta.codigo}" />
+				</p:column>
+				
+				<p:column headerText="Descripción" filterBy="#{cuenta.descripcion}"
+					filterMatchMode="contains">
+					<p:outputLabel value="#{cuenta.descripcion}" />
+				</p:column>
+				
+				<p:column headerText="Cuenta Corriente" filterBy="#{cuenta.corriente}"
+					filterMatchMode="startsWith">
+					<p:outputLabel value="#{(cuenta.corriente == 'S' ? 'Si' : 'No')}" />
+				</p:column>				
+			</p:dataTable>
+		</p:scrollPanel>
+	</p:dialog><!-- FIN DIÁLOGO CUENTA CONTABLE -->
+	
+	<!-- ************************************************** -->
+	<!-- **		DIÁLOGO CUENTA CONTABLE DEPRECIACIÓN	 ** -->
+	<!-- ************************************************** -->
+	<p:dialog id="dialogCuentaContableDepreciacion" widgetVar="dialogCuentaContableDepreciacion" closable="true" 
+			  header="Consultar Cuenta Contable Depreciación" modal="true" draggable="false" resizable="true" width="90%">			  
+		<p:scrollPanel id="cuentaContableDepreciacionDataTableScroll" mode="native" style="width:100%; height:400px">
+			<p:dataTable id="cuentaContableDepreciacionDataTable" style="text-align: center;"
+				var="cuenta"
+				value="#{gluoBienInmuebleView.listCuentaContableDepreciacionDTOs}"
+				selection="#{gluoBienInmuebleView.selectedCuentaContableDepreciacionDTO}"
+				selectionMode="single"
+				rowKey="#{cuenta.cconId}"
+				paginator="true"
+				rows="10"
+				filterDelay="1000">		
+				
+				<p:column selectionMode="single" style="width: 6%;" />
+				
+				<p:ajax event="rowSelect"
+					listener="#{gluoBienInmuebleView.listener_seleccionar_cuenta_contable_depreciacion}"
+					update=":frmAdministracionBienInmueble" />		
+					
+				<p:column headerText="Código" filterBy="#{cuenta.codigo}"
+					filterMatchMode="startsWith">
+					<p:outputLabel value="#{cuenta.codigo}" />
+				</p:column>
+				
+				<p:column headerText="Descripción" filterBy="#{cuenta.descripcion}"
+					filterMatchMode="contains">
+					<p:outputLabel value="#{cuenta.descripcion}" />
+				</p:column>
+				
+				<p:column headerText="Cuenta Corriente" filterBy="#{cuenta.corriente}"
+					filterMatchMode="startsWith">
+					<p:outputLabel value="#{(cuenta.corriente == 'S' ? 'Si' : 'No')}" />
+				</p:column>				
+			</p:dataTable>
+		</p:scrollPanel>
+	</p:dialog><!-- FIN DIÁLOGO CUENTA CONTABLE DEPRECIACIÓN -->
+	
+</h:form>
+</div>
+</ui:define>
+</ui:composition>

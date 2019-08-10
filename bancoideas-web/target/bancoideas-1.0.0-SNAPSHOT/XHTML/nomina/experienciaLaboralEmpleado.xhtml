@@ -1,0 +1,232 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+<ui:define name="content">
+<f:view>
+	<p:ajaxStatus onstart="PF('statusDialog').show()"
+		onsuccess="PF('statusDialog').hide()" />
+	<p:dialog modal="true" widgetVar="statusDialog" header="Cargando"
+		draggable="false" closable="false">
+		<p:graphicImage
+			value="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/ajaxloadingbar.gif" />
+	</p:dialog>
+
+	<!-- Expired session -->
+	<p:idleMonitor onactive="PF('sessionTimeOutDialog').show();"
+		timeout="#{session.maxInactiveInterval * 1000}" />
+	<p:dialog modal="true" widgetVar="sessionTimeOutDialog"
+		header="Sesión Finalizada" draggable="false" closable="false">
+		<h:outputText value="La sesión ha caducado." />
+		<input id="confirmBackToLogin" type="button" value="Iniciar Sesión"
+			onclick="window.location='#{facesContext.externalContext.requestContextPath}/index.jsp';" />
+	</p:dialog>
+	
+<div align="center">
+<h:form id="frmExperienciaLaboralEmpleado">
+
+	<p:growl id="growl" autoUpdate="true" />
+
+	<p:panel id="pnlExperienciaLaboralEmpleado" header="Gestionar Experiencia Laboral Empleado" style="width: 90%;">
+	
+		<h:panelGrid columns="2">
+			<p:outputLabel value="Consultar Empleado:" for="identificacionEmpleado" />		
+			<h:panelGrid columns="2">			
+				<p:inputText id="identificacionEmpleado" binding="#{gluoExperienciaLaboralView.identificacionEmpleado}" />
+				<p:commandButton style="width:100%" icon="ui-icon-search"
+					disabled="#{gluoExperienciaLaboralView.showSeleccionarEmpleado}"					
+					onclick="PF('dialogEmpleados').show();" />
+			</h:panelGrid>									
+		</h:panelGrid>
+		
+		<br/>
+	
+		<h:panelGrid columns="2">
+		
+			<p:outputLabel value="Nombre Empresa:" for="nombreEmpresa" />
+			<p:inputText id="nombreEmpresa" binding="#{gluoExperienciaLaboralView.nombreEmpresa}" />
+			
+			<p:outputLabel value="Teléfono Empresa:" for="telefonoEmpresa" />
+			<p:inputText id="telefonoEmpresa" binding="#{gluoExperienciaLaboralView.telefonoEmpresa}" />
+			
+			<p:outputLabel value="Fecha Inicio Laboral:" for="fechaInicioLaboral" />
+			<p:calendar id="fechaInicioLaboral" binding="#{gluoExperienciaLaboralView.fechaInicioLaboral}"
+				navigator="true" />
+			
+			<p:outputLabel value="Fecha Final Laboral:" for="fechaFinalLaboral" />
+			<p:calendar id="fechaFinalLaboral" binding="#{gluoExperienciaLaboralView.fechaFinalLaboral}"
+				navigator="true" />
+				
+			<p:outputLabel value="Cargo Desempeñado:" for="cargoDesempenado" />
+			<p:inputText id="cargoDesempenado" binding="#{gluoExperienciaLaboralView.cargoDesempenado}" />
+						
+			<p:outputLabel value="Estado:" for="activo" />
+			<p:selectOneRadio id="activo" binding="#{gluoExperienciaLaboralView.activo}" >
+				<f:selectItem itemLabel="Activo" itemValue="A" />
+				<f:selectItem itemLabel="Inactivo" itemValue="I" />
+			</p:selectOneRadio>
+			
+		</h:panelGrid>
+	
+		<br/>
+		
+		<p:commandButton id="btnGuardar" value="Guardar"
+			action="#{gluoExperienciaLaboralView.action_guardar}"
+			update=":frmExperienciaLaboralEmpleado" />
+			
+		<p:commandButton id="btnLimpiar" value="Limpiar"
+			action="#{gluoExperienciaLaboralView.action_limpiar}"
+			update=":frmExperienciaLaboralEmpleado" />
+			
+	
+	</p:panel>
+	
+	<br/>
+	
+	<p:panel id="pnlListarExperienciaLaboralEmpleado" header="Listado Experiencia Laboral Empleados" style="width: 90%;">
+			
+		<p:dataTable id="listarExperienciaLaboralEmpleadoDataTable" style="text-align: center;"
+			var="experiencia"
+			value="#{gluoExperienciaLaboralView.listExperienciaLaboralDTOs}"
+			selection="#{gluoExperienciaLaboralView.selectedExperienciaLaboralDTO}"
+			selectionMode="single" scrollable="true" scrollWidth="100%"
+			paginator="true"    
+			rows="10"       
+			emptyMessage="No se han encontrado registros en el sistema"
+			rowKey="#{experiencia.exlaId}"
+			filterDelay="1000">
+		
+			<p:column selectionMode="single" style="width: 28px;"/>
+			
+			<p:ajax event="rowSelect"
+				listener="#{gluoExperienciaLaboralView.listener_seleccionar_experiencia_laboral}"
+				update=":frmExperienciaLaboralEmpleado" />
+			
+			<p:column headerText="Tipo Documento" filterBy="#{experiencia.tipoDocumentoEmpleado}"
+				filterMatchMode="startsWith" style="width: 200px;">
+				<p:outputLabel value="#{experiencia.tipoDocumentoEmpleado}" />
+			</p:column>
+			
+			<p:column headerText="Documento" filterBy="#{experiencia.documentoEmpleado}"
+				filterMatchMode="startsWith" style="width: 200px;">
+				<p:outputLabel value="#{experiencia.documentoEmpleado}" />
+			</p:column>
+			
+			<p:column headerText="Código" filterBy="#{experiencia.codigoEmpleado}"
+				filterMatchMode="startsWith" style="width: 200px;">
+				<p:outputLabel value="#{experiencia.codigoEmpleado}" />
+			</p:column>
+			
+			<p:column headerText="Nombre Empleado" filterBy="#{experiencia.nombreEmpleado}"
+				filterMatchMode="contains" style="width: 200px;">
+				<p:outputLabel value="#{experiencia.nombreEmpleado}" />
+			</p:column>
+			
+			<p:column headerText="Nombre Empresa" filterBy="#{experiencia.nombreEmpresa}"
+				filterMatchMode="contains" style="width: 200px;">
+				<p:outputLabel value="#{experiencia.nombreEmpresa}" />
+			</p:column>
+			
+			<p:column headerText="Teléfono Empresa" filterBy="#{experiencia.telefonoEmpresa}"
+				filterMatchMode="startsWith" style="width: 200px;">
+				<p:outputLabel value="#{experiencia.telefonoEmpresa}" />
+			</p:column>
+			
+			<p:column headerText="Fecha laboral Inicio" filterBy="#{experiencia.fechaInicioLaboral}"
+				filterMatchMode="startsWith" style="width: 200px;">
+				<p:outputLabel value="#{experiencia.fechaInicioLaboral}" >
+					<f:convertDateTime type="date" pattern="yyyy-MM-dd" />
+				</p:outputLabel>
+			</p:column>
+			
+			<p:column headerText="Fecha laboral Final" filterBy="#{experiencia.fechaFinalLaboral}"
+				filterMatchMode="startsWith" style="width: 200px;">
+				<p:outputLabel value="#{experiencia.fechaFinalLaboral}" >
+					<f:convertDateTime type="date" pattern="yyyy-MM-dd" />
+				</p:outputLabel>
+			</p:column>
+			
+			<p:column headerText="Cargo Desempeñado" filterBy="#{experiencia.cargoDesempenado}"
+				filterMatchMode="startsWith" style="width: 200px;">
+				<p:outputLabel value="#{experiencia.cargoDesempenado}" />
+			</p:column>
+			
+			<p:column headerText="Estado" filterBy="#{experiencia.activo}"
+				filterMatchMode="startsWith" style="width: 200px;">
+				<p:outputLabel value="#{(experiencia.activo == 'A' ? 'Activo' : 'Inactivo')}" />
+			</p:column>
+		
+		</p:dataTable>
+	</p:panel>
+	
+	<!-- ************************************************** -->
+	<!-- **				DIÁLOGO EMPLEADOS		     	 ** -->
+	<!-- ************************************************** -->
+	<p:dialog header="Empleados" style="align-text: center"
+		widgetVar="dialogEmpleados" modal="true" height="400" width="90%">
+
+		<p:scrollPanel mode="native" style="width:100%; height:400px">
+			<p:dataTable id="listarEmpleadosDataTable"
+				var="empleado"
+				value="#{gluoExperienciaLaboralView.listEmpleadoDTOs}"
+				paginator="true"
+				rows="10"		
+				selectionMode="single"		
+				selection="#{gluoExperienciaLaboralView.selectedGluoEmpleadoDTO}"
+				rowKey="#{empleado.emplId}"
+				filterDelay="1000">
+				
+				<p:column selectionMode="single" style="width: 28px;" />
+				
+				<p:ajax event="rowSelect" 
+						listener="#{gluoExperienciaLaboralView.listener_seleccionar_empleado}" 						
+						oncomplete="PF('dialogEmpleados').hide();"
+						update=":frmExperienciaLaboralEmpleado" />		
+				
+				<p:column headerText="Tipo Identificación" filterBy="#{empleado.tipoIdentifiacion}"
+					filterMatchMode="startsWith">
+					<p:outputLabel value="#{empleado.tipoIdentifiacion}" />
+				</p:column>
+				
+				<p:column headerText="Identificación" filterBy="#{empleado.identificacion}"
+					filterMatchMode="startsWith">
+					<p:outputLabel value="#{empleado.identificacion}" />
+				</p:column>
+				
+				<p:column headerText="Código" filterBy="#{empleado.codigo}"
+					filterMatchMode="startsWith">
+					<p:outputLabel value="#{empleado.codigo}" />
+				</p:column>
+				
+				<p:column headerText="Primer Nombre" filterBy="#{empleado.primerNombre}"
+					filterMatchMode="startsWith">
+					<p:outputLabel value="#{empleado.primerNombre}" />
+				</p:column>
+				
+				<p:column headerText="Segundo Nombre" filterBy="#{empleado.segundoNombre}"
+					filterMatchMode="startsWith">
+					<p:outputLabel value="#{empleado.segundoNombre}" />
+				</p:column>
+				
+				<p:column headerText="Primer Apellido" filterBy="#{empleado.primerApellido}"
+					filterMatchMode="startsWith">
+					<p:outputLabel value="#{empleado.primerApellido}" />
+				</p:column>
+				
+				<p:column headerText="Segundo Apellido" filterBy="#{empleado.segundoApellido}"
+					filterMatchMode="startsWith">
+					<p:outputLabel value="#{empleado.segundoApellido}" />
+				</p:column>
+				
+			</p:dataTable>			
+		</p:scrollPanel>
+	</p:dialog> <!-- FIN DIÁLOGO EMPLEADOS -->
+	
+</h:form>
+</div>
+</f:view>
+</ui:define>
+
+</ui:composition>

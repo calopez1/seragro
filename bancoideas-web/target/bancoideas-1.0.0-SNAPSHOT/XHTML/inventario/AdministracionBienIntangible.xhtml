@@ -1,0 +1,847 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" 
+	template="/WEB-INF/template.xhtml"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+
+	<ui:define name="content">
+		<f:view>
+			<script type="text/javascript">
+				function justNumbers(e) {
+					var keynum = window.event ? window.event.keyCode : e.which;
+					if ((keynum == 8) || (keynum == 46) || (keynum == 44))
+						return true;
+
+					return /\d/.test(String.fromCharCode(keynum));
+				}
+				PrimeFaces.locales['es'] = {
+					closeText : 'Cerrar',
+					prevText : 'Anterior',
+					nextText : 'Siguiente',
+					monthNames : [ 'Enero', 'Febrero', 'Marzo', 'Abril',
+							'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre',
+							'Octubre', 'Noviembre', 'Diciembre' ],
+					monthNamesShort : [ 'Ene', 'Feb', 'Mar', 'Abr', 'May',
+							'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic' ],
+					dayNames : [ 'Domingo', 'Lunes', 'Martes', 'Miércoles',
+							'Jueves', 'Viernes', 'Sábado' ],
+					dayNamesShort : [ 'Dom', 'Lun', 'Mar', 'Mie', 'Jue', 'Vie',
+							'Sab' ],
+					dayNamesMin : [ 'D', 'L', 'M', 'M', 'J', 'V', 'S' ],
+					weekHeader : 'Semana',
+					firstDay : 1,
+					isRTL : false,
+					showMonthAfterYear : false,
+					yearSuffix : '',
+					timeOnlyTitle : 'Sólo hora',
+					timeText : 'Tiempo',
+					hourText : 'Hora',
+					minuteText : 'Minuto',
+					secondText : 'Segundo',
+					currentText : 'Fecha actual',
+					ampm : false,
+					month : 'Mes',
+					week : 'Semana',
+					day : 'Día',
+					allDayText : 'Todo el día'
+				};
+				function showStatus() {
+					statusDialog.show();
+				}
+
+				function hideStatus() {
+					statusDialog.hide();
+				}
+			</script>
+			<style type="text/css">
+				.ui-panel {
+					margin-top: 20px
+				}
+				
+				.ui-tabs-top {
+					background-color: #FFFFFF;
+				}
+				
+				.one {
+					width: 15%;
+				}
+				
+				.two {
+					width: 85%;
+				}
+				
+				.col50Left {
+					width: 10%;
+					text-align: left;
+				}
+				
+				.col50Right {
+					width: 10%;
+					text-align: right;
+				}
+				
+				.txt100 {
+					width: 100%;
+				}
+			</style>
+			<p:ajaxStatus onstart="PF('statusDialog').show()"
+				onsuccess="PF('statusDialog').hide()" />
+			<p:dialog modal="true" widgetVar="statusDialog" header="Cargando"
+				draggable="false" closable="false">
+				<p:graphicImage
+					value="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/ajaxloadingbar.gif" />
+			</p:dialog>
+
+			<!-- Expired session -->
+			<p:idleMonitor onactive="PF('sessionTimeOutDialog').show();"
+				timeout="#{session.maxInactiveInterval * 1000}" />
+			<p:dialog modal="true" widgetVar="sessionTimeOutDialog"
+				header="Sesión Finalizada" draggable="false" closable="false">
+				<h:outputText value="La sesión ha caducado." />
+				<input id="confirmBackToLogin" type="button" value="Iniciar Sesión"
+					onclick="window.location='#{facesContext.externalContext.requestContextPath}/index.jsp';" />
+			</p:dialog>
+			<h:form id="frm" enctype="multipart/form-data">
+					
+					<p:growl id="msgBienIntangibleGrowl" autoUpdate="true" showDetail="false"/>
+					<div align="center">
+					<p:panel id="panelSeleccionar" style="border: none; width:90%;" header="Operaciones a Bienes Intangibles" >
+						<h:panelGrid columns="2" id="panelGridTiposMovimientos" style="width: 60%;text-align: center;">
+								<h:outputText value="Tipo de movimiento: "/>
+								<p:selectOneMenu id="somTipoMovimientos" binding="#{gluoBienIntangibleView.somTipoMovimientoBienIntangible}" style="width:300px" filter="true" filterMatchMode="contains">
+								 	<f:selectItem itemLabel="[--- Seleccionar ---]" itemValue="-1"/>	
+									<f:selectItems value="#{gluoBienIntangibleView.listTiposMovimientoBienIntangible}"/>
+									<p:ajax listener="#{gluoBienIntangibleView.listener_tipoMovimiento}" event="change" update="@([id$=panelSeleccionar]), @([id$=panelGluoBienIntangible]), @([id$=frm])"/>
+								</p:selectOneMenu>	
+						</h:panelGrid>
+						
+						<p:panel id="panelIngreso" header="Ingreso de Bienes" rendered="#{gluoBienIntangibleView.showPanelIngreso}" style="border: none;">
+								<h:panelGrid id="panelOperacionesIngreso" style="width: 60%; text-align: center;" columns="2">
+									<h:outputText value="Tipo de Operacion:"/>	
+									<p:selectOneRadio id="sorOperacionIngreso" binding="#{gluoBienIntangibleView.sorOperacionIngreso}" layout="grid" columns="3">
+										<f:selectItems value="#{gluoBienIntangibleView.lasOperaciones}"/>
+										<p:ajax listener="#{gluoBienIntangibleView.listener_operacionIngreso}" event="change" update="@([id$=panelSeleccionar]), @([id$=panelGluoBienIntangible]), @([id$=frm])"/>
+									</p:selectOneRadio>
+								</h:panelGrid>
+						</p:panel>
+						
+						<p:panel id="panelSalida" header="Salida de Bienes" rendered="#{gluoBienIntangibleView.showPanelSalida}" style="border: none;">
+								<h:panelGrid id="panelOperacionesSalida" style="width: 60%; text-align: center;" columns="2">
+									<h:outputText value="Tipo de Operacion:"/>	
+									<p:selectOneRadio id="sorOperacionSalida" binding="#{gluoBienIntangibleView.sorOperacionSalida}">
+										<f:selectItems value="#{gluoBienIntangibleView.lasOperaciones}"/>
+										<p:ajax listener="#{gluoBienIntangibleView.listener_operacionSalida}" event="change" update="@([id$=panelSeleccionar]), @([id$=panelGluoBienIntangible]), @([id$=frm])"/>
+									</p:selectOneRadio>
+								</h:panelGrid>
+						</p:panel>
+					</p:panel>		
+					</div>
+						<div align="center">
+					<p:panel id="panelGluoBienIntangible" header="ADMINISTRACION DE BIENES INTANGIBLES" rendered="#{gluoBienIntangibleView.showPanelPrincipalDatosBienIntangible}" style="width:90%;border: none;">
+						<h:panelGrid columns="4" id="panelGrid" width="95%">
+							
+							<h:outputText value="Tipo bien: "/>
+							<p:panelGrid>
+								<p:inputText id="txtTipoBienDev" styleClass="Wid50" value="#{gluoBienIntangibleView.descripcionTipoBienSeleccionado}" disabled="true"/>
+								<p:commandButton icon="ui-icon-search" action="#{gluoBienIntangibleView.action_validarTipoBienDialog()}" disabled="#{gluoBienIntangibleView.deshabilitarBtnConsultaBien}" 
+												  update="@([id$=panelGluoBienIntangible]), @this, @([id$=txtTipoBienDev]), @form"/>
+							</p:panelGrid>
+							
+							<h:outputText id="msgCodigo" value=" Codigo" />
+							<p:inputText id="txtCodigo" 
+								binding="#{gluoBienIntangibleView.txtCodigo}" />
+								
+							<h:outputText value="Cuenta Contable"/>
+							<p:panelGrid>
+								<p:inputText id="txtCuentaContable" styleClass="Wid50" value="#{gluoBienIntangibleView.codigoCuenta}" disabled="true"/>
+								<p:commandButton icon="ui-icon-search" action="#{gluoBienIntangibleView.action_cuentaBienMueble}" disabled="#{gluoBienIntangibleView.deshabilitarBtnConsultaCuentaContable}"/>
+							</p:panelGrid>		
+								
+							<h:outputText id="msgDescripcion" value=" Descripcion" />
+							<h:panelGrid columns="1" id="panelGridDescripcion">
+								<p:inputTextarea id="txtDescripcion" rows="5" cols="30"
+									counter="displayDescripcion" maxlength="2000"
+									counterTemplate="{0} caracteres restantes."
+									autoResize="false"
+									binding="#{gluoBienIntangibleView.txtDescripcion}" />
+								<h:outputText id="displayDescripcion" />
+							</h:panelGrid>
+							
+							<h:outputText value="Orden de Pago" rendered="#{gluoBienIntangibleView.showObligacionInfo}"/>
+							<p:panelGrid rendered="#{gluoBienIntangibleView.showObligacionInfo}" >
+								<p:inputText id="txtOP" styleClass="Wid50" value="#{gluoBienIntangibleView.consecutivoOP}" disabled="true"/>
+								<p:commandButton icon="ui-icon-search" action="#{gluoBienIntangibleView.action_mostrarDialogoObligaciones()}" disabled="#{gluoBienIntangibleView.deshabilitarBtnConsultaOP}"/>
+							</p:panelGrid>
+							
+							<p:outputLabel id="msgValor" value="Valor" for="txtValor" />
+							<pe:inputNumber widgetVar="txtValor"
+								id="txtValor" minValue="0.00" decimalPlaces="2" 
+								decimalSeparator="." thousandSeparator=","
+								binding="#{gluoBienIntangibleView.txtValor}"
+								value="#{gluoBienIntangibleView.valorBienIntangible}"
+								symbol="$ " emptyValue="empty"
+								onkeypress="return justNumbers(event);" styleClass="inputOnDataTable">
+								<f:passThroughAttribute name="placeholder" value="Valor"/>	
+							</pe:inputNumber>
+							
+							<h:outputText value="Responsable"/>
+							<p:panelGrid>
+								<p:inputText id="txtResponsable" styleClass="Wid50" value="#{gluoBienIntangibleView.identificacionTercero}" disabled="true"/>
+								<p:commandButton icon="ui-icon-search" action="#{gluoBienIntangibleView.action_mostrarDialogoTerceroResponsable()}" disabled="#{gluoBienIntangibleView.deshabilitarBtnConsultaTercero}"/>
+							</p:panelGrid>
+								
+							<h:outputText id="msgNumeroFactura" value=" Factura" rendered="#{gluoBienIntangibleView.showNumeroFactura}"/>
+							<p:inputText id="txtNumeroFactura" rendered="#{gluoBienIntangibleView.showNumeroFactura}"
+								binding="#{gluoBienIntangibleView.txtNumeroFactura}" />
+								
+							<h:outputText value="Recibo de Caja" rendered="#{gluoBienIntangibleView.showReciboCaja}"/>
+							<p:panelGrid rendered="#{gluoBienIntangibleView.showReciboCaja}" >
+								<p:inputText id="txtReciboCaja" styleClass="Wid50" value="#{gluoBienIntangibleView.consecutivoReciboCaja}" disabled="true"/>
+								<p:commandButton icon="ui-icon-search" oncomplete="PF('dialogoConsultarRecibo').show();" disabled="#{gluoBienIntangibleView.deshabilitarBtnConsultaReciboCaja}"/>
+							</p:panelGrid>
+							
+							<h:outputText id="msgActivo" value=" Estado" />
+							<p:selectOneRadio id="sorEstado" disabled="true"
+								binding="#{gluoBienIntangibleView.sorEstado}">
+								<f:selectItem itemLabel="Activo" itemValue="A" />
+								<f:selectItem itemLabel="Inactivo" itemValue="I" />
+								<f:selectItem itemLabel="Entregado" itemValue="E" />
+							</p:selectOneRadio>	
+								
+							<h:outputText id="msgFechaFactura" value=" Fecha de Factura" rendered="#{gluoBienIntangibleView.showFechaFactura}"/>
+							<p:calendar id="calendarFechaFactura" rendered="#{gluoBienIntangibleView.showFechaFactura}"
+								binding="#{gluoBienIntangibleView.txtFechaFactura}"
+								placeholder="Fecha de Factura " size="32" locale="es"
+								navigator="true" pattern="yyyy-MM-dd" mask="true"
+								converterMessage="Fecha incorrecta">
+								<p:ajax event="dateSelect"
+									listener="#{gluoBienIntangibleView.listener_txtFechaFactura}" />
+								<f:converter converterId="timestampConverter" />
+							</p:calendar>
+							
+						</h:panelGrid>
+						
+						<br/>
+							
+							<h:panelGrid id="panelGridArchivosSoporte" columns="1" width="100%" style="text-align: center;">
+									<p:fileUpload  id="uploadAdjuntos"
+										mode="advanced"
+										auto="true" 
+										dragDropSupport="true"
+                          				allowTypes="/(\.|\/)(gif|jpe?g|png|pdf|doc|docx|xls|xlsx)$/" 
+                          				cancelLabel="Cancelar"
+                          				fileLimit="3"
+                          				fileLimitMessage="Número máximo de archivos soportados: 3"
+                          				invalidFileMessage="Tipo de archivo no válido. Solo pdf, Doc(x), Xls(x), gif, jpg, png )"
+                          				invalidSizeMessage="Archivo demasiado grande. Tamaño máximo: 3MB"
+                          				label="Adjuntar"
+                          				sizeLimit="3145728"
+                          				uploadLabel="Cargar"
+                          				fileUploadListener="#{gluoBienIntangibleView.fileUploadListener}"
+                          				update="panelGluoBienIntangible"
+                          				process="panelGluoBienIntangible"
+                          				disabled="#{gluoBienIntangibleView.deshabilitarBtnArchivoSoporte}"/>
+                          			
+                          			<br/>
+                          			
+	                          		<p:dataTable id="pnlTablaArchivosSoporte"
+	                          				value="#{gluoBienIntangibleView.archivosDeSoporteDTO}"
+	                          				var="archivo"
+	                          				rendered="#{gluoBienIntangibleView.cantidadArchivosSoporte > 0}">
+	                          				
+	                          				<p:column headerText="Archivo" style="width: 80%">
+	                          					<p:outputLabel value="#{archivo.descripcion}" />
+	                          				</p:column>
+	                          				
+	                          				<p:column headerText="Borrar" style="width: 10%">
+	                          					<p:commandButton icon="ui-icon-close"  
+	                          						action="#{gluoBienIntangibleView.action_eliminarArchivoSoporte(archivo)}"
+	                          						update="@([id$=panelGluoBienIntangible])"/>
+	                          				</p:column>
+	                          				
+	                          				<p:column headerText="Ver" style="width: 10%">
+	                          					<p:commandButton ajax="false" onclick="PrimeFaces.monitorDownload(start, stop);" icon="ui-icon-search">
+											        <p:fileDownload value="#{gluoBienIntangibleView.getDocumentoAdjuntoSoporte(archivo)}" contentDisposition="inline"/>
+											    </p:commandButton>
+											    
+	                          				</p:column>
+	                          				
+	                          		</p:dataTable>
+							</h:panelGrid>
+							
+							<br/>
+
+						<div align="center">
+							<p:panel id="panelBotones" style="border:none;">
+								<div align="center">
+									<p:commandButton id="btnSave"
+										binding="#{gluoBienIntangibleView.btnSave}" value="Guardar"
+										action="#{gluoBienIntangibleView.guardarMovimientosBienIntangible()}"
+										update="@([id$=panelGluoBienIntangible]), @form, @this" />
+									<p:commandButton id="btnClear" value="Limpiar"
+										action="#{gluoBienIntangibleView.limpiar_datosBienMueble()}"
+										update="@([id$=panelGluoBienIntangible]), @form, @this" />
+								</div>
+							</p:panel>
+						</div>
+					</p:panel>
+					</div>
+					
+					
+					
+					
+					
+					<!-- DIALOGOS -->
+					
+					<p:dialog id="dialogoConsultaBienesIntangibles" widgetVar="dialogoConsultaBienesIntangibles" closable="true" 
+							  header="Consulta de Bienes Intangibles" modal="true" draggable="false" resizable="true" width="90%"> 
+						
+						<p:growl id="msgDialogBienIntangible" showDetail="false" autoUpdate="true"/>
+						
+						<p:scrollPanel id="pnlBienes" mode="native" style="width:100%; height:400px">
+							
+							<div class="ContainerIndent"/>
+					
+							<p:outputLabel value="Criterios de búsqueda para bienes intangibles:"/>
+							<h:panelGrid columns="2" columnClasses="colAFiltro, colBFiltro" style="width: 100%;">
+								<p:outputLabel value="Codigo:  "/>
+								<p:inputText styleClass="Wid50" value="#{gluoBienIntangibleView.codigoBienIntangibleBusqueda}"/>
+								
+								<p:outputLabel value="Descripcion:"/>
+								<p:inputText styleClass="Wid50" value="#{gluoBienIntangibleView.descripcionBienIntangibleBusqueda}"/>
+							</h:panelGrid>
+					
+							<p:commandButton value="Buscar Bien Intangible"
+								actionListener="#{gluoBienIntangibleView.action_buscarBienIntangible}"
+								update="@([id$=pnlBienesIntangible]), @([id$=msgDialogBienIntangible])"/>
+					
+							<br/>
+							
+							<p:dataTable id="pnlBienesIntangible" var="intangible" rows="350" style="width: 100%;"
+								value="#{gluoBienIntangibleView.bienesIntangibles}"
+								paginator="true"
+								paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+								rowsPerPageTemplate="300,400,500"
+								emptyMessage="No hay bienes intangibles encontrados"
+								reflow="true" 
+								filterDelay="1000">
+								
+								<f:facet name="header">
+		                             Bienes Intangibles
+		                         </f:facet>
+		                         
+		                   		<p:column headerText="Codigo" sortBy="#{intangible.codigo}"
+									style="width: 10%" filterBy="#{intangible.codigo}"
+									filterMatchMode="startsWith">
+									<h:outputText value="#{intangible.codigo}"/>
+								</p:column>
+								
+								<p:column headerText="Descripcion" sortBy="#{intangible.descripcion}"
+									style="width: 10%" filterBy="#{intangible.descripcion}"
+									filterMatchMode="contains">
+									<h:outputText value="#{intangible.descripcion}"/>
+								</p:column>
+		
+								<p:column headerText="Tipo Bien" sortBy="#{intangible.gluoTipoBien.descripcion}"
+									style="width: 10%" filterBy="#{intangible.gluoTipoBien.descripcion}"
+									filterMatchMode="contains">
+									<h:outputText value="#{intangible.gluoTipoBien.descripcion}"/>
+								</p:column>
+								
+								<p:column headerText="Seleccionar" 
+									style="width: 5%">
+									<p:commandButton title="Seleccionar"  
+						            	icon="ui-icon-check" 
+						            	oncomplete="PF('dialogoConsultaBienesIntangibles').hide();"
+						            	update="@([id$=panelSeleccionar]), @([id$=panelGluoBienIntangible]), @([id$=frm])" 
+						            	action="#{gluoBienIntangibleView.action_seleccionarBienIntangible(intangible)}">
+						            </p:commandButton>
+								</p:column>
+		                         
+		
+							</p:dataTable>
+				
+						</p:scrollPanel>
+						
+						<div class="EmptyBox20" />
+						
+					</p:dialog>
+					
+					
+					<p:dialog modal="true" widgetVar="dlgTipoBien" header="Tipo Bien" draggable="false" closable="true" resizable="true" width="90%">
+					
+						<p:growl id="msgTipoDialogBienIntangible" showDetail="false" autoUpdate="true"/>
+					
+						<p:scrollPanel id="pnlTipoBien" mode="native" style="width:100%; height:400px">
+							<div class="ContainerIndent"/>
+							
+							<p:outputLabel value="Criterios de búsqueda para tipos de bienes intangibles"/>
+							<h:panelGrid columns="2" columnClasses="colAFiltro, colBFiltro" style="width: 100%;">
+								<p:outputLabel value="Codigo:  "/>
+								<p:inputText styleClass="Wid50" value="#{gluoBienIntangibleView.codigoTipoBienIntangibleBusqueda}"/>
+								
+								<p:outputLabel value="Descripción:"/>
+								<p:inputText styleClass="Wid50" value="#{gluoBienIntangibleView.descripcionTipoBienIntangibleBusqueda}"/>
+							</h:panelGrid>
+					
+							<p:commandButton value="Buscar Tipo Bien"
+								actionListener="#{gluoBienIntangibleView.action_buscarTipoBienIntangible}"
+								update="@([id$=tblTipoBienesIntangible]), @([id$=msgTipoDialogBienIntangible])"/>
+					
+							<br/>
+							
+							<p:dataTable id="tblTipoBienesIntangible" var="tipoBien" rows="350" style="width: 100%;"
+								value="#{gluoBienIntangibleView.listaTiposBien}"
+								paginator="true"
+								paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+								rowsPerPageTemplate="300,400,500"
+								emptyMessage="No hay bienes mueble encontrados"
+								reflow="true" 
+								filterDelay="1000">
+								
+								<f:facet name="header">
+		                             Tipo de Bienes Muebles
+		                         </f:facet>
+		                         
+		                   		<p:column headerText="Codigo" sortBy="#{tipoBien.codigo}"
+									style="width: 20%" filterBy="#{tipoBien.codigo}"
+									filterMatchMode="startsWith">
+									<h:outputText value="#{tipoBien.codigo}"/>
+								</p:column>
+								
+								<p:column headerText="Descripción" sortBy="#{tipoBien.descripcion}"
+									style="width: 60%" filterBy="#{tipoBien.descripcion}"
+									filterMatchMode="contains">
+									<h:outputText value="#{tipoBien.descripcion}"/>
+								</p:column>
+								
+								<p:column headerText="Seleccionar" 
+									style="width: 10%">
+									<p:commandButton title="Seleccionar"  
+						            	icon="ui-icon-check" 
+						            	oncomplete="PF('dlgTipoBien').hide();"
+						            	update="@([id$=panelGluoBienIntangible])"
+						            	action="#{gluoBienIntangibleView.action_seleccionarTipoBien(tipoBien)}">
+						            </p:commandButton>
+								</p:column>
+							</p:dataTable>
+							
+						</p:scrollPanel>
+						
+						<div class="EmptyBox20" />
+					
+					</p:dialog>
+		
+		
+		
+			<!--        Tercero            -->
+			<!-- ************************* -->
+			<p:dialog modal="true" widgetVar="dlgTercero" header="Tercero"
+				draggable="false" closable="true" resizable="true"
+				width="90%" >
+				
+				<p:scrollPanel id="pnlTerceros" mode="native" style="width:100%; height:400px">
+					<div class="ContainerIndent"/>
+					
+					<p:outputLabel value="Criterios de búsqueda para terceros:"/>
+					
+					<h:panelGrid columns="2" style="width: 50%;">
+								
+						<p:outputLabel value="Identificación: "/>
+						<p:inputText styleClass="Wid50"
+							value="#{gluoBienIntangibleView.identificacionFiltro}"/>
+						
+						<p:outputLabel value="Nombre/Razón Social:"/>
+						<p:inputText styleClass="Wid50"
+							value="#{gluoBienIntangibleView.nombreRazonSocialFiltro}"/>
+						
+					</h:panelGrid>
+					
+					<p:commandButton value="Buscar Tercero"
+						actionListener="#{gluoBienIntangibleView.action_buscarTercero}"
+						update=":frm:pnlTerceros"/>
+					
+					<br/>
+				
+					<p:dataTable id="tercerosEncontrados" var="tercero" rows="350" style="width: 100%;"
+						value="#{gluoBienIntangibleView.terceros}"
+						paginator="true"
+						paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+						rowsPerPageTemplate="300,400,500"
+						emptyMessage="No hay terceros encontrados"
+						reflow="true" 
+						filterDelay="1000">
+						
+						<f:facet name="header">
+                             Terceros
+                         </f:facet>
+                         
+                   		<p:column headerText="Identificación" sortBy="#{tercero.identificacion}"
+							style="width: 10%" filterBy="#{tercero.identificacion}"
+							filterMatchMode="startsWith">
+							<h:outputText value="#{tercero.identificacion}"/>
+						</p:column>
+						
+						<p:column headerText="Primer Nombre" sortBy="#{tercero.primerNombre}"
+							style="width: 10%" filterBy="#{tercero.primerNombre}"
+							filterMatchMode="contains">
+							<h:outputText value="#{tercero.primerNombre}"/>
+						</p:column>
+						
+						<p:column headerText="Segundo Nombre" sortBy="#{tercero.segundoNombre}"
+							style="width: 10%" filterBy="#{tercero.segundoNombre}"
+							filterMatchMode="contains">
+							<h:outputText value="#{tercero.segundoNombre}"/>
+						</p:column>
+						
+						<p:column headerText="Primer Apellido" sortBy="#{tercero.primerApellido}"
+							style="width: 10%" filterBy="#{tercero.primerApellido}"
+							filterMatchMode="contains">
+							<h:outputText value="#{tercero.primerApellido}"/>
+						</p:column>
+						
+						<p:column headerText="Segundo Apellido" sortBy="#{tercero.segundoApellido}"
+							style="width: 10%" filterBy="#{tercero.segundoApellido}"
+							filterMatchMode="contains">
+							<h:outputText value="#{tercero.segundoApellido}"/>
+						</p:column>
+						
+						<p:column headerText="Razon Social" sortBy="#{tercero.razonSocial}"
+							style="width: 10%" filterBy="#{tercero.razonSocial}"
+							filterMatchMode="contains">
+							<h:outputText value="#{(tercero.razonSocial.trim() ne null ? tercero.razonSocial : 'N/A')}"/>
+						</p:column>
+						
+						<p:column headerText="Seleccionar" 
+							style="width: 5%">
+							<p:commandButton title="Seleccionar"  
+				            	icon="ui-icon-check" 
+				            	update="@([id$=txtIdentTercero]), @([id$=panelGluoBienIntangible])" 
+				            	action="#{gluoBienIntangibleView.action_seleccionarTercero(tercero)}">
+				            </p:commandButton>
+						</p:column>
+                         
+
+					</p:dataTable>
+					
+				</p:scrollPanel>
+
+
+				<div class="EmptyBox20" />
+				
+			</p:dialog>
+			<!--        Tercero            -->
+			<!-- ************************* -->
+				
+			<!--        Obligaciones       -->
+			<!-- ************************* -->			
+			<p:dialog modal="true" widgetVar="dlgObligaciones" header="Obligaciones" 
+				draggable="false" closable="true"
+				resizable="true" height="400px" width="90%" > 
+					
+				<p:growl id="menObligaciones" showDetail="false" autoUpdate="true"/>
+				
+				<div align="center">
+					<h:panelGrid columns="3">
+						<h:outputText value="Tercero: "/>
+						<p:inputText id="txtIdentTercero" value="#{gluoBienIntangibleView.identificacionTerceroSeleccionadoEnOP}" readonly="true"/>
+						<p:commandButton icon="ui-icon-search" action="#{gluoBienIntangibleView.action_mostrarDialogoTerceroDesdeOP()}"/>
+					</h:panelGrid>
+				</div>
+				
+				<div class="EmptyBox20" />
+				
+				<div align="center">
+					<h:panelGrid id="btnConsultarOPs" columns="2">
+						<p:commandButton id="btnGetOps" value="Consultar Obligaciones de Tercero" action="#{gluoBienIntangibleView.action_consultarOPsDeTercero()}" update="menObligaciones, opData"/>
+						<p:commandButton id="btnClearOps" value="Limpiar" action="#{gluoBienIntangibleView.action_limpiarOPsDeTercero()}" update="txtIdentTercero, opData"/>
+					</h:panelGrid>
+				</div>
+				
+				<br/>
+					
+				<p:scrollPanel mode="native" style="width:100%; height:400px;">
+							<p:dataTable id="opData" var="op"
+								value="#{gluoBienIntangibleView.listaOps}"
+								rows="10" paginator="true"
+								paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+								rowsPerPageTemplate="10,15,20,30"
+								emptyMessage="No existen Obligaciones" reflow="true"
+								rowKey="#{op.maopId}"
+								filterDelay="1000">
+								
+								<f:facet name="header">Obligaciones del Tercero Seleccionado</f:facet>
+								
+								<p:column style="width:16px">
+				            		<p:rowToggler />
+				        		</p:column>
+		
+								<p:column headerText="Consecutivo" sortBy="#{op.consecutivo}"
+									style="width: 15%" filterBy="#{op.consecutivo}"
+									filterMatchMode="startsWith">
+									<h:outputText value="#{op.consecutivo}" />
+								</p:column>
+								
+								<p:column headerText="Concepto"
+									sortBy="#{op.concepto}" style="width: 25%" filterBy="#{op.concepto}"
+									filterMatchMode="startsWith">
+									<h:outputText value="#{op.concepto}" />
+								</p:column>
+								
+								<p:column headerText="Tercero" style="width: 20%" >
+									<h:outputText value="#{op.terceroDTO.identificacion}" />
+								</p:column>
+								
+								<p:column headerText="Valor Obligación" style="width: 15%">
+									<div align="right">
+										<h:outputText value="#{op.valorTotal}">
+											<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+										</h:outputText>
+									</div>
+								</p:column>
+								
+								<p:column headerText="Valor Deducciones" style="width: 15%">
+									<div align="right">
+										<h:outputText value="#{op.valorTotalDeducciones}">
+											<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+										</h:outputText>
+									</div>
+								</p:column>
+								
+								<p:column headerText="Saldo Por Pagar" style="width: 15%">
+										<div align="right">
+											<h:outputText value="#{op.saldoPorPagar}">
+												<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+											</h:outputText>
+										</div>
+								</p:column>
+								
+								<p:column headerText="Valor Total" style="width: 15%">
+										<div align="right">
+											<h:outputText id="valorAPagarPorOPMaster" value="#{op.valorPagarPorOp}">
+												<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+											</h:outputText>
+										</div>
+								</p:column>
+								
+								<p:column headerText="Seleccionar" 
+									style="width: 5%">
+									<p:commandButton title="Seleccionar"  
+						            	icon="ui-icon-check" 
+						            	update="@([id$=panelGluoBienIntangible])" 
+						            	action="#{gluoBienIntangibleView.action_seleccionarObligacion(op)}">
+						            </p:commandButton>
+								</p:column>
+								
+								<p:rowExpansion>
+				        			 	<h:panelGrid columns="2" style="width:100%">
+				        			 		<p:dataTable id="tablaDetalleOPDialog" var="dtlOp" rows="10"
+				        			 					 value="#{op.detalleOpDTO}"
+				        			 					 emptyMessage="No hay registros disponibles"
+				        			 					 paginator="false" reflow="true"
+				        			 					 rowKey="#{op.glopId}">
+				        			 					 
+						        			 		 <p:column headerText="Codigo Rubro">
+											            <h:outputText value="#{dtlOp.codigoRubro}" />
+											        </p:column>
+											        
+											   		<p:column headerText="Descripción Rubro">
+											            <h:outputText value="#{dtlOp.descripcionRubro}" />
+											        </p:column>
+											        
+											        <p:column headerText="Valor Original">
+											          <div align="right">
+														 <h:outputText value="#{dtlOp.valorTotal}">
+															<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+														</h:outputText>
+													 </div>
+											        </p:column>
+											        
+											         <p:column headerText="Saldo Por Pagar">
+											          <div align="right">
+														 <h:outputText value="#{dtlOp.saldoDeduccionesDetalle}">
+															<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+														</h:outputText>
+													 </div>
+											        </p:column>
+											        
+											         <p:column headerText="Valor Deducciones">
+											          <div align="right">
+														 <h:outputText value="#{dtlOp.valorDeducciones}">
+															<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+														</h:outputText>
+													 </div>
+											        </p:column>
+											        
+											        <p:column headerText="Tipo Recurso" >
+											        	<div align="center">
+											        		<h:outputLabel value="#{dtlOp.nombreTipoRecurso}" />
+											        	</div>											          
+											        </p:column>
+				        			 		</p:dataTable>
+				        			 	</h:panelGrid>
+				        			 </p:rowExpansion>
+								
+							</p:dataTable>
+						</p:scrollPanel>
+						<div class="EmptyBox20" />					
+					</p:dialog>
+			<!-- ************************* -->	
+			
+			
+			<!--  Recibo Caja  -->
+			<!-- Dialogo consultar recibo -->
+		<!-- **************************** -->
+		<p:dialog header="Recibo de Caja" widgetVar="dialogoConsultarRecibo" modal="true"  width="90%" height="400px" >
+				
+				<p:growl id="msgReciboCaja" showDetail="false"/>
+				
+				<p:panel id="pnlInformeReciboCaja" header="Informe Recibo de Caja" style="width: 95%;" >
+				
+					<h:panelGrid id="panelDatosReciboCaja" columns="5">
+					
+						<p:outputLabel value="Fecha Inicial:" for="calFechaInicial" />			
+						<p:calendar id="calFechaInicial" value="#{gluoBienIntangibleView.fechaInicialReciboCaja}" timeZone="GMT-5" style="width: 100%;" disabled="false"/>
+			            
+			            <p:spacer width="10"></p:spacer>
+			            
+						<p:outputLabel value="Fecha Final:" for="calFechaFinal" />
+						<p:calendar id="calFechaFinal"  value="#{gluoBienIntangibleView.fechaFinReciboCaja}"  timeZone="GMT-5" style="width: 100%;" disabled="false"/>
+					
+						<p:outputLabel value="Identificación:" for="txtIdentificacion" />			
+						<p:inputText id="txtIdentificacion" value="#{gluoBienIntangibleView.identificacionEnReciboCaja}" style="width: 90%;" disabled="false"/>
+			            
+			            <p:spacer width="10"></p:spacer>
+			            
+						<p:outputLabel value="Nombre:" for="txtNombre" />
+						<p:inputText id="txtNombre"  value="#{gluoBienIntangibleView.nombreEnReciboCaja}"  style="width: 90%;" disabled="false"/>
+					
+						<p:outputLabel value="Consecutivo:" for="txtConsecutivo" />
+						<p:inputText id="txtConsecutivo"  value="#{gluoBienIntangibleView.consecutivoReciboCajaBusqueda}"  style="width: 90%;" disabled="false"/>
+					
+					
+					</h:panelGrid>
+					
+					<br/>
+					
+					<p:commandButton id="btnConsultar" value="Consultar" action="#{gluoBienIntangibleView.action_consultarReciboCaja}" update="panelDatosReciboCaja, pnlListaReciboCajaDataTable, msgReciboCaja" />
+					<p:commandButton id="btnLimpiar" value="Limpiar" action="#{gluoBienIntangibleView.action_limpiarReciboCaja}" update="panelDatosReciboCaja, pnlListaReciboCajaDataTable" />
+				
+				</p:panel>
+				
+				<p:panel id="pnlListaReciboCaja" style="width: 95%;" header="Informe Recibo de Caja">
+				
+					<p:dataTable id="pnlListaReciboCajaDataTable" value="#{gluoBienIntangibleView.lstReciboCaja}"
+							var="recibo" paginator="true" rows="20"
+							paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+							emptyMessage="No se encontraron recibos de caja " reflow="true"
+							scrollable="true" scrollWidth="100%"				
+							rowKey="#{recibo.rcboId}"
+							filterDelay="1000">
+							
+							<p:column headerText="Consecutivo"
+								filterBy="#{recibo.consecutivo}"
+								style="text-align:center">
+								<p:outputLabel value="#{recibo.consecutivo}" />							
+							</p:column>
+							
+							<p:column headerText="Fecha"
+								filterBy="#{recibo.fechaRecibo}"
+								style="text-align:center">
+								<p:outputLabel value="#{recibo.fechaRecibo}" >
+									<f:convertDateTime type="date" pattern="dd-MM-yyyy"/>
+								</p:outputLabel>									
+							</p:column>
+							
+							<p:column headerText="Valor"
+								filterBy="#{recibo.valorTotal}"
+								style="text-align:center">
+								<p:outputLabel value="#{recibo.valorTotal}" >
+									<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+								</p:outputLabel>							
+							</p:column>
+							
+							<p:column headerText="Identificación"
+								filterBy="#{recibo.identificacionTercero}"
+								style="text-align:center">
+								<p:outputLabel value="#{recibo.identificacionTercero}" />							
+							</p:column>
+							
+							<p:column headerText="Tercero"
+								filterBy="#{recibo.nombreTercero}"
+								style="text-align:center">
+								<p:outputLabel value="#{recibo.nombreTercero}" />							
+							</p:column>
+							
+							<p:column headerText="Seleccionar">
+								<p:commandButton title="Seleccionar"  
+					            	icon="ui-icon-check" 
+					            	update="@([id$=panelGluoBienIntangible])" 
+					            	action="#{gluoBienIntangibleView.action_seleccionarReciboCaja(recibo)}">
+					            </p:commandButton>
+							</p:column>
+					        
+					</p:dataTable>
+					
+				</p:panel>
+		    </p:dialog>
+			<!-- Fin Recibo Caja -->
+			
+			<!-- *********************** Cuentas Contbles *********************** -->
+			<p:dialog modal="true" widgetVar="dlgCuentasContables" header="Cuentas Contables"
+					  draggable="false" closable="true" resizable="true" width="90%" height="400px">
+				
+				<p:growl id="menConceptoPago" showDetail="false"/>
+				
+				<p:scrollPanel mode="native" style="width:100%; height:400px">
+					<div class="ContainerIndent">
+					<h:outputText value="Cuentas Contables" />
+					</div>
+				
+					<p:dataTable id="tblConceptosDePago" var="cuentaContable" rows="200" style="width: 100%;"
+						value="#{gluoBienIntangibleView.cuentasContables}"
+						paginator="true"
+						paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+						rowsPerPageTemplate="300,400,500"
+						emptyMessage="No hay cuentas contables"
+						reflow="true" 
+						rowKey="#{cuentaContable.cconId}"
+						filterDelay="1000">
+						
+						<f:facet name="header"> Cuentas Contables </f:facet>
+                        
+                        <p:column headerText="Codigo" style="width:15%;" filterBy="#{cuentaContable.codigo}" sortBy="#{cuentaContable.codigo}">
+                        	<h:outputText value="#{cuentaContable.codigo}"/>
+                        </p:column>
+                        
+                         <p:column headerText="Descripción" style="width:75%;" filterBy="#{cuentaContable.descripcion}" sortBy="#{cuentaContable.descripcion}" filterMatchMode="contains">
+                        	<h:outputText value="#{cuentaContable.descripcion}"/>
+                        </p:column>
+                        
+                       	 <p:column headerText="Seleccionar">
+								<p:commandButton title="Seleccionar"  
+					            	icon="ui-icon-check" 
+					            	update="@([id$=panelGluoBienIntangible])"
+					            	action="#{gluoBienIntangibleView.action_seleccionarCuentaContable(cuentaContable)}">
+					            </p:commandButton>
+						</p:column>
+                        
+					</p:dataTable>
+				</p:scrollPanel>
+				<div class="EmptyBox20" />
+			</p:dialog>
+			<!-- *********************** Cuentas Contables *********************** -->
+					
+					
+					
+			
+					
+			<div class="EmptyBox100" />
+			</h:form>
+			
+		</f:view>
+	</ui:define>
+
+</ui:composition>

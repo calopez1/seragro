@@ -1,0 +1,201 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+	<ui:define name="content">
+
+		<p:ajaxStatus onstart="PF('statusDialog').show()"
+			onsuccess="PF('statusDialog').hide()" />
+		<p:dialog modal="true" widgetVar="statusDialog" header="Cargando"
+			draggable="false" closable="false">
+			<p:graphicImage
+				value="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/ajaxloadingbar.gif" />
+		</p:dialog>
+
+		<!-- Expired session -->
+		<p:idleMonitor onactive="PF('sessionTimeOutDialog').show();"
+			timeout="#{session.maxInactiveInterval * 1000}" />
+		<p:dialog modal="true" widgetVar="sessionTimeOutDialog"
+			header="Sesión terminada" draggable="false" closable="false">
+			<h:outputText value="La sesión ha finalizado" />
+			<input id="confirmBackToLogin" type="button" value="Iniciar sesión"
+				onclick="window.location='#{facesContext.externalContext.requestContextPath}/index.jsp';" />
+		</p:dialog>
+
+		<script type="text/javascript">
+			function showStatus() {
+				statusDialog.show();
+			}
+
+			function hideStatus() {
+				statusDialog.hide();
+			}
+		</script>
+
+
+		<style type="text/css">
+			.ui-panel {
+				margin-top: 20px
+			}
+			
+			.ui-tabs-top {
+				background-color: #FFFFFF;
+			}
+			
+			.one {
+				width: 10%;
+			}
+			
+			.two {
+				width: 90%;
+			}
+			
+			.col50Left {
+				width: 10%;
+				text-align: left;
+			}
+			
+			.col50Right {
+				width: 10%;
+				text-align: right;
+			}
+			
+			.txt100 {
+				width: 100%;
+			}
+		</style>
+
+		<div align="center">
+
+			 <h:form id="frmInformeReciboCaja">
+
+				<p:growl id="men" showDetail="false" autoUpdate="true" />
+				
+				<p:panel id="pnlInformeReciboCaja" header="Conciliación Bancaria" style="width: 95%;" >
+				
+					<h:panelGrid columns="6">
+					
+						<p:outputLabel value="Fecha Inicial:" for="calFechaInicial" />			
+						<p:calendar id="calFechaInicial" value="#{conciliacionBancariaView.fechaInicial}"
+							navigator="true" timeZone="GMT-5" style="width: 100%;" disabled="false"/>
+			            
+						<p:outputLabel value="Fecha Final:" for="calFechaFinal" />
+						<p:calendar id="calFechaFinal"  value="#{conciliacionBancariaView.fechaFin}"
+							navigator="true"  timeZone="GMT-5" style="width: 100%;" disabled="false"/>
+					
+						<p:outputLabel value="Consecutivo:" for="txtConsecutivo" />
+						<p:inputText id="txtConsecutivo"  value="#{conciliacionBancariaView.consecutivo}"  style="width: 90%;" disabled="false"/>
+						
+					</h:panelGrid>
+					
+					<br/>
+					
+					<p:commandButton id="btnConsultar" value="Consultar"
+									 action="#{conciliacionBancariaView.action_consultar}"
+									 update=":frmInformeReciboCaja, men" />
+					
+					<p:commandButton id="btnLimpiar" value="Limpiar" 
+									 action="#{conciliacionBancariaView.action_limpiar}"
+									 update=":frmInformeReciboCaja" />
+				
+				</p:panel>
+				
+				<p:scrollPanel id="pnlListaReciboCaja" mode="native" style="width:100%;">
+				
+					<p:dataTable id="pnlListaReciboCajaDataTable" value="#{conciliacionBancariaView.lstReciboCaja}"
+							var="recibo" paginator="true" rows="20" style="width: 100%;"
+							paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+							emptyMessage="No se encontraron conciliaciones bancarias " reflow="true"
+							rowKey="#{recibo.rcboId}"
+							filterDelay="1000">
+							
+							<p:column headerText="Consecutivo"
+								filterBy="#{recibo.consecutivoRecibo}"
+								style="text-align:center; width: 40%;">
+								<p:outputLabel value="#{recibo.consecutivoRecibo}" />							
+							</p:column>
+							
+							<p:column headerText="Valor Recibo"
+								filterBy="#{recibo.valorTotalRecibo}"
+								style="text-align:center; width: 40%;">
+								<p:outputLabel value="#{recibo.valorTotalRecibo}" >
+									<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+								</p:outputLabel>							
+							</p:column>
+							
+							<p:column headerText="Fecha Recibo"
+								filterBy="#{recibo.fechaRecibo}"
+								style="text-align:center; width: 40%;">
+								<p:outputLabel value="#{recibo.fechaRecibo}" >
+									<f:convertDateTime type="date" pattern="dd-MM-yyyy"/>
+								</p:outputLabel>									
+							</p:column>
+							
+							<p:column headerText="Observacion"
+								filterBy="#{recibo.observacionRecibo}"
+								style="text-align:center; width: 40%;">
+								<p:outputLabel value="#{recibo.observacionRecibo}" />							
+							</p:column>
+							
+							<p:column headerText="Tipo de Recibo"
+								filterBy="#{recibo.tipoRecibo}"
+								style="text-align:center; width: 40%">
+								<p:outputLabel value="#{recibo.tipoRecibo}" />							
+							</p:column>
+							
+							<p:column headerText="Valor Consignación"
+								filterBy="#{recibo.valorTotalConsignacion}"
+								style="text-align:center; width: 40%;">
+								<p:outputLabel value="#{recibo.valorTotalConsignacion}" >
+									<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+								</p:outputLabel>							
+							</p:column>
+							
+							<p:column headerText="Fecha Consignación"
+								filterBy="#{recibo.fechaConsignacion}"
+								style="text-align:center; width: 40%;">
+								<p:outputLabel value="#{recibo.fechaConsignacion}" >
+									<f:convertDateTime type="date" pattern="dd-MM-yyyy"/>
+								</p:outputLabel>									
+							</p:column>
+					        
+					        <p:column headerText="Valor Detalle Consignación" 
+								filterBy="#{recibo.valorDetalleConsignacion}"
+								style="text-align:center; width: 40%;">
+								<p:outputLabel value="#{recibo.valorDetalleConsignacion}" >
+									<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+								</p:outputLabel>							
+							</p:column>
+					        
+							<p:column headerText="Numero Cuenta"
+								filterBy="#{recibo.numeroCuenta}"
+								style="text-align:center; width: 40%;">
+								<p:outputLabel value="#{recibo.numeroCuenta}" />							
+							</p:column>
+							
+							<p:column headerText="Nombre Cuenta"
+								filterBy="#{recibo.nombreCuenta}"
+								style="text-align:center; width: 40%;">
+								<p:outputLabel value="#{recibo.nombreCuenta}" />							
+							</p:column>
+							
+							<p:column headerText="Nombre Banco"
+								filterBy="#{recibo.nombreBanco}"
+								style="text-align:center; width: 40%;">
+								<p:outputLabel value="#{recibo.nombreBanco}" />							
+							</p:column>
+							
+							<p:column headerText="Numero Banco"
+								filterBy="#{recibo.numeroBanco}"
+								style="text-align:center; width: 40%;">
+								<p:outputLabel value="#{recibo.numeroBanco}" />							
+							</p:column>
+					        
+					</p:dataTable>
+				</p:scrollPanel>
+			</h:form>
+		</div>
+	</ui:define>
+</ui:composition>

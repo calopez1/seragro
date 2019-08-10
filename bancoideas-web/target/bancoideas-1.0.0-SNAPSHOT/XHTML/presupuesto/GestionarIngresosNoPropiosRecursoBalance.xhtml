@@ -1,0 +1,206 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+	<ui:define name="content">
+		<style type="text/css">
+			.ui-panel {
+				margin-top: 20px
+			}
+			
+			.ui-tabs-top{
+				background-color: #FFFFFF;
+			}
+		</style>
+
+		<div align="center">
+		<h:form id="formIngresosNoPropios" >
+			
+			<p:growl id="messages" />
+
+
+			<!-- ************************************************** -->
+			<!-- **	  PANEL GESTIONAR INGRESOS NO PROPIOS R.B.   ** -->
+			<!-- ************************************************** -->
+			<p:panel id="pnlIngresosNoPropios" header="Gestionar Ingresos por recursos del balance" style="width: 90%;">									
+				<h:panelGrid columns="2">				
+					<p:outputLabel value="Fecha Expedición" for="txtFechaExpedicion" />
+					<p:calendar id="txtFechaExpedicion" value="#{gluoIngresoNoPropioView.txtFechaExpedicion}" navigator="true" />
+
+					<p:outputLabel value="Entidad Pública: " />					     
+					<h:panelGrid columns="2">
+						<p:inputText id="txtEnpuId" value="#{gluoIngresoNoPropioView.enpuId}"
+						 maxlength="100" style="width: 200px" />
+						<p:commandButton style="width:100%" icon="ui-icon-search"
+							onclick="PF('dlgEntidadPublica').show();"></p:commandButton>
+					</h:panelGrid>
+					
+					<p:outputLabel value="Concepto Presupuestal de Ingreso: " />
+					<h:panelGrid columns="2">						
+						<p:commandButton style="width:100%" icon="ui-icon-search"
+							onclick="PF('dialogAdicionesRenta').show();"></p:commandButton>
+					</h:panelGrid>
+					
+        			<p:outputLabel value="Valor: " />        			
+        			<p:inputText id="txtValor" binding="#{gluoIngresoNoPropioView.txtValor}" maxlength="100" style="width: 200px" >
+        				<f:convertNumber pattern="#,##0.00"  />
+						<p:ajax event="blur" update="@this" />
+        			</p:inputText>
+									        			
+				</h:panelGrid>
+				
+				<br/><br/>
+				
+				<p:dataTable id="detallesPresupuestoDataTable" style="text-align: center;" var="detalles" value="#{gluoIngresoNoPropioView.listPresupuestoRentaSeleccionados}" 
+							 filterDelay="1000">
+					
+					<p:column headerText="Código" filterBy="#{detalles.codigoCuenta}" sortBy="#{detalles.codigoCuenta}"
+						filterMatchMode="startsWith">
+						<h:outputLabel value="#{detalles.codigoCuenta}" />
+					</p:column>
+					
+					<p:column headerText="Descripción" filterBy="#{detalles.descripcionCuenta}" sortBy="#{detalles.descripcionCuenta}"
+						filterMatchMode="contains">
+						<h:outputLabel value="#{detalles.descripcionCuenta}" />
+					</p:column>
+					
+					<p:column headerText="Valor" >
+					<p:inputText  id="txtValorDetalleIngresoValor" value="#{detalles.valorIngresoXRubro}">					
+						<f:convertNumber pattern="#,##0.00"  />
+						<p:ajax event="blur" update="@this" />
+					</p:inputText>
+					</p:column>
+					
+				</p:dataTable>
+							
+				<!-- Botones -->
+				<br/>
+
+				<p:commandButton id="btnSave" value="Guardar"
+						action="#{gluoIngresoNoPropioView.action_save2}"
+						binding="#{gluoIngresoNoPropioView.btnSave}" disabled="false"
+						update="formIngresosNoPropios, pnlIngresosNoPropios2" />
+	
+				<p:commandButton id="btnClear" value="Limpiar"
+					action="#{gluoIngresoNoPropioView.action_clear}"
+					binding="#{gluoIngresoNoPropioView.btnClear}" disabled="false"
+					update="formIngresosNoPropios, pnlIngresosNoPropios2" />		
+								
+			</p:panel> <!-- FIN PANEL GESTIONAR INGRESOS NO PROPIOS R.B. -->
+			
+			
+			<!-- ************************************************** -->
+			<!-- **	  PANEL LISTADO DE INGRESOS NO PROPIOS R.B.  ** -->
+			<!-- ************************************************** -->
+			<p:panel id="pnlIngresosNoPropios2" header="Listado Ingresos por recursos del balance" style="width: 90%;">
+
+				<p:dataTable value="#{gluoIngresoNoPropioView.listDetalleIngresoNoPropioRecursoBalanceDTOs}" var="detalleIngresoNoPropio"
+					paginator="true" rows="10" scrollable="true" scrollWidth="100%"
+					scrollHeight="500"					
+					rowKey="#{detalleIngresoNoPropio.dinpId}"
+					filterDelay="1000">
+					
+					<p:column headerText="Fecha Expedición" filterBy="#{detalleIngresoNoPropio.fechaExpedicion}" style="text-align:center"> 
+						<p:outputLabel value="#{detalleIngresoNoPropio.fechaExpedicion}" >
+							<f:convertDateTime pattern="dd-MM-yyyy" />
+						</p:outputLabel>
+					</p:column>
+					
+					<p:column headerText="Entidad Pública" filterBy="#{detalleIngresoNoPropio.nombreEntidadPublica}"  class="text-center" style="text-align:center"> 
+						<p:outputLabel value="#{detalleIngresoNoPropio.nombreEntidadPublica}"  />
+					</p:column>
+										
+					<p:column headerText="Valor X Rubro" filterBy="#{detalleIngresoNoPropio.valorXRubro}" style="text-align: center;">
+						<p:outputLabel value="#{detalleIngresoNoPropio.valorXRubro}" >
+							<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+						</p:outputLabel> 							
+					</p:column>
+															
+				</p:dataTable>
+			</p:panel> <!-- FIN PANEL LISTADO DE INGRESOS NO PROPIOS R.B. -->
+			
+			
+			<!-- ************************************************** -->
+			<!-- **		  DIÁLOGO PARA ENTIDADES PÚBLICAS 		 ** -->
+			<!-- ************************************************** -->	
+			<p:dialog header="Entidades Públicas" style="align-text: center"
+				widgetVar="dlgEntidadPublica" modal="true" height="400" width="80%">
+	
+				<p:scrollPanel mode="native" style="width:100%; height:400px">
+				<p:dataTable var="entidad" paginator="true" rows="10"
+					value="#{gluoIngresoNoPropioView.dataEntidadPublica}"
+					selectionMode="single"
+					selection="#{gluoIngresoNoPropioView.selectedGluoEntidadPublica}"
+					rowKey="#{entidad.enpuId}"
+					filterDelay="1000">
+
+					<p:ajax event="rowSelect"
+						listener="#{gluoIngresoNoPropioView.onRowSelectEntidad}"	
+						update=":formIngresosNoPropios"								
+						oncomplete="PF('dlgEntidadPublica').hide();" />
+
+					<p:column headerText="Código" filterBy="#{entidad.codigoInstitucional}" 
+						filterMatchMode="contains">
+						<h:outputText value="#{entidad.codigoInstitucional}" />
+					</p:column>
+					
+					<p:column headerText="Nombre" filterBy="#{entidad.nombre}" style="text-align: center"
+						filterMatchMode="contains">
+						<h:outputText value="#{entidad.nombre}" />
+					</p:column>
+					
+				</p:dataTable>
+				</p:scrollPanel>
+					
+			</p:dialog> <!-- FIN DIÁLOGO PARA ENTIDADES PÚBLICAS -->
+			
+			
+			<!-- ************************************************** -->			 	
+			<!-- **			DIÁLOGO PARA ADICIONES RENTA		 ** -->
+			<!-- ************************************************** -->		
+			<p:dialog header="Presupuesto Renta" style="align-text: center"
+				widgetVar="dialogAdicionesRenta" modal="true" height="400" width="80%">
+	
+				<p:scrollPanel mode="native" style="width:100%; height:400px">
+				<p:dataTable var="item" paginator="true" rows="5"
+					value="#{gluoIngresoNoPropioView.presupuestoRentasDTO.detallePresupuestoDTOs}"						
+					selection="#{gluoIngresoNoPropioView.listPresupuestoRentaSeleccionados}"
+					rowKey="#{item.codigoCuenta}"
+					filterDelay="1000">
+						
+					<p:column selectionMode="multiple" style="width:28px;text-align:center"/>	
+
+					<p:column headerText="Código" filterBy="#{item.codigoCuenta}" sortBy="#{item.codigoCuenta}"
+						filterMatchMode="contains">
+						<h:outputText value="#{item.codigoCuenta}" />
+					</p:column>
+
+					<p:column headerText="Descripción"
+						filterBy="#{item.descripcionCuenta}" filterMatchMode="contains" sortBy="#{item.descripcionCuenta}">
+						<h:outputText value="#{item.descripcionCuenta}" />
+					</p:column>
+
+					<p:column headerText="Valor Inicial"
+						filterBy="#{item.valorInicial}" filterMatchMode="contains">
+						<h:outputText value="#{item.valorInicial}" style="text-align: right;">
+							<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+						</h:outputText>
+					</p:column>
+					
+				</p:dataTable>
+				</p:scrollPanel>
+				
+				<p:commandButton id="btnAgregarAdicionesRentas" value="Agregar"								
+					update=":formIngresosNoPropios"
+					onclick="PF('dialogAdicionesRenta').hide();" />
+							
+			</p:dialog> <!-- FIN DIÁLOGO PARA ADICIONES RENTA -->
+
+		</h:form>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

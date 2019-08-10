@@ -1,0 +1,120 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+<ui:define name="content">
+<f:view>
+	<p:ajaxStatus onstart="PF('statusDialog').show()"
+		onsuccess="PF('statusDialog').hide()" />
+	<p:dialog modal="true" widgetVar="statusDialog" header="Cargando"
+		draggable="false" closable="false">
+		<p:graphicImage
+			value="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/ajaxloadingbar.gif" />
+	</p:dialog>
+
+	<!-- Expired session -->
+	<p:idleMonitor onactive="PF('sessionTimeOutDialog').show();"
+		timeout="#{session.maxInactiveInterval * 1000}" />
+	<p:dialog modal="true" widgetVar="sessionTimeOutDialog"
+		header="Sesión Finalizada" draggable="false" closable="false">
+		<h:outputText value="La sesión ha caducado." />
+		<input id="confirmBackToLogin" type="button" value="Iniciar Sesión"
+			onclick="window.location='#{facesContext.externalContext.requestContextPath}/index.jsp';" />
+	</p:dialog>
+	
+<div align="center">
+<h:form id="frmTipoDeduccion">
+
+	<p:growl id="growl" autoUpdate="true" />
+
+	<p:panel id="pnlTipoDeduccion" header="Gestionar Tipo Deducciones" style="width: 90%;">
+	
+		<h:panelGrid columns="2">
+		
+			<p:outputLabel value="Código:" for="codigo" />
+			<p:inputText id="codigo" value="#{gluoTipoDeduccionView.codigo}" />
+		
+			<p:outputLabel value="Descripción:" for="descripcion" />
+			<p:inputText id="descripcion" binding="#{gluoTipoDeduccionView.descripcion}" />
+				
+			<p:outputLabel value="Deducción en:" for="pesosPorcentaje" />
+			<p:selectOneRadio id="pesosPorcentaje" binding="#{gluoTipoDeduccionView.pesosPorcentaje}">
+				<f:selectItem itemLabel="Pesos" itemValue="V" />
+				<f:selectItem itemLabel="Porcentaje" itemValue="P" />
+			</p:selectOneRadio>
+			
+			<p:outputLabel value="Tipo:" for="rangoCuota" />
+			<p:selectOneRadio id="rangoCuota" binding="#{gluoTipoDeduccionView.rangoCuota}">
+				<f:selectItem itemLabel="Rango" itemValue="R" />
+				<f:selectItem itemLabel="Cuota" itemValue="C" />
+			</p:selectOneRadio>
+			
+			<p:outputLabel value="Estado:" for="estado" />
+			<p:selectOneRadio id="estado" binding="#{gluoTipoDeduccionView.estado}">
+				<f:selectItem itemLabel="Activo" itemValue="A" />
+				<f:selectItem itemLabel="Inactivo" itemValue="I" />
+			</p:selectOneRadio>
+		</h:panelGrid>
+		
+		<br/>
+		<p:commandButton id="btnGuardar" value="Guardar"
+			action="#{gluoTipoDeduccionView.action_guardar}" update=":frmTipoDeduccion" />
+			
+		<p:commandButton id="btnLimpiar" value="Limpiar"
+			action="#{gluoTipoDeduccionView.action_limpiar}" update=":frmTipoDeduccion" />
+		
+	</p:panel>
+	
+	<p:panel id="pnlListaTipoDeduccion" header="Listado Tipo Deducciones" style="width: 90%;">
+	
+		<p:dataTable id="listaTipoDeduccionDataTable" style="text-align: center;"
+			var="tipoDeduccion"
+			value="#{gluoTipoDeduccionView.listTipoDeduccionNominaDTOs}"
+			selection="#{gluoTipoDeduccionView.tipoDeduccionNominaDTO}"
+			selectionMode="single"
+			paginator="true"
+			rows="10"			
+			rowKey="#{tipoDeduccion.tdnoId}"
+			filterDelay="1000">
+			
+			<p:column selectionMode="single" style="width: 28px;"/>
+			<p:ajax event="rowSelect" 
+				listener="#{gluoTipoDeduccionView.listener_seleccionar_tipo_deduccion}"
+				update=":frmTipoDeduccion" />
+				
+			<p:column headerText="Código" filterBy="#{tipoDeduccion.codigo}"
+				filterMatchMode="contains">
+				<p:outputLabel value="#{tipoDeduccion.codigo}" />
+			</p:column>
+			
+			<p:column headerText="Descripción" filterBy="#{tipoDeduccion.descripcion}"
+				filterMatchMode="contains">
+				<p:outputLabel value="#{tipoDeduccion.descripcion}" />
+			</p:column>
+			
+			<p:column headerText="Pesos/Porcentaje" filterBy="#{tipoDeduccion.pesosOPorcentaje}"
+				filterMatchMode="startsWith">
+				<p:outputLabel value="#{(tipoDeduccion.pesosOPorcentaje == 'V' ? 'Pesos' : 'Porcentaje')}" />
+			</p:column>
+			
+			<p:column headerText="Rango/Cuota" filterBy="#{tipoDeduccion.rangoOCuota}"
+				filterMatchMode="startsWith">
+				<p:outputLabel value="#{(tipoDeduccion.rangoOCuota == 'R' ? 'Rango' : 'Cuota')}" />
+			</p:column>
+					
+			<p:column headerText="Estado" filterBy="#{tipoDeduccion.activo}"
+				filterMatchMode="startsWith">
+				<p:outputLabel value="#{(tipoDeduccion.activo == 'A' ? 'Activo' : 'Inactivo')}" />
+			</p:column>
+		</p:dataTable>
+	
+	</p:panel>	
+	
+</h:form>
+</div>
+</f:view>
+</ui:define>
+
+</ui:composition>

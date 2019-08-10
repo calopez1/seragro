@@ -1,0 +1,167 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+	<ui:define name="content">
+		<f:view>
+			<script type="text/javascript">
+				function start() {
+					PF('statusDialog').show();
+				}
+
+				function stop() {
+					PF('statusDialog').hide();
+				}
+			</script>
+			<p:ajaxStatus onstart="PF('statusDialog').show()"
+				onsuccess="PF('statusDialog').hide()" />
+			<p:dialog modal="true" widgetVar="statusDialog" header="Cargando"
+				draggable="false" closable="false">
+				<p:graphicImage
+					value="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/ajaxloadingbar.gif" />
+			</p:dialog>
+
+			<!-- Expired session -->
+			<p:idleMonitor onactive="PF('sessionTimeOutDialog').show();"
+				timeout="#{session.maxInactiveInterval * 1000}" />
+			<p:dialog modal="true" widgetVar="sessionTimeOutDialog"
+				header="Sesión terminada" draggable="false" closable="false">
+				<h:outputText value="La sesión ha finalizado" />
+				<input id="confirmBackToLogin" type="button" value="Iniciar sesión"
+					onclick="window.location='#{facesContext.externalContext.requestContextPath}/index.jsp';" />
+			</p:dialog>
+
+			<div align="center">
+				<h:form id="frmInformesContraloriaGeneralRepublica">
+					<p:panel id="pnlInformesContraloriaGeneralRepublica"
+						header="Formatos de Ejecución Presupuestal" style="width: 90%;">
+
+						<br />
+						<p:commandButton value="Ingresos "
+							action="reporteFutIngresos.xhtml" style="width: 500px;" />
+
+						<br />
+						<br />
+						<p:commandButton value="Gastos Funcionamiento  "
+							action="reporteFutGastosFuncionamiento.xhtml" style="width: 500px;" />
+
+						<br />
+						<br />
+						<p:commandButton value="Gastos de inversión"
+							action="reporteFutGastosInversion.xhtml" style="width: 500px;" />
+
+						<br />
+						<br />
+						<p:commandButton value="Servicio de la deuda "
+							action="reporteFutServicioDeuda.xhtml"
+							style="width: 500px;" />
+
+						<br />
+						<br />
+						<p:commandButton value="Ingresos que amparan reservas (En construcción) "
+							action="reporteFutIngresosAmparanReservas.xhtml" disabled="true"
+							style="width: 500px;" />
+						
+						<br />	
+						<br />
+						<p:commandButton value="Reservas Presupuestales "
+							action="reservasPresupuestales.xhtml"
+							style="width: 500px;" />
+
+						<br />
+						<br />
+						<p:commandButton value="Cuentas Por Pagar"
+							action="reporteCuentasXPagar.xhtml"
+							style="width: 500px;" />
+
+						<br />
+						<br />
+						<p:commandButton value="Vigencias Futuras (En construcción)" disabled="true"
+							style="width: 500px;" />
+
+						<br />
+						<br />
+
+					</p:panel>
+
+					<p:panel id="pnlInformesContraloriaGeneralRepublica2" header="Regalias" style="width: 90%;">
+						<br />
+						<br />
+						<p:commandButton
+							value="Presupuesto SGR Bienio - Ingresos (2015 - 2016)"
+							action="reporteFutIngresosRegalias.xhtml"
+							style="width: 500px;" />
+						<br />
+						<br />
+						
+						<p:commandButton
+							value="Presupuesto SGR Bienio - Gastos (2015 - 2016)" rendered="false"
+							action="reporteFutGastosRegalias.xhtml"
+							style="width: 500px;" />
+						<br />
+						<br />
+					</p:panel>
+					
+					
+					<p:panel id="pnlInformesContraloriaGeneralRepublica3" header="Formatos de Ejecución de los Fondos de Salud" style="width: 90%;">
+						
+						<br />
+						<br />
+						<p:commandButton
+							value="Fondos de Salud - Ejecución Presupuestal" action="reporteFutFondoSaludEjecucion.xhtml" style="width: 500px;" />
+							
+						<br />
+						<br />
+						<p:commandButton
+							value="Fondos de Salud - Movimientos de Tesoreria" action="reporteFutFondoSaludTesoreria.xhtml" style="width: 500px;" />
+						<br />
+						<br />
+						
+					</p:panel>
+
+					<p:panel id="pnlInformesContraloriaGeneralRepublica4"
+						header="Otros formatos" style="width: 90%;">
+						<br />
+						<br />
+						<p:commandButton value="Excedentes de liquidez (En Construcción)" disabled="true"
+							style="width: 500px;" />
+
+						<br />
+						<br />
+						<p:commandButton
+							value="Registros presupuestales Agua Potable y Saneamiento Basico"
+							action="reporteAguaPotableYSaneamiento.xhtml"
+							style="width: 500px;" />
+
+						<br />
+						<br />
+						<p:commandButton value="Desplazados"
+							action="reporteFutDesplazados.xhtml"
+							style="width: 500px;" />
+							
+						<br />
+						<br />
+						<p:commandButton value="Otras Victimas"
+							action="reporteFutOtrasVictimas.xhtml"
+							style="width: 500px;" />
+							
+							
+						<br />
+						<br />
+						<p:commandButton value="Resguardos 2"
+							action="reporteFutResguardos2.xhtml"
+							style="width: 500px;" />
+							
+						<br />
+						<br />
+						<p:commandButton value="Resguardos 3"
+							action="reporteFutResguardos3.xhtml"
+							style="width: 500px;" />
+					</p:panel>
+				</h:form>
+			</div>
+		</f:view>
+	</ui:define>
+</ui:composition>

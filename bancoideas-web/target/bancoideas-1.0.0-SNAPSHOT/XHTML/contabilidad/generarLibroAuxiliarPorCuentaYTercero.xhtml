@@ -1,0 +1,294 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+	<ui:define name="content">
+
+		<p:ajaxStatus onstart="PF('statusDialog').show()"
+			onsuccess="PF('statusDialog').hide()" />
+		<p:dialog modal="true" widgetVar="statusDialog" header="Cargando"
+			draggable="false" closable="false">
+			<p:graphicImage
+				value="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/ajaxloadingbar.gif" />
+		</p:dialog>
+
+		<!-- Expired session -->
+		<p:idleMonitor onactive="PF('sessionTimeOutDialog').show();"
+			timeout="#{session.maxInactiveInterval * 1000}" />
+		<p:dialog modal="true" widgetVar="sessionTimeOutDialog"
+			header="Sesión terminada" draggable="false" closable="false">
+			<h:outputText value="La sesión ha finalizado" />
+			<input id="confirmBackToLogin" type="button" value="Iniciar sesión"
+				onclick="window.location='#{facesContext.externalContext.requestContextPath}/index.jsp';" />
+		</p:dialog>
+		
+		<script type="text/javascript">
+			function showStatus() {
+			    statusDialog.show();
+			}
+			 
+			function hideStatus() {
+			    statusDialog.hide();
+			}
+		</script>
+
+		<style type="text/css">
+			.one {
+				width: 20%;
+			}
+			
+			.two {
+				width: 80%;
+			}
+			
+			.ui-panel {
+				margin-top: 20px
+			}
+			
+			.ui-tabs-top {
+				background-color: #FFFFFF;
+			}
+			
+        	.colAFiltro{width: 10%; }
+        	.colBFiltro{width: 50%; }
+        	
+        	.col30{width: 30%;}
+        	.col70{width: 70%;}
+			
+		</style>
+
+		<h:form id="frmLibroAuxiliar">
+
+			<p:growl id="men" showDetail="false" autoUpdate="true"/>
+
+					<p:panel>
+						<h:outputText value="Libro Auxiliar Por Cuenta y Tercero" styleClass="FontBold Fs18 hardblue" />
+					</p:panel>
+					
+					<p:panel id="pnlDatos">
+						
+						<br/>
+					
+						<div align="center">
+								<h:panelGrid id="panelFechas" columns="4">
+									<h:outputText value="Fecha Inicial: "/>
+									<p:calendar id="fechaInicial" locale="es" showButtonPanel="true"  
+												value="#{generarLibroAuxiliarPorCuentaYTerceroView.fechaInicial}" readonlyInput="true" 
+												timeZone="GMT-5" style="width: 100%;" disabled="false"
+												navigator="true" pattern="yyyy-MM-dd" />
+												
+									<h:outputText value="Fecha Final: "/>
+									<p:calendar id="fechaFinal" locale="es" showButtonPanel="true"  
+												value="#{generarLibroAuxiliarPorCuentaYTerceroView.fechaFinal}" readonlyInput="true" 
+												timeZone="GMT-5" style="width: 100%;" disabled="false" 
+												navigator="true" pattern="yyyy-MM-dd" />
+								</h:panelGrid>
+							</div>
+								
+							<br/>
+							
+							<div align="center">	
+								<h:panelGrid id="panelOtrosDatos" columns="11">
+									<h:outputText value="Centro de Costos (Opcional): "/>
+									<p:selectOneMenu id="somCentroCostos" binding="#{generarLibroAuxiliarPorCuentaYTerceroView.somCentroCostos}" filter="true">
+										<f:selectItem itemLabel="------ Seleccione ------" itemValue="-1"/>
+										<f:selectItems value="#{generarLibroAuxiliarPorCuentaYTerceroView.losCentroCostos}"/>
+									</p:selectOneMenu>
+									
+									<h:outputText value="Cuenta Contable Inicial: "/>
+									<p:inputText id="txtCuentaContableInicial" value="#{generarLibroAuxiliarPorCuentaYTerceroView.descripcionCuentaContableInicial}" readonly="true"/>
+									<p:commandButton id="btnBuscarCucoInicial" icon="ui-icon-search" onclick="PF('dlgCuentaContableInicial').show();"/>
+									
+									<h:outputText value="Cuenta Contable Final: "/>
+									<p:inputText id="txtCuentaContableFinal" value="#{generarLibroAuxiliarPorCuentaYTerceroView.descripcionCuentaContableFinal}" readonly="true"/>
+									<p:commandButton id="btnBuscarCucoFinal" icon="ui-icon-search" onclick="PF('dlgCuentaContableFinal').show();"/>
+									
+									<h:outputText value="Tercero (Opcional): "/>
+									<p:inputText value="#{generarLibroAuxiliarPorCuentaYTerceroView.identificacionTerceroSeleccionado}" readonly="true"/>
+									<p:commandButton id="btnBuscarTerceroMain" icon="ui-icon-search" oncomplete="PF('dlgTercero').show();"/>
+								</h:panelGrid>
+							</div>
+							
+							<br/>
+							
+							<div align="center">
+								<h:panelGrid id="pnlGenerarInforme" columns="4">
+									<p:commandButton value="Generar Reporte en PDF" onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)" icon="ui-icon-arrowthichk-s">
+										<p:fileDownload value="#{generarLibroAuxiliarPorCuentaYTerceroView.reporteLibroAuxiliarPdf}" />
+									</p:commandButton>
+									
+									<p:commandButton value="Generar Reporte en XLS" onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)" icon="ui-icon-arrowthichk-s">
+										<p:fileDownload value="#{generarLibroAuxiliarPorCuentaYTerceroView.reporteLibroAuxiliarXls}" />
+									</p:commandButton>
+									
+									<p:commandButton value="Generar Reporte en XLSX" onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)" icon="ui-icon-arrowthichk-s">
+										<p:fileDownload value="#{generarLibroAuxiliarPorCuentaYTerceroView.reporteLibroAuxiliarXlsx}" />
+									</p:commandButton>
+								</h:panelGrid>
+							</div>
+					</p:panel>
+					
+					<div class="EmptyBox20" />
+					
+			<!-- ************************************************** -->
+			<!-- **		DIÁLOGO CUENTA CONTABLE INICIAL		 ** -->
+			<!-- ************************************************** -->
+			<p:dialog header="Cuentas Contables"
+				widgetVar="dlgCuentaContableInicial" modal="true" height="400" width="90%">
+
+				<div style="text-align: center;">
+
+					<p:scrollPanel mode="native" style="width:100%; height:400px;">
+						<p:dataTable var="cuentaContableDebito" paginator="true" rows="10"
+							value="#{generarLibroAuxiliarPorCuentaYTerceroView.listCuentasContablesInicial}"
+							selection="#{generarLibroAuxiliarPorCuentaYTerceroView.cuentaContableInicial}"
+							selectionMode="single"
+							rowKey="#{cuentaContableDebito.cconId}" 
+							filterDelay="1000">
+
+							<p:ajax event="rowSelect"
+								listener="#{generarLibroAuxiliarPorCuentaYTerceroView.onRowSelectCuentaContableInicial}"
+								update=":frmLibroAuxiliar"
+								oncomplete="PF('dlgCuentaContableInicial').hide();" />
+
+							<p:column headerText="Código" filterBy="#{cuentaContableDebito.codigo}">
+								<h:outputText value="#{cuentaContableDebito.codigo}" />
+							</p:column>
+
+							<p:column headerText="Descripción" filterBy="#{cuentaContableDebito.descripcion}"
+								filterMatchMode="contains">
+								<h:outputText value="#{cuentaContableDebito.descripcion}" />
+							</p:column>
+						</p:dataTable>
+					</p:scrollPanel>
+				</div>
+			</p:dialog>
+
+
+			<!-- ************************************************** -->
+			<!-- **		DIÁLOGO CUENTA CONTABLE FINAL		 ** -->
+			<!-- ************************************************** -->
+			<p:dialog header="Cuentas Contables"
+				widgetVar="dlgCuentaContableFinal" modal="true" height="400" width="90%">
+
+				<div style="text-align: center;">
+
+					<p:scrollPanel mode="native" style="width:100%; height:400px;">
+						<p:dataTable var="cuentaContableCredito" paginator="true" rows="10"
+							value="#{generarLibroAuxiliarPorCuentaYTerceroView.listCuentasContableFinal}"
+							selection="#{generarLibroAuxiliarPorCuentaYTerceroView.cuentaContableFinal}"
+							selectionMode="single"
+							rowKey="#{cuentaContableCredito.cconId}"
+							filterDelay="1000">
+
+							<p:ajax event="rowSelect"
+								listener="#{generarLibroAuxiliarPorCuentaYTerceroView.onRowSelectCuentaContableFinal}"
+								update=":frmLibroAuxiliar"
+								oncomplete="PF('dlgCuentaContableFinal').hide();" />
+
+							<p:column headerText="Código" filterBy="#{cuentaContableCredito.codigo}">
+								<h:outputText value="#{cuentaContableCredito.codigo}" />
+							</p:column>
+
+							<p:column headerText="Descripción" filterBy="#{cuentaContableCredito.descripcion}"
+								filterMatchMode="contains">
+								<h:outputText value="#{cuentaContableCredito.descripcion}" />
+							</p:column>
+						</p:dataTable>
+					</p:scrollPanel>
+				</div>
+			</p:dialog>
+			
+			
+			<!--        Tercero            -->
+			<!-- ************************* -->
+			<p:dialog modal="true" widgetVar="dlgTercero" header="Terceros"
+				draggable="false" closable="true" resizable="true"
+				width="90%" height="500">
+				
+				<p:scrollPanel id="pnlTerceros" mode="native" style="width:100%; height:400px">
+					<div class="ContainerIndent"/>
+					
+					<p:outputLabel value="Criterios de búsqueda para terceros:"/>
+					
+					<h:panelGrid columns="2" columnClasses="colAFiltro, colBFiltro" style="width: 100%;">
+								
+						<p:outputLabel value="Identificación: "/>
+						<p:inputText styleClass="Wid50"
+							value="#{generarLibroAuxiliarPorCuentaYTerceroView.identificacionFiltro}"/>
+						
+						<p:outputLabel value="Nombre/Razón Social:"/>
+						<p:inputText styleClass="Wid50"
+							value="#{generarLibroAuxiliarPorCuentaYTerceroView.nombreRazonSocialFiltro}"/>
+						
+					</h:panelGrid>
+					
+					<p:commandButton value="Buscar Tercero"
+						actionListener="#{generarLibroAuxiliarPorCuentaYTerceroView.action_buscarTercero}"
+						update=":frmLibroAuxiliar:pnlTerceros"/>
+					
+					<br/>
+				
+					<p:dataTable id="tercerosEncontrados" var="tercero" rows="350" style="width: 100%;"
+						value="#{generarLibroAuxiliarPorCuentaYTerceroView.terceros}"
+						paginator="true"
+						paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+						rowsPerPageTemplate="300,400,500"
+						emptyMessage="No hay terceros encontrados"
+						reflow="true" 
+						selection="#{generarLibroAuxiliarPorCuentaYTerceroView.terceroSeleccionado}"
+						selectionMode="single"
+						rowKey="#{tercero.tercId}" 
+						filterDelay="1000">
+						
+						<f:facet name="header">
+                             Terceros
+                         </f:facet>
+                         
+                         <p:ajax event="rowSelect"
+								listener="#{generarLibroAuxiliarPorCuentaYTerceroView.onRowSelectTercero}"
+								update=":frmLibroAuxiliar"
+								oncomplete="PF('dlgTercero').hide();" />
+                         
+                   		<p:column headerText="Identificación" sortBy="#{tercero.identificacion}"
+							style="width: 10%" filterBy="#{tercero.identificacion}"
+							filterMatchMode="startsWith">
+							<h:outputText value="#{tercero.identificacion}"/>
+						</p:column>
+						
+						<p:column headerText="Primer Nombre" sortBy="#{tercero.primerNombre}"
+							style="width: 10%" filterBy="#{tercero.primerNombre}"
+							filterMatchMode="contains">
+							<h:outputText value="#{tercero.primerNombre}"/>
+						</p:column>
+						
+						<p:column headerText="Segundo Nombre" sortBy="#{tercero.segundoNombre}"
+							style="width: 10%" filterBy="#{tercero.segundoNombre}"
+							filterMatchMode="contains">
+							<h:outputText value="#{tercero.segundoNombre}"/>
+						</p:column>
+						
+						<p:column headerText="Primer Apellido" sortBy="#{tercero.primerApellido}"
+							style="width: 10%" filterBy="#{tercero.primerApellido}"
+							filterMatchMode="contains">
+							<h:outputText value="#{tercero.primerApellido}"/>
+						</p:column>
+						
+						<p:column headerText="Segundo Apellido" sortBy="#{tercero.segundoApellido}"
+							style="width: 10%" filterBy="#{tercero.segundoApellido}"
+							filterMatchMode="contains">
+							<h:outputText value="#{tercero.segundoApellido}"/>
+						</p:column>
+					</p:dataTable>
+				</p:scrollPanel>
+				
+				<div class="EmptyBox20" />
+				
+			</p:dialog>
+			<!--        Tercero            -->
+			<!-- ************************* -->
+		</h:form>
+	</ui:define>
+</ui:composition>

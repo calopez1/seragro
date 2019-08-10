@@ -1,0 +1,220 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+
+	<ui:define name="content">
+
+		<p:ajaxStatus onstart="PF('statusDialog').show()"
+			onsuccess="PF('statusDialog').hide()" />
+		<p:dialog modal="true" widgetVar="statusDialog" header="Cargando"
+			draggable="false" closable="false">
+			<p:graphicImage
+				value="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/ajaxloadingbar.gif" />
+		</p:dialog>
+
+		<!-- Expired session -->
+		<p:idleMonitor onactive="PF('sessionTimeOutDialog').show();"
+			timeout="#{session.maxInactiveInterval * 1000}" />
+		<p:dialog modal="true" widgetVar="sessionTimeOutDialog"
+			header="Sesión terminada" draggable="false" closable="false">
+			<h:outputText value="La sesión ha finalizado" />
+			<input id="confirmBackToLogin" type="button" value="Iniciar sesión"
+				onclick="window.location='#{facesContext.externalContext.requestContextPath}/index.jsp';" />
+		</p:dialog>
+
+		<script type="text/javascript">
+			function showStatus() {
+				statusDialog.show();
+			}
+
+			function hideStatus() {
+				statusDialog.hide();
+			}
+		</script>
+
+
+		<style type="text/css">
+.ui-panel {
+	margin-top: 20px
+}
+
+.ui-tabs-top {
+	background-color: #FFFFFF;
+}
+
+.one {
+	width: 10%;
+}
+
+.two {
+	width: 90%;
+}
+
+.colAFiltro {
+	width: 10%;
+}
+
+.colBFiltro {
+	width: 50%;
+}
+
+.col50Left {
+	width: 10%;
+	text-align: left;
+}
+
+.col50Right {
+	width: 10%;
+	text-align: right;
+}
+
+.txt100 {
+	width: 100%;
+}
+
+.col30 {
+	width: 30%;
+}
+
+.col70 {
+	width: 70%;
+}
+
+.pe-inputNumber {
+	font-size: 100%;
+}
+</style>
+
+		<h:form id="idFormMod">
+			<p:panel id="panelDataTableGluoCapturaPago"
+				header="Listado de Capturas de Pago">
+
+				<p:growl id="men" />
+
+				<h:panelGrid id="panelFiltroTabla" columns="3">
+					<h:outputText value="Número de Recibo: " />
+					<p:inputText id="txtNumeroReciboConsulta"
+						binding="#{gluoCapturaPagoView.txtNumeroReciboConsulta}"
+						maxlength="20" />
+					<p:commandButton id="btnConsultarPredio" icon="ui-icon-search"
+						label="Consultar Recibo"
+						action="#{gluoCapturaPagoView.action_consultarRecibo()}"
+						update="men, tableCapturasPago" />
+				</h:panelGrid>
+
+				<p:defaultCommand target="btnConsultarPredio" />
+
+				<br />
+
+				<p:dataTable id="tableCapturasPago"
+					value="#{gluoCapturaPagoView.data}" var="gluoCapturaPago"
+					paginator="true" rows="10" filterDelay="1000">
+
+					<p:column headerText="Número Recibo Pago"
+						filterBy="#{gluoCapturaPago.numeroRecibo}"
+						sortBy="#{gluoCapturaPago.numeroRecibo}">
+						<h:outputText value="#{gluoCapturaPago.numeroRecibo}" />
+					</p:column>
+
+					<p:column headerText="Fecha Pago"
+						filterBy="#{gluoCapturaPago.fechaPagoString}"
+						sortBy="#{gluoCapturaPago.fechaPagoString}">
+						<h:outputText value="#{gluoCapturaPago.fechaPagoString}" />
+					</p:column>
+
+					<p:column headerText="Número Predio"
+						filterBy="#{gluoCapturaPago.numeroPredio}"
+						sortBy="#{gluoCapturaPago.numeroPredio}">
+						<h:outputText value="#{gluoCapturaPago.numeroPredio}" />
+					</p:column>
+
+					<p:column headerText="Valor Pago"
+						filterBy="#{gluoCapturaPago.valorPago}"
+						sortBy="#{gluoCapturaPago.valorPago}">
+						<h:outputText value="#{gluoCapturaPago.valorPago}">
+							<f:convertNumber currencySymbol="$" type="currency" />
+						</h:outputText>
+					</p:column>
+
+					<p:column headerText="Opciones">
+						<p:commandButton id="btnEdit" icon="ui-icon-pencil"
+							action="#{gluoCapturaPagoView.action_edit(gluoCapturaPago)}"
+							update=":idFormMod:panelGridCapturaPago" />
+							
+						<p:commandButton icon="ui-icon-trash"
+							actionListener="#{gluoCapturaPagoView.action_delete_pago(gluoCapturaPago)}" update=":idFormMod">
+							<p:confirm header="Confirmar"
+								message="¿Esta seguro de eliminar este registro?"
+								icon="ui-icon-alert" />
+						</p:commandButton>
+
+						<p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+							<p:commandButton value="Si" type="button"
+								styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+							<p:commandButton value="No" type="button"
+								styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+						</p:confirmDialog>
+
+					</p:column>
+				</p:dataTable>
+			</p:panel>
+
+			<p:dialog header="Captura de Pago"
+				widgetVar="dialogConfirmacionCapturaPagoMod" modal="true"
+				height="400" width="400">
+
+				<p:growl id="menDialog" showDetail="false" />
+
+				<p:panel id="panelCapturaPago" header="CAPTURA DE PAGOS">
+
+					<div align="center">
+
+						<h:panelGrid columns="2" id="panelGridCapturaPago">
+
+							<h:outputText value=" Nro Recibo de Pago: " />
+							<p:inputText id="txtNroReciboPagoMod" style="font-size: 150%;"
+								binding="#{gluoCapturaPagoView.txtNumeroReciboPagoMod}"
+								maxlength="50"
+								onkeypress="if (event.keyCode == 13) { document.getElementById('idFormMod:txtFechaPagoMod').focus(); return false; }" />
+
+							<h:outputText value=" Fecha Pago: " />
+							<p:inputMask id="txtFechaPagoMod" style="font-size: 150%;"
+								binding="#{gluoCapturaPagoView.txtFechaPagoMod}"
+								mask="99/99/9999" placeholder="dd/MM/yyyy"
+								onkeypress="if (event.keyCode == 13) { document.getElementById('idFormMod:txtNumeroPredioMod').focus(); return false; }" />
+
+							<h:outputText value=" Número Predio: " />
+							<p:inputText id="txtNumeroPredioMod" style="font-size: 150%;"
+								binding="#{gluoCapturaPagoView.txtNumeroPredioMod}"
+								maxlength="50"
+								onkeypress="if (event.keyCode == 13) { document.getElementById('idFormMod:txtValorPredioMod_input').focus(); return false; }" />
+
+							<h:outputText value="Valor Pago: " />
+							<pe:inputNumber id="txtValorPredioMod" style="font-size: 150%;"
+								value="#{gluoCapturaPagoView.valorPagoMod}" symbol="$"
+								decimalPlaces="0" />
+						</h:panelGrid>
+					</div>
+				</p:panel>
+				<br />
+
+				<div align="center">
+					<h:panelGrid id="panelBotonesreemplazaArqueo" columns="2">
+						<p:commandButton id="btnGuardar" value="Guardar"
+							icon="ui-icon-disk"
+							action="#{gluoCapturaPagoView.action_modificarCapturaPago()}"
+							update=":idFormMod:tableCapturasPago, menDialog" />
+						<p:commandButton id="btnCancelar" value="Limpiar"
+							icon="ui-icon-close"
+							action="#{gluoCapturaPagoView.action_limpiarDatosModificacion()}"
+							update=":idFormMod:panelGridCapturaPago" />
+					</h:panelGrid>
+				</div>
+				<br />
+			</p:dialog>
+		</h:form>
+	</ui:define>
+</ui:composition>

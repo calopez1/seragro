@@ -1,0 +1,354 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" 
+	template="/WEB-INF/template.xhtml"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+
+	<ui:define name="content">
+
+		<p:ajaxStatus onstart="PF('statusDialog').show()"
+			onsuccess="PF('statusDialog').hide()" />
+		<p:dialog modal="true" widgetVar="statusDialog" header="Cargando"
+			draggable="false" closable="false">
+			<p:graphicImage
+				value="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/ajaxloadingbar.gif" />
+		</p:dialog>
+
+		<!-- Expired session -->
+		<p:idleMonitor onactive="PF('sessionTimeOutDialog').show();"
+			timeout="#{session.maxInactiveInterval * 1000}" />
+		<p:dialog modal="true" widgetVar="sessionTimeOutDialog"
+			header="Sesión terminada" draggable="false" closable="false">
+			<h:outputText value="La sesión ha finalizado" />
+			<input id="confirmBackToLogin" type="button" value="Iniciar sesión"
+				onclick="window.location='#{facesContext.externalContext.requestContextPath}/index.jsp';" />
+		</p:dialog>
+		
+		<script type="text/javascript">
+			function showStatus() {
+			    statusDialog.show();
+			}
+			 
+			function hideStatus() {
+			    statusDialog.hide();
+			}
+		</script>
+		
+
+		<style type="text/css">
+			.ui-panel {
+				margin-top: 20px
+			}
+			
+			.ui-tabs-top {
+				background-color: #FFFFFF;
+			}
+			
+			.one {
+				width: 10%;
+			}
+			
+			.two {
+				width: 90%;
+			}
+			
+        	.colAFiltro{width: 10%; }
+        	.colBFiltro{width: 50%; }
+			
+			.col50Left{
+				width: 10%;
+				text-align: left;
+			}
+			
+			.col50Right{
+				width: 10%;
+				text-align: right;
+			}
+			
+			.txt100{
+				width: 100%;
+			}
+			
+			.col30{width: 30%;}
+        	.col70{width: 70%;}
+			
+		</style>
+			<h:form id="formDialog">
+				
+				<p:growl id="men" showDetail="false"/>
+				
+					<p:panel>
+						<h:outputText
+							value="Genere un Arqueo de Caja para un rango de fechas" styleClass="FontBold Fs18 hardblue" />
+					</p:panel>
+				
+					<p:panel id="panelGluoArqueoCaja" header="GENERACIÓN DEL ARQUEO DE CAJA">							
+						
+						<br/>
+						
+						<div align="center">	
+							<h:panelGrid columns="2" id="panelGrid" >
+								
+								<h:outputText value=" Movimientos Desde: "/>
+								<p:calendar id="idMovimientoDesde" showOn="button" navigator="true" timeZone="GMT-5"
+											value="#{gluoArqueoCajaView.txtMovimientosDesde}" disabled="true"
+											pattern="dd/MM/yyyy"/>
+								
+								<h:outputText  value=" Movimientos Hasta: "/>
+								<p:calendar id="idMovimientoHasta" locale="en" timeZone="GMT-5"	value="#{gluoArqueoCajaView.txtMovimientosHasta}" 
+											mindate="#{gluoArqueoCajaView.txtMovimientosDesde}" maxdate="#{gluoArqueoCajaView.fechaActual}"
+											pattern="dd/MM/yyyy">
+									<p:ajax  event="dateSelect" listener="#{gluoArqueoCajaView.listener_consultarInfoArqueoCaja}" update="panelDataTable, panelBotones, men"/>			
+								</p:calendar>
+							</h:panelGrid>
+						</div>
+						
+						<br/>
+
+					</p:panel>
+				
+					<p:panel id="panelDataTable" columns="1" visible="#{gluoArqueoCajaView.mostrarArqueo}">
+						<p:dataTable id="dataTableConfiguracionArqueo" var="arqueo" rows="10"
+									 value="#{gluoArqueoCajaView.listConfiguracionArqueoCaja}"
+									 emptyMessage="No hay registros disponibles"
+									 paginator="true" reflow="true"
+									 rowKey="#{arqueo.dptoId}">
+						
+							<p:column style="width:16px">
+					            <p:rowToggler />
+					        </p:column>
+					        <p:column headerText="Aforo">
+					            <h:outputText value="#{arqueo.codigoRubro} - #{arqueo.descripcionRubro}" />
+					        </p:column>
+					        <p:column headerText="Total Recaudado">
+					            <h:outputText value="#{arqueo.valorTotalRubro}">
+					            	<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+					            </h:outputText>
+					        </p:column>
+					        
+					        <p:rowExpansion>
+					        	<h:panelGrid columns="2" style="width:100%">
+					        		<p:dataTable id="tablaConceptosRenta" var="concepto" rows="10" 
+					        					 value="#{arqueo.listConceptosRentasPropias}" 
+					        					 emptyMessage="No hay registros disponibles"
+					        					 paginator="false" reflow="true"
+					        					 rowKey="#{concepto.pacoId}">
+					        		
+						        		<p:column style="width:16px">
+								            <p:rowToggler />
+								        </p:column>
+								        <p:column headerText="Concepto Renta Propia">
+								            <h:outputText value="#{concepto.codigoConcepto}" />
+								        </p:column>
+								        
+								        <p:column headerText="Tercero/Municipio">
+								            <h:outputText value="#{concepto.razonSocialTerceroMunicipio}" />
+								        </p:column>
+								        
+								        <p:column headerText="Valor">
+								            <h:outputText value="#{concepto.valorTotalArqueo}">
+								            	<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+								            </h:outputText>
+								        </p:column>
+					        			
+					        			 <p:rowExpansion>
+					        			 	<h:panelGrid columns="2" style="width:100%">
+					        			 		<p:dataTable id="tablaFormasPago" var="formaPago" 
+					        			 					 value="#{concepto.listFormasPago}"
+					        			 					 emptyMessage="No hay registros disponibles"
+					        			 					 paginator="false" reflow="true"
+					        			 					 rowKey="#{formaPago.tfdpId}">
+					        			 					 
+					        			 		 <p:column headerText="Forma de Pago">
+										            <h:outputText value="#{formaPago.descripcion}" />
+										        </p:column>
+										        <p:column headerText="Valor">
+										            <h:outputText value="#{formaPago.valorPagado}">
+										            	<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+										            </h:outputText>
+										        </p:column>
+					        			 		</p:dataTable>
+					        			 	</h:panelGrid>
+					        			 </p:rowExpansion>
+					        			
+					        		</p:dataTable>
+					        	</h:panelGrid>
+					        </p:rowExpansion>
+						</p:dataTable>
+					</p:panel>
+					
+					<p:panel id="panelBotones">
+							<div align="center">					
+								<p:commandButton id="btnSave" binding="#{gluoArqueoCajaView.btnSave}" value="Generar Arqueo" 
+									action="#{gluoArqueoCajaView.action_generarArqueo()}"
+									update="panelGluoArqueoCaja, panelDataTable, panelBotones, men"/>
+									
+								<p:commandButton id="btnConsignar" binding="#{gluoArqueoCajaView.btnConsignar}"									
+									value="Consignar" disabled="true" action="#{gluoArqueoCajaView.generarListaArqueoConceptoRentaDTOs}"
+									update=":formDialog:pnlConsignacion, :formDialog:pnlDetallesConsignacion"
+									onclick="PF('dialogConsignacion').show();" />
+									
+								
+								<p:commandButton id="btnPoblarInfoRecibos" value="Poblar Consignaciones" rendered="false" 
+												 action="#{gluoArqueoCajaView.action_poblarInfoConsignacionesAntiguas}" update="men"/>	
+									 
+							</div>
+						</p:panel>	
+					
+					
+					
+					
+				<!--  **************************************************************************** -->
+				<!--  **						DIÁLOGO - CONFIRMACION							** -->
+				<!--  **************************************************************************** -->
+				<p:dialog header="" widgetVar="confirmationArqueoAnulado" modal="true" height="200" width="90%">
+					
+					<p:growl id="menDialog" showDetail="false"/>
+					
+					<h:panelGrid id="panelConfirmacionNuevoArqueo" columns="1">
+						<h3>
+							Existe un arqueo en estado generado y será reemplazado. Está seguro que desea generar un nuevo arqueo?
+						</h3>
+						
+						<div align="center">	
+							<h:panelGrid id="panelBotonesreemplazaArqueo" columns="2">
+								<p:commandButton id="btnNuevoArqueo" value="Si" 
+									action="#{gluoArqueoCajaView.action_reemplazarArqueo()}"
+									update=":formDialog:panelGluoArqueoCaja, :formDialog:panelDataTable, :formDialog:panelBotones, menDialog"/>
+											
+								<p:commandButton id="btnNoReemplazar" action="#{gluoArqueoCajaView.action_clear}" value="No" 
+									onclick="PF('confirmationArqueoAnulado').hide();" 
+									update=":formDialog:panelGluoArqueoCaja, :formDialog:panelDataTable, :formDialog:panelBotones"/>
+							</h:panelGrid>
+						</div>
+					</h:panelGrid>
+				</p:dialog>
+				
+				
+				
+			<!--  **************************************************************************** -->
+			<!--  **						DIÁLOGO - CONSIGNACIÓN							** -->
+			<!--  **************************************************************************** -->
+			
+			
+			<p:dialog header="Consignación" widgetVar="dialogConsignacion" modal="true" height="500" width="90%">
+				
+				<p:growl id="menDialogConsignacion" showDetail="false"/>
+				
+				<div align="center">
+				<p:panel id="pnlConsignacion" header="Detalle Consignación" style="width: 90%;">
+					<h:panelGrid columns="2" style="text-align: center;">
+					
+						<p:outputLabel value="Fecha consignación" for="txtFechaConsignacion" />
+						<p:outputLabel id="txtFechaConsignacion" value="#{gluoArqueoCajaView.txtFechaConsignacion}" >
+							<f:convertDateTime type="date" pattern="dd-MM-yyyy"/>
+						</p:outputLabel>
+						
+						<br/>						
+						
+						<b>USTED DEBE CONSIGNAR: </b> 
+						<p:outputLabel value="#{gluoArqueoCajaView.valorTotalPagosConsignables}">
+							<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+						</p:outputLabel>							
+						
+					
+					</h:panelGrid>
+					
+					<br/>
+					
+					<p:commandButton id="btnGuardarConsignacion" value="Guardar Consignación"
+						update=":formDialog" action="#{gluoArqueoCajaView.action_consignar}"/>
+					
+				</p:panel>
+				
+				
+				<p:panel id="pnlDetallesConsignacion"  style="width: 90%; text-align: center">
+									
+					<p:dataTable id="conceptosRentaDataTable" value="#{gluoArqueoCajaView.listConceptosDTO}"
+						var="concepto" paginator="true" rows="10"
+						scrollable="true" scrollWidth="100%" scrollHeight="500"     					        					       					
+       					rowKey="#{concepto.pacoId}">
+					        					 
+						<p:column style="width:16px">
+				            <p:rowToggler />
+				        </p:column>
+						
+						<p:column headerText="Concepto Recaudo">
+				            <h:outputText value="#{concepto.codigoConcepto}" />
+				        </p:column>
+				        
+				        <p:column headerText="Banco">
+				            <h:outputText value="#{concepto.nombreBanco}" />
+				        </p:column> 
+				        
+				        <p:column headerText="Tipo Cuenta">
+				            <h:outputText value="#{concepto.tipoCuentaBancaria}" />
+				        </p:column> 
+				        
+				        <p:column headerText="No. Cuenta">
+				            <h:outputText value="#{concepto.numeroCuentaBancaria}" />
+				        </p:column> 
+				        
+				        <p:column headerText="Subtotal">
+				            <h:outputText value="#{concepto.subtotalPorConcepto}" >
+				            	<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+				            </h:outputText>
+				        </p:column>
+				        
+				        
+				        <p:rowExpansion>
+					        <h:panelGrid columns="2" style="width:100%">
+					        		<p:dataTable id="tablaFormasPagoConsignables" var="formaPagoConsignable" rows="10"
+					         					 value="#{concepto.listFormasPagoConsignables}"
+					         					 emptyMessage="No hay registros disponibles"
+					         					 paginator="false" reflow="true"
+					         					 rowKey="#{formaPagoConsignable.tfdpId}">
+					        			 					 
+					        	 		 <p:column headerText="Forma de Pago Consignable">
+								            <h:outputText value="#{formaPagoConsignable.descripcion}" />
+								        </p:column>
+								        <p:column headerText="Valor">
+								            <h:outputText value="#{formaPagoConsignable.valorPagado}">
+								            	<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+								            </h:outputText>
+								        </p:column>
+					         		</p:dataTable>
+					        </h:panelGrid>
+					        
+					        <h:panelGrid columns="2" style="width:100%">
+					        		<p:dataTable id="tablaFormasPagoNoConsignables" var="formaPagoNoConsignable" rows="10"
+					         					 value="#{concepto.listFormasPagoNoConsignables}"
+					         					 emptyMessage="No hay registros disponibles"
+					         					 paginator="false" reflow="true"
+					         					 rowKey="#{formaPagoNoConsignable.tfdpId}">
+					        			 					 
+					        	 		 <p:column headerText="Forma de Pago No Consignable">
+								            <h:outputText value="#{formaPagoNoConsignable.descripcion}" />
+								        </p:column>
+								        <p:column headerText="Valor">
+								            <h:outputText value="#{formaPagoNoConsignable.valorPagado}">
+								            	<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+								            </h:outputText>
+								        </p:column>
+					         		</p:dataTable>
+					        </h:panelGrid>
+					     </p:rowExpansion>       
+				       				 
+					</p:dataTable>
+					
+				</p:panel>
+				
+									
+				</div>
+				
+				
+			</p:dialog>
+				
+				
+					
+			</h:form>
+			
+	</ui:define>
+</ui:composition>

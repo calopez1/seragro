@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/"
+	debug="false" >
+	<!-- ============================== -->
+	<!-- Append messages to the console -->
+	<!-- ============================== -->
+
+	
+
+	<appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
+
+		<layout class="org.apache.log4j.PatternLayout">
+			<!-- The default pattern: Date Priority [Category] Message\n -->
+			<param name="ConversionPattern" value="%d{ABSOLUTE} %-5p [%t][%c{1}] %m%n" /> 
+		</layout>
+	</appender>
+
+	<appender name="jamonRFA" class="org.apache.log4j.RollingFileAppender">
+		<param name="File" value="${catalina.base}/logs/jamon.log" />
+		<param name="MaxFileSize" value="102400KB" />
+		<param name="MaxBackupIndex" value="10" />
+		<param name="append" value="true" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<!-- The default pattern: Date Priority [Category] Message\n -->
+			<!-- param name="ConversionPattern" value="%d{yyyy-MM-dd HH\:mm\:ss} %-5p %c{1}\:%L - %m" / -->
+			<param name="ConversionPattern" value="%d{yyyy-MM-dd HH\:mm\:ss} - %m%n" />
+		</layout>
+	</appender>
+	
+	<appender name="socketAppender" class="org.apache.log4j.net.SocketHubAppender">
+		<param name="RemoteHost" value="localhost"/>
+		<param name="Port" value="4445"/>
+		<param name="LocationInfo" value="true"/>
+	</appender>
+	
+	<appender name="recontabilizacionRFA" class="org.apache.log4j.RollingFileAppender">
+		<param name="File" value="${catalina.base}/logs/recontabilizacion.log" />
+		<param name="MaxFileSize" value="1000000KB" />
+		<param name="MaxBackupIndex" value="10" />
+		<param name="append" value="true" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<!-- The default pattern: Date Priority [Category] Message\n -->
+			<!-- param name="ConversionPattern" value="%d{yyyy-MM-dd HH\:mm\:ss} %-5p %c{1}\:%L - %m" / -->
+			<param name="ConversionPattern" value="%d{yyyy-MM-dd HH\:mm\:ss} - %m%n" />
+		</layout>
+	</appender>
+
+	<appender name="LogFileAppender" class="org.apache.log4j.RollingFileAppender">
+		<param name="File" value="${catalina.base}/logs/sm.log" />
+		<param name="MaxFileSize" value="5000KB" />
+		<param name="MaxBackupIndex" value="99" />
+		<param name="append" value="true" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d{dd-MM-yyyy HH:mm:ss} %-5p%c{1} - %m%n" />
+		</layout>
+	</appender>
+	
+  	 
+	<appender name="jamonAppender" class="org.apache.log4j.RollingFileAppender">
+		<param name="File" value="${catalina.base}/logs/jamon.log" />
+		<param name="MaxFileSize" value="5000KB" />
+		<param name="MaxBackupIndex" value="99" />
+		<param name="append" value="true" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d{dd-MM-yyyy HH:mm:ss} %-5p%c{1} - %m%n" />
+		</layout>
+	</appender>
+
+
+	<category name="org.springframework">
+		<priority value="OFF" />
+		<appender-ref ref="CONSOLE" />
+	</category>
+
+	<category name="org.hibernate">
+		<!-- <priority value="INFO" /> -->
+		<priority value="OFF" />
+		<appender-ref ref="CONSOLE" />
+	</category>
+	
+	<category name="org.hibernate.SQL">
+		<!-- <priority value="DEBUG" /> -->
+		<priority value="OFF" />
+		<appender-ref ref="CONSOLE" />
+	</category>
+	
+	<category name="org.hibernate.type.descriptor.sql">
+		<!-- <priority value="TRACE" /> -->
+		<priority value="OFF" />
+		<appender-ref ref="CONSOLE" />
+	</category>
+
+	<category name="com.vortexbird.gluon.JAMON_MONITOR">
+		<!-- Para monotorear, habilitar TRACE --> 
+		<priority value="OFF" /> 
+		<appender-ref ref="jamonRFA" />
+		<!-- <appender-ref ref="socketAppender" /> -->
+	</category>
+	
+	<category name="com.vortexbird.gluon.monitor.recontabilizacion">
+		<priority value="INFO" />
+		<appender-ref ref="recontabilizacionRFA" />
+	</category>
+
+	<logger
+		name="org.springframework.aop.interceptor.JamonPerformanceMonitorInterceptor"
+		additivity="false">
+		<level value="OFF" />
+		<appender-ref ref="jamonAppender" />
+	</logger>
+
+	<category name="org.apache.myfaces.renderkit.html.HtmlLabelRenderer">
+		<priority value="OFF" />
+	</category>
+
+	<!-- ======================= -->
+	<!-- Setup the Root category -->
+	<!-- ======================= -->
+
+	<root>
+		<level value="ERROR" />
+		<appender-ref ref="CONSOLE"/>
+		<!--<appender-ref ref="LogFileAppender" />-->
+		
+		
+	</root>
+
+</log4j:configuration>
+    
