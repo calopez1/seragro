@@ -65,4 +65,8 @@ public class DetalleNominaEmpleadoDAO extends HibernateDaoImpl<DetalleNominaEmpl
    		}
    		
    	}
+    
+   
+    
+    
 }

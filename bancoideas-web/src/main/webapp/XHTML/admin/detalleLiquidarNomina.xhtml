@@ -170,6 +170,15 @@
 								</h:outputText>
 							</p:column>
 	
+							<p:column headerText="Total horas extras"
+								sortBy="#{item.totalHorasExtras}"
+								filterBy="#{item.totalHorasExtras}" filterMatchMode="contains">
+								
+								<h:outputText value="#{item.totalHorasExtras}" style="text-align: right">
+												<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+								</h:outputText>
+							</p:column>
+							
 							<p:column headerText="Valor a pagar"
 								sortBy="#{item.totalPagar}"
 								filterBy="#{item.totalPagar}" filterMatchMode="contains">
@@ -179,6 +188,16 @@
 								</h:outputText>
 							</p:column>
 
+							<p:column style="width:32px;text-align: center">
+								<p:commandButton update=":formDialogConceptoNomina"
+									icon="ui-icon-search"
+									action="#{detalleLiquidacionNominaView.action_detallar_conceptos}"
+									oncomplete="PF('dialogoConceptoNomina').show()"
+									title="Ver Conceptos Nómina">
+									<f:setPropertyActionListener value="#{item}"
+										target="#{detalleLiquidacionNominaView.liquidacionNominaEmpleado}" />
+								</p:commandButton>
+							</p:column>
 							
 						</p:dataTable>
 						<p:spacer height="10">
@@ -189,6 +208,191 @@
 				</div>
 			</h:form>
 			
+			<!-- Dialogo  detalle liquidación -->
+			<!-- **************************** -->
+			<p:dialog header="Detalle de Nómina"
+				widgetVar="dialogoConceptoNomina" modal="true" height="400"
+				width="80%" style="position: absolute" >
+				<h:form id="formDialogConceptoNomina">
+					<p:outputPanel id="pnlConceptoNomina" style="text-align:left;">
+						<div align="left">
+
+				<p:panel id="totales" header="Totales" style="margin-bottom:20px">
+							<h:panelGrid columns="2">
+
+								<p:outputLabel value="Liquidación:  "
+									style="width: 100%;font-size: 110%; font-height:bold"></p:outputLabel>
+								<p:outputLabel
+									value="#{detalleLiquidacionNominaView.liquidacionNomina.codigo} - #{detalleLiquidacionNominaView.liquidacionNomina.descripcion}"
+									style="width: 100%;font-size: 110%;"></p:outputLabel>
+
+								<p:outputLabel value="Empleado: "
+									style="width: 100%;font-size: 110%; font-height:bold"></p:outputLabel>
+								<p:outputLabel
+									value="#{detalleLiquidacionNominaView.liquidacionNominaEmpleado.identificacion} - #{detalleLiquidacionNominaView.liquidacionNominaEmpleado.nombre}"
+									style="width: 100%;font-size: 110%;">
+								</p:outputLabel>
+
+								<p:outputLabel value="Total devengado "
+									style="width: 100%;font-size: 110%; font-height:bold"></p:outputLabel>
+								<p:outputLabel
+									value="#{detalleLiquidacionNominaView.liquidacionNominaEmpleado.totalDevengado}"
+									style="width: 100%;font-size: 110%; color: blue">
+									<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+								</p:outputLabel>
+								
+								<p:outputLabel value="Total horas extras "
+									style="width: 100%;font-size: 110%; font-height:bold"></p:outputLabel>
+								<p:outputLabel
+									value="#{detalleLiquidacionNominaView.liquidacionNominaEmpleado.totalHorasExtras}"
+									style="width: 100%;font-size: 110%; color: blue">
+									<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+								</p:outputLabel>
+								
+								<p:outputLabel value="Total deducciones "
+									style="width: 100%;font-size: 110%; font-height:bold"></p:outputLabel>
+								<p:outputLabel
+									value="#{detalleLiquidacionNominaView.liquidacionNominaEmpleado.totalDeduccion}"
+									style="width: 100%;font-size: 110%; color: blue">
+									<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+								</p:outputLabel>
+								
+								<p:outputLabel value="Total a pagar "
+									style="width: 100%;font-size: 110%; font-height:bold"></p:outputLabel>
+								<p:outputLabel
+									value="#{detalleLiquidacionNominaView.liquidacionNominaEmpleado.totalPagar}"
+									style="width: 100%;font-size: 110%; color: blue">
+									<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+								</p:outputLabel>
+								
+								<p:outputLabel value="Días laborados "
+									style="width: 100%;font-size: 110%; font-height:bold"></p:outputLabel>
+								<p:outputLabel
+									value="#{detalleLiquidacionNominaView.liquidacionNominaEmpleado.diasLaborados}"
+									style="width: 100%;font-size: 110%; color: blue">
+								</p:outputLabel>
+								
+
+							</h:panelGrid>
+							
+							</p:panel>
+
+				<p:panel id="devengos" header="Devengos" style="margin-bottom:20px">
+
+							<h:panelGrid columns="2">
+							
+							
+								<p:outputLabel value="Salario liquidado "
+									style="width: 100%;font-size: 110%; font-height:bold"></p:outputLabel>
+								<p:outputLabel
+									value="#{detalleLiquidacionNominaView.detalleNomina.salarioLiquidado}"
+									style="width: 100%;font-size: 110%; color: blue">
+									<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+								</p:outputLabel>
+								
+								<p:outputLabel value="Auxilio transporte "
+									style="width: 100%;font-size: 110%; font-height:bold"></p:outputLabel>
+								<p:outputLabel
+									value="#{detalleLiquidacionNominaView.detalleNomina.auxilioTransporte}"
+									style="width: 100%;font-size: 110%; color: blue">
+									<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+								</p:outputLabel>
+							
+								<p:outputLabel value="Horas extras"
+									style="width: 100%;font-size: 110%; font-height:bold"></p:outputLabel>
+								<p:outputLabel
+									value="#{detalleLiquidacionNominaView.detalleNomina.valorHorasExtras}"
+									style="width: 100%;font-size: 110%; color: blue">
+									<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+								</p:outputLabel>
+							</h:panelGrid>
+					</p:panel>
+					<p:panel id="deducciones" header="Deducciones" style="margin-bottom:20px">
+							
+							<h:panelGrid columns="2">
+							
+							<p:outputLabel value="Salud"
+									style="width: 100%;font-size: 110%; font-height:bold"></p:outputLabel>
+								<p:outputLabel
+									value="#{detalleLiquidacionNominaView.detalleNomina.salud}"
+									style="width: 100%;font-size: 110%; color: blue">
+									<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+								</p:outputLabel>
+								
+								<p:outputLabel value="Pension"
+									style="width: 100%;font-size: 110%; font-height:bold"></p:outputLabel>
+								<p:outputLabel
+									value="#{detalleLiquidacionNominaView.detalleNomina.pension}"
+									style="width: 100%;font-size: 110%; color: blue">
+									<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+								</p:outputLabel>
+								
+
+							</h:panelGrid>
+					</p:panel>
+					
+					<p:panel id="horasExtras" header="Horas extras y recargos" style="margin-bottom:20px">
+							
+							<p:dataTable id="tblHorasExtras" var="item"
+							value="#{detalleLiquidacionNominaView.liquidacionesHoraExtra}"
+							style="width:90%; text-align: center" rows="10" paginator="true"
+							paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+							rowsPerPageTemplate="5,10,15" filterDelay="1000">
+
+							<p:column headerText="Tipo hora extra" sortBy="#{item.horaExtraEmpleado.tipoHoraExtra.descripcion}"
+								filterBy="#{item.horaExtraEmpleado.tipoHoraExtra.descripcion}" filterMatchMode="contains">
+
+								<p:outputLabel value="#{item.horaExtraEmpleado.tipoHoraExtra.descripcion}">
+								</p:outputLabel>
+
+							</p:column>
+
+							<p:column headerText="Fecha" sortBy="#{item.horaExtraEmpleado.fecha}"
+								filterBy="#{item.horaExtraEmpleado.fecha}" filterMatchMode="contains">
+
+								<p:outputLabel value="#{item.horaExtraEmpleado.fecha}">
+									<f:convertDateTime type="date" pattern="dd-MM-yyyy" />
+								</p:outputLabel>
+
+							</p:column>
+							
+							
+							<p:column headerText="Cantidad horas"
+								sortBy="#{item.cantidadHoras}"
+								filterBy="#{item.cantidadHoras}" filterMatchMode="contains">
+								
+								<h:outputText value="#{item.cantidadHoras}" style="text-align: right">
+								</h:outputText>
+							</p:column>
+	
+							<p:column headerText="Valor unitario"
+								sortBy="#{item.valor}"
+								filterBy="#{item.valor}" filterMatchMode="contains">
+								
+								<h:outputText value="#{item.valor}" style="text-align: right">
+																	<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+								
+								</h:outputText>
+							</p:column>
+							
+							<p:column headerText="Total pagar"
+								sortBy="#{item.totalPagar}"
+								filterBy="#{item.totalPagar}" filterMatchMode="contains">
+								
+								<h:outputText value="#{item.totalPagar}" style="text-align: right">
+																	<f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+								
+								</h:outputText>
+							</p:column>
+							
+						</p:dataTable>
+					</p:panel>
+
+
+						</div>
+					</p:outputPanel>
+				</h:form>
+			</p:dialog>
 			
 			
 			

@@ -4,6 +4,7 @@ import com.unilever.bancoideas.modelo.Cargo;
 import com.unilever.bancoideas.modelo.Departamento;
 import com.unilever.bancoideas.modelo.DetalleNominaEmpleado;
 import com.unilever.bancoideas.modelo.Empleado;
+import com.unilever.bancoideas.modelo.HoraExtraEmpleado;
 import com.unilever.bancoideas.modelo.LiquidacionHoraExtra;
 import com.unilever.bancoideas.modelo.LiquidacionNomina;
 import com.unilever.bancoideas.modelo.NominaEmpleado;
@@ -18,6 +19,7 @@ import com.unilever.bancoideas.modelo.control.ICargoLogic;
 import com.unilever.bancoideas.modelo.control.IDepartamentoLogic;
 import com.unilever.bancoideas.modelo.control.IDetalleNominaEmpleadoLogic;
 import com.unilever.bancoideas.modelo.control.IEmpleadoLogic;
+import com.unilever.bancoideas.modelo.control.IHoraExtraEmpleadoLogic;
 import com.unilever.bancoideas.modelo.control.ILiquidacionHoraExtraLogic;
 import com.unilever.bancoideas.modelo.control.ILiquidacionNominaLogic;
 import com.unilever.bancoideas.modelo.control.INominaEmpleadoLogic;
@@ -35,6 +37,7 @@ import com.unilever.bancoideas.modelo.dto.CargoDTO;
 import com.unilever.bancoideas.modelo.dto.DepartamentoDTO;
 import com.unilever.bancoideas.modelo.dto.DetalleNominaEmpleadoDTO;
 import com.unilever.bancoideas.modelo.dto.EmpleadoDTO;
+import com.unilever.bancoideas.modelo.dto.HoraExtraEmpleadoDTO;
 import com.unilever.bancoideas.modelo.dto.LiquidacionHoraExtraDTO;
 import com.unilever.bancoideas.modelo.dto.LiquidacionNominaDTO;
 import com.unilever.bancoideas.modelo.dto.NominaEmpleadoDTO;
@@ -135,7 +138,9 @@ public class BusinessDelegatorView implements IBusinessDelegatorView {
     private ITipoIdentificacionLogic tipoIdentificacionLogic;
     @Autowired
     private IParametrosLogic parametrosLogic;
-
+    @Autowired
+    private IHoraExtraEmpleadoLogic horaExtraEmpleadoLogic;
+    
     public List<Persona> getPersona() throws Exception {
         return personaLogic.getPersona();
     }
@@ -617,62 +622,6 @@ public class BusinessDelegatorView implements IBusinessDelegatorView {
         return detalleNominaEmpleadoLogic.getDataDetalleNominaEmpleado();
     }
 
-    public List<LiquidacionHoraExtra> getLiquidacionHoraExtra()
-        throws Exception {
-        return liquidacionHoraExtraLogic.getLiquidacionHoraExtra();
-    }
-
-    public void saveLiquidacionHoraExtra(LiquidacionHoraExtra entity)
-        throws Exception {
-        liquidacionHoraExtraLogic.saveLiquidacionHoraExtra(entity);
-    }
-
-    public void deleteLiquidacionHoraExtra(LiquidacionHoraExtra entity)
-        throws Exception {
-        liquidacionHoraExtraLogic.deleteLiquidacionHoraExtra(entity);
-    }
-
-    public void updateLiquidacionHoraExtra(LiquidacionHoraExtra entity)
-        throws Exception {
-        liquidacionHoraExtraLogic.updateLiquidacionHoraExtra(entity);
-    }
-
-    public LiquidacionHoraExtra getLiquidacionHoraExtra(Integer lhoeId)
-        throws Exception {
-        LiquidacionHoraExtra liquidacionHoraExtra = null;
-
-        try {
-            liquidacionHoraExtra = liquidacionHoraExtraLogic.getLiquidacionHoraExtra(lhoeId);
-        } catch (Exception e) {
-            throw e;
-        }
-
-        return liquidacionHoraExtra;
-    }
-
-    public List<LiquidacionHoraExtra> findByCriteriaInLiquidacionHoraExtra(
-        Object[] variables, Object[] variablesBetween,
-        Object[] variablesBetweenDates) throws Exception {
-        return liquidacionHoraExtraLogic.findByCriteria(variables,
-            variablesBetween, variablesBetweenDates);
-    }
-
-    public List<LiquidacionHoraExtra> findPageLiquidacionHoraExtra(
-        String sortColumnName, boolean sortAscending, int startRow,
-        int maxResults) throws Exception {
-        return liquidacionHoraExtraLogic.findPageLiquidacionHoraExtra(sortColumnName,
-            sortAscending, startRow, maxResults);
-    }
-
-    public Long findTotalNumberLiquidacionHoraExtra() throws Exception {
-        return liquidacionHoraExtraLogic.findTotalNumberLiquidacionHoraExtra();
-    }
-
-    public List<LiquidacionHoraExtraDTO> getDataLiquidacionHoraExtra()
-        throws Exception {
-        return liquidacionHoraExtraLogic.getDataLiquidacionHoraExtra();
-    }
-
     public List<NominaEmpleado> getNominaEmpleado() throws Exception {
         return nominaEmpleadoLogic.getNominaEmpleado();
     }
@@ -845,4 +794,117 @@ public class BusinessDelegatorView implements IBusinessDelegatorView {
     public List<ParametrosDTO> getDataParametros() throws Exception {
         return parametrosLogic.getDataParametros();
     }
+  
+    public List<LiquidacionHoraExtra> getLiquidacionHoraExtra()
+        throws Exception {
+        return liquidacionHoraExtraLogic.getLiquidacionHoraExtra();
+    }
+
+    public void saveLiquidacionHoraExtra(LiquidacionHoraExtra entity)
+        throws Exception {
+        liquidacionHoraExtraLogic.saveLiquidacionHoraExtra(entity);
+    }
+
+    public void deleteLiquidacionHoraExtra(LiquidacionHoraExtra entity)
+        throws Exception {
+        liquidacionHoraExtraLogic.deleteLiquidacionHoraExtra(entity);
+    }
+
+    public void updateLiquidacionHoraExtra(LiquidacionHoraExtra entity)
+        throws Exception {
+        liquidacionHoraExtraLogic.updateLiquidacionHoraExtra(entity);
+    }
+
+    public LiquidacionHoraExtra getLiquidacionHoraExtra(Integer lhoeId)
+        throws Exception {
+        LiquidacionHoraExtra liquidacionHoraExtra = null;
+
+        try {
+            liquidacionHoraExtra = liquidacionHoraExtraLogic.getLiquidacionHoraExtra(lhoeId);
+        } catch (Exception e) {
+            throw e;
+        }
+
+        return liquidacionHoraExtra;
+    }
+
+    public List<LiquidacionHoraExtra> findByCriteriaInLiquidacionHoraExtra(
+        Object[] variables, Object[] variablesBetween,
+        Object[] variablesBetweenDates) throws Exception {
+        return liquidacionHoraExtraLogic.findByCriteria(variables,
+            variablesBetween, variablesBetweenDates);
+    }
+
+    public List<LiquidacionHoraExtra> findPageLiquidacionHoraExtra(
+        String sortColumnName, boolean sortAscending, int startRow,
+        int maxResults) throws Exception {
+        return liquidacionHoraExtraLogic.findPageLiquidacionHoraExtra(sortColumnName,
+            sortAscending, startRow, maxResults);
+    }
+
+    public Long findTotalNumberLiquidacionHoraExtra() throws Exception {
+        return liquidacionHoraExtraLogic.findTotalNumberLiquidacionHoraExtra();
+    }
+
+    public List<LiquidacionHoraExtraDTO> getDataLiquidacionHoraExtra()
+        throws Exception {
+        return liquidacionHoraExtraLogic.getDataLiquidacionHoraExtra();
+    }
+
+    public List<HoraExtraEmpleado> getHoraExtraEmpleado()
+        throws Exception {
+        return horaExtraEmpleadoLogic.getHoraExtraEmpleado();
+    }
+
+    public void saveHoraExtraEmpleado(HoraExtraEmpleado entity)
+        throws Exception {
+        horaExtraEmpleadoLogic.saveHoraExtraEmpleado(entity);
+    }
+
+    public void deleteHoraExtraEmpleado(HoraExtraEmpleado entity)
+        throws Exception {
+        horaExtraEmpleadoLogic.deleteHoraExtraEmpleado(entity);
+    }
+
+    public void updateHoraExtraEmpleado(HoraExtraEmpleado entity)
+        throws Exception {
+        horaExtraEmpleadoLogic.updateHoraExtraEmpleado(entity);
+    }
+
+    public HoraExtraEmpleado getHoraExtraEmpleado(Integer hexmId)
+        throws Exception {
+        HoraExtraEmpleado horaExtraEmpleado = null;
+
+        try {
+            horaExtraEmpleado = horaExtraEmpleadoLogic.getHoraExtraEmpleado(hexmId);
+        } catch (Exception e) {
+            throw e;
+        }
+
+        return horaExtraEmpleado;
+    }
+
+    public List<HoraExtraEmpleado> findByCriteriaInHoraExtraEmpleado(
+        Object[] variables, Object[] variablesBetween,
+        Object[] variablesBetweenDates) throws Exception {
+        return horaExtraEmpleadoLogic.findByCriteria(variables,
+            variablesBetween, variablesBetweenDates);
+    }
+
+    public List<HoraExtraEmpleado> findPageHoraExtraEmpleado(
+        String sortColumnName, boolean sortAscending, int startRow,
+        int maxResults) throws Exception {
+        return horaExtraEmpleadoLogic.findPageHoraExtraEmpleado(sortColumnName,
+            sortAscending, startRow, maxResults);
+    }
+
+    public Long findTotalNumberHoraExtraEmpleado() throws Exception {
+        return horaExtraEmpleadoLogic.findTotalNumberHoraExtraEmpleado();
+    }
+
+    public List<HoraExtraEmpleadoDTO> getDataHoraExtraEmpleado()
+        throws Exception {
+        return horaExtraEmpleadoLogic.getDataHoraExtraEmpleado();
+    }
+
 }

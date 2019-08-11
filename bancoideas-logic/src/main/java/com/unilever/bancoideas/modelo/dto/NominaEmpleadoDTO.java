@@ -42,6 +42,7 @@ public class NominaEmpleadoDTO implements Serializable {
     private String nombreCargo;
     private Double totalDeduccion;
     private Double totalDevengado;
+	private Double totalHorasExtras;
 	
 	public Double getDeducciones() {
 		return deducciones;
@@ -180,6 +181,12 @@ public class NominaEmpleadoDTO implements Serializable {
 	}
 	public void setTotalDevengado(Double totalDevengado) {
 		this.totalDevengado = totalDevengado;
+	}
+	public Double getTotalHorasExtras() {
+		return totalHorasExtras;
+	}
+	public void setTotalHorasExtras(Double totalHorasExtras) {
+		this.totalHorasExtras = totalHorasExtras;
 	}
 
 	

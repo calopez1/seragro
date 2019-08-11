@@ -4,6 +4,7 @@ import com.unilever.bancoideas.modelo.Cargo;
 import com.unilever.bancoideas.modelo.Departamento;
 import com.unilever.bancoideas.modelo.DetalleNominaEmpleado;
 import com.unilever.bancoideas.modelo.Empleado;
+import com.unilever.bancoideas.modelo.HoraExtraEmpleado;
 import com.unilever.bancoideas.modelo.LiquidacionHoraExtra;
 import com.unilever.bancoideas.modelo.LiquidacionNomina;
 import com.unilever.bancoideas.modelo.NominaEmpleado;
@@ -27,6 +28,7 @@ import com.unilever.bancoideas.modelo.dto.CargoDTO;
 import com.unilever.bancoideas.modelo.dto.DepartamentoDTO;
 import com.unilever.bancoideas.modelo.dto.DetalleNominaEmpleadoDTO;
 import com.unilever.bancoideas.modelo.dto.EmpleadoDTO;
+import com.unilever.bancoideas.modelo.dto.HoraExtraEmpleadoDTO;
 import com.unilever.bancoideas.modelo.dto.LiquidacionHoraExtraDTO;
 import com.unilever.bancoideas.modelo.dto.LiquidacionNominaDTO;
 import com.unilever.bancoideas.modelo.dto.NominaEmpleadoDTO;
@@ -279,34 +281,6 @@ public interface IBusinessDelegatorView {
     public List<DetalleNominaEmpleadoDTO> getDataDetalleNominaEmpleado()
         throws Exception;
 
-    public List<LiquidacionHoraExtra> getLiquidacionHoraExtra()
-        throws Exception;
-
-    public void saveLiquidacionHoraExtra(LiquidacionHoraExtra entity)
-        throws Exception;
-
-    public void deleteLiquidacionHoraExtra(LiquidacionHoraExtra entity)
-        throws Exception;
-
-    public void updateLiquidacionHoraExtra(LiquidacionHoraExtra entity)
-        throws Exception;
-
-    public LiquidacionHoraExtra getLiquidacionHoraExtra(Integer lhoeId)
-        throws Exception;
-
-    public List<LiquidacionHoraExtra> findByCriteriaInLiquidacionHoraExtra(
-        Object[] variables, Object[] variablesBetween,
-        Object[] variablesBetweenDates) throws Exception;
-
-    public List<LiquidacionHoraExtra> findPageLiquidacionHoraExtra(
-        String sortColumnName, boolean sortAscending, int startRow,
-        int maxResults) throws Exception;
-
-    public Long findTotalNumberLiquidacionHoraExtra() throws Exception;
-
-    public List<LiquidacionHoraExtraDTO> getDataLiquidacionHoraExtra()
-        throws Exception;
-
     public List<NominaEmpleado> getNominaEmpleado() throws Exception;
 
     public void saveNominaEmpleado(NominaEmpleado entity)
@@ -392,7 +366,61 @@ public interface IBusinessDelegatorView {
 
    public List<ParametrosDTO> getDataParametros() throws Exception;
    
-   
+   public List<LiquidacionHoraExtra> getLiquidacionHoraExtra()
+       throws Exception;
+
+   public void saveLiquidacionHoraExtra(LiquidacionHoraExtra entity)
+       throws Exception;
+
+   public void deleteLiquidacionHoraExtra(LiquidacionHoraExtra entity)
+       throws Exception;
+
+   public void updateLiquidacionHoraExtra(LiquidacionHoraExtra entity)
+       throws Exception;
+
+   public LiquidacionHoraExtra getLiquidacionHoraExtra(Integer lhoeId)
+       throws Exception;
+
+   public List<LiquidacionHoraExtra> findByCriteriaInLiquidacionHoraExtra(
+       Object[] variables, Object[] variablesBetween,
+       Object[] variablesBetweenDates) throws Exception;
+
+   public List<LiquidacionHoraExtra> findPageLiquidacionHoraExtra(
+       String sortColumnName, boolean sortAscending, int startRow,
+       int maxResults) throws Exception;
+
+   public Long findTotalNumberLiquidacionHoraExtra() throws Exception;
+
+   public List<LiquidacionHoraExtraDTO> getDataLiquidacionHoraExtra()
+       throws Exception;
+
+   public List<HoraExtraEmpleado> getHoraExtraEmpleado()
+       throws Exception;
+
+   public void saveHoraExtraEmpleado(HoraExtraEmpleado entity)
+       throws Exception;
+
+   public void deleteHoraExtraEmpleado(HoraExtraEmpleado entity)
+       throws Exception;
+
+   public void updateHoraExtraEmpleado(HoraExtraEmpleado entity)
+       throws Exception;
+
+   public HoraExtraEmpleado getHoraExtraEmpleado(Integer hexmId)
+       throws Exception;
+
+   public List<HoraExtraEmpleado> findByCriteriaInHoraExtraEmpleado(
+       Object[] variables, Object[] variablesBetween,
+       Object[] variablesBetweenDates) throws Exception;
+
+   public List<HoraExtraEmpleado> findPageHoraExtraEmpleado(
+       String sortColumnName, boolean sortAscending, int startRow,
+       int maxResults) throws Exception;
+
+   public Long findTotalNumberHoraExtraEmpleado() throws Exception;
+
+   public List<HoraExtraEmpleadoDTO> getDataHoraExtraEmpleado()
+       throws Exception;
 
    
 }

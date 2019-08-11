@@ -3,6 +3,7 @@ package com.unilever.bancoideas.modelo.control;
 import com.unilever.bancoideas.dataaccess.dao.*;
 import com.unilever.bancoideas.exceptions.*;
 import com.unilever.bancoideas.modelo.*;
+import com.unilever.bancoideas.modelo.dto.HoraExtraEmpleadoDTO;
 import com.unilever.bancoideas.modelo.dto.LiquidacionNominaDTO;
 import com.unilever.bancoideas.modelo.dto.UsuarioDTO;
 import com.unilever.bancoideas.utilities.Constantes;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.awt.Container;
 import java.math.BigDecimal;
 
 import java.util.ArrayList;
@@ -57,16 +59,25 @@ public class LiquidacionNominaLogic implements ILiquidacionNominaLogic {
     private IEmpleadoLogic empleadoLogic;
     
     @Autowired
+    private IHoraExtraEmpleadoLogic horaExtraEmpleadoLogic;
+    
+    @Autowired
     private IParametrosLogic parametroLogic;
     
     @Autowired
     private IDetalleNominaEmpleadoDAO detalleNominaEmpleadoDAO;
     
     @Autowired
+    private ILiquidacionHoraExtraDAO liquidacionHoraExtraDAO;
+    
+    @Autowired
     private INominaEmpleadoLogic nominaEmpleadoLogic;
     
     @Autowired
     private IDetalleNominaEmpleadoLogic detalleNominaEmpleadoLogic;
+    
+    @Autowired
+    private ILiquidacionHoraExtraLogic liquidacionHoraExtraLogic;
 
     @Transactional(readOnly = true)
     public List<LiquidacionNomina> getLiquidacionNomina()
@@ -660,6 +671,8 @@ public class LiquidacionNominaLogic implements ILiquidacionNominaLogic {
     		if(lstNominaEmpleado != null && !lstNominaEmpleado.isEmpty()) {
     			for(NominaEmpleado noem: lstNominaEmpleado) {
     				detalleNominaEmpleadoDAO.eliminarDetalleLiquidacionNomina(noem.getNoemId());
+    				liquidacionHoraExtraDAO.eliminarDetalleLiquidacionHorasExtras(noem.getNoemId());
+
     			}
     			// Se eliminan las liquidacion de empleados
     			nominaEmpleadoDAO.eliminarNominaEmpleado(liquidacionNomina.getLinoId());
@@ -737,9 +750,13 @@ public class LiquidacionNominaLogic implements ILiquidacionNominaLogic {
     	Double salarioEmpleadoMes = 0d;
     	Double salarioEmpleadoLiquidado = 0d;
     	Double salarioEmpleadoDiario = 0d;
+    	Double valorHora = 0d;
+
     	Double auxilioTransporte = 0d;
     	Double valorPension =0d;
     	Double valorSalud = 0d;
+    	List<HoraExtraEmpleadoDTO> lstHorasExtras = null;
+    	Double totalHorasExtras = 0d;
     	
     	try {
     		
@@ -753,6 +770,7 @@ public class LiquidacionNominaLogic implements ILiquidacionNominaLogic {
     		salarioEmpleadoMes = empleado.getCargo().getSalario();
     		salarioEmpleadoDiario = salarioEmpleadoMes / 30;
     		salarioEmpleadoLiquidado = salarioEmpleadoDiario*diasLaborados;
+    		valorHora = salarioEmpleadoMes / 240;
     		
     		//Si se gana mas de N salarios minimos, se debe dar auxilio de transporte
     		auxilioTransporte = (valorAuxilioTransporte / 30) * diasLaborados;
@@ -760,6 +778,7 @@ public class LiquidacionNominaLogic implements ILiquidacionNominaLogic {
     		//Se calcula valor pension y salud
     		valorPension = ((salarioEmpleadoDiario * diasLaborados) * porcentajePension) /100;
     		valorSalud = ((salarioEmpleadoDiario * diasLaborados) * porcentajeSalud)/100;
+    		
     		
     		//Se arma la liquidacion nomina empleado
     		nominaEmpleado = new NominaEmpleado();
@@ -769,11 +788,52 @@ public class LiquidacionNominaLogic implements ILiquidacionNominaLogic {
     		nominaEmpleado.setFechaCreacion(new Date());
     		nominaEmpleado.setLiquidacionNomina(liquidacionNomina);
     		nominaEmpleado.setDiasLaborados(diasLaborados);
-    		nominaEmpleado.setTotalPagar(salarioEmpleadoLiquidado + auxilioTransporte - valorSalud - valorPension);
     		nominaEmpleado.setDeducciones(valorPension + valorSalud);
-    		nominaEmpleado.setValorDevengado(salarioEmpleadoLiquidado + auxilioTransporte);
+    		nominaEmpleado.setTotalPagar(salarioEmpleadoLiquidado + auxilioTransporte + (double)Math.round(totalHorasExtras * 100d) / 100d - valorSalud - valorPension);
+    		nominaEmpleado.setValorDevengado(salarioEmpleadoLiquidado + auxilioTransporte + (double)Math.round(totalHorasExtras * 100d) / 100d );
     		nominaEmpleadoDAO.save(nominaEmpleado);
     		
+    		//Se calcula las horas extras y se liquidan
+    		lstHorasExtras = horaExtraEmpleadoLogic.consultarHorasExtrasPeriodo(Constantes.ESTADO_ACTIVO, liquidacionNomina.getFechaInicio(), liquidacionNomina.getFechaFin(), empleado.getEmplId());
+
+    		//Si el empleado tiene horas extras, se debe liquidar las horas extras
+    		if(lstHorasExtras != null && !lstHorasExtras.isEmpty()) {
+    			
+    			Double valorIndividual = 0d;
+    			Double valorTotal = 0d;
+    			LiquidacionHoraExtra lhoe = null;
+    			for(HoraExtraEmpleadoDTO hora: lstHorasExtras) {
+    				
+    				//Se calcula el valor individual
+    				valorIndividual = (valorHora * hora.getPorcentaje()) / 100;
+    				valorTotal = valorIndividual * hora.getCantidadHoras();
+    				lhoe = new LiquidacionHoraExtra();
+    				lhoe.setCantidadHoras(hora.getCantidadHoras());
+    				lhoe.setEstadoRegistro(Constantes.ESTADO_ACTIVO);
+    				lhoe.setFechaCreacion(new Date());
+    				lhoe.setHoraExtraEmpleado(horaExtraEmpleadoLogic.getHoraExtraEmpleado(hora.getHexmId()));
+    				lhoe.setNominaEmpleado(nominaEmpleado);
+    				lhoe.setPorcentaje(hora.getPorcentaje());
+    				lhoe.setTotalPagar((double)Math.round(valorTotal * 100d) / 100d);
+    				lhoe.setUsuCreador(usuario.getUsuario());
+    				lhoe.setValor((double)Math.round(valorIndividual) / 100d);
+    				liquidacionHoraExtraLogic.saveLiquidacionHoraExtra(lhoe);
+    				
+    				totalHorasExtras = totalHorasExtras + lhoe.getTotalPagar();
+    			}
+
+    		}
+    		
+    		Double salarioMasExtras = salarioEmpleadoDiario + totalHorasExtras;
+    		
+    		valorPension = (((salarioEmpleadoDiario * diasLaborados) + totalHorasExtras) * porcentajePension) /100;
+    		valorSalud = (((salarioEmpleadoDiario * diasLaborados) + totalHorasExtras) * porcentajeSalud)/100;
+    		
+    		nominaEmpleado.setDeducciones((double)Math.round(valorPension * 100d) / 100d   + (double)Math.round(valorSalud * 100d) / 100d  );
+    		nominaEmpleado.setTotalPagar(salarioEmpleadoLiquidado + auxilioTransporte + (double)Math.round(totalHorasExtras * 100d) / 100d - (double)Math.round(valorSalud * 100d) / 100d  - (double)Math.round(valorPension * 100d) / 100d );
+    		nominaEmpleado.setTotalHorasExtras((double)Math.round(totalHorasExtras * 100d) / 100d );
+    		nominaEmpleado.setValorDevengado(salarioEmpleadoLiquidado + auxilioTransporte + (double)Math.round(totalHorasExtras * 100d) / 100d );
+
     		//Se guarda el detalle de la nomina empleado
     		detalleNominaEmpleado = new DetalleNominaEmpleado();
     		detalleNominaEmpleado.setAuxilioAlimentacion(0d);
@@ -781,11 +841,11 @@ public class LiquidacionNominaLogic implements ILiquidacionNominaLogic {
     		detalleNominaEmpleado.setEstadoRegistro(Constantes.ESTADO_ACTIVO);
     		detalleNominaEmpleado.setFechaCreacion(new Date());
     		detalleNominaEmpleado.setNominaEmpleado(nominaEmpleado);
-    		detalleNominaEmpleado.setPension(valorPension);
+    		detalleNominaEmpleado.setPension((double)Math.round(valorPension * 100d) / 100d );
     		detalleNominaEmpleado.setSalarioLiquidado(salarioEmpleadoLiquidado);
-    		detalleNominaEmpleado.setSalud(valorSalud);
+    		detalleNominaEmpleado.setSalud((double)Math.round(valorSalud * 100d) / 100d);
     		detalleNominaEmpleado.setUsuCreador(usuario.getUsuario());
-    		detalleNominaEmpleado.setValorHorasExtras(0d);
+    		detalleNominaEmpleado.setValorHorasExtras((double)Math.round(totalHorasExtras * 100d) / 100d );
     		detalleNominaEmpleadoDAO.save(detalleNominaEmpleado);
     		
 		} catch (Exception e) {

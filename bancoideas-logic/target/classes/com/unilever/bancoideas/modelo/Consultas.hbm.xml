@@ -34,6 +34,7 @@
 		<return-scalar column="totalPagar" type="java.lang.Double" />
 		<return-scalar column="totalDeduccion" type="java.lang.Double" />
 		<return-scalar column="totalDevengado" type="java.lang.Double" />
+		<return-scalar column="totalHorasExtras" type="java.lang.Double" />
 		
 		
 		<![CDATA[				
@@ -56,7 +57,8 @@
 					noem.dias_laborados diasLaborados,
 					noem.total_pagar totalPagar,
 					noem.deducciones totalDeduccion,
-					noem.valor_devengado totalDevengado
+					noem.valor_devengado totalDevengado,
+					noem.total_horas_extras totalHorasExtras	
 				from nomina_empleado noem
 				inner join empleado empl on empl.empl_id = noem.empl_id
 				inner join persona pers on pers.pers_id = empl.pers_id
@@ -68,6 +70,34 @@
 		]]>
 	</sql-query>
 	
+	<sql-query name="consultar_horas_extras_periodo">
+		<return-scalar column="hexmId" type="java.lang.Integer" />
+		<return-scalar column="fecha" type="java.util.Date" />
+		<return-scalar column="cantidadHoras" type="java.lang.Double"/>
+		<return-scalar column="thoeId" type="java.lang.Integer" />
+		<return-scalar column="codigoTipoHoraExtra" type="java.lang.String" />
+		<return-scalar column="descripcionTipoHoraExtra" type="java.lang.String" />
+		<return-scalar column="porcentaje" type="java.lang.Double" />
+		
+		<![CDATA[				
+			
+			select hexm.hexm_id hexmId,
+				   hexm.fecha fecha,
+				   hexm.cantidad_horas cantidadHoras,
+				   thoe.thoe_id thoeId,
+				   thoe.codigo codigoTipoHoraExtra,
+				   thoe.descripcion descripcionTipoHoraExtra,
+				   thoe.porcentaje porcentaje
+			from hora_extra_empleado hexm
+			inner join tipo_hora_extra thoe on thoe.thoe_id = hexm.thoe_id
+			where date_trunc('day', hexm.fecha) between date_trunc('day', TO_DATE(:pFechaInicio,'dd-MM-yyyy')) and date_trunc('day', TO_DATE(:pFechaFin,'dd-MM-yyyy'))
+			and hexm.estado_registro = :pEstado
+			and hexm.empl_id = :pIdEmpl
+				
+		]]>
+	</sql-query>
+	
+	
 	<sql-query name="eliminar_liquidacion_nomina_empleado">
 	<![CDATA[
 		delete from nomina_empleado where lino_id = :pLinoId
@@ -78,6 +108,12 @@
 	<sql-query name="eliminar_detalle_liquidacion_nomina">
 	<![CDATA[
 		delete from detalle_nomina_empleado where noem_id = :pNoemId
+	]]>
+	</sql-query>
+	
+	<sql-query name="eliminar_detalle_liquidacion_horas_extras">
+	<![CDATA[
+		delete from liquidacion_hora_extra where noem_id = :pNoemId
 	]]>
 	</sql-query>
 		

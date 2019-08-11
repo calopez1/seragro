@@ -1,0 +1,181 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:pe="http://primefaces.org/ui/extensions" 
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+<ui:define name="content">
+	
+		<f:view>
+			<p:ajaxStatus onstart="PF('statusDialog').show()" onsuccess="PF('statusDialog').hide()"/>               
+			<p:dialog modal="true" widgetVar="statusDialog" header="Loading"  draggable="false" closable="false">  
+   				<p:graphicImage value="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/ajaxloadingbar.gif" />   
+			</p:dialog>
+			
+			<!-- Expired session -->
+					<p:idleMonitor onactive="PF('sessionTimeOutDialog').show();" timeout="#{session.maxInactiveInterval * 1000}" />
+					<p:dialog modal="true" widgetVar="sessionTimeOutDialog" header="Expired session"  draggable="false" closable="false">  
+	   					<h:outputText value="The session is finished" />
+	                 	<input id="confirmBackToLogin" 
+	                 		type="button" 
+	                 		value="Sign in"
+	                    	onclick="window.location='#{facesContext.externalContext.requestContextPath}/index.jsp';" />   
+					</p:dialog>
+			
+						
+			<h:form id="frm">
+				<p:messages id="msg" />
+				<p:growl id="men"/>
+				<div align="center">
+					<p:panel id="pnlHorasExtras" header="Gestión horas extras"
+						style="width:90%;">
+						<p:spacer height="10">
+						</p:spacer>
+						
+						<div align="left">
+						
+						<h:panelGrid columns="2">
+							<p:outputLabel value="Tipo hora extra: "></p:outputLabel>
+							<p:selectOneMenu disabled="#{horasExtrasView.modificar}" value="#{horasExtrasView.tipoHoraExtraSeleccionada}"  effect="fade" filter="true" filterMatchMode="contains" required="false">
+					           	 <f:selectItem itemLabel="Seleccionar" itemValue="-1" noSelectionOption="false"/>
+					           	 <f:selectItems value="#{horasExtrasView.lstTipoHoraExtraItem}"/>
+					        </p:selectOneMenu>
+					        
+					        <p:outputLabel value="Empleado: "></p:outputLabel>
+					        <p:selectOneMenu  disabled="#{horasExtrasView.modificar}" value="#{horasExtrasView.empleadoSeleccionado}"  effect="fade" filter="true" filterMatchMode="contains" required="false">
+					           	 <f:selectItem itemLabel="Seleccionar" itemValue="-1" noSelectionOption="false"/>
+					           	 <f:selectItems value="#{horasExtrasView.lstEmpleadoItem}"/>
+					        </p:selectOneMenu>
+					        
+							<h:outputText value="Fecha:" style="width: 100%;" />
+							<p:calendar  disabled="#{horasExtrasView.modificar}"  navigator="true"
+								value="#{horasExtrasView.fecha}" timeZone="GMT-5"
+								style="width: 100%;" />
+					        
+					       <p:outputLabel value="Número de horas:"></p:outputLabel>
+					       <p:inputText type="number" value="#{horasExtrasView.numeroHoras}"></p:inputText>
+					        
+				          <h:outputText value="Estado:" />
+									<p:selectOneRadio id="city2" value="#{horasExtrasView.estadoRegistro}" layout="responsive" columns="5" style="width:100%">
+		          						 <f:selectItem itemLabel="Activo" itemValue="A" />
+		                       			 <f:selectItem itemLabel="Inactivo" itemValue="I" />            
+								    </p:selectOneRadio>	
+				                
+				                
+				                </h:panelGrid>
+					                
+						
+						<p:spacer height="10">
+						</p:spacer>
+
+						<h:panelGrid columns="2">
+							<p:commandButton value="Guardar"
+								action="#{horasExtrasView.action_guardar}"
+								update="frm"
+								oncomplete="PF('tblHorasExtras').filter();"></p:commandButton>
+							<p:commandButton value="Limpiar"
+								action="#{horasExtrasView.action_limpiar}"
+								update="frm"></p:commandButton>
+						</h:panelGrid>
+						</div>
+
+						<p:spacer height="10">
+						</p:spacer>
+
+						
+					</p:panel>
+
+				<p:spacer height="10"></p:spacer>
+				<p:panel id="panelDataTableHorasExtras" header="Consulta Horas Extras" style="width:90%" >
+				
+							<p:dataTable id="tblHorasExtras"  widgetVar="tblHorasExtras"  selectionMode="single" selection="#{horasExtrasView.horaExtraSeleccionada}" rowKey="#{hora.hexmId}" value="#{horasExtrasView.data}" var="hora" paginator="true" rows="10"
+							filterDelay="1000" paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}">
+										
+										<p:ajax event="rowSelect" listener="#{horasExtrasView.action_cargar_hora}" update="frm" />		
+											
+										<f:facet name="{Exporters}">
+								            <div style="float:right;padding-top: 5px;">
+								                <h:commandLink>
+								                    <img src="../../images/excel.png"/>
+								                    <p:dataExporter type="xls" target="tblHorasExtras" fileName="horasExtras" />
+								                </h:commandLink>
+								 
+								                <h:commandLink>
+								              		<img src="../../images/pdf.png"/>
+								                    <p:dataExporter type="pdf" target="tblHorasExtras" fileName="horasExtras"/>
+								                </h:commandLink>
+								 
+								                <h:commandLink>
+								                	<img src="../../images/csv.png"/>
+								                    <p:dataExporter type="csv" target="tblHorasExtras" fileName="horasExtras" />
+								                </h:commandLink>
+								 
+								                <h:commandLink>
+								                	<img src="../../images/xml.png"/>
+								                    <p:dataExporter type="xml" target="tblHorasExtras" fileName="horasExtras" />
+								                </h:commandLink>
+								            </div>
+								        </f:facet>			
+								        
+								        <p:column  filterBy="#{hora.descripcionTipoHoraExtra}" sortBy="#{hora.descripcionTipoHoraExtra}"  filterMatchMode="contains">
+											 <f:facet name="header">
+											<h:outputText value="Tipo hora extra"/>
+											</f:facet>
+											 <h:outputText value="#{hora.descripcionTipoHoraExtra}"/>
+										</p:column>  	
+										
+										<p:column  filterBy="#{hora.identificacionEmpleado}" sortBy="#{hora.identificacionEmpleado}"  filterMatchMode="contains">
+											 <f:facet name="header">
+											<h:outputText value="Identificación"/>
+											</f:facet>
+											 <h:outputText value="#{hora.identificacionEmpleado}"/>
+										</p:column>  	
+								        
+								        <p:column  filterBy="#{hora.nombreEmpleado}" sortBy="#{hora.nombreEmpleado}"  filterMatchMode="contains">
+											 <f:facet name="header">
+											<h:outputText value="Nombre"/>
+											</f:facet>
+											 <h:outputText value="#{hora.nombreEmpleado}"/>
+										</p:column> 
+										
+										<p:column headerText="Fecha" sortBy="#{hora.fecha}"
+											filterBy="#{hora.fecha}" filterMatchMode="contains">
+			
+											<p:outputLabel value="#{hora.fecha}">
+												<f:convertDateTime type="date" pattern="dd-MM-yyyy" />
+											</p:outputLabel>
+			
+										</p:column>
+								        
+										<p:column  filterBy="#{hora.cantidadHoras}" sortBy="#{hora.cantidadHoras}"  filterMatchMode="contains">
+											 <f:facet name="header">
+											<h:outputText value="Cantidad horas"/>
+											</f:facet>
+											 <h:outputText value="#{hora.cantidadHoras}"/>
+										</p:column>  	
+										
+										<p:column filterBy="#{hora.estadoRegistro}" sortBy="#{hora.estadoRegistro}" >
+											<f:facet name="header">
+												<h:outputText value="Estado"/>
+											</f:facet>
+											<f:facet name="filter">
+								                <p:selectOneMenu onchange="PF('tblHorasExtras').filter()" styleClass="custom-filter">
+								                    <f:selectItem itemLabel="Seleccionar" itemValue="#{null}" noSelectionOption="true" />
+								                    <f:selectItem itemLabel="ACTIVO" itemValue="A" noSelectionOption="false" />
+								                    <f:selectItem itemLabel="INACTIVO" itemValue="I" noSelectionOption="false" />
+								                  
+								                </p:selectOneMenu>
+								            </f:facet>
+											 <h:outputText value="#{(hora.estadoRegistro == 'A') ? 'ACTIVO':'INACTIVO'}"/>
+										</p:column>       			                    
+												                    
+							</p:dataTable>	
+						</p:panel>
+						
+
+				</div>	
+			</h:form>
+		</f:view>
+			</ui:define>		
+		</ui:composition>	

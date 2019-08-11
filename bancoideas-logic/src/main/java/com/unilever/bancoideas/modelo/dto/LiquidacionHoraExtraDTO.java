@@ -19,35 +19,35 @@ import java.util.Date;
 public class LiquidacionHoraExtraDTO implements Serializable {
     private static final long serialVersionUID = 1L;
     private static final Logger log = LoggerFactory.getLogger(LiquidacionHoraExtraDTO.class);
+    private Double cantidadHoras;
     private String estadoRegistro;
-    private Date fecha;
     private Date fechaCreacion;
     private Date fechaModificacion;
-    private Integer horasTrabajadas;
     private Integer lhoeId;
-    private Double totalPagarHorasExtras;
-    private Double totalPagarRecargo;
+    private Double porcentaje;
+    private Double totalPagar;
     private String usuCreador;
     private String usuModificador;
-    private Double valorHoraExtra;
-    private Double valorRecargo;
+    private Double valor;
+    private Integer hexmId_HoraExtraEmpleado;
     private Integer noemId_NominaEmpleado;
-    private Integer thoeId_TipoHoraExtra;
 
-    public String getEstadoRegistro() {
+  
+
+    public Double getCantidadHoras() {
+		return cantidadHoras;
+	}
+
+	public void setCantidadHoras(Double cantidadHoras) {
+		this.cantidadHoras = cantidadHoras;
+	}
+
+	public String getEstadoRegistro() {
         return estadoRegistro;
     }
 
     public void setEstadoRegistro(String estadoRegistro) {
         this.estadoRegistro = estadoRegistro;
-    }
-
-    public Date getFecha() {
-        return fecha;
-    }
-
-    public void setFecha(Date fecha) {
-        this.fecha = fecha;
     }
 
     public Date getFechaCreacion() {
@@ -66,14 +66,6 @@ public class LiquidacionHoraExtraDTO implements Serializable {
         this.fechaModificacion = fechaModificacion;
     }
 
-    public Integer getHorasTrabajadas() {
-        return horasTrabajadas;
-    }
-
-    public void setHorasTrabajadas(Integer horasTrabajadas) {
-        this.horasTrabajadas = horasTrabajadas;
-    }
-
     public Integer getLhoeId() {
         return lhoeId;
     }
@@ -82,20 +74,20 @@ public class LiquidacionHoraExtraDTO implements Serializable {
         this.lhoeId = lhoeId;
     }
 
-    public Double getTotalPagarHorasExtras() {
-        return totalPagarHorasExtras;
+    public Double getPorcentaje() {
+        return porcentaje;
     }
 
-    public void setTotalPagarHorasExtras(Double totalPagarHorasExtras) {
-        this.totalPagarHorasExtras = totalPagarHorasExtras;
+    public void setPorcentaje(Double porcentaje) {
+        this.porcentaje = porcentaje;
     }
 
-    public Double getTotalPagarRecargo() {
-        return totalPagarRecargo;
+    public Double getTotalPagar() {
+        return totalPagar;
     }
 
-    public void setTotalPagarRecargo(Double totalPagarRecargo) {
-        this.totalPagarRecargo = totalPagarRecargo;
+    public void setTotalPagar(Double totalPagar) {
+        this.totalPagar = totalPagar;
     }
 
     public String getUsuCreador() {
@@ -114,20 +106,20 @@ public class LiquidacionHoraExtraDTO implements Serializable {
         this.usuModificador = usuModificador;
     }
 
-    public Double getValorHoraExtra() {
-        return valorHoraExtra;
+    public Double getValor() {
+        return valor;
     }
 
-    public void setValorHoraExtra(Double valorHoraExtra) {
-        this.valorHoraExtra = valorHoraExtra;
+    public void setValor(Double valor) {
+        this.valor = valor;
     }
 
-    public Double getValorRecargo() {
-        return valorRecargo;
+    public Integer getHexmId_HoraExtraEmpleado() {
+        return hexmId_HoraExtraEmpleado;
     }
 
-    public void setValorRecargo(Double valorRecargo) {
-        this.valorRecargo = valorRecargo;
+    public void setHexmId_HoraExtraEmpleado(Integer hexmId_HoraExtraEmpleado) {
+        this.hexmId_HoraExtraEmpleado = hexmId_HoraExtraEmpleado;
     }
 
     public Integer getNoemId_NominaEmpleado() {
@@ -136,13 +128,5 @@ public class LiquidacionHoraExtraDTO implements Serializable {
 
     public void setNoemId_NominaEmpleado(Integer noemId_NominaEmpleado) {
         this.noemId_NominaEmpleado = noemId_NominaEmpleado;
-    }
-
-    public Integer getThoeId_TipoHoraExtra() {
-        return thoeId_TipoHoraExtra;
-    }
-
-    public void setThoeId_TipoHoraExtra(Integer thoeId_TipoHoraExtra) {
-        this.thoeId_TipoHoraExtra = thoeId_TipoHoraExtra;
     }
 }

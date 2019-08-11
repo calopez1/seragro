@@ -59,4 +59,5 @@ public interface ILiquidacionHoraExtraLogic {
 
     public List<LiquidacionHoraExtraDTO> getDataLiquidacionHoraExtra()
         throws Exception;
+    
 }

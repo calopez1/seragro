@@ -11,6 +11,8 @@ import org.primefaces.model.StreamedContent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.unilever.bancoideas.modelo.DetalleNominaEmpleado;
+import com.unilever.bancoideas.modelo.LiquidacionHoraExtra;
 import com.unilever.bancoideas.modelo.LiquidacionNomina;
 import com.unilever.bancoideas.modelo.NominaEmpleado;
 import com.unilever.bancoideas.modelo.dto.NominaEmpleadoDTO;
@@ -65,7 +67,8 @@ public class DetalleLiquidacionNominaView implements Serializable {
 	private LiquidacionNomina liquidacionNomina;
 	private List<LiquidacionNomina> lstLiquidaciones = new ArrayList<LiquidacionNomina>();
 	private List<NominaEmpleadoDTO> lstLiquidacionNominaEmpleado = new ArrayList<NominaEmpleadoDTO>();
-	private NominaEmpleado liquidacionNominaEmpleado = new NominaEmpleado();
+	private NominaEmpleadoDTO liquidacionNominaEmpleado = new NominaEmpleadoDTO();
+	private DetalleNominaEmpleado detalleNomina = new DetalleNominaEmpleado();
 	private Double totalLiquidado;
 	private StreamedContent fileReporteGenerado;
 	private boolean pintarMensajeLiquidacionVacia;
@@ -77,6 +80,7 @@ public class DetalleLiquidacionNominaView implements Serializable {
 	private boolean pintarBotonAprobar;
 	private boolean pintarBotonPagar;
 
+	private List<LiquidacionHoraExtra> liquidacionesHoraExtra;
 
 	
 	public DetalleLiquidacionNominaView() {
@@ -170,20 +174,26 @@ public class DetalleLiquidacionNominaView implements Serializable {
 	}
 
 	public void action_detallar_conceptos() {
-
+		
+		List<DetalleNominaEmpleado> lstDetalleNomina = null;
 		try {
 
-//			// Se consulta los concepto de nomina para el nomina empleado
-//			// seleccionado
-//			lstTipoConceptoNomina = businessDelegatorView
-//					.consultarConceptosNominaXNominaEmpleado(liquidacionNominaEmpleado.getLineId());
-//			totalLiquidado = 0d;
-//
-//			for (TipoConceptoNominaDTO tipoConcepto : lstTipoConceptoNomina) {
-//				totalLiquidado = totalLiquidado + tipoConcepto.getTotal();
-//			}
+			//Se consulta el detalle liquidado del empleado
+			Object[] variables = {"nominaEmpleado.noemId", false, liquidacionNominaEmpleado.getNoemId(), "="};
+			lstDetalleNomina = businessDelegatorView.findByCriteriaInDetalleNominaEmpleado(variables, null, null);
+			
+			if(lstDetalleNomina == null || lstDetalleNomina.isEmpty()) {
+				throw new Exception("No hay detalle de liquidación del empleado");
+			}
+			
+			detalleNomina = lstDetalleNomina.get(0);
+			
+			//Se consultan la liquidacion de horas extras
+			Object[] variablesHorasExtras = {"nominaEmpleado.noemId", false, liquidacionNominaEmpleado.getNoemId(), "="};
+			liquidacionesHoraExtra = businessDelegatorView.findByCriteriaInLiquidacionHoraExtra(variablesHorasExtras, null, null);
+			
+			
 
-			System.out.println("Datallar conceptos");
 		} catch (Exception e) {
 			FacesUtils.addErrorMessage(e.getMessage());
 		}
@@ -384,14 +394,6 @@ public class DetalleLiquidacionNominaView implements Serializable {
 		this.lstLiquidacionNominaEmpleado = lstLiquidacionNominaEmpleado;
 	}
 
-	public NominaEmpleado getLiquidacionNominaEmpleado() {
-		return liquidacionNominaEmpleado;
-	}
-
-	public void setLiquidacionNominaEmpleado(NominaEmpleado liquidacionNominaEmpleado) {
-		this.liquidacionNominaEmpleado = liquidacionNominaEmpleado;
-	}
-
 	public UsuarioDTO getUsuarioSesion() {
 		return usuarioSesion;
 	}
@@ -400,5 +402,30 @@ public class DetalleLiquidacionNominaView implements Serializable {
 		this.usuarioSesion = usuarioSesion;
 	}
 
+	public NominaEmpleadoDTO getLiquidacionNominaEmpleado() {
+		return liquidacionNominaEmpleado;
+	}
+
+	public void setLiquidacionNominaEmpleado(NominaEmpleadoDTO liquidacionNominaEmpleado) {
+		this.liquidacionNominaEmpleado = liquidacionNominaEmpleado;
+	}
+
+	public DetalleNominaEmpleado getDetalleNomina() {
+		return detalleNomina;
+	}
+
+	public void setDetalleNomina(DetalleNominaEmpleado detalleNomina) {
+		this.detalleNomina = detalleNomina;
+	}
+
+	public List<LiquidacionHoraExtra> getLiquidacionesHoraExtra() {
+		return liquidacionesHoraExtra;
+	}
+
+	public void setLiquidacionesHoraExtra(List<LiquidacionHoraExtra> liquidacionesHoraExtra) {
+		this.liquidacionesHoraExtra = liquidacionesHoraExtra;
+	}
+
+	
 	
 }

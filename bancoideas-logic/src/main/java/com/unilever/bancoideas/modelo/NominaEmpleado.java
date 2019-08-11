@@ -24,6 +24,7 @@ public class NominaEmpleado  implements java.io.Serializable {
      private Date fechaModificacion;
      private String estadoRegistro;
      private Double valorDevengado;
+     private Double totalHorasExtras;
      private Set<LiquidacionHoraExtra> liquidacionHoraExtras = new HashSet<LiquidacionHoraExtra>(0);
      private Set<DetalleNominaEmpleado> detalleNominaEmpleados = new HashSet<DetalleNominaEmpleado>(0);
 
@@ -158,6 +159,16 @@ public class NominaEmpleado  implements java.io.Serializable {
 
 	public void setValorDevengado(Double valorDevengado) {
 		this.valorDevengado = valorDevengado;
+	}
+
+
+	public Double getTotalHorasExtras() {
+		return totalHorasExtras;
+	}
+
+
+	public void setTotalHorasExtras(Double totalHorasExtras) {
+		this.totalHorasExtras = totalHorasExtras;
 	}
 
 

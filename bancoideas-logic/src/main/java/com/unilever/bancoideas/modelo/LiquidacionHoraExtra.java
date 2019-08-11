@@ -1,5 +1,5 @@
 package com.unilever.bancoideas.modelo;
-// Generated 9/08/2019 11:14:06 AM by Hibernate Tools 4.0.0
+// Generated 10/08/2019 06:53:15 PM by Hibernate Tools 4.0.0
 
 
 import java.util.Date;
@@ -11,14 +11,12 @@ public class LiquidacionHoraExtra  implements java.io.Serializable {
 
 
      private Integer lhoeId;
+     private HoraExtraEmpleado horaExtraEmpleado;
      private NominaEmpleado nominaEmpleado;
-     private TipoHoraExtra tipoHoraExtra;
-     private Double valorRecargo;
-     private Double valorHoraExtra;
-     private Integer horasTrabajadas;
-     private Double totalPagarRecargo;
-     private Date fecha;
-     private Double totalPagarHorasExtras;
+     private Double valor;
+     private Double cantidadHoras;
+     private Double totalPagar;
+     private Double porcentaje;
      private String usuCreador;
      private String usuModificador;
      private Date fechaCreacion;
@@ -29,30 +27,26 @@ public class LiquidacionHoraExtra  implements java.io.Serializable {
     }
 
 	
-    public LiquidacionHoraExtra(Integer lhoeId, NominaEmpleado nominaEmpleado, TipoHoraExtra tipoHoraExtra, Double valorRecargo, Double valorHoraExtra, Integer horasTrabajadas, Double totalPagarRecargo, Date fecha, Double totalPagarHorasExtras, String usuCreador, Date fechaCreacion, String estadoRegistro) {
+    public LiquidacionHoraExtra(Integer lhoeId, HoraExtraEmpleado horaExtraEmpleado, NominaEmpleado nominaEmpleado, Double valor, Double cantidadHoras, Double totalPagar, Double porcentaje, String usuCreador, Date fechaCreacion, String estadoRegistro) {
         this.lhoeId = lhoeId;
+        this.horaExtraEmpleado = horaExtraEmpleado;
         this.nominaEmpleado = nominaEmpleado;
-        this.tipoHoraExtra = tipoHoraExtra;
-        this.valorRecargo = valorRecargo;
-        this.valorHoraExtra = valorHoraExtra;
-        this.horasTrabajadas = horasTrabajadas;
-        this.totalPagarRecargo = totalPagarRecargo;
-        this.fecha = fecha;
-        this.totalPagarHorasExtras = totalPagarHorasExtras;
+        this.valor = valor;
+        this.cantidadHoras = cantidadHoras;
+        this.totalPagar = totalPagar;
+        this.porcentaje = porcentaje;
         this.usuCreador = usuCreador;
         this.fechaCreacion = fechaCreacion;
         this.estadoRegistro = estadoRegistro;
     }
-    public LiquidacionHoraExtra(Integer lhoeId, NominaEmpleado nominaEmpleado, TipoHoraExtra tipoHoraExtra, Double valorRecargo, Double valorHoraExtra, Integer horasTrabajadas, Double totalPagarRecargo, Date fecha, Double totalPagarHorasExtras, String usuCreador, String usuModificador, Date fechaCreacion, Date fechaModificacion, String estadoRegistro) {
+    public LiquidacionHoraExtra(Integer lhoeId, HoraExtraEmpleado horaExtraEmpleado, NominaEmpleado nominaEmpleado, Double valor, Double cantidadHoras, Double totalPagar, Double porcentaje, String usuCreador, String usuModificador, Date fechaCreacion, Date fechaModificacion, String estadoRegistro) {
        this.lhoeId = lhoeId;
+       this.horaExtraEmpleado = horaExtraEmpleado;
        this.nominaEmpleado = nominaEmpleado;
-       this.tipoHoraExtra = tipoHoraExtra;
-       this.valorRecargo = valorRecargo;
-       this.valorHoraExtra = valorHoraExtra;
-       this.horasTrabajadas = horasTrabajadas;
-       this.totalPagarRecargo = totalPagarRecargo;
-       this.fecha = fecha;
-       this.totalPagarHorasExtras = totalPagarHorasExtras;
+       this.valor = valor;
+       this.cantidadHoras = cantidadHoras;
+       this.totalPagar = totalPagar;
+       this.porcentaje = porcentaje;
        this.usuCreador = usuCreador;
        this.usuModificador = usuModificador;
        this.fechaCreacion = fechaCreacion;
@@ -67,6 +61,13 @@ public class LiquidacionHoraExtra  implements java.io.Serializable {
     public void setLhoeId(Integer lhoeId) {
         this.lhoeId = lhoeId;
     }
+    public HoraExtraEmpleado getHoraExtraEmpleado() {
+        return this.horaExtraEmpleado;
+    }
+    
+    public void setHoraExtraEmpleado(HoraExtraEmpleado horaExtraEmpleado) {
+        this.horaExtraEmpleado = horaExtraEmpleado;
+    }
     public NominaEmpleado getNominaEmpleado() {
         return this.nominaEmpleado;
     }
@@ -74,54 +75,37 @@ public class LiquidacionHoraExtra  implements java.io.Serializable {
     public void setNominaEmpleado(NominaEmpleado nominaEmpleado) {
         this.nominaEmpleado = nominaEmpleado;
     }
-    public TipoHoraExtra getTipoHoraExtra() {
-        return this.tipoHoraExtra;
+    public Double getValor() {
+        return this.valor;
     }
     
-    public void setTipoHoraExtra(TipoHoraExtra tipoHoraExtra) {
-        this.tipoHoraExtra = tipoHoraExtra;
+    public void setValor(Double valor) {
+        this.valor = valor;
     }
-    public Double getValorRecargo() {
-        return this.valorRecargo;
-    }
-    
-    public void setValorRecargo(Double valorRecargo) {
-        this.valorRecargo = valorRecargo;
-    }
-    public Double getValorHoraExtra() {
-        return this.valorHoraExtra;
-    }
-    
-    public void setValorHoraExtra(Double valorHoraExtra) {
-        this.valorHoraExtra = valorHoraExtra;
-    }
-    public Integer getHorasTrabajadas() {
-        return this.horasTrabajadas;
+
+    public Double getCantidadHoras() {
+		return cantidadHoras;
+	}
+
+
+	public void setCantidadHoras(Double cantidadHoras) {
+		this.cantidadHoras = cantidadHoras;
+	}
+
+
+	public Double getTotalPagar() {
+        return this.totalPagar;
     }
     
-    public void setHorasTrabajadas(Integer horasTrabajadas) {
-        this.horasTrabajadas = horasTrabajadas;
+    public void setTotalPagar(Double totalPagar) {
+        this.totalPagar = totalPagar;
     }
-    public Double getTotalPagarRecargo() {
-        return this.totalPagarRecargo;
-    }
-    
-    public void setTotalPagarRecargo(Double totalPagarRecargo) {
-        this.totalPagarRecargo = totalPagarRecargo;
-    }
-    public Date getFecha() {
-        return this.fecha;
+    public Double getPorcentaje() {
+        return this.porcentaje;
     }
     
-    public void setFecha(Date fecha) {
-        this.fecha = fecha;
-    }
-    public Double getTotalPagarHorasExtras() {
-        return this.totalPagarHorasExtras;
-    }
-    
-    public void setTotalPagarHorasExtras(Double totalPagarHorasExtras) {
-        this.totalPagarHorasExtras = totalPagarHorasExtras;
+    public void setPorcentaje(Double porcentaje) {
+        this.porcentaje = porcentaje;
     }
     public String getUsuCreador() {
         return this.usuCreador;

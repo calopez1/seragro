@@ -9,4 +9,6 @@ import com.unilever.bancoideas.modelo.LiquidacionHoraExtra;
 *
 */
 public interface ILiquidacionHoraExtraDAO extends Dao<LiquidacionHoraExtra, Integer> {
+	
+	public void eliminarDetalleLiquidacionHorasExtras(Integer noemId) throws Exception;
 }

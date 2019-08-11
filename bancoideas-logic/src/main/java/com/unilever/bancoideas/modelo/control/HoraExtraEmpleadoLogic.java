@@ -3,7 +3,7 @@ package com.unilever.bancoideas.modelo.control;
 import com.unilever.bancoideas.dataaccess.dao.*;
 import com.unilever.bancoideas.exceptions.*;
 import com.unilever.bancoideas.modelo.*;
-import com.unilever.bancoideas.modelo.dto.LiquidacionHoraExtraDTO;
+import com.unilever.bancoideas.modelo.dto.HoraExtraEmpleadoDTO;
 import com.unilever.bancoideas.utilities.Utilities;
 
 import org.slf4j.Logger;
@@ -19,7 +19,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -32,44 +32,51 @@ import java.util.Set;
 *
 */
 @Scope("singleton")
-@Service("LiquidacionHoraExtraLogic")
-public class LiquidacionHoraExtraLogic implements ILiquidacionHoraExtraLogic {
-    private static final Logger log = LoggerFactory.getLogger(LiquidacionHoraExtraLogic.class);
+@Service("HoraExtraEmpleadoLogic")
+public class HoraExtraEmpleadoLogic implements IHoraExtraEmpleadoLogic {
+    private static final Logger log = LoggerFactory.getLogger(HoraExtraEmpleadoLogic.class);
 
     /**
-     * DAO injected by Spring that manages LiquidacionHoraExtra entities
+     * DAO injected by Spring that manages HoraExtraEmpleado entities
      *
      */
+    @Autowired
+    private IHoraExtraEmpleadoDAO horaExtraEmpleadoDAO;
+
+    /**
+    * DAO injected by Spring that manages LiquidacionHoraExtra entities
+    *
+    */
     @Autowired
     private ILiquidacionHoraExtraDAO liquidacionHoraExtraDAO;
 
     /**
-    * Logic injected by Spring that manages HoraExtraEmpleado entities
+    * Logic injected by Spring that manages Empleado entities
     *
     */
     @Autowired
-    IHoraExtraEmpleadoLogic logicHoraExtraEmpleado1;
+    IEmpleadoLogic logicEmpleado1;
 
     /**
-    * Logic injected by Spring that manages NominaEmpleado entities
+    * Logic injected by Spring that manages TipoHoraExtra entities
     *
     */
     @Autowired
-    INominaEmpleadoLogic logicNominaEmpleado2;
+    ITipoHoraExtraLogic logicTipoHoraExtra2;
 
     @Transactional(readOnly = true)
-    public List<LiquidacionHoraExtra> getLiquidacionHoraExtra()
+    public List<HoraExtraEmpleado> getHoraExtraEmpleado()
         throws Exception {
-        log.debug("finding all LiquidacionHoraExtra instances");
+        log.debug("finding all HoraExtraEmpleado instances");
 
-        List<LiquidacionHoraExtra> list = new ArrayList<LiquidacionHoraExtra>();
+        List<HoraExtraEmpleado> list = new ArrayList<HoraExtraEmpleado>();
 
         try {
-            list = liquidacionHoraExtraDAO.findAll();
+            list = horaExtraEmpleadoDAO.findAll();
         } catch (Exception e) {
-            log.error("finding all LiquidacionHoraExtra failed", e);
+            log.error("finding all HoraExtraEmpleado failed", e);
             throw new ZMessManager().new GettingException(ZMessManager.ALL +
-                "LiquidacionHoraExtra");
+                "HoraExtraEmpleado");
         } finally {
         }
 
@@ -77,18 +84,17 @@ public class LiquidacionHoraExtraLogic implements ILiquidacionHoraExtraLogic {
     }
 
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
-    public void saveLiquidacionHoraExtra(LiquidacionHoraExtra entity)
+    public void saveHoraExtraEmpleado(HoraExtraEmpleado entity)
         throws Exception {
-        log.debug("saving LiquidacionHoraExtra instance");
+        log.debug("saving HoraExtraEmpleado instance");
 
         try {
-            if (entity.getHoraExtraEmpleado() == null) {
-                throw new ZMessManager().new ForeignException(
-                    "horaExtraEmpleado");
+            if (entity.getEmpleado() == null) {
+                throw new ZMessManager().new ForeignException("empleado");
             }
 
-            if (entity.getNominaEmpleado() == null) {
-                throw new ZMessManager().new ForeignException("nominaEmpleado");
+            if (entity.getTipoHoraExtra() == null) {
+                throw new ZMessManager().new ForeignException("tipoHoraExtra");
             }
 
             if (entity.getCantidadHoras() == null) {
@@ -108,24 +114,13 @@ public class LiquidacionHoraExtraLogic implements ILiquidacionHoraExtraLogic {
                     "estadoRegistro");
             }
 
+            if (entity.getFecha() == null) {
+                throw new ZMessManager().new EmptyFieldException("fecha");
+            }
+
             if (entity.getFechaCreacion() == null) {
                 throw new ZMessManager().new EmptyFieldException(
                     "fechaCreacion");
-            }
-
-            if (entity.getPorcentaje() == null) {
-                throw new ZMessManager().new EmptyFieldException("porcentaje");
-            }
-
-            if ((entity.getPorcentaje() != null) &&
-                    (Utilities.checkNumberAndCheckWithPrecisionAndScale("" +
-                        entity.getPorcentaje(), 5, 2) == false)) {
-                throw new ZMessManager().new NotValidFormatException(
-                    "porcentaje");
-            }
-
-            if (entity.getTotalPagar() == null) {
-                throw new ZMessManager().new EmptyFieldException("totalPagar");
             }
 
             if (entity.getUsuCreador() == null) {
@@ -146,73 +141,78 @@ public class LiquidacionHoraExtraLogic implements ILiquidacionHoraExtraLogic {
                     "usuModificador");
             }
 
-            if (entity.getValor() == null) {
-                throw new ZMessManager().new EmptyFieldException("valor");
-            }
-
-            if (entity.getHoraExtraEmpleado().getHexmId() == null) {
+            if (entity.getEmpleado().getEmplId() == null) {
                 throw new ZMessManager().new EmptyFieldException(
-                    "hexmId_HoraExtraEmpleado");
+                    "emplId_Empleado");
             }
 
-            if (entity.getNominaEmpleado().getNoemId() == null) {
+            if (entity.getTipoHoraExtra().getThoeId() == null) {
                 throw new ZMessManager().new EmptyFieldException(
-                    "noemId_NominaEmpleado");
+                    "thoeId_TipoHoraExtra");
             }
 
-            liquidacionHoraExtraDAO.save(entity);
+            horaExtraEmpleadoDAO.save(entity);
 
-            log.debug("save LiquidacionHoraExtra successful");
+            log.debug("save HoraExtraEmpleado successful");
         } catch (Exception e) {
-            log.error("save LiquidacionHoraExtra failed", e);
+            log.error("save HoraExtraEmpleado failed", e);
             throw e;
         } finally {
         }
     }
 
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
-    public void deleteLiquidacionHoraExtra(LiquidacionHoraExtra entity)
+    public void deleteHoraExtraEmpleado(HoraExtraEmpleado entity)
         throws Exception {
-        log.debug("deleting LiquidacionHoraExtra instance");
+        log.debug("deleting HoraExtraEmpleado instance");
 
         if (entity == null) {
             throw new ZMessManager().new NullEntityExcepcion(
-                "LiquidacionHoraExtra");
+                "HoraExtraEmpleado");
         }
 
-        if (entity.getLhoeId() == null) {
-            throw new ZMessManager().new EmptyFieldException("lhoeId");
+        if (entity.getHexmId() == null) {
+            throw new ZMessManager().new EmptyFieldException("hexmId");
         }
+
+        List<LiquidacionHoraExtra> liquidacionHoraExtras = null;
 
         try {
-            liquidacionHoraExtraDAO.delete(entity);
+            liquidacionHoraExtras = liquidacionHoraExtraDAO.findByProperty("horaExtraEmpleado.hexmId",
+                    entity.getHexmId());
 
-            log.debug("delete LiquidacionHoraExtra successful");
+            if (Utilities.validationsList(liquidacionHoraExtras) == true) {
+                throw new ZMessManager().new DeletingException(
+                    "liquidacionHoraExtras");
+            }
+
+            horaExtraEmpleadoDAO.delete(entity);
+
+            log.debug("delete HoraExtraEmpleado successful");
         } catch (Exception e) {
-            log.error("delete LiquidacionHoraExtra failed", e);
+            log.error("delete HoraExtraEmpleado failed", e);
             throw e;
         } finally {
         }
     }
 
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
-    public void updateLiquidacionHoraExtra(LiquidacionHoraExtra entity)
+    public void updateHoraExtraEmpleado(HoraExtraEmpleado entity)
         throws Exception {
-        log.debug("updating LiquidacionHoraExtra instance");
+        log.debug("updating HoraExtraEmpleado instance");
 
         try {
             if (entity == null) {
                 throw new ZMessManager().new NullEntityExcepcion(
-                    "LiquidacionHoraExtra");
+                    "HoraExtraEmpleado");
             }
 
-            if (entity.getHoraExtraEmpleado() == null) {
-                throw new ZMessManager().new ForeignException(
-                    "horaExtraEmpleado");
+            if (entity.getEmpleado() == null) {
+                throw new ZMessManager().new ForeignException("empleado");
             }
 
-            if (entity.getNominaEmpleado() == null) {
-                throw new ZMessManager().new ForeignException("nominaEmpleado");
+            if (entity.getTipoHoraExtra() == null) {
+                throw new ZMessManager().new ForeignException("tipoHoraExtra");
             }
 
             if (entity.getCantidadHoras() == null) {
@@ -232,29 +232,19 @@ public class LiquidacionHoraExtraLogic implements ILiquidacionHoraExtraLogic {
                     "estadoRegistro");
             }
 
+            if (entity.getFecha() == null) {
+                throw new ZMessManager().new EmptyFieldException("fecha");
+            }
+
             if (entity.getFechaCreacion() == null) {
                 throw new ZMessManager().new EmptyFieldException(
                     "fechaCreacion");
             }
 
-            if (entity.getLhoeId() == null) {
-                throw new ZMessManager().new EmptyFieldException("lhoeId");
+            if (entity.getHexmId() == null) {
+                throw new ZMessManager().new EmptyFieldException("hexmId");
             }
 
-            if (entity.getPorcentaje() == null) {
-                throw new ZMessManager().new EmptyFieldException("porcentaje");
-            }
-
-            if ((entity.getPorcentaje() != null) &&
-                    (Utilities.checkNumberAndCheckWithPrecisionAndScale("" +
-                        entity.getPorcentaje(), 5, 0) == false)) {
-                throw new ZMessManager().new NotValidFormatException(
-                    "porcentaje");
-            }
-
-            if (entity.getTotalPagar() == null) {
-                throw new ZMessManager().new EmptyFieldException("totalPagar");
-            }
 
             if (entity.getUsuCreador() == null) {
                 throw new ZMessManager().new EmptyFieldException("usuCreador");
@@ -274,88 +264,93 @@ public class LiquidacionHoraExtraLogic implements ILiquidacionHoraExtraLogic {
                     "usuModificador");
             }
 
-            if (entity.getValor() == null) {
-                throw new ZMessManager().new EmptyFieldException("valor");
-            }
-
-            if (entity.getHoraExtraEmpleado().getHexmId() == null) {
+            if (entity.getEmpleado().getEmplId() == null) {
                 throw new ZMessManager().new EmptyFieldException(
-                    "hexmId_HoraExtraEmpleado");
+                    "emplId_Empleado");
             }
 
-            if (entity.getNominaEmpleado().getNoemId() == null) {
+            if (entity.getTipoHoraExtra().getThoeId() == null) {
                 throw new ZMessManager().new EmptyFieldException(
-                    "noemId_NominaEmpleado");
+                    "thoeId_TipoHoraExtra");
             }
 
-            liquidacionHoraExtraDAO.update(entity);
+            horaExtraEmpleadoDAO.update(entity);
 
-            log.debug("update LiquidacionHoraExtra successful");
+            log.debug("update HoraExtraEmpleado successful");
         } catch (Exception e) {
-            log.error("update LiquidacionHoraExtra failed", e);
+            log.error("update HoraExtraEmpleado failed", e);
             throw e;
         } finally {
         }
     }
 
     @Transactional(readOnly = true)
-    public List<LiquidacionHoraExtraDTO> getDataLiquidacionHoraExtra()
+    public List<HoraExtraEmpleadoDTO> getDataHoraExtraEmpleado()
         throws Exception {
         try {
-            List<LiquidacionHoraExtra> liquidacionHoraExtra = liquidacionHoraExtraDAO.findAll();
+            List<HoraExtraEmpleado> horaExtraEmpleado = horaExtraEmpleadoDAO.findAll();
 
-            List<LiquidacionHoraExtraDTO> liquidacionHoraExtraDTO = new ArrayList<LiquidacionHoraExtraDTO>();
+            List<HoraExtraEmpleadoDTO> horaExtraEmpleadoDTO = new ArrayList<HoraExtraEmpleadoDTO>();
 
-            for (LiquidacionHoraExtra liquidacionHoraExtraTmp : liquidacionHoraExtra) {
-                LiquidacionHoraExtraDTO liquidacionHoraExtraDTO2 = new LiquidacionHoraExtraDTO();
+            for (HoraExtraEmpleado horaExtraEmpleadoTmp : horaExtraEmpleado) {
+                HoraExtraEmpleadoDTO horaExtraEmpleadoDTO2 = new HoraExtraEmpleadoDTO();
 
-                liquidacionHoraExtraDTO2.setLhoeId(liquidacionHoraExtraTmp.getLhoeId());
-                liquidacionHoraExtraDTO2.setCantidadHoras((liquidacionHoraExtraTmp.getCantidadHoras() != null)
-                    ? liquidacionHoraExtraTmp.getCantidadHoras() : null);
-                liquidacionHoraExtraDTO2.setEstadoRegistro((liquidacionHoraExtraTmp.getEstadoRegistro() != null)
-                    ? liquidacionHoraExtraTmp.getEstadoRegistro() : null);
-                liquidacionHoraExtraDTO2.setFechaCreacion(liquidacionHoraExtraTmp.getFechaCreacion());
-                liquidacionHoraExtraDTO2.setFechaModificacion(liquidacionHoraExtraTmp.getFechaModificacion());
-                liquidacionHoraExtraDTO2.setPorcentaje((liquidacionHoraExtraTmp.getPorcentaje() != null)
-                    ? liquidacionHoraExtraTmp.getPorcentaje() : null);
-                liquidacionHoraExtraDTO2.setTotalPagar((liquidacionHoraExtraTmp.getTotalPagar() != null)
-                    ? liquidacionHoraExtraTmp.getTotalPagar() : null);
-                liquidacionHoraExtraDTO2.setUsuCreador((liquidacionHoraExtraTmp.getUsuCreador() != null)
-                    ? liquidacionHoraExtraTmp.getUsuCreador() : null);
-                liquidacionHoraExtraDTO2.setUsuModificador((liquidacionHoraExtraTmp.getUsuModificador() != null)
-                    ? liquidacionHoraExtraTmp.getUsuModificador() : null);
-                liquidacionHoraExtraDTO2.setValor((liquidacionHoraExtraTmp.getValor() != null)
-                    ? liquidacionHoraExtraTmp.getValor() : null);
-                liquidacionHoraExtraDTO2.setHexmId_HoraExtraEmpleado((liquidacionHoraExtraTmp.getHoraExtraEmpleado()
-                                                                                             .getHexmId() != null)
-                    ? liquidacionHoraExtraTmp.getHoraExtraEmpleado().getHexmId()
-                    : null);
-                liquidacionHoraExtraDTO2.setNoemId_NominaEmpleado((liquidacionHoraExtraTmp.getNominaEmpleado()
-                                                                                          .getNoemId() != null)
-                    ? liquidacionHoraExtraTmp.getNominaEmpleado().getNoemId()
-                    : null);
-                liquidacionHoraExtraDTO.add(liquidacionHoraExtraDTO2);
+                horaExtraEmpleadoDTO2.setHexmId(horaExtraEmpleadoTmp.getHexmId());
+                horaExtraEmpleadoDTO2.setCantidadHoras((horaExtraEmpleadoTmp.getCantidadHoras() != null)
+                    ? horaExtraEmpleadoTmp.getCantidadHoras() : null);
+                horaExtraEmpleadoDTO2.setEstadoRegistro((horaExtraEmpleadoTmp.getEstadoRegistro() != null)
+                    ? horaExtraEmpleadoTmp.getEstadoRegistro() : null);
+                horaExtraEmpleadoDTO2.setFecha(horaExtraEmpleadoTmp.getFecha());
+                horaExtraEmpleadoDTO2.setFechaCreacion(horaExtraEmpleadoTmp.getFechaCreacion());
+                horaExtraEmpleadoDTO2.setFechaModificacion(horaExtraEmpleadoTmp.getFechaModificacion());
+                horaExtraEmpleadoDTO2.setUsuCreador((horaExtraEmpleadoTmp.getUsuCreador() != null)
+                    ? horaExtraEmpleadoTmp.getUsuCreador() : null);
+                horaExtraEmpleadoDTO2.setUsuModificador((horaExtraEmpleadoTmp.getUsuModificador() != null)
+                    ? horaExtraEmpleadoTmp.getUsuModificador() : null);
+                horaExtraEmpleadoDTO2.setEmplId((horaExtraEmpleadoTmp.getEmpleado()
+                                                                              .getEmplId() != null)
+                    ? horaExtraEmpleadoTmp.getEmpleado().getEmplId() : null);
+                horaExtraEmpleadoDTO2.setThoeId((horaExtraEmpleadoTmp.getTipoHoraExtra() .getThoeId() != null)
+                    ? horaExtraEmpleadoTmp.getTipoHoraExtra().getThoeId() : null);
+                
+                horaExtraEmpleadoDTO2.setDescripcionTipoHoraExtra((horaExtraEmpleadoTmp.getTipoHoraExtra().getDescripcion() != null)
+                        ? horaExtraEmpleadoTmp.getTipoHoraExtra().getDescripcion() : null);
+                
+                horaExtraEmpleadoDTO2.setIdentificacionEmpleado((horaExtraEmpleadoTmp.getEmpleado().getPersona().getIdentificacion() != null)
+                        ? horaExtraEmpleadoTmp.getEmpleado().getPersona().getIdentificacion() : null);
+                
+                String nombre = (horaExtraEmpleadoTmp.getEmpleado().getPersona().getPrimerApellido())+
+                				(horaExtraEmpleadoTmp.getEmpleado().getPersona().getSegundoApellido() == null ? "": " "+horaExtraEmpleadoTmp.getEmpleado().getPersona().getSegundoApellido())+
+                				(horaExtraEmpleadoTmp.getEmpleado().getPersona().getPrimerNombre())+
+                				(horaExtraEmpleadoTmp.getEmpleado().getPersona().getSegundoNombre() == null ? "": " "+horaExtraEmpleadoTmp.getEmpleado().getPersona().getSegundoNombre());
+                
+                horaExtraEmpleadoDTO2.setNombreEmpleado((horaExtraEmpleadoTmp.getEmpleado().getPersona().getPrimerNombre() != null)
+                        ? nombre : null);
+                
+                horaExtraEmpleadoDTO2.setCodigoEmpleado((horaExtraEmpleadoTmp.getEmpleado().getCodigo() != null)
+                        ? horaExtraEmpleadoTmp.getEmpleado().getCodigo() : null);
+                
+                horaExtraEmpleadoDTO.add(horaExtraEmpleadoDTO2);
             }
 
-            return liquidacionHoraExtraDTO;
+            return horaExtraEmpleadoDTO;
         } catch (Exception e) {
             throw e;
         }
     }
 
     @Transactional(readOnly = true)
-    public LiquidacionHoraExtra getLiquidacionHoraExtra(Integer lhoeId)
+    public HoraExtraEmpleado getHoraExtraEmpleado(Integer hexmId)
         throws Exception {
-        log.debug("getting LiquidacionHoraExtra instance");
+        log.debug("getting HoraExtraEmpleado instance");
 
-        LiquidacionHoraExtra entity = null;
+        HoraExtraEmpleado entity = null;
 
         try {
-            entity = liquidacionHoraExtraDAO.findById(lhoeId);
+            entity = horaExtraEmpleadoDAO.findById(hexmId);
         } catch (Exception e) {
-            log.error("get LiquidacionHoraExtra failed", e);
-            throw new ZMessManager().new FindingException(
-                "LiquidacionHoraExtra");
+            log.error("get HoraExtraEmpleado failed", e);
+            throw new ZMessManager().new FindingException("HoraExtraEmpleado");
         } finally {
         }
 
@@ -363,17 +358,17 @@ public class LiquidacionHoraExtraLogic implements ILiquidacionHoraExtraLogic {
     }
 
     @Transactional(readOnly = true)
-    public List<LiquidacionHoraExtra> findPageLiquidacionHoraExtra(
+    public List<HoraExtraEmpleado> findPageHoraExtraEmpleado(
         String sortColumnName, boolean sortAscending, int startRow,
         int maxResults) throws Exception {
-        List<LiquidacionHoraExtra> entity = null;
+        List<HoraExtraEmpleado> entity = null;
 
         try {
-            entity = liquidacionHoraExtraDAO.findPage(sortColumnName,
+            entity = horaExtraEmpleadoDAO.findPage(sortColumnName,
                     sortAscending, startRow, maxResults);
         } catch (Exception e) {
             throw new ZMessManager().new FindingException(
-                "LiquidacionHoraExtra Count");
+                "HoraExtraEmpleado Count");
         } finally {
         }
 
@@ -381,14 +376,14 @@ public class LiquidacionHoraExtraLogic implements ILiquidacionHoraExtraLogic {
     }
 
     @Transactional(readOnly = true)
-    public Long findTotalNumberLiquidacionHoraExtra() throws Exception {
+    public Long findTotalNumberHoraExtraEmpleado() throws Exception {
         Long entity = null;
 
         try {
-            entity = liquidacionHoraExtraDAO.count();
+            entity = horaExtraEmpleadoDAO.count();
         } catch (Exception e) {
             throw new ZMessManager().new FindingException(
-                "LiquidacionHoraExtra Count");
+                "HoraExtraEmpleado Count");
         } finally {
         }
 
@@ -453,10 +448,10 @@ public class LiquidacionHoraExtraLogic implements ILiquidacionHoraExtraLogic {
                             * @throws Exception
                             */
     @Transactional(readOnly = true)
-    public List<LiquidacionHoraExtra> findByCriteria(Object[] variables,
+    public List<HoraExtraEmpleado> findByCriteria(Object[] variables,
         Object[] variablesBetween, Object[] variablesBetweenDates)
         throws Exception {
-        List<LiquidacionHoraExtra> list = new ArrayList<LiquidacionHoraExtra>();
+        List<HoraExtraEmpleado> list = new ArrayList<HoraExtraEmpleado>();
         String where = new String();
         String tempWhere = new String();
 
@@ -553,7 +548,7 @@ public class LiquidacionHoraExtraLogic implements ILiquidacionHoraExtraLogic {
         }
 
         try {
-            list = liquidacionHoraExtraDAO.findByCriteria(where);
+            list = horaExtraEmpleadoDAO.findByCriteria(where);
         } catch (Exception e) {
             throw new Exception(e.getMessage());
         } finally {
@@ -562,4 +557,33 @@ public class LiquidacionHoraExtraLogic implements ILiquidacionHoraExtraLogic {
         return list;
     }
     
+    @Transactional(readOnly= true)
+    public List<HoraExtraEmpleadoDTO> consultarHorasExtrasPeriodo(String estado, Date fechaInicial, Date fechaFinal, Integer emplId) throws Exception{
+    	
+    	SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy");
+		String fechaInicio = "";
+		String fechaFin = "";
+    	try {
+    		
+    		if(estado == null) {
+    			throw new Exception("Se debe ingresar un estado");
+    		}
+
+    		if(fechaInicial == null) {
+    			throw new Exception("Se debe ingresar una fecha inicial");
+    		}
+
+    		if(fechaFinal == null) {
+    			throw new Exception("Se debe ingresar una fecha final");
+    		}
+    		
+    		fechaInicio = simpleDateFormat.format(fechaInicial);
+    		fechaFin = simpleDateFormat.format(fechaFinal);
+
+			return horaExtraEmpleadoDAO.consultarHorasExtrasPeriodo(estado, fechaInicio, fechaFin, emplId);
+    		
+		} catch (Exception e) {
+			throw e;
+		}
+    }
 }

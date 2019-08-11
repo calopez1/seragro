@@ -5,7 +5,7 @@
 <hibernate-mapping>
     <class name="com.unilever.bancoideas.modelo.TipoHoraExtra" table="tipo_hora_extra" schema="public">
         <id name="thoeId" type="java.lang.Integer">
-            <column name="THOE_ID" />
+            <column name="thoe_id" />
             <generator class="identity" />
         </id>
         <property name="codigo" type="java.lang.String">

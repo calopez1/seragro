@@ -42,6 +42,11 @@
         <property name="estadoRegistro" type="java.lang.String">
             <column name="estado_registro" length="1" not-null="true" />
         </property>
+        
+         <property name="totalHorasExtras" type="java.lang.Double">
+            <column name="total_horas_extras" not-null="true" />
+        </property>
+        
         <set name="liquidacionHoraExtras" table="liquidacion_hora_extra" inverse="true" lazy="true" fetch="select">
             <key>
                 <column name="nomina_empleadonoem_id" not-null="true" />

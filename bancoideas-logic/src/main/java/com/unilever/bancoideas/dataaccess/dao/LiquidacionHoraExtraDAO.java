@@ -51,4 +51,17 @@ public class LiquidacionHoraExtraDAO extends HibernateDaoImpl<LiquidacionHoraExt
         ApplicationContext ctx) {
         return (ILiquidacionHoraExtraDAO) ctx.getBean("LiquidacionHoraExtraDAO");
     }
+    
+    @Override
+    public void eliminarDetalleLiquidacionHorasExtras(Integer noemId) throws Exception{
+   		try {
+   			Query query = getSession().getNamedQuery("eliminar_detalle_liquidacion_horas_extras");
+   			query.setParameter("pNoemId", noemId);
+   			query.executeUpdate();
+   		} catch (Exception e) {
+   			log.error(e.getMessage());
+   			throw e;
+   		}
+   		
+   	}
 }

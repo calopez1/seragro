@@ -3,28 +3,22 @@
 "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 <!-- Generated 10/08/2019 06:53:15 PM by Hibernate Tools 4.0.0 -->
 <hibernate-mapping>
-    <class name="com.unilever.bancoideas.modelo.LiquidacionHoraExtra" table="liquidacion_hora_extra" schema="public">
-        <id name="lhoeId" type="java.lang.Integer">
-            <column name="lhoe_id" />
+    <class name="com.unilever.bancoideas.modelo.HoraExtraEmpleado" table="hora_extra_empleado" schema="public">
+        <id name="hexmId" type="java.lang.Integer">
+            <column name="hexm_id" />
             <generator class="identity" />
         </id>
-        <many-to-one name="horaExtraEmpleado" class="com.unilever.bancoideas.modelo.HoraExtraEmpleado" fetch="select">
-            <column name="hexm_id" not-null="true" />
+        <many-to-one name="tipoHoraExtra" class="com.unilever.bancoideas.modelo.TipoHoraExtra" fetch="select">
+            <column name="thoe_id" />
         </many-to-one>
-        <many-to-one name="nominaEmpleado" class="com.unilever.bancoideas.modelo.NominaEmpleado" fetch="select">
-            <column name="noem_id" not-null="true" />
+        <many-to-one name="empleado" class="com.unilever.bancoideas.modelo.Empleado" fetch="select">
+            <column name="empl_id" not-null="true" />
         </many-to-one>
-        <property name="valor" type="java.lang.Double">
-            <column name="valor" not-null="true" />
+        <property name="fecha" type="java.util.Date">
+            <column name="fecha" length="13" not-null="true" />
         </property>
         <property name="cantidadHoras" type="java.lang.Double">
             <column name="cantidad_horas" not-null="true" />
-        </property>
-        <property name="totalPagar" type="java.lang.Double">
-            <column name="total_pagar" not-null="true" />
-        </property>
-        <property name="porcentaje" type="java.lang.Double">
-            <column name="porcentaje" precision="5" not-null="true" />
         </property>
         <property name="usuCreador" type="java.lang.String">
             <column name="usu_creador" length="100" not-null="true" />
@@ -41,5 +35,11 @@
         <property name="estadoRegistro" type="java.lang.String">
             <column name="estado_registro" length="1" not-null="true" />
         </property>
+        <set name="liquidacionHoraExtras" table="liquidacion_hora_extra" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="hexm_id" not-null="true" />
+            </key>
+            <one-to-many class="com.unilever.bancoideas.modelo.LiquidacionHoraExtra" />
+        </set>
     </class>
 </hibernate-mapping>

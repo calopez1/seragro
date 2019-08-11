@@ -10,7 +10,6 @@
         <property name="show_sql">false</property>
         
        <mapping resource="com/unilever/bancoideas/modelo/Departamento.hbm.xml" />
-        <mapping resource="com/unilever/bancoideas/modelo/LiquidacionHoraExtra.hbm.xml" />
         <mapping resource="com/unilever/bancoideas/modelo/TipoIdentificacion.hbm.xml" />
         <mapping resource="com/unilever/bancoideas/modelo/Empleado.hbm.xml" />
         <mapping resource="com/unilever/bancoideas/modelo/Persona.hbm.xml" />
@@ -22,6 +21,9 @@
         <mapping resource="com/unilever/bancoideas/modelo/Usuario.hbm.xml" />
         <mapping resource="com/unilever/bancoideas/modelo/TipoHoraExtra.hbm.xml" />
          <mapping resource="com/unilever/bancoideas/modelo/Parametros.hbm.xml" />
+         <mapping resource="com/unilever/bancoideas/modelo/LiquidacionHoraExtra.hbm.xml" />
+        <mapping resource="com/unilever/bancoideas/modelo/HoraExtraEmpleado.hbm.xml" />
+        
         
         <!-- Archivo de consultas -->
         <mapping resource="com/unilever/bancoideas/modelo/Consultas.hbm.xml" />

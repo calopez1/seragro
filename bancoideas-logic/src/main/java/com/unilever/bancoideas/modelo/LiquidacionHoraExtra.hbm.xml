@@ -1,36 +1,30 @@
 <?xml version="1.0"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
 "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
-<!-- Generated 9/08/2019 11:14:06 AM by Hibernate Tools 4.0.0 -->
+<!-- Generated 10/08/2019 06:53:15 PM by Hibernate Tools 4.0.0 -->
 <hibernate-mapping>
     <class name="com.unilever.bancoideas.modelo.LiquidacionHoraExtra" table="liquidacion_hora_extra" schema="public">
         <id name="lhoeId" type="java.lang.Integer">
-            <column name="LHOE_ID" />
+            <column name="lhoe_id" />
             <generator class="identity" />
         </id>
+        <many-to-one name="horaExtraEmpleado" class="com.unilever.bancoideas.modelo.HoraExtraEmpleado" fetch="select">
+            <column name="hexm_id" not-null="true" />
+        </many-to-one>
         <many-to-one name="nominaEmpleado" class="com.unilever.bancoideas.modelo.NominaEmpleado" fetch="select">
-            <column name="nomina_empleadonoem_id" not-null="true" />
+            <column name="noem_id" not-null="true" />
         </many-to-one>
-        <many-to-one name="tipoHoraExtra" class="com.unilever.bancoideas.modelo.TipoHoraExtra" fetch="select">
-            <column name="thoe_id" not-null="true" />
-        </many-to-one>
-        <property name="valorRecargo" type="java.lang.Double">
-            <column name="valor_recargo" not-null="true" />
+        <property name="valor" type="java.lang.Double">
+            <column name="valor" not-null="true" />
         </property>
-        <property name="valorHoraExtra" type="java.lang.Double">
-            <column name="valor_hora_extra" not-null="true" />
+        <property name="cantidadHoras" type="java.lang.Double">
+            <column name="cantidad_horas" not-null="true" />
         </property>
-        <property name="horasTrabajadas" type="java.lang.Integer">
-            <column name="horas_trabajadas" not-null="true" />
+        <property name="totalPagar" type="java.lang.Double">
+            <column name="total_pagar" not-null="true" />
         </property>
-        <property name="totalPagarRecargo" type="java.lang.Double">
-            <column name="total_pagar_recargo" not-null="true" />
-        </property>
-        <property name="fecha" type="java.util.Date">
-            <column name="fecha" length="13" not-null="true" />
-        </property>
-        <property name="totalPagarHorasExtras" type="java.lang.Double">
-            <column name="total_pagar_horas_extras" not-null="true" />
+        <property name="porcentaje" type="java.lang.Double">
+            <column name="porcentaje" precision="5" not-null="true" />
         </property>
         <property name="usuCreador" type="java.lang.String">
             <column name="usu_creador" length="100" not-null="true" />
